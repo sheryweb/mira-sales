@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Stage_Restriction_From_Sold_To_Prev</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+ ISCHANGED(StageName),
+ $Profile.Name &lt;&gt; &apos;System Administrator&apos;,
+ OR(
+  ISPICKVAL(StageName, &quot;New&quot;),
+  ISPICKVAL(StageName, &quot;Booked&quot;),
+  ISPICKVAL(StageName, &quot;Reserved&quot;)
+ ),
+ ISPICKVAL(PRIORVALUE(StageName), &quot;Sold&quot;)
+)</errorConditionFormula>
+    <errorMessage>You cannot go back to Previous Stage</errorMessage>
+</ValidationRule>

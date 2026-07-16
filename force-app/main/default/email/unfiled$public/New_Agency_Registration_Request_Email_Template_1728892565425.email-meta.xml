@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Email notification on new Agency Registration</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>New Agency Registration Request Email Template</name>
+    <relatedEntityType>Account</relatedEntityType>
+    <style>none</style>
+    <subject>Acknowledgment of Your Registration Submission</subject>
+    <type>custom</type>
+    <uiType>SFX</uiType>
+</EmailTemplate>

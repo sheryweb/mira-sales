@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Request Type --></label>
+    <name>Request_Type__c</name>
+    <picklistValues>
+        <masterLabel>Agency Profile Update</masterLabel>
+        <translation><!-- Agency Profile Update --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Bank Detail Update</masterLabel>
+        <translation><!-- Bank Detail Update --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Credit Limit Change</masterLabel>
+        <translation><!-- Credit Limit Change --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Discount Approval</masterLabel>
+        <translation><!-- Discount Approval --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Document Re-upload</masterLabel>
+        <translation><!-- Document Re-upload --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Fee Change</masterLabel>
+        <translation><!-- Fee Change --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Other</masterLabel>
+        <translation><!-- Other --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Payment Plan Change</masterLabel>
+        <translation><!-- Payment Plan Change --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Unit Price Change</masterLabel>
+        <translation><!-- Unit Price Change --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

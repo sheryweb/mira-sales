@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Payment_Plans_Collector__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Payment Plans Collector</label>
+    <referenceTo>Payment_Plans_Collector__c</referenceTo>
+    <relationshipLabel>Additional Payments</relationshipLabel>
+    <relationshipName>Additional_Payments</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

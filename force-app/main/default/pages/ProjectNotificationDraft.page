@@ -1,0 +1,248 @@
+<apex:page renderAs="pdf" showHeader="false" applyBodyTag="false" applyHtmlTag="false" controller="AgencyController">
+    <html>
+        <head>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    font-size: 9pt;
+                    margin: 40px;
+                }
+                h1, h2, h3, h4 {
+                    font-family: Arial, sans-serif;
+                    font-weight: bold;
+                }
+                h1 {
+                    font-size: 12pt;
+                    text-align: center;
+                    margin-bottom: 20px;
+                    text-decoration: underline;
+                }
+                h2 {
+                    font-size: 11pt;
+                    margin-top: 30px;
+                    margin-bottom: 10px;
+                    text-decoration: none;
+                }
+                h3 {
+                    font-size: 10pt;
+                    margin-top: 20px;
+                    margin-bottom: 10px;
+                    text-decoration: underline;
+                }
+                @page {
+                  size: A4 portait;
+                  margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+                }
+                /*page numbers*/
+                .page {
+                 counter-increment: page;
+                }
+               /*page numbers*/
+                div.page:after {
+                    display: block;
+                    content: "Page " counter(page) " of " counter(pages);
+                    padding: 2px 12px;
+                    font-size: 14px;
+                }
+                div#page-footer {
+                    display: block;
+                    padding: 5px;
+                    position: fixed;
+                    bottom: -20px;
+                }
+                .table-div {
+                    display: table;
+                    width: 100%;
+                    border: 1px solid #000;
+                    margin: 20px 0;
+                    table-layout: fixed;
+                }
+                .no-border {
+                    border: none !important;
+                }
+                .row-div {
+                    display: table-row;
+                }
+                .column-div {
+                    display: table-cell;
+                    padding: 5px;
+                    border: 1px solid #000;
+                    width: 50%;
+                    text-align: left;
+                }
+                .content-div {
+                    width: 100%;
+                    text-align: justify;
+                }
+                .end-page {
+                    font-size: 12pt;
+                    text-align: center;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="footer grey-txt table-div no-border" id="page-footer">
+                <div class="table-row">
+                    <div class="page no-border" style="text-align: right;"><br /><br /></div>
+                </div>
+            </div>
+            <div class='col size-1-of-2' style="text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div>
+            <div class="content-div" style="text-align: center;">
+                <h1>PROJECT NOTIFICATION</h1>
+            </div>
+    
+            <div class="content-div">
+                <p>
+                    <strong>Date:</strong>
+                    <apex:outputText value="{0,date,d}">
+                        <apex:param value="{!TODAY()}" />
+                    </apex:outputText><sup>{!IF(
+                            RIGHT(TEXT(DAY(TODAY())),1) == '1' && DAY(TODAY()) != 11, 'st',
+                            IF(RIGHT(TEXT(DAY(TODAY())),1) == '2' && DAY(TODAY()) != 12, 'nd', 
+                            IF(RIGHT(TEXT(DAY(TODAY())),1) == '3' && DAY(TODAY()) != 13, 'rd', 'th')
+                        ))}
+                    </sup>
+                    <apex:outputText value="{0,date,MMMM yyyy}">
+                        <apex:param value="{!TODAY()}" />
+                    </apex:outputText>
+                </p>
+            </div>
+    
+            <div class="content-div">
+                <p><strong>From:</strong> M I R A DEVELOPMENTS LLC (<strong>"the Developer"</strong>)</p>
+                <p><strong>To: </strong> <apex:outputText value="{!agencyInfo['name']}" /> (<strong>"the Agent"</strong>)</p>
+                <p style="text-align: center;"><strong>Subject: Formal Notification and Authorization to Market Project/Projects.</strong></p>
+            </div>
+    
+            <div class="content-div">
+                <p>This serves as formal notification and authorization, in accordance with the Real Estate Brokerage Agency Agreement (<strong>"the Agreement"</strong>), to market and promote properties within the following specific Projects:</p>
+            </div>
+    
+            <div class="table-div" style="display: {!IF(agencyInfo['agencyCategory'] == 'Georgian', 'none', '')}">
+                <div class="row-div">
+                    <div class="column-div"><strong>Project Name</strong></div>
+                    <div class="column-div"><strong>Project Location</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Trussardi Residences Phase 1 &amp; 2</div>
+                    <div class="column-div">Dubai, United Arab Emirates</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Mira Villas designed by Bentley Home</div>
+                    <div class="column-div">Dubai, United Arab Emirates</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Post Hotel &amp; Residences by Elie Saab</div>
+                    <div class="column-div">Andermatt, Switzerland</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Gianfranco Ferre Residences</div>
+                    <div class="column-div">
+                        Ras Al Khaimah, United Arab Emirates
+                        <p style="font-size: 8pt; margin-top: 5px; font-style: italic;">Project REG No. <strong>PRC/20257201</strong></p>
+                    </div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Trussardi Residences MIRA VERDE</div>
+                    <div class="column-div">Tblisi, Georgia</div>
+                </div>
+            </div>
+
+            <div class="table-div" style="display: {!IF(agencyInfo['agencyCategory'] == 'Georgian', '', 'none')}">
+                <div class="row-div">
+                    <div class="column-div"><strong>Project Name</strong></div>
+                    <div class="column-div"><strong>Project Location</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Trussardi Residences MIRA VERDE</div>
+                    <div class="column-div">Tblisi, Georgia</div>
+                </div>
+            </div>
+    
+            <div class="content-div">
+                <p>This authorization is granted subject to the terms and conditions set forth in the Agreement and the specifics outlined in this Project Notification.</p>
+            </div>
+    
+            <h2>Project and Properties Details</h2>
+            <div class="content-div">
+                <p>A comprehensive overview of the Project and the Properties authorized for marketing under the Agreement will be provided either in Attachment or/and during the brief which will be scheduled by the Developer.</p>
+            </div>
+    
+            <h2>1. Essential Marketing Details</h2>
+            <div class="content-div">
+                <p>Comprehensive marketing materials, including brochures, floor plans, renderings, and property data, will be provided through email. These materials are the only approved resources for marketing this Project and must be used in strict compliance with the branding and usage guidelines provided by the Developer.</p>
+            </div>
+    
+            <h2>2. Applicable Commission Structure</h2>
+            <div class="content-div">
+                <p>The commission payable to the Agent for Successful Sales within the Project shall be as follows:</p>
+            </div>
+    
+            <div class="table-div" style="display: {!IF(agencyInfo['agencyCategory'] == 'Georgian', 'none', '')}">
+                <div class="row-div">
+                    <div class="column-div"><strong>Project Name</strong></div>
+                    <div class="column-div"><strong>Commission Rate</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Trussardi Residences Phase 1 &amp; 2</div>
+                    <div class="column-div">6%</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Mira Villas designed by Bentley Home</div>
+                    <div class="column-div">7%</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Post Hotel &amp; Residences by Elie Saab</div>
+                    <div class="column-div">7%</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Gianfranco Ferre Residences</div>
+                    <div class="column-div">6%</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Trussardi Residences MIRA VERDE</div>
+                    <div class="column-div">6%</div>
+                </div>
+            </div>
+
+            <div class="table-div" style="display: {!IF(agencyInfo['agencyCategory'] == 'Georgian', '', 'none')}">
+                <div class="row-div">
+                    <div class="column-div"><strong>Project Name</strong></div>
+                    <div class="column-div"><strong>Commission Rate</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Trussardi Residences MIRA VERDE</div>
+                    <div class="column-div">6%</div>
+                </div>
+            </div>
+    
+            <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+    
+            <h2>3. Special Terms and Conditions / Project-Specific Procedures</h2>
+            <div class="content-div">
+                <p><strong>3.1</strong> The Agent shall strictly adhere to any specific procedures, guidelines, and additional terms governing the marketing and sale of properties within the Project referenced in this Project Notification. These project-specific requirements shall be notified in written to the Agent if necessary.</p>
+            </div>
+
+            <div class="content-div">
+                <p><strong>3.2</strong> Such project-specific terms may include, but are not limited to, requirements concerning lead notification, client profiling, appointment scheduling, pricing communication, discount policy, branding and marketing material usage, and procedures regarding the handling of payments. The Agent must fully comply with all such stipulated requirements for this Project.</p>
+            </div>
+
+            <h2>4. Duration of Authorization</h2>
+            <div class="content-div">
+                <p><strong>4.1</strong> This authorization to market the aforementioned Project/Projects is valid for the Term of the Agreement, unless earlier terminated in accordance with the Agreement's provisions or superseded by a revised Project Notification issued by the Developer.</p>
+                <p><strong>4.2</strong> Without prejudice to the Developer's rights of termination under this Agreement, the Developer may, at its sole discretion, suspend or revoke the authorization granted to the Agent for one or more specific Projects by providing written notice to the Agent. Such suspension or revocation shall be effective from the date specified in the written notice. Upon the effective date, the Agent shall immediately cease all marketing, promotional, and representation activities related to the affected Project(s) before any Clients. For the avoidance of doubt, the Agent shall not be entitled to any commission for any Clients related to the affected Project(s) whose transactions are initiated or completed on or after the effective date of such suspension or revocation, irrespective of any prior introduction by the Agent.</p>
+            </div>
+    
+            <div class="content-div">
+                <p>Please acknowledge receipt of this Project Notification and your understanding and acceptance of its terms by signing and returning a copy of this document.</p>
+            </div>
+    
+            <div>
+                <p><strong>M I R A DEVELOPMENTS LLC</strong></p>
+                <p style="margin-top: 50px;"><strong>Company Stamp:</strong></p>
+                <apex:image value="{!$Resource.MIRAStampProjectDetails}" alt="Logo" width="18%;" style="display: {!IF(agencyInfo['agencyCategory'] == 'Georgian', 'none', '')}"/>
+                <apex:image value="{!$Resource.MIRAStampProjectDetailsGeorgia}" alt="Logo" width="18%;" style="display: {!IF(agencyInfo['agencyCategory'] == 'Georgian', '', 'none')}"/>
+            </div>
+        </body>
+    </html>
+</apex:page>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Agency_Agents_editable_only_for_New_stag</fullName>
+    <active>true</active>
+    <description>Agency/Agents_editable_only_for_New_stag</description>
+    <errorConditionFormula>AND(
+ TEXT(StageName) &lt;&gt; &apos;New&apos;,
+ $Profile.Name &lt;&gt; &apos;Sales Admin&apos;,
+ $Profile.Name &lt;&gt; &apos;System Administrator&apos;,
+ OR(
+  ISCHANGED( Assisted_by_Agent__c ),
+  ISCHANGED(  Agency__c  ),
+  ISCHANGED ( Agent__c )
+ )
+)</errorConditionFormula>
+    <errorDisplayField>Assisted_by_Agent__c</errorDisplayField>
+    <errorMessage>You can not change these fields on this Stage</errorMessage>
+</ValidationRule>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Requested_Cost_AED__c</fullName>
+    <description>Requested unit Cost (AED), computed from the requested price and the currency conversion rate. Applied to Unit.Cost_AED__c on approval.</description>
+    <externalId>false</externalId>
+    <label>Requested Cost (AED)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

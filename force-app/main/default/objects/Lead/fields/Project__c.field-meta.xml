@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Project__c</fullName>
+    <label>Project</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>MIRA Villas Designed by Bentley Home</fullName>
+                <default>false</default>
+                <label>MIRA Villas Designed by Bentley Home</label>
+            </value>
+            <value>
+                <fullName>Trussardi Residences</fullName>
+                <default>false</default>
+                <label>Trussardi Residences</label>
+            </value>
+            <value>
+                <fullName>Trussardi Residences Phase 2</fullName>
+                <default>false</default>
+                <label>Trussardi Residences Phase 2</label>
+            </value>
+            <value>
+                <fullName>POST HOTEL &amp; RESIDENCES By ELIE SAAB</fullName>
+                <default>false</default>
+                <label>POST HOTEL &amp; RESIDENCES By ELIE SAAB</label>
+            </value>
+            <value>
+                <fullName>MIRA Bentley Home</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>MIRA Bentley Home</label>
+            </value>
+            <value>
+                <fullName>MIRA Trussardi</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>MIRA Trussardi</label>
+            </value>
+            <value>
+                <fullName>MIRA Trussardi Coming Soon</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>MIRA Trussardi Coming Soon</label>
+            </value>
+            <value>
+                <fullName>MIRA Trussardi Residences</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>MIRA Trussardi Residences</label>
+            </value>
+            <value>
+                <fullName>MIRA Villas Bentley Home</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>MIRA Villas Bentley Home</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

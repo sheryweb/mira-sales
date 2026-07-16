@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Target_Year__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF( YEAR( Unit_Booked_Date_Only__c ) = 2025, &quot;2025&quot;, IF( YEAR( Unit_Booked_Date_Only__c ) = 2026, &quot;2026&quot;, TEXT(YEAR( Unit_Booked_Date_Only__c )) ) )</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Target Year</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

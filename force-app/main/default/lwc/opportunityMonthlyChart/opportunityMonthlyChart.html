@@ -1,0 +1,113 @@
+<template>
+    <lightning-card title="Monthly Sales Report" icon-name="standard:chart">
+        <div class="slds-p-around_medium">
+            <!-- Year Filter and Print Button -->
+            <div class="slds-m-bottom_medium">
+                <lightning-layout>
+                    <lightning-layout-item size="3">
+                        <lightning-combobox
+                            name="yearFilter"
+                            label="Year"
+                            value={selectedYear}
+                            placeholder="Select Year"
+                            options={yearOptions}
+                            onchange={handleYearChange}>
+                        </lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" class="slds-align_absolute-center">
+                        <div class="slds-text-heading_small">
+                            Monthly Sales Report - {selectedYear}
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="3" class="slds-align_absolute-center">
+                        <lightning-button
+                            variant="neutral"
+                            label="Print Chart"
+                            icon-name="utility:print"
+                            onclick={handlePrint}
+                            class="print-button">
+                        </lightning-button>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </div>
+
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <div class="slds-is-relative slds-p-around_large">
+                    <lightning-spinner alternative-text="Loading chart data..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Error Message -->
+            <template if:true={hasError}>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">Error</span>
+                    <lightning-icon icon-name="utility:error" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    <h2>Error loading chart data: {error.body.message}</h2>
+                </div>
+            </template>
+
+            <!-- Chart Container -->
+            <template if:false={isLoading}>
+                <div class="chart-container">
+                    <canvas lwc:dom="manual"></canvas>
+                </div>
+                <template if:true={hasData}>
+                    
+                    <!-- Chart Summary -->
+                    <div class="slds-m-top_medium">
+                        <lightning-layout>
+                            <lightning-layout-item size="6">
+                                <div class="slds-text-align_center">
+                                    <div class="slds-text-heading_small booked-color">
+                                        <strong>Booked</strong>
+                                    </div>
+                                    <div class="slds-text-body_small">
+                                        Total Value: {totalBookedValue}
+                                    </div>
+                                    <div class="slds-text-body_small">
+                                        Total Units: {totalBookedCount}
+                                    </div>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="6">
+                                <div class="slds-text-align_center">
+                                    <div class="slds-text-heading_small slds-text-color_success">
+                                        <strong>Sold</strong>
+                                    </div>
+                                    <div class="slds-text-body_small">
+                                        Total Value: {totalSoldValue}
+                                    </div>
+                                    <div class="slds-text-body_small">
+                                        Total Units: {totalSoldCount}
+                                    </div>
+                                </div>
+                            </lightning-layout-item>
+                            <!--<lightning-layout-item size="4">
+                                <div class="slds-text-align_center">
+                                    <div class="slds-text-heading_small" style="color: #ff9800;">
+                                        <strong>In Progress</strong>
+                                    </div>
+                                    <div class="slds-text-body_small">
+                                        Total Value: {totalInProgressValue}
+                                    </div>
+                                    <div class="slds-text-body_small">
+                                        Total Units: {totalInProgressCount}
+                                    </div>
+                                </div>
+                            </lightning-layout-item>-->
+                        </lightning-layout>
+                    </div>
+                </template>
+                
+                <template if:false={hasData}>
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_info" role="alert">
+                        <span class="slds-assistive-text">Info</span>
+                        <lightning-icon icon-name="utility:info" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        <h2>No data available for {selectedYear}. Please ensure Opportunity Monthly Activity records exist.</h2>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>

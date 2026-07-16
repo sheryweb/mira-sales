@@ -1,0 +1,17 @@
+<template>
+    <lightning-card title="Agency Documents" icon-name="standard:document">
+        <template if:true={contentVersions}>
+            <lightning-datatable
+                key-field="Id"
+                data={contentVersions}
+                columns={columns}
+                hide-checkbox-column
+            ></lightning-datatable>
+        </template>
+        <template if:false={contentVersions}>
+            <div class="slds-text-color_error" role="alert">
+                No files found.
+            </div>
+        </template>
+    </lightning-card>
+</template>

@@ -1,0 +1,29 @@
+<template>
+    <template if:true={loading}>
+        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+    </template>
+
+    <template if:true={error}>
+        <div class="slds-notify slds-notify_alert slds-theme_error slds-m-around_small" role="alert">
+            <span>{error}</span>
+        </div>
+    </template>
+
+    <template if:true={showComparison}>
+        <template if:true={isPaymentPlan}>
+            <c-payment-plan-comparison-viewer record-id={recordId}></c-payment-plan-comparison-viewer>
+        </template>
+        <template if:true={isUnitPrice}>
+            <c-unit-price-comparison-viewer record-id={recordId}></c-unit-price-comparison-viewer>
+        </template>
+        <template if:true={isProfile}>
+            <c-profile-change-comparison-viewer record-id={recordId}></c-profile-change-comparison-viewer>
+        </template>
+        <template if:true={isBank}>
+            <c-bank-change-comparison-viewer record-id={recordId}></c-bank-change-comparison-viewer>
+        </template>
+        <template if:true={isDoc}>
+            <c-document-change-comparison-viewer record-id={recordId}></c-document-change-comparison-viewer>
+        </template>
+    </template>
+</template>

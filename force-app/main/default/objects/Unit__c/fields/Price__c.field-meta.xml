@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Price__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(Project_Name_F__c &lt;&gt; &apos;POST HOTEL &amp; RESIDENCES By ELIE SAAB&apos;, &apos;AED &apos;&amp;TEXT(Cost_AED__c), &apos;CHF &apos;&amp;TEXT(Cost_CHF__c))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Price</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

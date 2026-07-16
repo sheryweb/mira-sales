@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<apex:page controller="InvoiceCommissionPDFController" renderAs="pdf" applyHtmlTag="false" showHeader="false" standardStylesheets="false">
+    <head>
+        <style type="text/css">
+            @page {
+                size: A4 portrait;
+                margin: 8mm;
+            }
+            body {
+                font-family: Arial Unicode MS, Arial, sans-serif;
+                font-size: 12px;
+                line-height: 1.2;
+                margin: 0;
+                padding: 0;
+            }
+            strong, b {
+                font-weight: 900 !important;
+                font-family: Arial Black, Arial Bold, Arial, sans-serif !important;
+            }
+            th {
+                font-weight: 900 !important;
+                font-family: Arial Black, Arial Bold, Arial, sans-serif !important;
+            }
+            .invoice-container {
+                width: 100%;
+                margin: 0 auto;
+                padding: 0;
+                font-family: Arial Unicode MS, Arial, sans-serif;
+            }
+            .invoice-header h1 {
+                font-family: Arial Unicode MS, Arial, sans-serif;
+                font-size: 24px;
+                font-weight: 900 !important;
+                margin-bottom: 6px;
+                text-align: center;
+            }
+            .invoice-info {
+                margin-bottom: 8px;
+                font-family: Arial Unicode MS, Arial, sans-serif;
+            }
+            .details-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 8px;
+                font-family: Arial Unicode MS, Arial, sans-serif;
+            }
+            .details-table th {
+                background-color: #f2f2f2;
+                padding: 4px;
+                text-align: left;
+                border: 1px solid #ddd;
+                font-weight: 900 !important;
+            }
+            .details-table td {
+                padding: 4px;
+                border: 1px solid #ddd;
+            }
+            .details-table p {
+                margin: 2px 0;
+            }
+            .details-table p strong, .details-table p b {
+                font-weight: 900 !important;
+            }
+            .items-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 8px;
+            }
+            .items-table th {
+                background-color: #f2f2f2;
+                padding: 4px;
+                text-align: left;
+                border: 1px solid #ddd;
+                font-weight: 900 !important;
+            }
+            .items-table td {
+                padding: 4px;
+                border: 1px solid #ddd;
+            }
+            .serial-col {
+                width: 5%;
+            }
+            .desc-col {
+                width: 35%;
+            }
+            .amount-col {
+                width: 15%;
+                text-align: right;
+            }
+            .total-section {
+                margin-top: 8px;
+                border: 1px solid #ddd;
+                padding: 6px;
+                page-break-inside: avoid;
+            }
+            .total-in-words {
+                margin-bottom: 6px;
+            }
+            .total-in-words strong, .total-in-words b {
+                font-weight: 900 !important;
+            }
+            .total-amounts {
+                text-align: right;
+            }
+            .total-amounts p {
+                margin: 2px 0;
+            }
+            .total-amounts strong, .total-amounts b {
+                font-weight: 900 !important;
+            }
+            .bold-text {
+                font-weight: 900 !important;
+                font-family: Arial Black, Arial Bold, Arial, sans-serif !important;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="invoice-container">
+            <div class="invoice-header">
+                <table width="100%" style="margin-bottom: 6px;">
+                    <tr>
+                        <td width="50%" align="left" valign="middle">
+                            <img src="{!$Resource.MiraDocLogo}" alt="Mira Logo" style="height: 40px;"/>
+                        </td>
+                        <td width="50%" align="right" valign="middle">
+                            <b style="font-size: 18px;">COMMISSION INVOICE</b>
+                        </td>
+                    </tr>
+                </table>
+
+                <table width="100%" style="margin-bottom: 8px;">
+                    <tr>
+                        <td width="50%" align="left">
+                            <p style="margin: 0;"><b>Invoice Number:</b> {!invoice.Invoice_Number__c}</p>
+                        </td>
+                        <td width="50%" align="right">
+                            <p style="margin: 0;"><b>Date of Issue:</b> {!formattedInvoiceDate}</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <table class="details-table">
+                <tr>
+                    <th><b>Issued From</b></th>
+                    <th><b>Issued To</b></th>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">
+                        <p><b>M I R A Developments L L C</b></p>
+                        <p><b>TRN:</b> 104070222500003</p>
+                        <p><b>Address:</b> Office No601-606, Park Heights Square 1, Dubai Hills, Dubai, 213983, Dubai</p>
+                        <p><b>Email:</b> finance@miradevelopments.ae</p>
+                    </td>
+                    <td style="width: 50%;">
+                        <p><b>Agency Name:</b> {!agencyName}</p>
+                        <p><b>Registration Number:</b> {!agencyRegistrationNumber}</p>
+                        <apex:outputPanel rendered="{!isVatRegistered}">
+                            <p><b>TRN:</b> {!agencyTRN}</p>
+                        </apex:outputPanel>
+                        <p>&nbsp;</p>
+                        <p>&nbsp;</p>
+                    </td>
+                </tr>
+            </table>
+
+            <table class="details-table">
+                <tr>
+                    <th><b>Bank Details</b></th>
+                    <th><b>Project Details</b></th>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">
+                        <p><b>Bank Name:</b> {!bankName}</p>
+                        <p><b>Account Name:</b> {!accountName}</p>
+                        <p><b>Account No:</b> {!accountNumber}</p>
+                        <p><b>IBAN:</b> {!IBAN}</p>
+                        <p><b>Swift:</b> {!swiftCode}</p>
+                        <apex:outputPanel rendered="{!NOT(ISBLANK(branchName))}">
+                            <p><b>Branch:</b> {!branchName}</p>
+                        </apex:outputPanel>
+                    </td>
+                    <td style="width: 50%;">
+                        <p><b>Project Name:</b> {!invoice.Unit__r.Project_Name_Text__c}</p>
+                        <p><b>Sale Price:</b> {!currencySymbol} {!formattedSalePrice}</p>
+                        <p><b>Property Details:</b> {!invoice.Unit__r.Title__c}<apex:outputPanel rendered="{!invoice.Unit__r.Project_Name_Text__c != 'MIRA Villas Designed by Bentley Home'}"> - Tower: {!invoice.Unit__r.Building__c}</apex:outputPanel></p>
+                        <p><b>Unit No:</b> {!invoice.Unit__r.Property_Code_Text__c}</p>
+                        <p>&nbsp;</p>
+                    </td>
+                </tr>
+            </table>
+
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th class="serial-col"><b>#</b></th>
+                        <th class="desc-col"><b>Description</b></th>
+                        <th class="amount-col"><b>Amount (Excl. VAT) {!currencySymbol}</b></th>
+                        <th class="amount-col"><b>VAT%</b></th>
+                        <th class="amount-col"><b>VAT Amount {!currencySymbol}</b></th>
+                        <th class="amount-col"><b>Amount (Incl. VAT) {!currencySymbol}</b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="serial-col">1</td>
+                        <td class="desc-col">{!lineItemDescription}</td>
+                        <td class="amount-col">{!formattedSubTotal}</td>
+                        <td class="amount-col">{!vatPercentDisplay}</td>
+                        <td class="amount-col">{!formattedVATAmount}</td>
+                        <td class="amount-col">{!formattedAmountInclVat}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="total-section" style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td colspan="2" class="total-in-words">
+                        <p style="margin: 2px 0;"><b>Total in Words:</b> <apex:outputText value="{!totalInWords}"/></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="total-amounts" align="right">
+                        <p style="margin: 2px 0;"><b>Sub Total: </b> <apex:outputText value="{!currencySymbol}"/>&nbsp; <apex:outputText value="{!formattedSubTotal}"/></p>
+                        <p style="margin: 2px 0;"><b>Total VAT: </b> <apex:outputText value="{!currencySymbol}"/>&nbsp; <apex:outputText value="{!formattedVATAmount}"/></p>
+                        <apex:outputPanel rendered="{!invoice.Paid_Amount__c != null && invoice.Paid_Amount__c > 0}">
+                            <p style="margin: 2px 0;"><b>Paid Amount: </b> <apex:outputText value="{!currencySymbol}"/>&nbsp; <apex:outputText value="{!formattedPaidAmount}"/></p>
+                        </apex:outputPanel>
+                        <p style="margin: 2px 0;"><b>Grand Total: </b> <apex:outputText value="{!currencySymbol}"/>&nbsp; <apex:outputText value="{!formattedGrandTotal}"/></p>
+                    </td>
+                </tr>
+            </table>
+
+            <div style="margin-top: 8px; display: table; width: 100%;">
+                <div style="display: table-cell; width: 75%; vertical-align: top;">
+                    <div style="font-style: italic !important; font-weight: normal; font-family: 'Times New Roman', serif; font-size: 12px;">
+                        <i>This is a system-generated commission invoice and does not require signatures.</i>
+                    </div>
+                </div>
+                <div style="display: table-cell; width: 25%; text-align: right; vertical-align: top; padding-top: 8px;">
+                    <img src="{!$Resource.MIRAVoucherStamp}" alt="Mira Stamp" style="display: {!IF(invoice.Unit__r.Project_Name_Text__c == 'GIANFRANCO FERRE RESIDENCES', 'none', '')}; height: 100px; max-width: 100%;"/>
+                    <img src="{!$Resource.MIRAVoucherStampRAK}" alt="Mira Stamp RAK" style="display: {!IF(invoice.Unit__r.Project_Name_Text__c == 'GIANFRANCO FERRE RESIDENCES', '', 'none')}; height: 100px; max-width: 100%;"/>
+                </div>
+            </div>
+        </div>
+    </body>
+</apex:page>

@@ -1,0 +1,20 @@
+.proposed-col {
+    background: #f0f6ff;
+}
+
+.proposed-value {
+    font-weight: 600;
+    color: #0176d3;
+}
+
+.field-label {
+    font-weight: 600;
+}
+
+.bank-group {
+    border-left: 4px solid #0176d3;
+}
+
+.bank-title {
+    color: #032d60;
+}

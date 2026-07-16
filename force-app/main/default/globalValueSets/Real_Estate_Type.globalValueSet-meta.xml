@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Apartment</fullName>
+        <default>false</default>
+        <label>Apartment</label>
+    </customValue>
+    <customValue>
+        <fullName>Branded Villa</fullName>
+        <default>false</default>
+        <label>Branded Villa</label>
+    </customValue>
+    <customValue>
+        <fullName>Townhouse</fullName>
+        <default>false</default>
+        <label>Townhouse</label>
+    </customValue>
+    <customValue>
+        <fullName>Penthouse</fullName>
+        <default>false</default>
+        <label>Penthouse</label>
+    </customValue>
+    <customValue>
+        <fullName>Duplex</fullName>
+        <default>false</default>
+        <label>Duplex</label>
+    </customValue>
+    <customValue>
+        <fullName>Branded Mansion</fullName>
+        <default>false</default>
+        <label>Branded Mansion</label>
+    </customValue>
+    <customValue>
+        <fullName>Office</fullName>
+        <default>false</default>
+        <label>Office</label>
+    </customValue>
+    <customValue>
+        <fullName>Retail</fullName>
+        <default>false</default>
+        <label>Retail</label>
+    </customValue>
+    <masterLabel>Real Estate Type</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Booking_Month__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+  NOT(ISBLANK(Booking_Date_Time__c)),
+  TEXT(YEAR(DATEVALUE(Booking_Date_Time__c))) &amp; &quot;-&quot; &amp; 
+  TEXT(MONTH(DATEVALUE(Booking_Date_Time__c))),
+  NULL
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Booking Month</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

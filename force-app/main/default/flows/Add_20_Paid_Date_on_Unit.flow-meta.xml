@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>66.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Check_If_20_Paid</name>
+        <label>Check If 20% Paid</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>If Not Paid</defaultConnectorLabel>
+        <rules>
+            <name>If_Paid</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsTwentyPercentPaid</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Add_Unit_20_Paid_Date_Stamp</targetReference>
+            </connector>
+            <label>If Paid</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_if_20_Payment_Received_Date_is_Added</name>
+        <label>Check if 20% Payment Received Date is Added</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>If Added</defaultConnectorLabel>
+        <rules>
+            <name>If_Not_Added</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Twenty_Percent_Paid_Date__c</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Twenty_Percent_Paid_Date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_If_20_Paid</targetReference>
+            </connector>
+            <label>If Not Added</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>CurrDate</name>
+        <dataType>Date</dataType>
+        <expression>Today()</expression>
+    </formulas>
+    <formulas>
+        <name>IsTwentyPercentPaid</name>
+        <dataType>Boolean</dataType>
+        <expression>NULLVALUE({!$Record.Received_Installments_Amount__c}, 0) &gt;= ({!$Record.Cost_AED__c} * 0.20)
+&amp;&amp; NULLVALUE({!$Record.Cost_AED__c}, 0) &gt; 0</expression>
+    </formulas>
+    <interviewLabel>Add 20% Paid Date on Unit {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Add 20% Paid Date on Unit</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Add_Unit_20_Paid_Date_Stamp</name>
+        <label>Add Unit 20% Paid Date Stamp</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Twenty_Percent_Paid_Date__c</field>
+            <value>
+                <elementReference>CurrDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_if_20_Payment_Received_Date_is_Added</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Total_Received_Amount__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Unit__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

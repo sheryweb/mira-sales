@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Status --></label>
+    <name>Status__c</name>
+    <picklistValues>
+        <masterLabel>Booked</masterLabel>
+        <translation><!-- Booked --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Cancelled</masterLabel>
+        <translation><!-- Cancelled --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Cancelled Manually</masterLabel>
+        <translation><!-- Cancelled Manually --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>EOI Paid</masterLabel>
+        <translation><!-- EOI Paid --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Sent</masterLabel>
+        <translation><!-- Sent --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

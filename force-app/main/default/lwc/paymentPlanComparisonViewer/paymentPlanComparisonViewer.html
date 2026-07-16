@@ -1,0 +1,175 @@
+<template>
+    <template if:true={showViewer}>
+    <lightning-card title="Payment Plan Change — Comparison" icon-name="standard:approval">
+        <div class="slds-p-around_medium">
+
+            <!-- Loading -->
+            <template if:true={loading}>
+                <lightning-spinner alternative-text="Loading comparison…" size="medium"></lightning-spinner>
+            </template>
+
+            <!-- Error -->
+            <template if:true={error}>
+                <div class="slds-notify slds-notify_alert slds-theme_error" role="alert">
+                    <span>{error}</span>
+                </div>
+            </template>
+
+            <!-- Not applicable -->
+            <template if:true={isNotApplicable}>
+                <div class="slds-box slds-theme_shade slds-text-align_center slds-p-around_medium">
+                    <p class="slds-text-body_regular slds-text-color_weak">{notApplicableReason}</p>
+                </div>
+            </template>
+
+            <!-- Main comparison content -->
+            <template if:true={hasData}>
+
+                <!-- ── Request header ──────────────────────────────────── -->
+                <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Request</p>
+                            <p class="slds-text-heading_small">{comparison.requestName}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Status</p>
+                            <lightning-badge label={comparison.status}></lightning-badge>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Submitted By</p>
+                            <p>{comparison.requesterName}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Changes</p>
+                            <p>{changesSummary}</p>
+                        </div>
+                    </div>
+                    <div class="slds-m-top_small">
+                        <p class="slds-text-body_small slds-text-color_weak">Justification</p>
+                        <p class="slds-text-body_regular">{comparison.justification}</p>
+                    </div>
+                </div>
+
+                <!-- ── Unit info ───────────────────────────────────────── -->
+                <div class="slds-box slds-m-bottom_medium" style="background:#f0f6ff; border-left:4px solid #0176d3;">
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Unit</p>
+                            <p class="slds-text-heading_small">{unitTitle}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Project</p>
+                            <p>{unitProject}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Building</p>
+                            <p>{unitBuilding}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Client (Account)</p>
+                            <p>{unitAccount}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <template if:true={showChangesOnlyNote}>
+                    <div class="slds-notify slds-notify_alert slds-theme_info slds-m-bottom_medium" role="status">
+                        <span>{changesOnlyNote}</span>
+                    </div>
+                </template>
+
+                <!-- ── Side-by-side comparison ─────────────────────────── -->
+                <div class="slds-grid slds-gutters">
+
+                    <!-- Current Payment Plan -->
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="col-header col-header-current">
+                            Current Payment Plan
+                            <span class="slds-badge slds-badge_inverse slds-m-left_x-small">{currentCount}</span>
+                        </div>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered comparison-table">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">Milestone</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">%</th>
+                                    <th scope="col">Amount (AED)</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={currentLines} for:item="line">
+                                    <tr key={line.key} class={line.rowClass}>
+                                        <td>{line.milestoneName}</td>
+                                        <td>{line.dateDisplay}</td>
+                                        <td>{line.percentDisplay}</td>
+                                        <td>{line.amountDisplay}</td>
+                                        <td>
+                                            <template if:true={line.hasBadge}>
+                                                <lightning-badge label={line.badge}></lightning-badge>
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Proposed Payment Plan -->
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="col-header col-header-proposed">
+                            Proposed Payment Plan
+                            <span class="slds-badge slds-m-left_x-small">{proposedCount}</span>
+                        </div>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered comparison-table">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">Milestone</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">%</th>
+                                    <th scope="col">Amount (AED)</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={proposedLines} for:item="line">
+                                    <tr key={line.key} class={line.rowClass}>
+                                        <td>{line.milestoneName}</td>
+                                        <td>{line.dateDisplay}</td>
+                                        <td>{line.percentDisplay}</td>
+                                        <td>{line.amountDisplay}</td>
+                                        <td>
+                                            <template if:true={line.hasBadge}>
+                                                <lightning-badge label={line.badge}></lightning-badge>
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div><!-- /comparison grid -->
+
+                <!-- ── Legend ─────────────────────────────────────────── -->
+                <div class="slds-m-top_medium slds-grid slds-gutters slds-grid_vertical-align-center">
+                    <div class="slds-col slds-shrink">
+                        <span class="legend-dot dot-added"></span>
+                        <span class="slds-text-body_small slds-m-right_medium">Added</span>
+                    </div>
+                    <div class="slds-col slds-shrink">
+                        <span class="legend-dot dot-updated"></span>
+                        <span class="slds-text-body_small slds-m-right_medium">Updated</span>
+                    </div>
+                    <div class="slds-col slds-shrink">
+                        <span class="legend-dot dot-deleted"></span>
+                        <span class="slds-text-body_small">Deleted (left side only)</span>
+                    </div>
+                </div>
+
+            </template>
+        </div>
+    </lightning-card>
+    </template>
+</template>

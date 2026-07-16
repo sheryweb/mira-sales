@@ -1,0 +1,71 @@
+<apex:page controller="BrokerProfileEditController" action="{!checkLogin}" showHeader="false"
+           sidebar="false" standardStylesheets="false" cache="false" docType="html-5.0" title="Broker Portal — Edit Profile">
+<head><meta name="viewport" content="width=device-width, initial-scale=1"/></head>
+<body>
+    <c:BrokerStyles />
+    <div class="bp-shell">
+        <c:BrokerSidebar active="profile" />
+        <div class="bp-main">
+            <c:BrokerTopbar title="Edit Company Profile" company="{!brokerCompanyName}" />
+            <div class="bp-content">
+                <div class="bp-h">
+                    <h2>Edit Company Profile</h2>
+                    <p>Changes are sent to MIRA for approval before they take effect.</p>
+                </div>
+
+                <!-- Submitted -->
+                <apex:outputPanel rendered="{!submitted}" layout="block">
+                    <div class="bp-card">
+                        <div class="ok" style="margin:0 0 14px;">{!message}</div>
+                        <p style="color:#6b7280; margin:0 0 18px;">Your relationship manager will review the request. The changes will appear on your profile once approved.</p>
+                        <a class="bp-btn bp-btn-primary" href="{!$Page.BrokerProfile}">Back to profile</a>
+                    </div>
+                </apex:outputPanel>
+
+                <!-- Locked (a request is already pending) -->
+                <apex:outputPanel rendered="{!AND(locked, NOT(submitted))}" layout="block">
+                    <div class="bp-card">
+                        <div class="bp-soft-note" style="margin:0 0 16px;">You already have profile changes pending approval. You can edit again once they're approved or rejected.</div>
+                        <a class="bp-btn bp-btn-ghost" href="{!$Page.BrokerProfile}">Back to profile</a>
+                    </div>
+                </apex:outputPanel>
+
+                <!-- Edit form -->
+                <apex:outputPanel rendered="{!AND(NOT(locked), NOT(submitted))}" layout="block">
+                    <apex:form >
+                        <apex:outputPanel rendered="{!message != null}" styleClass="bp-soft-note" layout="block">{!message}</apex:outputPanel>
+                        <div class="bp-card">
+                            <h3>Company Details</h3>
+                            <p class="bp-sub">Update the fields you need to change, then submit for approval.</p>
+                            <div class="bp-grid bp-form bp-mt">
+                                <apex:repeat value="{!fields}" var="f">
+                                    <div class="bp-field">
+                                        <label>{!f.label}</label>
+                                        <apex:outputPanel rendered="{!f.fieldType == 'text'}" layout="none">
+                                            <apex:inputText value="{!f.value}" styleClass="bp-input"/>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!f.fieldType == 'date'}" layout="none">
+                                            <apex:input type="date" value="{!f.value}" styleClass="bp-input"/>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!f.fieldType == 'yesno'}" layout="none">
+                                            <apex:selectList value="{!f.value}" size="1" styleClass="bp-input">
+                                                <apex:selectOption itemValue="" itemLabel="--"/>
+                                                <apex:selectOption itemValue="Yes" itemLabel="Yes"/>
+                                                <apex:selectOption itemValue="No" itemLabel="No"/>
+                                            </apex:selectList>
+                                        </apex:outputPanel>
+                                    </div>
+                                </apex:repeat>
+                            </div>
+                            <div class="bp-mt">
+                                <apex:commandButton styleClass="bp-btn bp-btn-primary" value="Submit for approval" action="{!save}"/>
+                                <a class="bp-btn bp-btn-ghost" href="{!$Page.BrokerProfile}" style="margin-left:8px;">Cancel</a>
+                            </div>
+                        </div>
+                    </apex:form>
+                </apex:outputPanel>
+            </div>
+        </div>
+    </div>
+</body>
+</apex:page>

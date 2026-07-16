@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Value_Perc_Booked_Reserved_Sold_Tower_B__c</fullName>
+    <formula>IF(Total_Value_Tower_B__c &gt; 0,
+ Value_Booked_Reserved_Sold_Tower_B__c / Total_Value_Tower_B__c,
+ 0
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>% Value Booked/Reserved/Sold Tower B</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Eligible</fullName>
+        <default>false</default>
+        <label>Eligible</label>
+    </customValue>
+    <customValue>
+        <fullName>Invoiced</fullName>
+        <default>false</default>
+        <label>Invoiced</label>
+    </customValue>
+    <customValue>
+        <fullName>Partially Paid</fullName>
+        <default>false</default>
+        <label>Partially Paid</label>
+    </customValue>
+    <customValue>
+        <fullName>Fully Paid</fullName>
+        <default>false</default>
+        <label>Fully Paid</label>
+    </customValue>
+    <customValue>
+        <fullName>On Hold</fullName>
+        <default>false</default>
+        <label>On Hold</label>
+    </customValue>
+    <customValue>
+        <fullName>Cancelled</fullName>
+        <default>false</default>
+        <label>Cancelled</label>
+    </customValue>
+    <masterLabel>Commission Status</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

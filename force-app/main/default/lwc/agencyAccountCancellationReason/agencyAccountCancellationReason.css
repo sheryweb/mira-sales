@@ -1,0 +1,6 @@
+.reason-text {
+    font-size: 1.25rem; /* Makes text larger */
+    font-weight: bold; /* Makes text bold */
+    color: #D0011B; /* Sets text color to a prominent red */
+    padding: 0.5rem; /* Adds some padding for spacing */
+}

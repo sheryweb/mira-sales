@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>New_Unit_must_be_BLocked_first</fullName>
+    <active>true</active>
+    <errorConditionFormula>ISNEW() &amp;&amp;  TEXT(Status__c) &lt;&gt;&apos;Draft&apos;</errorConditionFormula>
+    <errorDisplayField>Status__c</errorDisplayField>
+    <errorMessage>New Units must be created in the Blocked status, then you can change it.</errorMessage>
+</ValidationRule>

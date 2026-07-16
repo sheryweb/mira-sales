@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Receipt_Layout</fullName>
+    <fields>Voucher_Number__c</fields>
+    <fields>Name</fields>
+    <fields>Receipt_Added_Date__c</fields>
+    <fields>Received_Amount__c</fields>
+    <fields>Payment_Date__c</fields>
+    <fields>Status__c</fields>
+    <fields>OwnerId</fields>
+    <label>Receipt Layout</label>
+</CompactLayout>

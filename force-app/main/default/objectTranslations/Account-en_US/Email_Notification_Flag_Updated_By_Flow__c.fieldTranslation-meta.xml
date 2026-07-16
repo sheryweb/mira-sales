@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Email Notification Flag Updated By Flow --></label>
+    <name>Email_Notification_Flag_Updated_By_Flow__c</name>
+</CustomFieldTranslation>

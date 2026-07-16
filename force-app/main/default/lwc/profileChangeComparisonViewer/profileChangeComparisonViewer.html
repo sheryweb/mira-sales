@@ -1,0 +1,65 @@
+<template>
+    <template if:true={showViewer}>
+    <lightning-card title="Agency Profile Update — Comparison" icon-name="standard:approval">
+        <div class="slds-p-around_medium">
+
+            <template if:true={error}>
+                <div class="slds-notify slds-notify_alert slds-theme_error" role="alert">
+                    <span>{error}</span>
+                </div>
+            </template>
+
+            <template if:true={hasData}>
+
+                <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Request</p>
+                            <p class="slds-text-heading_small">{comparison.requestName}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Status</p>
+                            <lightning-badge label={comparison.status}></lightning-badge>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Agency</p>
+                            <p>{comparison.agencyName}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Submitted</p>
+                            <p>{comparison.submittedDate}</p>
+                        </div>
+                    </div>
+                    <div class="slds-m-top_small">
+                        <p class="slds-text-body_small slds-text-color_weak">Justification</p>
+                        <p class="slds-text-body_regular">{comparison.justification}</p>
+                    </div>
+                </div>
+
+                <p class="slds-text-title_caps slds-m-bottom_x-small">
+                    Changed Fields ({changeCount})
+                </p>
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col"><div class="slds-truncate" title="Field">Field</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Current value">Current value</div></th>
+                            <th scope="col" class="proposed-col"><div class="slds-truncate" title="Requested value">Requested value</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={comparison.changes} for:item="row">
+                            <tr key={row.label} class="slds-hint-parent">
+                                <td><div class="slds-truncate field-label" title={row.label}>{row.label}</div></td>
+                                <td><div class="slds-text-color_weak" title={row.oldValue}>{row.oldValue}</div></td>
+                                <td class="proposed-col"><div class="proposed-value" title={row.newValue}>{row.newValue}</div></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+
+            </template>
+        </div>
+    </lightning-card>
+    </template>
+</template>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This is a custom Tab for MIRA Sales Report</description>
+    <label>Reports</label>
+    <motif>Custom85: Real Estate Sign</motif>
+    <page>MiraPublicReportPage</page>
+</CustomTab>

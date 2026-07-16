@@ -1,0 +1,45 @@
+<apex:component >
+    <apex:attribute name="active" type="String" required="false" description="Active menu key"/>
+
+    <aside class="bp-side">
+        <div class="bp-brand">
+            <div class="bp-logo"><img src="{!$Resource.BrokerPortalLogo}" alt="MIRA"/></div>
+            <div><b>MIRA</b><span>Broker Portal</span></div>
+        </div>
+
+        <nav class="bp-nav">
+            <div class="bp-grouplbl">Overview</div>
+            <a href="{!$Page.BrokerPortalHome}" class="{!IF(active=='dashboard','on','')}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+                <span>Dashboard</span>
+            </a>
+
+            <div class="bp-grouplbl">My Business</div>
+            <a href="{!$Page.BrokerBookings}" class="{!IF(active=='bookings','on','')}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg>
+                <span>Bookings</span>
+            </a>
+            <a href="{!$Page.BrokerCommissions}" class="{!IF(active=='commissions','on','')}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 6.5A4 4 0 0 0 13 4h-2a3.5 3.5 0 0 0 0 7h2a3.5 3.5 0 0 1 0 7h-2a4 4 0 0 1-4-2.5"/></svg>
+                <span>Commissions</span>
+            </a>
+            <a href="{!$Page.BrokerInventory}" class="{!IF(active=='inventory','on','')}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-7h6v7"/></svg>
+                <span>Available Units</span>
+            </a>
+
+            <div class="bp-grouplbl">Account</div>
+            <a href="{!$Page.BrokerProfile}" class="{!IF(active=='profile','on','')}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V7a2 2 0 0 1 2-2h6v16M11 21h10V11a2 2 0 0 0-2-2h-8"/><path d="M7 9h0M7 13h0M15 13h0M15 17h0"/></svg>
+                <span>Company Profile</span>
+            </a>
+        </nav>
+
+        <div class="bp-side-foot">
+            <a href="{!$Page.BrokerLogout}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+                <span>Log out</span>
+            </a>
+        </div>
+    </aside>
+</apex:component>

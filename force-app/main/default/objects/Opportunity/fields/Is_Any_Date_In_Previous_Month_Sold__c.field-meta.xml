@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Any_Date_In_Previous_Month_Sold__c</fullName>
+    <formula>AND(
+    DATEVALUE(Sold_Date_Time__c) &gt;= 
+        DATE(
+            YEAR(ADDMONTHS(TODAY(), -1)),
+            MONTH(ADDMONTHS(TODAY(), -1)),
+            1
+        ),
+    DATEVALUE(Sold_Date_Time__c) &lt;
+        DATE(
+            YEAR(TODAY()),
+            MONTH(TODAY()),
+            1
+        )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Is Any Date In Previous Month Sold</label>
+    <type>Checkbox</type>
+</CustomField>

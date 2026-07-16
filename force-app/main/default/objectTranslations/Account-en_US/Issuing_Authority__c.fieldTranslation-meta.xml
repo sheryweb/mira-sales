@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Issuing Authority --></label>
+    <name>Issuing_Authority__c</name>
+    <picklistValues>
+        <masterLabel>ADGM</masterLabel>
+        <translation><!-- ADGM --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ajman Freezone Authority</masterLabel>
+        <translation><!-- Ajman Freezone Authority --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ajman Nuventures Centre Free Zone (ANC)</masterLabel>
+        <translation><!-- Ajman Nuventures Centre Free Zone (ANC) --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ankara Chamber of Commerce</masterLabel>
+        <translation><!-- Ankara Chamber of Commerce --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Canada Business Corporations Act</masterLabel>
+        <translation><!-- Canada Business Corporations Act --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Chamber of Commerce, Industry, Handicrafts and Agriculture MONTE ROSA LAGHI ALTO PIEMONTE</masterLabel>
+        <translation><!-- Chamber of Commerce, Industry, Handicrafts and Agriculture MONTE ROSA LAGHI ALTO PIEMONTE --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Companies Registration Office (CRO), Ireland</masterLabel>
+        <translation><!-- Companies Registration Office (CRO), Ireland --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Creative City Media Free Zone, Fujairah</masterLabel>
+        <translation><!-- Creative City Media Free Zone, Fujairah --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Department of Economic Development - Abu Dhabi</masterLabel>
+        <translation><!-- Department of Economic Development - Abu Dhabi --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Department of Economic Development - Ajman</masterLabel>
+        <translation><!-- Department of Economic Development - Ajman --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Department of Economic Development - Dubai</masterLabel>
+        <translation><!-- Department of Economic Development - Dubai --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Department of Economic Development - Ras Al Khaimah</masterLabel>
+        <translation><!-- Department of Economic Development - Ras Al Khaimah --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Department of Economic Development - Sharjah</masterLabel>
+        <translation><!-- Department of Economic Development - Sharjah --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Dubai Aviation City Corporation</masterLabel>
+        <translation><!-- Dubai Aviation City Corporation --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Dubai Integrated Economic Zones Authority</masterLabel>
+        <translation><!-- Dubai Integrated Economic Zones Authority --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Federal Board of Revenue (FBR) - Government of Pakistan</masterLabel>
+        <translation><!-- Federal Board of Revenue (FBR) - Government of Pakistan --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Interdistrict Inspectorate of the Federal Tax Service No. 39 for the Republic of Bashkortostan</masterLabel>
+        <translation><!-- Interdistrict Inspectorate of the Federal Tax Service No. 39 for the Republic of Bashkortostan --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Istanbul Trade Registry Directorate - Republic of Turkiye</masterLabel>
+        <translation><!-- Istanbul Trade Registry Directorate - Republic of Turkiye --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Magistrat der Stadt Büdingen - Gewerbeamt (Trade Office of the City of Buedingen) Germany</masterLabel>
+        <translation><!-- Magistrat der Stadt Büdingen - Gewerbeamt (Trade Office of the City of Buedingen) Germany --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ministry of Commerce &amp; Industry, State of Qatar</masterLabel>
+        <translation><!-- Ministry of Commerce &amp; Industry, State of Qatar --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ministry of Commerce, Industry &amp; Investment Promotion - Sultanate of Oman</masterLabel>
+        <translation><!-- Ministry of Commerce, Industry &amp; Investment Promotion - Sultanate of Oman --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ministry of Corporate Affairs (MCA services), ROC Delhi, India</masterLabel>
+        <translation><!-- Ministry of Corporate Affairs (MCA services), ROC Delhi, India --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ministry of Economic Development and Technology, Republic of Poland</masterLabel>
+        <translation><!-- Ministry of Economic Development and Technology, Republic of Poland --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ministry of Government and Consumer Services, Ontario</masterLabel>
+        <translation><!-- Ministry of Government and Consumer Services, Ontario --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ministry of Justice of Georgia - LEPL National Agency of Public Registry</masterLabel>
+        <translation><!-- Ministry of Justice of Georgia - LEPL National Agency of Public Registry --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ministry of Micro, Small and Medium Enterprises (MSME), Government of India</masterLabel>
+        <translation><!-- Ministry of Micro, Small and Medium Enterprises (MSME), Government of India --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Municipal Court in Prague</masterLabel>
+        <translation><!-- Municipal Court in Prague --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>National Agency of Public Registry (LEPL)</masterLabel>
+        <translation><!-- National Agency of Public Registry (LEPL) --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ras Al Khaimah Economic Zone (RAKEZ)</masterLabel>
+        <translation><!-- Ras Al Khaimah Economic Zone (RAKEZ) --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Registrar of Companies - Hong Kong</masterLabel>
+        <translation><!-- Registrar of Companies - Hong Kong --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Registro Mercantil de Mallorca</masterLabel>
+        <translation><!-- Registro Mercantil de Mallorca --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Revenue Service of Georgia</masterLabel>
+        <translation><!-- Revenue Service of Georgia --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>SECURITIES AND EXCHANGE COMMISSION OF PAKISTAN</masterLabel>
+        <translation><!-- SECURITIES AND EXCHANGE COMMISSION OF PAKISTAN --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Sharjah Media City - Free Zone Authority</masterLabel>
+        <translation><!-- Sharjah Media City - Free Zone Authority --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Sharjah Publishing City - Free Zone Authority</masterLabel>
+        <translation><!-- Sharjah Publishing City - Free Zone Authority --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Sharjah Research Technology and Innovation Park Free Zone Authority (SRTIP)</masterLabel>
+        <translation><!-- Sharjah Research Technology and Innovation Park Free Zone Authority (SRTIP) --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>State of California</masterLabel>
+        <translation><!-- State of California --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>State of Kuwait - Ministry of Commerce &amp; Industry</masterLabel>
+        <translation><!-- State of Kuwait - Ministry of Commerce &amp; Industry --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Tartu County Court Registration Department</masterLabel>
+        <translation><!-- Tartu County Court Registration Department --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>The Kolkata Municipal Corporation</masterLabel>
+        <translation><!-- The Kolkata Municipal Corporation --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>The Netherlands Chamber of Commerce KVK</masterLabel>
+        <translation><!-- The Netherlands Chamber of Commerce KVK --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>The Registrar of Companies for England and Wales</masterLabel>
+        <translation><!-- The Registrar of Companies for England and Wales --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>İSTANBUL TİCARET ODASI (ISTANBUL CHAMBER OF COMMERCE)</masterLabel>
+        <translation><!-- İSTANBUL TİCARET ODASI (ISTANBUL CHAMBER OF COMMERCE) --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

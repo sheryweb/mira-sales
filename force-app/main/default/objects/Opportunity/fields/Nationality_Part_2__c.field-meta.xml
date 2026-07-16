@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Nationality_Part_2__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(TEXT(Account.Nationality__c), 
+ &apos;🇱🇹&apos;,&apos;Lithuania&apos;, &apos;🇱🇺&apos;,&apos;Luxembourg&apos;, &apos;🇲🇴&apos;,&apos;Macau&apos;, &apos;🇲🇬&apos;,&apos;Madagascar&apos;,
+ &apos;🇲🇼&apos;,&apos;Malawi&apos;, &apos;🇲🇾&apos;,&apos;Malaysia&apos;, &apos;🇲🇻&apos;,&apos;Maldives&apos;, &apos;🇲🇱&apos;,&apos;Mali&apos;, &apos;🇲🇹&apos;,&apos;Malta&apos;,
+ &apos;🇲🇷&apos;,&apos;Mauritania&apos;, &apos;🇲🇺&apos;,&apos;Mauritius&apos;, &apos;🇲🇽&apos;,&apos;Mexico&apos;, &apos;🇲🇩&apos;,&apos;Moldova&apos;, &apos;🇲🇨&apos;,&apos;Monaco&apos;,
+ &apos;🇲🇳&apos;,&apos;Mongolia&apos;, &apos;🇲🇪&apos;,&apos;Montenegro&apos;, &apos;🇲🇦&apos;,&apos;Morocco&apos;, &apos;🇲🇿&apos;,&apos;Mozambique&apos;,
+ &apos;🇲🇲&apos;,&apos;Myanmar&apos;, &apos;🇳🇦&apos;,&apos;Namibia&apos;, &apos;🇳🇵&apos;,&apos;Nepal&apos;, &apos;🇳🇱&apos;,&apos;Netherlands&apos;,
+ &apos;🇳🇿&apos;,&apos;New Zealand&apos;, &apos;🇳🇮&apos;,&apos;Nicaragua&apos;, &apos;🇳🇪&apos;,&apos;Niger&apos;, &apos;🇳🇬&apos;,&apos;Nigeria&apos;,
+ &apos;🇲🇰&apos;,&apos;North Macedonia&apos;, &apos;🇳🇴&apos;,&apos;Norway&apos;, &apos;🇴🇲&apos;,&apos;Oman&apos;, &apos;🇵🇰&apos;,&apos;Pakistan&apos;,
+ &apos;🇵🇸&apos;,&apos;Palestine&apos;, &apos;🇵🇦&apos;,&apos;Panama&apos;, &apos;🇵🇾&apos;,&apos;Paraguay&apos;, &apos;🇵🇪&apos;,&apos;Peru&apos;,
+ &apos;🇵🇭&apos;,&apos;Philippines&apos;, &apos;🇵🇱&apos;,&apos;Poland&apos;, &apos;🇵🇹&apos;,&apos;Portugal&apos;, &apos;🇶🇦&apos;,&apos;Qatar&apos;,
+ &apos;🇷🇴&apos;,&apos;Romania&apos;, &apos;🇷🇺&apos;,&apos;Russia&apos;, &apos;🇷🇼&apos;,&apos;Rwanda&apos;, &apos;🇸🇦&apos;,&apos;Saudi Arabia&apos;,
+ &apos;🇸🇳&apos;,&apos;Senegal&apos;, &apos;🇷🇸&apos;,&apos;Serbia&apos;, &apos;🇸🇨&apos;,&apos;Seychelles&apos;, &apos;🇸🇱&apos;,&apos;Sierra Leone&apos;,
+ &apos;🇸🇬&apos;,&apos;Singapore&apos;, &apos;🇸🇰&apos;,&apos;Slovakia&apos;, &apos;🇸🇮&apos;,&apos;Slovenia&apos;, &apos;🇸🇧&apos;,&apos;Solomon Islands&apos;,
+ &apos;🇸🇴&apos;,&apos;Somalia&apos;, &apos;🇿🇦&apos;,&apos;South Africa&apos;, &apos;🇰🇷&apos;,&apos;South Korea&apos;, &apos;🇪🇸&apos;,&apos;Spain&apos;,
+ &apos;🇱🇰&apos;,&apos;Sri Lanka&apos;, &apos;🇸🇩&apos;,&apos;Sudan&apos;, &apos;🇸🇷&apos;,&apos;Suriname&apos;, &apos;🇸🇪&apos;,&apos;Sweden&apos;,
+ &apos;🇨🇭&apos;,&apos;Switzerland&apos;, &apos;🇸🇾&apos;,&apos;Syria&apos;, &apos;🇹🇼&apos;,&apos;Taiwan&apos;, &apos;🇹🇯&apos;,&apos;Tajikistan&apos;,
+ &apos;🇹🇿&apos;,&apos;Tanzania&apos;, &apos;🇹🇭&apos;,&apos;Thailand&apos;, &apos;🇹🇱&apos;,&apos;Timor-Leste&apos;, &apos;🇹🇬&apos;,&apos;Togo&apos;,
+ &apos;🇹🇳&apos;,&apos;Tunisia&apos;, &apos;🇹🇷&apos;,&apos;Türkiye&apos;, &apos;🇺🇬&apos;,&apos;Uganda&apos;, &apos;🇺🇦&apos;,&apos;Ukraine&apos;,
+ &apos;🇦🇪&apos;,&apos;United Arab Emirates&apos;, &apos;🇬🇧&apos;,&apos;United Kingdom&apos;, &apos;🇺🇸&apos;,&apos;United States&apos;,
+ &apos;🇺🇾&apos;,&apos;Uruguay&apos;, &apos;🇺🇿&apos;,&apos;Uzbekistan&apos;, &apos;🇻🇪&apos;,&apos;Venezuela&apos;, &apos;🇻🇳&apos;,&apos;Vietnam&apos;,
+ &apos;🇿🇲&apos;,&apos;Zambia&apos;, &apos;🇿🇼&apos;,&apos;Zimbabwe&apos;,
+ &apos;Unknown Country&apos;
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Nationality Part 2</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

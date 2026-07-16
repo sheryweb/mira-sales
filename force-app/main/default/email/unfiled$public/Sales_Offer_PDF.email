@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
+    xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width" name="viewport">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta name="x-apple-disable-message-reformatting">
+    <meta content="telephone=no,address=no,email=no,date=no,url=no" name="format-detection">
+    <link rel="stylesheet" href="https://use.typekit.net/bax4rmg.css">
+    <style>
+        html {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-family: sans-serif;
+            color: #212121;
+            font-weight: 100;
+        }
+
+        body {
+            margin:0;
+        }
+
+        .header {
+            height: 60px;
+            background-color: #2A324B;
+        }
+
+        .header img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            padding-top: 15px;
+        }
+
+        .header-txt {
+            font-size: 24px;
+            color: #232323;
+            margin-top: 20px;
+            font-weight: bolder;
+        }
+        
+        .txt-container{
+            margin-top: 30px;
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+
+        .regular-txt {
+            font-size: 16px;
+            font-size: 16px;
+            font-weight: 200;
+        }
+
+        .margin-top {
+            margin-top: 30px;
+        }
+
+        .margin-top-small {
+            margin-top: 15px;
+        }
+
+        .button {
+            height: 17px;
+            padding: 15px;
+            background-color: #2A324B;
+            color: white;
+            text-align: center;
+            font-weight: 200;
+        }
+
+        .contact-container,
+        .footer-container-mobile {
+            margin-top: 30px;
+            border-top: 1px solid #DDDDDD;
+            margin-left: 15px;
+            margin-right: 15px;
+            margin-bottom: 15px;
+        }
+
+        .footer-container {
+            display: none;
+        }
+
+        .link {
+            color: #B48660;
+            text-decoration: none;
+        }
+
+        .grey-txt {
+            color: #9A9EA9
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .socials {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            padding-top: 15px;
+            text-align: center;
+            color: #9A9EA9
+        }
+
+        .socials span {
+            padding-right: 15px;
+        }
+
+        @media only screen and (min-width: 600px){
+            .footer-container-mobile {
+                display: none;
+
+            }
+
+            .footer-container {
+                display: block;
+                margin-top: 30px;
+                border-top: 1px solid #DDDDDD;
+                margin-left: 15px;
+                margin-right: 15px;
+                margin-bottom: 15px;
+            }
+
+            .socials {
+                display: inline-block;
+            }
+
+            .socials-icons {
+                float: right;
+            }
+
+            .contact-detail {
+                display: inline-block;
+                margin-right: 70px;
+            }
+
+            .contact-detail a {
+                display: block;
+            }
+        }
+    </style>
+
+<body width="100%" \>
+    <div>
+        <div class='header'>
+            <img src="https://miradevelopments.file.force.com/servlet/servlet.ImageServer?id=015Hp000006rTXz&oid=00DHp0000033te2&lastMod=1715681641000" />
+        </div>
+
+        <div class='txt-container'>
+            <div class='header-txt'>Greetings!</div>
+            <div class='regular-txt margin-top'>Thank you for your interest in Mira Developments.</div>
+            <div class='regular-txt margin-top'>A unit has been reserved in your name. Detailed information is attached to this letter as a PDF.</div>
+            <div class='regular-txt margin-top'>To confirm the reservation, please make a payment using the link in the separate email message we have sent to you.</div>
+            <div class='regular-txt margin-top'>This is an automated message. Please do not reply.</div>
+        
+        </div>
+        <div class='contact-container'>
+            <div class='header-txt'>Contacts</div>
+            <div class='grey-txt margin-top-small contact-detail'>Phone: <a href="tel:+971 4 887 7283" class='link'>+971 4 887 7283</a></div>
+            <div class='grey-txt margin-top-small contact-detail'>Email: <a href="mailto:info@miradevelopments.ae" class='link'>info@miradevelopments.ae</a></div>
+            
+        </div>
+        <div class='footer-container-mobile'>
+            <div class='socials'>
+                <a href="https://www.instagram.com/mira.developments/"><img src="https://miradevelopments.file.force.com/servlet/servlet.ImageServer?id=015Hp000006rTXx&oid=00DHp0000033te2&lastMod=1715681641000" /></a>
+                <a href="https://www.facebook.com/profile.php?id=100095239586902"><img src="https://miradevelopments.file.force.com/servlet/servlet.ImageServer?id=015Hp000006rTXw&oid=00DHp0000033te2&lastMod=1715681641000" /></a>
+                <a href="https://www.linkedin.com/company/mira-developments/posts/?feedView=all"><img src="https://miradevelopments.file.force.com/servlet/servlet.ImageServer?id=015Hp000006rTXy&oid=00DHp0000033te2&lastMod=1715681641000" /></a>
+            </div>
+            <div class='socials'>Copyright © 2023 Mira developments</div>
+            
+        </div>
+        <div class='footer-container'>
+            
+            <div class='socials'>Copyright © 2023 Mira developments</div>
+            <div class='socials socials-icons'>
+                <a href="https://www.instagram.com/mira.developments/"><img src="https://miradevelopments.file.force.com/servlet/servlet.ImageServer?id=015Hp000006rTXx&oid=00DHp0000033te2&lastMod=1715681641000" /></a>
+                <a href="https://www.facebook.com/profile.php?id=100095239586902"><img src="https://miradevelopments.file.force.com/servlet/servlet.ImageServer?id=015Hp000006rTXw&oid=00DHp0000033te2&lastMod=1715681641000" /></a>
+                <a href="https://www.linkedin.com/company/mira-developments/posts/?feedView=all"><img src="https://miradevelopments.file.force.com/servlet/servlet.ImageServer?id=015Hp000006rTXy&oid=00DHp0000033te2&lastMod=1715681641000" /></a>
+            </div>
+        </div>
+
+    </div>
+    <div></div>
+</body

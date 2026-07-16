@@ -1,0 +1,155 @@
+<template>
+    <template if:true={showViewer}>
+    <lightning-card title="Unit Price Change — Comparison" icon-name="standard:approval">
+        <div class="slds-p-around_medium">
+
+            <template if:true={loading}>
+                <lightning-spinner alternative-text="Loading comparison…" size="medium"></lightning-spinner>
+            </template>
+
+            <template if:true={error}>
+                <div class="slds-notify slds-notify_alert slds-theme_error" role="alert">
+                    <span>{error}</span>
+                </div>
+            </template>
+
+            <template if:true={isNotApplicable}>
+                <div class="slds-box slds-theme_shade slds-text-align_center slds-p-around_medium">
+                    <p class="slds-text-body_regular slds-text-color_weak">{notApplicableReason}</p>
+                </div>
+            </template>
+
+            <template if:true={hasData}>
+
+                <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Request</p>
+                            <p class="slds-text-heading_small">{comparison.requestName}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Status</p>
+                            <lightning-badge label={comparison.status}></lightning-badge>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Submitted By</p>
+                            <p>{comparison.requesterName}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Currency</p>
+                            <p>{currencyCode}</p>
+                        </div>
+                    </div>
+                    <div class="slds-m-top_small">
+                        <p class="slds-text-body_small slds-text-color_weak">Justification</p>
+                        <p class="slds-text-body_regular">{comparison.justification}</p>
+                    </div>
+                </div>
+
+                <div class="slds-box slds-m-bottom_medium unit-info-box">
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Unit</p>
+                            <p class="slds-text-heading_small">{unitTitle}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Project</p>
+                            <p>{unitProject}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Building</p>
+                            <p>{unitBuilding}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Client (Account)</p>
+                            <p>{unitAccount}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-grid slds-gutters">
+
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="col-header col-header-current">Current Price</div>
+                        <div class="slds-box comparison-panel">
+                            <template if:true={isForeignCurrency}>
+                                <div class="slds-m-bottom_small">
+                                    <p class="slds-text-body_small slds-text-color_weak">Unit Price ({currencyCode})</p>
+                                    <p class="slds-text-heading_medium">{currentPriceDisplay}</p>
+                                </div>
+                                <div>
+                                    <p class="slds-text-body_small slds-text-color_weak">Cost (AED)</p>
+                                    <p class="slds-text-heading_medium">{currentCostAedDisplay}</p>
+                                </div>
+                            </template>
+                            <template if:false={isForeignCurrency}>
+                                <div>
+                                    <p class="slds-text-body_small slds-text-color_weak">Price (AED)</p>
+                                    <p class="slds-text-heading_medium">{currentPriceDisplay}</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="col-header col-header-proposed">Proposed Price</div>
+                        <div class="slds-box comparison-panel proposed-panel">
+                            <template if:true={isForeignCurrency}>
+                                <div class="slds-m-bottom_small">
+                                    <p class="slds-text-body_small slds-text-color_weak">Unit Price ({currencyCode})</p>
+                                    <p class="slds-text-heading_medium">{requestedPriceDisplay}</p>
+                                </div>
+                                <div>
+                                    <p class="slds-text-body_small slds-text-color_weak">Cost (AED)</p>
+                                    <p class="slds-text-heading_medium">{requestedCostAedDisplay}</p>
+                                </div>
+                            </template>
+                            <template if:false={isForeignCurrency}>
+                                <div>
+                                    <p class="slds-text-body_small slds-text-color_weak">Price (AED)</p>
+                                    <p class="slds-text-heading_medium">{requestedPriceDisplay}</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="slds-box slds-m-top_medium slds-theme_shade">
+                    <p class="slds-text-title_caps slds-m-bottom_x-small">Change Summary</p>
+                    <template if:true={isForeignCurrency}>
+                        <div class="slds-grid slds-gutters slds-wrap">
+                            <div class="slds-col slds-size_1-of-3">
+                                <p class="slds-text-body_small slds-text-color_weak">Discount</p>
+                                <p class="slds-text-heading_small">{discountPercentDisplay}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3">
+                                <p class="slds-text-body_small slds-text-color_weak">Price difference ({currencyCode})</p>
+                                <p class={priceDiffClass}>{priceDifferenceDisplay}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3">
+                                <p class="slds-text-body_small slds-text-color_weak">Cost (AED) difference</p>
+                                <p class={costAedDiffClass}>{costAedDifferenceDisplay}</p>
+                            </div>
+                        </div>
+                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_small">{conversionRateDisplay}</p>
+                    </template>
+                    <template if:false={isForeignCurrency}>
+                        <div class="slds-grid slds-gutters slds-wrap">
+                            <div class="slds-col slds-size_1-of-2">
+                                <p class="slds-text-body_small slds-text-color_weak">Discount</p>
+                                <p class="slds-text-heading_small">{discountPercentDisplay}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <p class="slds-text-body_small slds-text-color_weak">Price difference (AED)</p>
+                                <p class={priceDiffClass}>{priceDifferenceDisplay}</p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+            </template>
+        </div>
+    </lightning-card>
+    </template>
+</template>

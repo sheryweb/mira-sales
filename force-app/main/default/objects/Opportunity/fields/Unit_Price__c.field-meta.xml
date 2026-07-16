@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Unit_Price__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(Project_Name__c &lt;&gt; &apos;POST HOTEL &amp; RESIDENCES By ELIE SAAB&apos;, Unit__r.Cost_AED__c, Unit__r.Cost_AED__c)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Unit Price</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

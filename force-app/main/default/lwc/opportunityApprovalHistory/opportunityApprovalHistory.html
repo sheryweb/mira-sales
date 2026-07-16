@@ -1,0 +1,124 @@
+<template>
+    <lightning-card title="Approval History" icon-name="standard:approval">
+        <span slot="actions" class="slds-text-body_small slds-text-color_weak">
+            Unit Price &amp; Payment Plan changes
+        </span>
+
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </template>
+
+            <template if:true={error}>
+                <div class="slds-text-color_error slds-p-vertical_small">{error}</div>
+            </template>
+
+            <template if:true={showEmpty}>
+                <div class="slds-illustration slds-illustration_small slds-p-vertical_medium slds-text-align_center slds-text-color_weak">
+                    No Unit Price Change or Payment Plan Change approvals for this opportunity's unit.
+                </div>
+            </template>
+
+            <template if:true={hasRequests}>
+                <ul class="slds-has-dividers_bottom-space">
+                    <template for:each={requests} for:item="req">
+                        <li key={req.key} class="slds-item slds-p-vertical_x-small">
+
+                            <!-- Header row: type, change summary, status badge -->
+                            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-wrap">
+                                <div class="slds-col">
+                                    <div class="slds-text-heading_small">{req.requestType}</div>
+                                    <div class="slds-text-body_small slds-text-color_weak">
+                                        <lightning-formatted-text value={req.currentValue}></lightning-formatted-text>
+                                        &nbsp;&rarr;&nbsp;
+                                        <lightning-formatted-text value={req.requestedValue}></lightning-formatted-text>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-no-flex">
+                                    <span class={req.badgeClass}>{req.status}</span>
+                                </div>
+                            </div>
+
+                            <!-- Meta row: requester + requested date -->
+                            <div class="slds-text-body_small slds-text-color_weak slds-p-top_xx-small">
+                                Requested by {req.requesterName}
+                                <template if:true={req.createdDate}>
+                                    on
+                                    <lightning-formatted-date-time
+                                        value={req.createdDate}
+                                        year="numeric" month="short" day="2-digit"
+                                        hour="2-digit" minute="2-digit">
+                                    </lightning-formatted-date-time>
+                                </template>
+                            </div>
+
+                            <!-- Toggle -->
+                            <div class="slds-p-top_xx-small">
+                                <lightning-button
+                                    variant="base"
+                                    label={req.buttonLabel}
+                                    icon-name={req.buttonIcon}
+                                    data-key={req.key}
+                                    onclick={toggle}
+                                    class="slds-text-body_small">
+                                </lightning-button>
+                            </div>
+
+                            <!-- Timeline -->
+                            <template if:true={req.expanded}>
+                                <div class="slds-box slds-box_x-small slds-m-top_x-small slds-theme_shade">
+                                    <template if:true={req.justification}>
+                                        <div class="slds-p-bottom_x-small slds-text-body_small">
+                                            <strong>Justification:</strong>
+                                            <lightning-formatted-text value={req.justification}></lightning-formatted-text>
+                                        </div>
+                                    </template>
+
+                                    <template if:true={req.hasSteps}>
+                                        <ul class="slds-timeline">
+                                            <template for:each={req.steps} for:item="step">
+                                                <li key={step.key} class="slds-p-vertical_xx-small">
+                                                    <div class="slds-grid slds-grid_vertical-align-center">
+                                                        <lightning-icon
+                                                            icon-name={step.icon}
+                                                            size="x-small"
+                                                            class="slds-m-right_x-small">
+                                                        </lightning-icon>
+                                                        <span class={step.variant}>
+                                                            <strong>{step.label}</strong>
+                                                            <template if:true={step.actorName}> by {step.actorName}</template>
+                                                        </span>
+                                                        <template if:true={step.actionDate}>
+                                                            <span class="slds-text-color_weak slds-p-left_x-small slds-text-body_small">
+                                                                <lightning-formatted-date-time
+                                                                    value={step.actionDate}
+                                                                    year="numeric" month="short" day="2-digit"
+                                                                    hour="2-digit" minute="2-digit">
+                                                                </lightning-formatted-date-time>
+                                                            </span>
+                                                        </template>
+                                                    </div>
+                                                    <template if:true={step.hasComment}>
+                                                        <div class="slds-p-left_large slds-text-body_small slds-text-color_weak">
+                                                            &ldquo;<lightning-formatted-text value={step.comments}></lightning-formatted-text>&rdquo;
+                                                        </div>
+                                                    </template>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </template>
+
+                                    <template if:false={req.hasSteps}>
+                                        <div class="slds-text-body_small slds-text-color_weak">
+                                            No approval-process steps recorded for this request.
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </li>
+                    </template>
+                </ul>
+            </template>
+        </div>
+    </lightning-card>
+</template>

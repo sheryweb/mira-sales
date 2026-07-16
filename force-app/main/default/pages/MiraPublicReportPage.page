@@ -1,0 +1,79 @@
+<apex:page controller="MiraPublicReportsController">
+    <!-- Enable Lightning Design System -->
+    <apex:slds />
+
+    <div class="slds-scope">
+        <!-- Page Header -->
+        <div class="slds-page-header">
+            <div class="slds-grid slds-grid_align-spread">
+                <div class="slds-col">
+                    <h1 class="slds-page-header__title slds-truncate" title="Reports in MIRA Public Reports Folder">
+                        Reports
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Check if there are any reports available to display -->
+        <apex:pageMessages />
+
+        <!-- Report List -->
+        <div class="slds-p-around_medium">
+            <apex:outputPanel rendered="{!NOT(ISNULL(accessibleReports)) && accessibleReports.size > 0}">
+                <!-- Lightning-like List View -->
+                <div class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_fixed-layout">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_fixed-layout">
+                        <!-- Table Header -->
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="Report Name">Report Name</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="Description">Description</div>
+                                </th>
+                                <th class="slds-text-title_caps" scope="col">
+                                    <div class="slds-truncate" title="Actions">Actions</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <!-- Table Body -->
+                        <tbody>
+                            <apex:repeat value="{!accessibleReports}" var="report">
+                                <tr class="slds-hint-parent">
+                                    <!-- Report Name -->
+                                    <td>
+                                        <div class="slds-truncate" title="{!report.Name}">
+                                            <a href="/{!report.Id}" target="_blank">{!report.Name}</a>
+                                        </div>
+                                    </td>
+                                    <!-- Report Description -->
+                                    <td>
+                                        <div class="slds-truncate" title="{!report.Description}">
+                                            {!report.Description}
+                                        </div>
+                                    </td>
+                                    <!-- Actions -->
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <a class="slds-button slds-button_neutral" href="/{!report.Id}" target="_blank">
+                                                View Report
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </apex:repeat>
+                        </tbody>
+                    </table>
+                </div>
+            </apex:outputPanel>
+
+            <!-- Message if no reports are found -->
+            <apex:outputPanel rendered="{!ISNULL(accessibleReports) || accessibleReports.size == 0}">
+                <div class="slds-text-align_center slds-m-top_medium">
+                    <p class="slds-text-heading_small">No reports available in the MIRA Public Reports folder.</p>
+                </div>
+            </apex:outputPanel>
+        </div>
+    </div>
+</apex:page>

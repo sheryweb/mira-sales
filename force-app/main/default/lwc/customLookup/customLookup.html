@@ -1,0 +1,76 @@
+<template>
+    <div class="slds-form-element">
+        <label class="slds-form-element__label" for="combobox">
+            <template if:true={required}>
+                <abbr class="slds-required" title="required">*</abbr>
+            </template>
+            {labelName}
+        </label>
+        <div class="slds-form-element__control">
+            <div class={containerClass}>
+                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right">
+                        <template if:true={selectedRecord}>
+                            <!-- Selected Record Display -->
+                            <div class="slds-pill_container">
+                                <lightning-pill
+                                    label={selectedValue}
+                                    onremove={handleClear}
+                                    href={selectedRecord.Id}>
+                                    <lightning-icon icon-name={iconName}></lightning-icon>
+                                </lightning-pill>
+                            </div>
+                        </template>
+                        <template if:false={selectedRecord}>
+                            <!-- Search Input -->
+                            <input
+                                type="text"
+                                class={inputClass}
+                                id="combobox"
+                                placeholder={placeholder}
+                                value={searchKey}
+                                onkeyup={handleSearch}
+                                autocomplete="off"/>
+                            <template if:true={isSearching}>
+                                <div class="slds-input__icon-group slds-input__icon-group_right">
+                                    <div class="slds-spinner slds-spinner_brand slds-spinner_x-small" role="status">
+                                        <span class="slds-assistive-text">Loading</span>
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                            </template>
+                        </template>
+                    </div>
+                    <!-- Results Dropdown -->
+                    <template if:true={showResults}>
+                        <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid">
+                            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                <template for:each={records} for:item="record">
+                                    <li key={record.Id} role="presentation" class="slds-listbox__item">
+                                        <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta"
+                                             role="option"
+                                             data-id={record.Id}
+                                             data-name={record.Name}
+                                             onclick={handleSelect}>
+                                            <span class="slds-media__figure">
+                                                <lightning-icon icon-name={iconName} size="small"></lightning-icon>
+                                            </span>
+                                            <span class="slds-media__body">
+                                                <span class="slds-listbox__option-text slds-listbox__option-text_entity">{record.Name}</span>
+                                            </span>
+                                        </div>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <!-- Error Message -->
+            <template if:true={hasError}>
+                <div class="slds-form-element__help">{errorMessage}</div>
+            </template>
+        </div>
+    </div>
+</template>

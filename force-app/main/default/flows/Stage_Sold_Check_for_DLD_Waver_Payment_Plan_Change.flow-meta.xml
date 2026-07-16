@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <customErrors>
+        <name>DLD_Waver_Error_Message</name>
+        <label>DLD Waver Error Message</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <customErrorMessages>
+            <errorMessage>DLD Waver Request needs to be approved before Sold!!!</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <customErrors>
+        <name>Payment_Plan_Change_Error_Message</name>
+        <label>Payment Plan Change Error Message</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <customErrorMessages>
+            <errorMessage>Payment Plan Change Request needs to be approved before Sold!!!</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <decisions>
+        <name>Check_Id_DLD_Waver_Or_Payment_Plan_Change_Requested</name>
+        <label>Check Id DLD Waver Or Payment Plan Change Requested</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_DLD_Waver_Requested</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.DLD_Waver_Requested__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_If_DLD_Waver_Request_Not_Approved</targetReference>
+            </connector>
+            <label>If DLD Waver Requested</label>
+        </rules>
+        <rules>
+            <name>If_Payment_Plan_Change_Requested</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Payment_Plan_Change_Requested__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_If_Payment_Plan_Change_Request_Not_Approved</targetReference>
+            </connector>
+            <label>If Payment Plan Change Requested</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_If_DLD_Waver_Request_Not_Approved</name>
+        <label>Check If DLD Waver Request Not Approved</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>If DLD Waver Approved</defaultConnectorLabel>
+        <rules>
+            <name>If_DLD_Waver_Not_Approved</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.DLD_Waver__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Under Approval</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>DLD_Waver_Error_Message</targetReference>
+            </connector>
+            <label>If DLD Waver Not Approved</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_If_Payment_Plan_Change_Request_Not_Approved</name>
+        <label>Check If Payment Plan Change Request Not Approved</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>If Payment Plan Change Approved</defaultConnectorLabel>
+        <rules>
+            <name>If_Payment_Plan_Change_Not_Approved</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Payment_Plan_Change__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Under Approval</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Payment_Plan_Change_Error_Message</targetReference>
+            </connector>
+            <label>If Payment Plan Change Not Approved</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <interviewLabel>Stage Sold Check for DLD Waver &amp; Payment Plan Change {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Stage Sold Check for DLD Waver &amp; Payment Plan Change</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Id_DLD_Waver_Or_Payment_Plan_Change_Requested</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>StageName</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Sold</stringValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

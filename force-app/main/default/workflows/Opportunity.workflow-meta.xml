@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <alerts>
+        <fullName>Opportunity_Cancellation_Request_Notification</fullName>
+        <ccEmails>ayman.a@miradevelopments.ae</ccEmails>
+        <description>Opportunity Cancellation Request Notification</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>jad.orabi@miradevelopments.ae</recipient>
+            <type>user</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>unfiled$public/Notification_on_Opportunity_Cancellation_Request_1727775486868</template>
+    </alerts>
+    <alerts>
+        <fullName>Opportunity_Fee_Change_Request_Review_Sales_Admin_Email_Alert</fullName>
+        <description>Opportunity Fee Change Request Review Sales Admin Email Alert</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>sheraz.h@miradevelopments.ae</recipient>
+            <type>user</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>unfiled$public/Opportunity_Fee_Change_Request_Review_Sales_Admin_Email_Template_1746786933710</template>
+    </alerts>
+    <alerts>
+        <fullName>Re_Selling_Unit_Request_Approval_Email_Alert</fullName>
+        <description>Re-Selling Unit Request Approval Email Alert</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>jad.orabi@miradevelopments.ae</recipient>
+            <type>user</type>
+        </recipients>
+        <senderAddress>ayman.a@miradevelopments.ae</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>unfiled$public/Re_Selling_Unit_Request_Approval_Email_Template_1737448850134</template>
+    </alerts>
+    <alerts>
+        <fullName>Re_Selling_Unit_Request_Email_Alert</fullName>
+        <description>Re-Selling Unit Request Email Alert</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>ayman.a@miradevelopments.ae</recipient>
+            <type>user</type>
+        </recipients>
+        <senderAddress>jad.orabi@miradevelopments.ae</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>unfiled$public/Re_Selling_Unit_Request_Email_Template_1737448608779</template>
+    </alerts>
+    <alerts>
+        <fullName>Staff_Notification_Alert_On_Booking</fullName>
+        <ccEmails>muaed.alakaev@miradevelopments.ae</ccEmails>
+        <ccEmails>ayman.a@miradevelopments.ae</ccEmails>
+        <description>Staff Notification Alert On Booking</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>jad.orabi@miradevelopments.ae</recipient>
+            <type>user</type>
+        </recipients>
+        <senderAddress>noreply@miradevelopments.ae</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>unfiled$public/Notification_Email_On_Booking_1721910955061</template>
+    </alerts>
+    <alerts>
+        <fullName>Unit_Sold_Notification</fullName>
+        <ccEmails>ayman.a@miradevelopments.ae</ccEmails>
+        <description>Unit Sold Notification</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>jad.orabi@miradevelopments.ae</recipient>
+            <type>user</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>unfiled$public/Notification_Email_on_Unit_Sold_1727790640519</template>
+    </alerts>
+    <fieldUpdates>
+        <fullName>Field_Update</fullName>
+        <field>Registration_Fee_Change_Request_Status__c</field>
+        <literalValue>Approved</literalValue>
+        <name>Field Update</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Stage_Becomes_Cancelled</fullName>
+        <field>StageName</field>
+        <literalValue>Cancelled</literalValue>
+        <name>Stage Becomes Cancelled</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Update_Requested_Fee_Change_Status</fullName>
+        <field>Registration_Fee_Change_Request_Status__c</field>
+        <name>Update Requested Fee Change Status</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Update_Requested_Fee_Change_Status_Value</fullName>
+        <field>Registration_Fee_Change_Request_Status__c</field>
+        <literalValue>Approved</literalValue>
+        <name>Update Requested Fee Change Status Value</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+</Workflow>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingOwnerRules>
+        <fullName>General_Lead_Sharing</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>General Lead Sharing</label>
+        <sharedTo>
+            <role>Sales_Admin</role>
+        </sharedTo>
+        <sharedFrom>
+            <roleAndSubordinatesInternal>Sales_Admin</roleAndSubordinatesInternal>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Share_Leads_with_Marketing</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Share Leads with Marketing</label>
+        <sharedTo>
+            <role>Content_Manager</role>
+        </sharedTo>
+        <sharedFrom>
+            <allInternalUsers></allInternalUsers>
+        </sharedFrom>
+    </sharingOwnerRules>
+</SharingRules>

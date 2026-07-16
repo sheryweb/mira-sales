@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Opportunity$Name</field>
+    </columns>
+    <columns>
+        <field>Opportunity$Account_Name__c</field>
+    </columns>
+    <columns>
+        <field>Opportunity$Project_Name__c</field>
+    </columns>
+    <columns>
+        <field>Opportunity$Building__c</field>
+    </columns>
+    <columns>
+        <field>Opportunity$Unit_Number__c</field>
+    </columns>
+    <columns>
+        <field>Opportunity$Customer_Nationality__c</field>
+    </columns>
+    <currency>AED</currency>
+    <filter>
+        <criteriaItems>
+            <column>Opportunity$Project_Name__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Trussardi Residences 2</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Opportunity$StageName</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>Booked,Reserved,Sold</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>Customer Nationality With Units</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Opportunities_Custom_Report_Type__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Opportunity$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

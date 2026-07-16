@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Ownership_Share_of_the_Main_Purchaser__c</fullName>
+    <defaultValue>1</defaultValue>
+    <inlineHelpText>You can change it later if you are planning to add Joint Owners</inlineHelpText>
+    <label>Ownership Share of the Main Purchaser</label>
+    <precision>3</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Percent</type>
+</CustomField>

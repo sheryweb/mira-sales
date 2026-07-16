@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Notification email to client on changing RM on an Agency Account with completed status</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Agency Account Completed Status Assignment Email Template</name>
+    <relatedEntityType>Account</relatedEntityType>
+    <style>none</style>
+    <subject>New Relationship Manager for Your Agency</subject>
+    <type>custom</type>
+    <uiType>SFX</uiType>
+</EmailTemplate>

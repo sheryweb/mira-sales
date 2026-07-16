@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help><!-- If you going to create more than 1 file for Layouts of different floors, please provide the order: 1 - for first floor, 2 - for second and so on. --></help>
+    <label><!-- Order --></label>
+    <name>Order__c</name>
+</CustomFieldTranslation>

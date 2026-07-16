@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OTP_Attempts__c</fullName>
+    <defaultValue>0</defaultValue>
+    <description>Failed login-code attempts since the last code was sent. Login is blocked at 10 until a new code is requested (written by BrokerAuthEventHandler, never by the guest).</description>
+    <externalId>false</externalId>
+    <label>OTP Attempts</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

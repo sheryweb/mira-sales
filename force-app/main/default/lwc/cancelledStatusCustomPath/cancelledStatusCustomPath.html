@@ -1,0 +1,11 @@
+<!-- customPath.html -->
+<template>
+    <div class="path-container">
+        <template for:each={computedStages} for:item="item">
+            <!-- Use the computed class dynamically for each stage -->
+            <div key={item.stage} class={item.class}>
+                {item.stage}
+            </div>
+        </template>
+    </div>
+</template>

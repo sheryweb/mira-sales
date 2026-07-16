@@ -1,0 +1,270 @@
+<apex:page controller="PaymentPlanApprovalDetailController"
+          showHeader="true"
+          sidebar="false"
+          standardStylesheets="true"
+          title="Payment Plan Change — Approval Detail">
+
+    <style>
+        body { font-family: 'Salesforce Sans', Arial, sans-serif; font-size: 13px; color: #1c1c1c; }
+
+        .pp-card {
+            border: 1px solid #dddbda;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .pp-card-header {
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            background: #f3f2f2;
+            border-bottom: 1px solid #dddbda;
+        }
+        .pp-card-body { padding: 14px 16px; }
+
+        /* Unit info strip */
+        .unit-strip {
+            background: #f0f6ff;
+            border-left: 4px solid #0176d3;
+            padding: 12px 16px;
+            border-radius: 2px;
+        }
+        .unit-strip-grid { display: flex; flex-wrap: wrap; gap: 24px; }
+        .unit-field label { display: block; font-size: 11px; color: #706e6b; margin-bottom: 2px; }
+        .unit-field span  { font-size: 13px; font-weight: 600; }
+
+        /* Comparison grid */
+        .comparison-grid { display: flex; gap: 12px; }
+        .comparison-col  { flex: 1; min-width: 0; }
+        .col-header {
+            padding: 8px 10px;
+            font-weight: 600;
+            border-radius: 3px 3px 0 0;
+            font-size: 13px;
+        }
+        .col-header-current  { background: #f3f2f2; border-left: 4px solid #706e6b; }
+        .col-header-proposed { background: #e8f4fd; border-left: 4px solid #0176d3; }
+
+        /* Tables */
+        .pp-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .pp-table th {
+            background: #fafaf9;
+            border: 1px solid #dddbda;
+            padding: 6px 8px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .pp-table td {
+            border: 1px solid #dddbda;
+            padding: 6px 8px;
+            vertical-align: middle;
+        }
+
+        /* Row states */
+        .row-added   td { background: #d4edda; }
+        .row-updated td { background: #fff3cd; }
+        .row-deleted td { background: #f8d7da; text-decoration: line-through; color: #888; }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 1px 7px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-added   { background: #2e7d32; color: #fff; }
+        .badge-updated { background: #e65100; color: #fff; }
+        .badge-deleted { background: #b71c1c; color: #fff; }
+
+        /* Legend */
+        .legend { display: flex; gap: 20px; margin-top: 12px; font-size: 12px; align-items: center; }
+        .legend-dot {
+            display: inline-block; width: 12px; height: 12px;
+            border-radius: 50%; margin-right: 5px; vertical-align: middle;
+        }
+        .dot-added   { background: #28a745; }
+        .dot-updated { background: #ffc107; }
+        .dot-deleted { background: #dc3545; }
+
+        /* Summary row */
+        .meta-grid { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 12px; }
+        .meta-field label { display: block; font-size: 11px; color: #706e6b; margin-bottom: 2px; }
+        .meta-field span  { font-size: 13px; }
+
+        .status-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .status-Pending  { background: #fff3cd; color: #856404; }
+        .status-Approved { background: #d4edda; color: #155724; }
+        .status-Rejected { background: #f8d7da; color: #721c24; }
+        .status-Draft    { background: #e2e3e5; color: #383d41; }
+        .status-Applied  { background: #cce5ff; color: #004085; }
+
+        .error-box {
+            background: #f8d7da; border: 1px solid #f5c6cb;
+            border-radius: 4px; padding: 14px; color: #721c24;
+        }
+    </style>
+
+    <!-- ── Error state ──────────────────────────────────────────────────── -->
+    <apex:outputPanel rendered="{!hasError}">
+        <div class="error-box">
+            <strong>Error:</strong> <apex:outputText value="{!errorMessage}" />
+        </div>
+    </apex:outputPanel>
+
+    <!-- ── Main content ────────────────────────────────────────────────── -->
+    <apex:outputPanel rendered="{!isPaymentPlan}">
+
+        <!-- Request header card -->
+        <div class="pp-card">
+            <div class="pp-card-header">Payment Plan Change Request</div>
+            <div class="pp-card-body">
+                <div class="meta-grid">
+                    <div class="meta-field">
+                        <label>Request</label>
+                        <span><apex:outputText value="{!requestName}" /></span>
+                    </div>
+                    <div class="meta-field">
+                        <label>Status</label>
+                        <span class="status-pill status-{!requestStatus}">
+                            <apex:outputText value="{!requestStatus}" />
+                        </span>
+                    </div>
+                    <div class="meta-field">
+                        <label>Submitted By</label>
+                        <span><apex:outputText value="{!requesterName}" /></span>
+                    </div>
+                </div>
+                <div class="meta-field" style="margin-top:8px;">
+                    <label>Justification</label>
+                    <span><apex:outputText value="{!justification}" /></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unit info card -->
+        <div class="pp-card">
+            <div class="pp-card-header">Unit Information</div>
+            <div class="pp-card-body">
+                <div class="unit-strip">
+                    <div class="unit-strip-grid">
+                        <div class="unit-field">
+                            <label>Unit</label>
+                            <span><apex:outputText value="{!unitTitle}" /></span>
+                        </div>
+                        <div class="unit-field">
+                            <label>Project</label>
+                            <span><apex:outputText value="{!projectName}" /></span>
+                        </div>
+                        <div class="unit-field">
+                            <label>Building</label>
+                            <span><apex:outputText value="{!building}" /></span>
+                        </div>
+                        <div class="unit-field">
+                            <label>Client (Account)</label>
+                            <span><apex:outputText value="{!accountName}" /></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side-by-side comparison card -->
+        <div class="pp-card">
+            <div class="pp-card-header">Payment Plan Comparison</div>
+            <div class="pp-card-body">
+
+                <div class="comparison-grid">
+
+                    <!-- Current Plan -->
+                    <div class="comparison-col">
+                        <div class="col-header col-header-current">
+                            &#9632; Current Payment Plan
+                        </div>
+                        <table class="pp-table">
+                            <thead>
+                                <tr>
+                                    <th>Milestone</th>
+                                    <th>Date</th>
+                                    <th>%</th>
+                                    <th>Amount</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <apex:repeat value="{!currentRows}" var="row">
+                                    <tr class="row-{!row.changeType}">
+                                        <td><apex:outputText value="{!row.milestoneName}" /></td>
+                                        <td><apex:outputText value="{!row.installmentDate}" /></td>
+                                        <td><apex:outputText value="{!row.percent}" /></td>
+                                        <td><apex:outputText value="{!row.constantAmount}" /></td>
+                                        <td>
+                                            <apex:outputPanel rendered="{!row.hasBadge}">
+                                                <span class="badge badge-{!row.changeType}">
+                                                    <apex:outputText value="{!row.badge}" />
+                                                </span>
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                </apex:repeat>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Proposed Plan -->
+                    <div class="comparison-col">
+                        <div class="col-header col-header-proposed">
+                            &#9632; Proposed Payment Plan
+                        </div>
+                        <table class="pp-table">
+                            <thead>
+                                <tr>
+                                    <th>Milestone</th>
+                                    <th>Date</th>
+                                    <th>%</th>
+                                    <th>Amount</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <apex:repeat value="{!proposedRows}" var="row">
+                                    <tr class="row-{!row.changeType}">
+                                        <td><apex:outputText value="{!row.milestoneName}" /></td>
+                                        <td><apex:outputText value="{!row.installmentDate}" /></td>
+                                        <td><apex:outputText value="{!row.percent}" /></td>
+                                        <td><apex:outputText value="{!row.constantAmount}" /></td>
+                                        <td>
+                                            <apex:outputPanel rendered="{!row.hasBadge}">
+                                                <span class="badge badge-{!row.changeType}">
+                                                    <apex:outputText value="{!row.badge}" />
+                                                </span>
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                </apex:repeat>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div><!-- /comparison-grid -->
+
+                <!-- Legend -->
+                <div class="legend">
+                    <span><span class="legend-dot dot-added"></span>Added</span>
+                    <span><span class="legend-dot dot-updated"></span>Updated (old values on left, new values on right)</span>
+                    <span><span class="legend-dot dot-deleted"></span>Deleted (left only — removed from proposed)</span>
+                </div>
+
+            </div>
+        </div>
+
+    </apex:outputPanel>
+
+</apex:page>

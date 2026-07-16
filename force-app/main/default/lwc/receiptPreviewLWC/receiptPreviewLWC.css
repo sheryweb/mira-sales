@@ -1,0 +1,174 @@
+/*.receipt-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.receipt-header h1 {
+    text-align: center;
+    width: 20%;
+    margin: 0 auto;
+    background: #ededed;
+    padding: 10px;
+    border-radius: 10px;
+    color: #935252;
+}
+
+.details-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    align-items: flex-start;
+}
+
+.left-details, .right-details {
+    flex: 1;
+    padding: 10px;
+}
+
+.detail-item {
+    margin: 5px 0;
+}
+
+.left-details {
+    text-align: left;
+}
+
+.right-details {
+    text-align: right;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #eef6fc;
+    border-radius: 8px;
+}
+
+.status-block {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.status-value {
+    color: #28a745;
+    font-size: 1.2em;
+}
+
+.payment-status-value {
+    color: #007bff;
+    font-size: 1.2em;
+}
+
+.milestones-section, .payments-section {
+    margin-top: 20px;
+}
+
+h2 {
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 5px;
+}
+
+.grid-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.grid-table th, .grid-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.grid-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.receipt-footer {
+    margin-top: 20px;
+    text-align: right;
+}
+.total-amount {
+    color: #2196F3;
+}
+.paid-amount {
+    color: #2196F3;
+}
+.balance-amount {
+    color: #f93b4b;
+}*/
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+.container {
+    width: 800px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.header h1 {
+    margin: 0;
+    color: #333;
+}
+.header p {
+    margin: 5px 0;
+}
+.details, .table-container {
+    margin-bottom: 20px;
+}
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.column {
+    flex: 1;
+    padding: 0 10px;
+}
+.table-container {
+    margin: 20px 0;
+}
+.payment-table-container {
+    margin-bottom: 15px;
+}
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+.table th, .table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+.table th {
+    background-color: #f2f2f2;
+}
+.terms {
+    margin-top: 20px;
+}
+.terms ul {
+    padding-left: 20px;
+}
+.terms li {
+    margin-bottom: 5px;
+    list-style-type: none;
+}

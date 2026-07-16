@@ -1,0 +1,55 @@
+/**
+ * Handles Broker_Bank_Submit__e platform events. Runs in the Automated Process (system)
+ * context — NOT the site guest — so it can submit the Approval_Request__c into the native
+ * Approval Process on behalf of the Account owner (the designated RM / submitter).
+ * Parallel to BrokerProfileSubmitHandler; filters to the 'Bank Detail Update' request type so
+ * the existing Company Profile flow is left completely untouched.
+ */
+public without sharing class BrokerBankSubmitHandler {
+
+    public static void handle(List<Broker_Bank_Submit__e> events) {
+        Set<Id> reqIds = new Set<Id>();
+        for (Broker_Bank_Submit__e e : events) {
+            if (String.isNotBlank(e.Approval_Request_Id__c)) {
+                try { reqIds.add(Id.valueOf(e.Approval_Request_Id__c)); } catch (Exception ignored) {}
+            }
+        }
+        if (reqIds.isEmpty()) return;
+
+        Map<Id, Approval_Request__c> reqs = new Map<Id, Approval_Request__c>([
+            SELECT Id, Related_Record_Id__c, Status__c
+            FROM Approval_Request__c
+            WHERE Id IN :reqIds AND Request_Type__c = 'Bank Detail Update'
+        ]);
+        if (reqs.isEmpty()) return;
+
+        // Resolve each request's Account owner (the submitter)
+        Set<Id> acctIds = new Set<Id>();
+        for (Approval_Request__c r : reqs.values()) {
+            if (String.isNotBlank(r.Related_Record_Id__c)) {
+                try { acctIds.add(Id.valueOf(r.Related_Record_Id__c)); } catch (Exception ignored) {}
+            }
+        }
+        Map<Id, Account> accts = acctIds.isEmpty()
+            ? new Map<Id, Account>()
+            : new Map<Id, Account>([SELECT Id, OwnerId FROM Account WHERE Id IN :acctIds]);
+
+        for (Approval_Request__c r : reqs.values()) {
+            Id ownerId;
+            if (String.isNotBlank(r.Related_Record_Id__c)) {
+                Account a = accts.get(Id.valueOf(r.Related_Record_Id__c));
+                if (a != null) ownerId = a.OwnerId;
+            }
+            try {
+                Approval.ProcessSubmitRequest psr = new Approval.ProcessSubmitRequest();
+                psr.setObjectId(r.Id);
+                if (ownerId != null) psr.setSubmitterId(ownerId);   // submit on behalf of the Account owner
+                psr.setComments('Bank detail update submitted from the MIRA Broker Portal.');
+                Approval.process(psr);
+            } catch (Exception ex) {
+                // No approval process yet, or submitter not allowed — leave as Pending; don't break the event.
+                System.debug('BrokerBankSubmit: could not submit ' + r.Id + ' :: ' + ex.getMessage());
+            }
+        }
+    }
+}

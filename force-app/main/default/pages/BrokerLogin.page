@@ -1,0 +1,102 @@
+<apex:page controller="BrokerLoginController" showHeader="false" sidebar="false"
+           standardStylesheets="false" cache="false" title="Broker Portal — Login">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <style>
+        .bp-auth{display:flex; min-height:100vh;}
+        /* brand panel */
+        .bp-auth-brand{flex:0 0 44%; background:linear-gradient(160deg,#0b1f3a 0%,#16325c 55%,#1d4fd0 130%);
+            color:#fff; padding:54px 52px; display:flex; flex-direction:column; justify-content:space-between;
+            position:relative; overflow:hidden;}
+        .bp-auth-brand .circ{position:absolute; border-radius:50%; background:rgba(255,255,255,.06);}
+        .bp-auth-brand .c1{width:320px;height:320px; right:-90px; top:-80px;}
+        .bp-auth-brand .c2{width:200px;height:200px; left:-60px; bottom:40px; background:rgba(79,140,255,.12);}
+        .bp-auth-logo{display:flex; align-items:center; gap:13px; position:relative; z-index:1;}
+        .bp-auth-logo .lg{width:44px;height:44px;border-radius:12px;background:#fff;color:#16325c;display:flex;
+            align-items:center;justify-content:center;font-weight:800;font-size:20px;}
+        .bp-auth-logo b{font-size:18px;} .bp-auth-logo span{display:block;font-size:12px;color:#9fb3d1;}
+        .bp-auth-hero{position:relative; z-index:1;}
+        .bp-auth-hero h1{font-size:34px; line-height:1.2; margin:0 0 14px; font-weight:800;}
+        .bp-auth-hero p{color:#c2d0e6; font-size:15px; line-height:1.6; margin:0 0 26px; max-width:380px;}
+        .bp-auth-feats{list-style:none; padding:0; margin:0;}
+        .bp-auth-feats li{display:flex; align-items:center; gap:12px; padding:8px 0; color:#dde6f3; font-size:14px;}
+        .bp-auth-feats svg{width:20px;height:20px;color:#5fd08a; flex:none;}
+        .bp-auth-foot{position:relative; z-index:1; color:#8aa0c0; font-size:12px;}
+
+        /* form panel */
+        .bp-auth-form{flex:1; display:flex; align-items:center; justify-content:center; padding:40px; background:#f4f6fb;}
+        .bp-auth-card{width:100%; max-width:400px;}
+        .bp-auth-card h2{font-size:23px; color:#16325c; margin:0 0 6px;}
+        .bp-auth-card .lead{color:#6b7280; font-size:14px; margin:0 0 28px;}
+        .bp-auth-card label{display:block; font-size:12px; font-weight:600; color:#444; margin-bottom:7px;}
+        .bp-auth-card input[type=text]{width:100%; padding:13px 14px; box-sizing:border-box; border:1px solid #d8dde6;
+            border-radius:10px; font-size:15px; transition:.15s; background:#fff;}
+        .bp-auth-card input[type=text]:focus{outline:none; border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.15);}
+        .bp-auth-card input.code{font-size:20px; letter-spacing:5px; text-align:center; font-weight:700; text-transform:uppercase;}
+        .bp-auth-btn{width:100%; margin-top:22px; padding:13px; background:#2563eb; color:#fff; border:none;
+            border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; transition:.15s;}
+        .bp-auth-btn:hover{background:#1d4fd0;}
+        .bp-auth-link{display:block; margin-top:18px; text-align:center; font-size:13px; color:#2563eb; text-decoration:none;}
+        .bp-auth-link:hover{text-decoration:underline;}
+        .bp-auth-msg{margin-top:18px; padding:11px 14px; background:#fdeaea; color:#c23934; border:1px solid #f5cccc;
+            border-radius:10px; font-size:13px;}
+        .bp-auth-pill{display:inline-flex; align-items:center; gap:7px; background:#eef3ff; color:#2563eb;
+            font-size:12px; font-weight:600; padding:6px 12px; border-radius:20px; margin-bottom:20px;}
+        @media (max-width:880px){ .bp-auth-brand{display:none;} }
+    </style>
+</head>
+<body>
+    <c:BrokerStyles />
+    <div class="bp-auth">
+        <!-- brand panel -->
+        <div class="bp-auth-brand">
+            <span class="circ c1"></span><span class="circ c2"></span>
+            <div class="bp-auth-logo">
+                <div class="lg">M</div>
+                <div><b>MIRA</b><span>Developments</span></div>
+            </div>
+            <div class="bp-auth-hero">
+                <h1>Your deals,<br/>in one place.</h1>
+                <p>Manage your bookings, track commissions, browse available units and keep your company details current — all from your broker portal.</p>
+                <ul class="bp-auth-feats">
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Real-time booking &amp; commission status</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Browse available inventory</li>
+                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Secure, passwordless sign-in</li>
+                </ul>
+            </div>
+            <div class="bp-auth-foot">© MIRA Developments • Broker Partner Portal</div>
+        </div>
+
+        <!-- form panel -->
+        <div class="bp-auth-form">
+            <apex:form styleClass="bp-auth-card">
+                <!-- Step 1: email -->
+                <apex:outputPanel layout="block" rendered="{!phase == 'EMAIL'}">
+                    <span class="bp-auth-pill">Broker Portal</span>
+                    <h2>Welcome back</h2>
+                    <p class="lead">Enter your registered email and we'll send you a one-time login code.</p>
+                    <label for="emailInput">Email address</label>
+                    <apex:inputText id="emailInput" value="{!email}" html-autocomplete="email" html-placeholder="you@company.com"/>
+                    <apex:commandButton styleClass="bp-auth-btn" value="Send login code" action="{!sendOtp}"/>
+                </apex:outputPanel>
+
+                <!-- Step 2: code -->
+                <apex:outputPanel layout="block" rendered="{!phase == 'OTP'}">
+                    <span class="bp-auth-pill">Check your inbox</span>
+                    <h2>Enter your code</h2>
+                    <p class="lead">If <b>{!email}</b> is registered with us, an 8-character code is on its way. It expires in 10 minutes.</p>
+                    <apex:inputHidden value="{!email}"/>
+                    <label for="otpInput">Login code</label>
+                    <apex:inputText id="otpInput" styleClass="code" value="{!otp}" maxlength="8"/>
+                    <apex:commandButton styleClass="bp-auth-btn" value="Verify & log in" action="{!verifyOtp}"/>
+                    <apex:commandLink styleClass="bp-auth-link" value="Use a different email" action="{!resetToEmail}"/>
+                </apex:outputPanel>
+
+                <apex:outputPanel layout="block" styleClass="bp-auth-msg" rendered="{!message != null}">
+                    {!message}
+                </apex:outputPanel>
+            </apex:form>
+        </div>
+    </div>
+</body>
+</apex:page>

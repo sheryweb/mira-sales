@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Entity__c</fullName>
+    <label>Entity</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>M I R A DEVELOPMENTS LLC</fullName>
+                <default>false</default>
+                <label>M I R A DEVELOPMENTS LLC</label>
+            </value>
+            <value>
+                <fullName>M I R A REAL ESTATE BROKERS LLC</fullName>
+                <default>false</default>
+                <label>M I R A REAL ESTATE BROKERS LLC</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lead_Assigned_At__c</fullName>
+    <formula>IF(
+   NOT(ISBLANK(Lead_Assignment_Date__c)),
+   Lead_Assignment_Date__c,
+   DATEVALUE(CreatedDate)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Lead Assigned At</label>
+    <required>false</required>
+    <type>Date</type>
+</CustomField>

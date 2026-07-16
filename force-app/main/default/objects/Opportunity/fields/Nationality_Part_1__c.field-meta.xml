@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Nationality_Part_1__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(TEXT(Account.Nationality__c),
+ &apos;🇦🇫&apos;,&apos;Afghanistan&apos;, &apos;🇦🇱&apos;,&apos;Albania&apos;, &apos;🇩🇿&apos;,&apos;Algeria&apos;, &apos;🇦🇩&apos;,&apos;Andorra&apos;, &apos;🇦🇴&apos;,&apos;Angola&apos;,
+ &apos;🇦🇮&apos;,&apos;Anguilla&apos;, &apos;🇦🇬&apos;,&apos;Antigua and Barbuda&apos;, &apos;🇦🇷&apos;,&apos;Argentina&apos;, &apos;🇦🇲&apos;,&apos;Armenia&apos;,
+ &apos;🇦🇼&apos;,&apos;Aruba&apos;, &apos;🇦🇺&apos;,&apos;Australia&apos;, &apos;🇦🇹&apos;,&apos;Austria&apos;, &apos;🇦🇿&apos;,&apos;Azerbaijan&apos;, &apos;🇧🇸&apos;,&apos;Bahamas&apos;,
+ &apos;🇧🇭&apos;,&apos;Bahrain&apos;, &apos;🇧🇩&apos;,&apos;Bangladesh&apos;, &apos;🇧🇧&apos;,&apos;Barbados&apos;, &apos;🇧🇾&apos;,&apos;Belarus&apos;, &apos;🇧🇪&apos;,&apos;Belgium&apos;,
+ &apos;🇧🇿&apos;,&apos;Belize&apos;, &apos;🇧🇯&apos;,&apos;Benin&apos;, &apos;🇧🇲&apos;,&apos;Bermuda&apos;, &apos;🇧🇹&apos;,&apos;Bhutan&apos;, &apos;🇧🇴&apos;,&apos;Bolivia&apos;,
+ &apos;🇧🇦&apos;,&apos;Bosnia and Herzegovina&apos;, &apos;🇧🇼&apos;,&apos;Botswana&apos;, &apos;🇧🇷&apos;,&apos;Brazil&apos;, &apos;🇧🇳&apos;,&apos;Brunei&apos;,
+ &apos;🇧🇬&apos;,&apos;Bulgaria&apos;, &apos;🇧🇫&apos;,&apos;Burkina Faso&apos;, &apos;🇧🇮&apos;,&apos;Burundi&apos;, &apos;🇰🇭&apos;,&apos;Cambodia&apos;,
+ &apos;🇨🇲&apos;,&apos;Cameroon&apos;, &apos;🇨🇦&apos;,&apos;Canada&apos;, &apos;🇨🇻&apos;,&apos;Cape Verde&apos;, &apos;🇨🇫&apos;,&apos;Central African Republic&apos;,
+ &apos;🇹🇩&apos;,&apos;Chad&apos;, &apos;🇨🇱&apos;,&apos;Chile&apos;, &apos;🇨🇳&apos;,&apos;China&apos;, &apos;🇨🇴&apos;,&apos;Colombia&apos;, &apos;🇰🇲&apos;,&apos;Comoros&apos;,
+ &apos;🇨🇩&apos;,&apos;Congo (DRC)&apos;, &apos;🇨🇬&apos;,&apos;Congo (Republic)&apos;, &apos;🇨🇷&apos;,&apos;Costa Rica&apos;, &apos;🇭🇷&apos;,&apos;Croatia&apos;,
+ &apos;🇨🇺&apos;,&apos;Cuba&apos;, &apos;🇨🇾&apos;,&apos;Cyprus&apos;, &apos;🇨🇿&apos;,&apos;Czechia&apos;, &apos;🇩🇰&apos;,&apos;Denmark&apos;, &apos;🇩🇯&apos;,&apos;Djibouti&apos;,
+ &apos;🇩🇴&apos;,&apos;Dominican Republic&apos;, &apos;🇪🇨&apos;,&apos;Ecuador&apos;, &apos;🇪🇬&apos;,&apos;Egypt&apos;, &apos;🇸🇻&apos;,&apos;El Salvador&apos;,
+ &apos;🇪🇷&apos;,&apos;Eritrea&apos;, &apos;🇪🇪&apos;,&apos;Estonia&apos;, &apos;🇪🇹&apos;,&apos;Ethiopia&apos;, &apos;🇫🇯&apos;,&apos;Fiji&apos;, &apos;🇫🇮&apos;,&apos;Finland&apos;,
+ &apos;🇫🇷&apos;,&apos;France&apos;, &apos;🇬🇦&apos;,&apos;Gabon&apos;, &apos;🇬🇲&apos;,&apos;Gambia&apos;, &apos;🇬🇪&apos;,&apos;Georgia&apos;, &apos;🇩🇪&apos;,&apos;Germany&apos;,
+ &apos;🇬🇭&apos;,&apos;Ghana&apos;, &apos;🇬🇷&apos;,&apos;Greece&apos;, &apos;🇬🇱&apos;,&apos;Greenland&apos;, &apos;🇬🇹&apos;,&apos;Guatemala&apos;, &apos;🇬🇳&apos;,&apos;Guinea&apos;,
+ &apos;🇬🇼&apos;,&apos;Guinea-Bissau&apos;, &apos;🇬🇾&apos;,&apos;Guyana&apos;, &apos;🇭🇳&apos;,&apos;Honduras&apos;, &apos;🇭🇰&apos;,&apos;Hong Kong&apos;,
+ &apos;🇭🇺&apos;,&apos;Hungary&apos;, &apos;🇮🇸&apos;,&apos;Iceland&apos;, &apos;🇮🇳&apos;,&apos;India&apos;, &apos;🇮🇩&apos;,&apos;Indonesia&apos;, &apos;🇮🇶&apos;,&apos;Iraq&apos;,
+ &apos;🇮🇪&apos;,&apos;Ireland&apos;, &apos;🇮🇱&apos;,&apos;Israel&apos;, &apos;🇮🇹&apos;,&apos;Italy&apos;, &apos;🇯🇲&apos;,&apos;Jamaica&apos;, &apos;🇯🇵&apos;,&apos;Japan&apos;,
+ &apos;🇯🇴&apos;,&apos;Jordan&apos;, &apos;🇰🇿&apos;,&apos;Kazakhstan&apos;, &apos;🇰🇪&apos;,&apos;Kenya&apos;, &apos;🇰🇼&apos;,&apos;Kuwait&apos;, &apos;🇱🇦&apos;,&apos;Laos&apos;,
+ &apos;🇱🇻&apos;,&apos;Latvia&apos;, &apos;🇱🇧&apos;,&apos;Lebanon&apos;, &apos;🇱🇸&apos;,&apos;Lesotho&apos;, &apos;🇱🇷&apos;,&apos;Liberia&apos;, &apos;🇱🇾&apos;,&apos;Libya&apos;,
+ &apos;United Arab Emirates&apos;
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Nationality Part 1</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

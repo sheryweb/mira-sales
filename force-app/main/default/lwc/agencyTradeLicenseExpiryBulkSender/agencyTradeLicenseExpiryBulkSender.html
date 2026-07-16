@@ -1,0 +1,135 @@
+<template>
+    <div class="bulk-sender-container">
+        <header class="page-header">
+            <div class="header-content">
+                <lightning-icon icon-name="standard:account" size="medium" class="header-icon"></lightning-icon>
+                <div>
+                    <h1 class="header-title">Trade License Expiry Notifications</h1>
+                    <p class="header-subtitle">Select agencies to send expiry notification emails</p>
+                </div>
+            </div>
+            <template if:true={hasAccounts}>
+                <div class="selection-badge">
+                    <span class="badge-count">{selectedCount}</span>
+                    <span class="badge-label">of {totalAccountCount}</span>
+                </div>
+            </template>
+        </header>
+
+        <template if:true={isLoading}>
+            <div class="loading-container">
+                <lightning-spinner alternative-text="Loading agencies..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:false={isLoading}>
+            <template if:true={error}>
+                <div class="slds-p-around_medium">
+                    <div class="error-banner" role="alert">
+                        <lightning-icon icon-name="utility:error" size="x-small" variant="error"></lightning-icon>
+                        <span>Unable to load agencies. Please try again.</span>
+                    </div>
+                </div>
+            </template>
+
+            <template if:false={error}>
+                <template if:true={hasAccounts}>
+                    <div class="list-toolbar">
+                        <label class="select-all-label">
+                            <input
+                                type="checkbox"
+                                class="account-checkbox"
+                                data-select-all
+                                checked={isAllSelected}
+                                onchange={handleSelectAll}
+                            />
+                            <span>Select All</span>
+                        </label>
+                    </div>
+
+                    <ul class="account-list" role="list">
+                        <template for:each={accounts} for:item="account">
+                            <li key={account.accountId} class={account.rowClass} role="listitem">
+                                <div class="account-item">
+                                    <input
+                                        type="checkbox"
+                                        class="account-checkbox"
+                                        data-account-id={account.accountId}
+                                        checked={account.selected}
+                                        onchange={handleRowSelect}
+                                    />
+                                    <div class="account-details">
+                                        <div class="account-name-row">
+                                            <span class="account-name">{account.name}</span>
+                                            <span class="notification-pill">
+                                                Sent: {account.notificationCount}
+                                            </span>
+                                        </div>
+                                        <div class="account-meta">
+                                            <lightning-icon icon-name="utility:email" size="xx-small" class="meta-icon"></lightning-icon>
+                                            <span class="account-email">{account.emailDisplay}</span>
+                                        </div>
+                                        <template if:true={account.notificationDate}>
+                                            <div class="account-meta secondary-meta">
+                                                <lightning-icon icon-name="utility:event" size="xx-small" class="meta-icon"></lightning-icon>
+                                                <span>Last notification: {account.notificationDate}</span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </template>
+
+                <template if:false={hasAccounts}>
+                    <div class="empty-state">
+                        <lightning-icon icon-name="utility:success" size="large" class="empty-icon"></lightning-icon>
+                        <h2>No agencies eligible</h2>
+                        <p>No agencies with an expired trade license are eligible for notification at this time.</p>
+                    </div>
+                </template>
+            </template>
+        </template>
+
+        <footer class="action-footer">
+            <!--<lightning-button label={closeButtonLabel} onclick={handleClose} disabled={isSending}></lightning-button>-->
+            <lightning-button
+                variant="brand"
+                label="Send"
+                onclick={handleSendClick}
+                disabled={isSendDisabled}
+                class="send-button"
+            ></lightning-button>
+        </footer>
+
+        <template if:true={isSending}>
+            <div class="sending-overlay">
+                <lightning-spinner alternative-text="Sending notifications..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+    </div>
+
+    <template if:true={showConfirmModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open confirm-modal" aria-modal="true">
+            <div class="slds-modal__container confirm-modal-container">
+                <header class="slds-modal__header confirm-modal-header">
+                    <h2 class="slds-text-heading_medium">Confirm Send</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_large confirm-modal-body">
+                    <lightning-icon icon-name="utility:warning" size="small" class="confirm-icon"></lightning-icon>
+                    <p class="confirm-message">{confirmMessage}</p>
+                </div>
+                <footer class="slds-modal__footer confirm-modal-footer">
+                    <lightning-button label="Cancel" onclick={handleCancelConfirm}></lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        label="Confirm &amp; Send"
+                        onclick={handleConfirmSend}
+                    ></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

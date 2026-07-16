@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Emirates/National Id (Arabic) --></label>
+    <name>Emirates_National_Id_Arabic__c</name>
+</CustomFieldTranslation>

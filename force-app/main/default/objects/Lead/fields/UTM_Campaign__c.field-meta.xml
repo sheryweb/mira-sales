@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>UTM_Campaign__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+    CONTAINS(UTM__c, &quot;utm_campaign=&quot;),
+    MID(
+        UTM__c,
+        FIND(&quot;utm_campaign=&quot;, UTM__c) + LEN(&quot;utm_campaign=&quot;),
+        FIND(&quot;&amp;&quot;, UTM__c + &quot;&amp;&quot;, FIND(&quot;utm_campaign=&quot;, UTM__c)) - FIND(&quot;utm_campaign=&quot;, UTM__c) - LEN(&quot;utm_campaign=&quot;)
+    ),
+    &quot;No Campaign&quot;
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>UTM Campaign</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

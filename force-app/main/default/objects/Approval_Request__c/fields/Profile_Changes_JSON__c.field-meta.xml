@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Profile_Changes_JSON__c</fullName>
+    <description>JSON payload of broker Company Profile field changes submitted from the portal: [{field,label,oldValue,newValue}]. Read by AgencyProfileApprovalService on approval and by the comparison view. Only used for Request_Type = Agency Profile Update.</description>
+    <label>Profile Changes (JSON)</label>
+    <length>32768</length>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>10</visibleLines>
+</CustomField>

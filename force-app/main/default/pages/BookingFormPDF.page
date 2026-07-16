@@ -1,0 +1,783 @@
+<apex:page renderAs="" showHeader="true" title="Booking Form ({!oppData['Opportunity'].Unit__r.Title_Formula__c})" sidebar="false" standardStylesheets="false" applyBodyTag="true" applyHtmlTag="true" controller="BookingFormPDFController">
+  <html>
+      <head>
+          <style>
+              body {
+                  font-family: Arial, Helvetica, sans-serif;
+                  font-size: 12px;
+                  //font-family: "Lucida Console", "Courier New", monospace;
+              }
+              .clearfix {
+                  clear: both;
+              }
+              table {
+                  width: 100%;
+              }
+              .table-div {
+                  display: table;
+                  width: 100%;
+                  border: 1px solid #dddddd;
+              }
+              .row-div {
+                  display: table-row;
+              }
+              .column-div {
+                  display: table-cell;
+                  padding: 5px;
+                  border: 1px solid #dddddd;
+              }
+              .table-title {
+                  width: 50%;
+                  font-size: 14px;
+                  font-weight: bold;
+                  background: #f1f1f1;
+                  border-bottom: none;
+              }
+              @page {
+                  size: A4 portait;
+                  margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+              }
+              @media print {
+                  div#page-footer {
+                      display: block;
+                      padding: 5px;
+                      position: fixed;
+                      bottom: 0;
+                  }
+                  #print-btn {
+                      display: none;
+                  }
+              }
+              .logo {
+                  width: 100%;
+                  padding-bottom: 10px;
+                  text-align: right;
+              }
+              .ar-lang {
+                  direction: rtl;
+              }
+              
+            .page {
+                 position: relative;
+                 counter-increment: page;
+            }
+           /*page numbers*/
+            div.page:after {
+                display: block;
+                content: " Page - "counter(page);
+                position: absolute;
+                bottom: -1050px;
+                right: 15px;
+                padding: 2px 12px;
+                font-size: 14px;
+            }
+            .floor-plan-title {
+                width: 100%;
+                text-align: center;
+                font-size: 20px;
+                font-weight: bold;
+            }
+          </style>
+      </head>
+      <body class="page-content" onload="">
+          <div class="footer grey-txt" id="page-footer">
+              <div>Signed by the Purchaser ______________________________</div>
+          </div>
+          <p id="print-btn"><button onclick="window.print()">Download PDF</button></p>
+          <div id="page-content">
+              <div class='col size-1-of-2 page' style="text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div>
+              <div class='logo'></div>
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div table-title" style="border-right: none;">OFFER TO PURCHASE</div>
+                      <div class="column-div table-title ar-lang" style="border-left: none;">عرض للشراء</div>
+                  </div>
+              </div>
+              <div class="table-div" style="text-align: justify;">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Date: {!oppData['BookingDate']}</div>
+                      <div class="column-div" style="width: 50%; text-align: right;"><span style="direction: ltr !important;">{!oppData['BookingDate']}</span> :التاريخ</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Vendor: M I R A Developments LLC</div>
+                      <div class="column-div ar-lang" style="width: 50%;">البائع: ام اي ار ايه للتطوير ش.ذ.م.م</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Project: {!oppData['Opportunity'].Unit__r.Project_Name_Text__c}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">المشروع: {!oppData['Opportunity'].Unit__r.Project_Name_Text_Arabic__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Property: {!oppData['Opportunity'].Unit__r.Title_Formula__c}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">الوحدة العقارية: {!oppData['arabicUnitType'][oppData['Opportunity'].Unit__r.Type__c]} {!oppData['Opportunity'].Unit__r.Title__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Building: {!oppData['Opportunity'].Unit__r.Building__c}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">البناية / المرحلة: {!oppData['Opportunity'].Unit__r.Building_Arabic_Text__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Unit: {!oppData['Opportunity'].Unit__r.Title__c}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">رقم الوحدة: {!oppData['Opportunity'].Unit__r.Title__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">No. of Bedrooms: {!IF(oppData['Opportunity'].Unit__r.Number_of_Bedrooms__c == 0, 'STUDIO', oppData['Opportunity'].Unit__r.Number_of_Bedrooms__c)}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">عدد الغرف: {!IF(oppData['Opportunity'].Unit__r.Number_of_Bedrooms__c == 0, 'استوديو', oppData['Opportunity'].Unit__r.Number_of_Bedrooms__c)}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(oppData['Opportunity'].Unit__r.Type__c == 'Apartment', 'none', '')}">
+                      <div class="column-div" style="width: 50%;">Plot Area: sq.ft. {!oppData['formattedNumbers'].formattedPlotArea}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">مساحة الأرض: sq.ft. {!oppData['formattedNumbers'].formattedPlotArea}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Total Area: sq.ft. {!oppData['formattedNumbers'].formattedTotalArea}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">المساحة الإجمالية: sq.ft. {!oppData['formattedNumbers'].formattedTotalArea}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Purchase Price: AED {!oppData['formattedNumbers'].formattedUnitCost}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">ثمن الشراء: {!oppData['formattedNumbers'].formattedUnitCost} درهم اماراتي</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">VAT%: 0.00%</div>
+                      <div class="column-div ar-lang" style="width: 50%;">ضريبة القيمة المضافة: 0.00%</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">First Installment Payment ("Deposit"): AED {!oppData['formattedNumbers'].firstInstallment}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">("العربون") الدفعة الأولى: {!oppData['formattedNumbers'].firstInstallment} درهم اماراتي</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Registration Fee: {!oppData['Opportunity'].Registration_Fees__c}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">رسوم التسجيل: {!oppData['registrationFee']}</div>
+                  </div>
+              </div>
+              <br />
+           <!-- Start of Purchaser Information -->              
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div table-title" style="border-right: none;">{!IF(hasJointOwners, 'PURCHASER 1 INFORMATION', 'PURCHASER INFORMATION')}</div>
+                      <div class="column-div table-title ar-lang" style="border-left: none;">{!IF(hasJointOwners, 'معلومات المشتري رقم 1', 'معلومات المشتري')}</div>
+                  </div>
+              </div>
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Name: {!oppData['Opportunity'].Account.Name}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">الاسم: {!oppData['arabicAccountName']}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Ownership Share: {!oppData['Opportunity'].Ownership_Share_of_the_Main_Purchaser__c}%</div>
+                      <div class="column-div ar-lang" style="width: 50%;">حصة الملكية: %{!oppData['Opportunity'].Ownership_Share_of_the_Main_Purchaser__c}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', '', 'none')}">
+                      <div class="column-div" style="width: 50%;">License No. (For legal entities): {!oppData['licenseNumberValue']}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">رقم الرخصة (للشركات): {!oppData['licenseNumberValue']}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', '', 'none')}">
+                      <div class="column-div" style="width: 50%;">Country of Incorporation: {!oppData['incorporationCountry']}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">البلد الذي تأسست فيه: {!oppData['incorporationCountryArabic']}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', 'none', '')}">
+                      <div class="column-div" style="width: 50%;">Nationality: {!oppData['Opportunity'].Account.Nationality__c}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">الجنسية: {!oppData['Opportunity'].Account.Nationality_Arabic__c}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', 'none', '')}">
+                      <div class="column-div" style="width: 50%;">Passport No: {!oppData['Opportunity'].Account.Passport_No__c}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">رقم جواز السفر: {!oppData['Opportunity'].Account.Passport_No__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">P.O. Box / Postal Code: {!oppData['Opportunity'].Account.BillingPostalCode}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">الرمز البريدي / ص.ب: {!oppData['Opportunity'].Account.Postal_Code_Arabic__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">City: {!oppData['Opportunity'].Account.BillingCity}&nbsp; &nbsp; &nbsp; &nbsp; Country: {!oppData['Opportunity'].Account.BillingCountry}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">المدينة: {!oppData['Opportunity'].Account.City_Arabic__c}&nbsp; &nbsp; &nbsp; &nbsp; البلد: {!oppData['Opportunity'].Account.Country_Arabic__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Address: {!oppData['Opportunity'].Account.BillingStreet}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">العنوان: {!oppData['Opportunity'].Account.Address__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Mobile: {!oppData['personInformation']['personMobile']}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">الهاتف المتحرك: {!oppData['personInformation']['personMobile']}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Telephone: {!oppData['personInformation']['personPhone']}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">الهاتف: {!oppData['personInformation']['personPhone']}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Email: {!oppData['personInformation']['personEmail']}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">البريد الإلكتروني: {!oppData['personInformation']['personEmail']}</div>
+                  </div>
+              </div>
+              
+              <div class="table-div" style="text-align: justify;">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Note: The above address/contact details are considered the Purchaser’s primary address and chosen domicile and shall be printed on the Vendor’s Sales and Purchase Agreement and used for all communications / correspondences with the Purchaser.</div>
+                      <div class="column-div ar-lang" style="width: 50%;">ملاحظة: إن العنوان/بيانات الاتصال أعلاه تعتبر العنوان الأساسي والمختار للمشتري وسيتم طباعتها على اتفاقية البيع والشراء الخاصة بالبائع واعتمادها في جميع الاتصالات/المراسلات مع المشتري.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Note: Customer Due Diligence is required by the Vendor under applicable laws. </div>
+                      <div class="column-div ar-lang" style="width: 50%;">ملاحظة: تطلب التدقيق اللازم للعميل من قبل البائع بموجب القوانين  المطبقة.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Delivery Address for the Sales and Purchase Agreement: the following address will be used solely for the delivery of the Vendor’s Sales and Purchase Agreement. All other communications, correspondences, notifications and notices shall be dispatched/delivered to the primary address above.</div>
+                      <div class="column-div ar-lang" style="width: 50%;">عنوان تسليم الاتفاقية البيع والشراء: سيتم استخدام العنوان التالي فقط لتسليم اتفاقية البيع والشراء الخاصة بالبائع. وسيتم إرسال / تسليم جميع المراسلات والإخطارات والإشعارات الأخرى إلى العنوان الأساسي المذكور أعلاه.</div>
+                  </div>
+              </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+           <apex:variable value="{!1}" var="count" />
+           <apex:outputPanel rendered="{!hasJointOwners}">
+           <apex:repeat value="{!jointOwnerAccounts}" var="jOwner">
+              <apex:variable value="{!count+1}" var="count" />
+              <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right; display: {!IF((count == 2 || count == 4), '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+              
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div table-title" style="border-right: none;">PURCHASER {!TEXT(count)} INFORMATION</div>
+                      <div class="column-div table-title ar-lang" style="border-left: none;">معلومات المشتري رقم {!TEXT(count)}</div>
+                  </div>
+              </div>
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Name: {!IF(jOwner.IsPersonAccount, IF(ISBLANK(jOwner.FirstName), jOwner.Name, jOwner.FirstName + ' ' + jOwner.MiddleName + ' ' + jOwner.LastName), jOwner.Name)}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">الاسم: {!IF(jOwner.IsPersonAccount, jOwner.Contact_First_Name_Arabic__pc+' '+jOwner.Contact_Middle_Name_Arabic__pc+' '+jOwner.Contact_Last_Name_Arabic__pc, jOwner.Account_Name_Arabic__c)}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Ownership Share: {!jointOwnersOwnershipById[jOwner.Id]}%</div>
+                      <div class="column-div ar-lang" style="width: 50%;">حصة الملكية: %{!jointOwnersOwnershipById[jOwner.Id]}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(jOwner.IsPersonAccount, 'none', '')}">
+                      <div class="column-div" style="width: 50%;">License No. (For legal entities): {!jointOwnersLicenseValuesById[jOwner.Id]}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">رقم الرخصة (للشركات): {!jointOwnersLicenseValuesById[jOwner.Id]}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(jOwner.IsPersonAccount, 'none', '')}">
+                      <div class="column-div" style="width: 50%;">Country of Incorporation: {!jointOwnersIncorporationValuesById[jOwner.Id]}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">البلد الذي تأسست فيه: {!jointOwnersIncorporationValuesArabicById[jOwner.Id]}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(jOwner.IsPersonAccount, '', 'none')}">
+                      <div class="column-div" style="width: 50%;">Nationality: {!jOwner.Nationality__c}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">الجنسية: {!jOwner.Nationality_Arabic__c}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(jOwner.IsPersonAccount, '', 'none')}">
+                      <div class="column-div" style="width: 50%;">Passport No: {!jOwner.Passport_No__c}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">رقم جواز السفر: {!jOwner.Passport_No__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">P.O. Box / Postal Code: {!jOwner.BillingPostalCode}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">الرمز البريدي / ص.ب: {!jOwner.Postal_Code_Arabic__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">City: {!jOwner.BillingCity}&nbsp; &nbsp; &nbsp; &nbsp; Country: {!jOwner.BillingCountry}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">المدينة: {!jOwner.City_Arabic__c}&nbsp; &nbsp; &nbsp; &nbsp; البلد: {!jOwner.Country_Arabic__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Address: {!jOwner.BillingStreet}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">العنوان: {!jOwner.Address__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Mobile: {!jOwner.PersonMobilePhone}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">الهاتف المتحرك: {!jOwner.PersonMobilePhone}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Telephone: {!jOwner.Phone}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">الهاتف: {!jOwner.Phone}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Email: {!jOwner.PersonEmail}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">البريد الإلكتروني: {!jOwner.PersonEmail}</div>
+                  </div>
+              </div>
+           </apex:repeat>
+           </apex:outputPanel>
+           <!-- End of Purchaser Information -->
+
+              <br />
+              
+              <!-- Start of Purchasers Summary -->
+              <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right; display: {!IF(AND(hasSharedContacts, NOT(hasJointOwners)), '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+              <apex:outputPanel rendered="{!hasSharedContacts}">
+              <div class="table-div" style="text-align: justify;">
+                  <div class="row-div" style="text-align: center;">
+                      <div class="column-div" style="width: 20%;">Name</div>
+                      <div class="column-div" style="width: 20%;">Position in Company</div>
+                      <div class="column-div" style="width: 10%;">Company Share</div>
+                      <div class="column-div" style="width: 20%;">Nationality</div>
+                      <div class="column-div" style="width: 20%;">Passport No.</div>
+                  </div>
+              </div>
+              <apex:repeat value="{!sharedContactList}" var="sCont">
+              <div class="table-div" style="text-align: justify;">
+                  <div class="row-div" style="text-align: center;">
+                      <div class="column-div" style="width: 20%;">{!sCont.FirstName} {!sCont.MiddleName} {!sCont.LastName}</div>
+                      <div class="column-div" style="width: 20%;">{!sCont.Position_in_Company__c}</div>
+                      <div class="column-div" style="width: 10%;">{!sCont.Company_Share__c}%</div>
+                      <div class="column-div" style="width: 20%;">{!sCont.Nationality__c}</div>
+                      <div class="column-div" style="width: 20%;">{!sCont.Passport_No__c}</div>
+                  </div>
+              </div>
+              </apex:repeat>
+              </apex:outputPanel>
+              <!-- End of Purchasers Summary -->
+              <br />
+              <!-- Start of Due Diligence -->
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div table-title" style="border-right: none;">{!IF(hasJointOwners, 'CUSTOMER DUE DILIGENCE - PURCHASER 1', IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'CUSTOMER DUE DILIGENCE - PURCHASER 1', 'CUSTOMER DUE DILIGENCE - SHAREHOLDER 1'))}</div>
+                      <div class="column-div table-title ar-lang" style="border-left: none;">{!IF(hasJointOwners, 'التدقيق اللازم للعميل - المشتري رقم 1', IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'التدقيق اللازم للعميل - المشتري رقم 1', 'التدقيق اللازم للعميل - المساهم رقم 1'))}</div>
+                  </div>
+              </div>
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Date of Birth: 
+                          <apex:outputText value="{0, date, dd MMMM yyyy}">
+                              <apex:param value="{!oppData['DueDeligence']['contactBirthDate']}" /> 
+                          </apex:outputText>
+                      </div>
+                      <div class="column-div" style="width: 50%; text-align: right;">
+                          <apex:outputText value="{0, date, dd MMMM yyyy}">
+                              <apex:param value="{!oppData['DueDeligence']['contactBirthDate']}" /> 
+                          </apex:outputText>
+                           :تاريخ الميلاد
+                      </div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Place of Birth: {!oppData['DueDeligence']['contactBirthPlace']}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">مكان الميلاد: {!oppData['DueDeligence']['contactBirthPlaceArabic']}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Occupation and Name of Employer: {!oppData['DueDeligence']['contactOccupation']}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">المهنة /صاحب العمل: {!oppData['DueDeligence']['contactOccupationArabic']}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Nature of Business: {!oppData['DueDeligence']['contactBusinessNature']}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">طبيعة العمل: {!oppData['DueDeligence']['contactBusinessNatureArabic']}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Source of Fund: {!oppData['DueDeligence']['contactFundSource']}{!IF(oppData['DueDeligence']['contactFundSource'] == 'Other', '__________', '')}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">مصدر الأموال: {!oppData['sourceOfFundArabic']}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Are you a politically exposed person, or a close family member or asoociate of one?<br /> {!IF(oppData['DueDeligence']['contactExposedPolitically'] == 'Yes, please specify', 'Yes, please specify__________', 'No')}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">هل أنت من أصحاب النفوذ السياسي، أو أحد أفراد عائلتك المقربة أو معرفك؟ <br /> {!IF(oppData['DueDeligence']['contactExposedPolitically'] == 'Yes, please specify', 'نعم, يرجى التحديد__________', 'لا')}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Are you or any of the ultimate owners subject to any sanctions?<br />{!IF(oppData['DueDeligence']['contactSubjectSanction'] == 'Yes', 'Yes, please specify__________', 'No')}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">هل أنت أو أي من المالكين النهائيين عرضة لأي عقوبات؟<br />  {!IF(oppData['DueDeligence']['contactSubjectSanction'] == 'Yes', 'نعم, يرجى التحديد__________', 'لا')}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Payment methods: {!substitute(oppData['DueDeligence']['contactPaymentMethods'], ';', ', ')}
+                          <p style="display: {!IF((oppData['DueDeligence']['contactPaymentMethods'] == 'Cheques' || oppData['DueDeligence']['contactPaymentMethods'] == 'Bank Transfer' || oppData['DueDeligence']['contactPaymentMethods'] == 'Cheques;Bank Transfer'), '', 'none')}">Bank Name: {!oppData['DueDeligence']['contactBankName']}</p>
+                      </div> 
+                      <div class="column-div ar-lang" style="width: 50%;">طرق الدفع: {!oppData['paymentMethodsArabic']}
+                          <p style="display: {!IF((oppData['DueDeligence']['contactPaymentMethods'] == 'Cheques' || oppData['DueDeligence']['contactPaymentMethods'] == 'Bank Transfer' || oppData['DueDeligence']['contactPaymentMethods'] == 'Cheques;Bank Transfer'), '', 'none')}">اسم البنك: {!oppData['DueDeligence']['contactBankNameArabic']}</p>
+                      </div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Currency: {!oppData['DueDeligence']['contactCurrency']}
+                          <p style="display: {!IF(oppData['DueDeligence']['contactCurrency'] == 'Others', '', 'none')}">{!oppData['DueDeligence']['contactCurrencyOther']}</p>
+                      </div>
+                      <div class="column-div ar-lang" style="width: 50%;">العملة: {!IF(oppData['DueDeligence']['contactCurrency'] == 'AED', 'درهم اماراتى', 'آخر')}
+                          <p style="display: {!IF(oppData['DueDeligence']['contactCurrency'] == 'Others', '', 'none')}">{!oppData['DueDeligence']['contactCurrencyOtherArabic']}</p>
+                      </div>
+                  </div>
+              </div>
+           <apex:variable value="{!1}" var="countdue" />
+           <apex:outputPanel rendered="{!hasJointOwners}">
+           <div style="page-break-before: always; margin-top: 2%; text-align: right;"></div>
+           <apex:repeat value="{!jointOwnerAccounts}" var="jOwn">
+              <apex:variable value="{!countdue+1}" var="countdue" />
+                  
+              <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div table-title" style="border-right: none;">CUSTOMER DUE DILIGENCE - PURCHASER {!TEXT(countdue)}</div>
+                      <div class="column-div table-title ar-lang" style="border-left: none;">التدقيق اللازم للعميل - المشتري رقم {!TEXT(countdue)}</div>
+                  </div>
+              </div>
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Date of Birth: 
+                          <apex:outputText value="{0, date, dd MMMM yyyy}">
+                              <apex:param value="{!jOwn.PersonBirthdate}" /> 
+                          </apex:outputText>
+                      </div>
+                      <div class="column-div ar-lang" style="width: 50%;">تاريخ الميلاد:
+                          <apex:outputText value="{0, date, yyyy MMMM dd}">
+                              <apex:param value="{!jOwn.Date_of_Birth_Arabic__c}" /> 
+                          </apex:outputText>
+                      </div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Place of Birth: {!jOwn.Place_of_Birth__pc}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">مكان الميلاد: {!jOwn.Place_of_Birth_Arabic__pc}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Occupation and Name of Employer: {!jOwn.Occupation__pc}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">المهنة /صاحب العمل: {!jOwn.Occupation_Arabic__pc}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Nature of Business: {!jOwn.Nature_of_Business__pc}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">طبيعة العمل: {!jOwn.Nature_of_Business_Arabic__pc}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Source of Fund: {!jOwn.Source_of_Funds__pc}{!IF(jOwn.Source_of_Funds__pc == 'Other', '__________', '')}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">مصدر الأموال: {!jointFundSourceArabicById[jOwn.Id]}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Are you a politically exposed person, or a close family member or asoociate of one?<br /> {!IF(jOwn.Politically_Exposed__pc == 'Yes, please specify', 'Yes, please specify__________', 'No')}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">هل أنت من أصحاب النفوذ السياسي، أو أحد أفراد عائلتك المقربة أو معرفك؟ <br /> {!IF(jOwn.Politically_Exposed__pc == 'Yes, please specify', 'نعم, يرجى التحديد__________', 'لا')}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Are you or any of the ultimate owners subject to any sanctions?<br />{!IF(jOwn.Subject_to_Sanction__pc == 'Yes', 'Yes, please specify__________', 'No')}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">هل أنت أو أي من المالكين النهائيين عرضة لأي عقوبات؟<br /> {!IF(jOwn.Subject_to_Sanction__pc == 'Yes', 'نعم, يرجى التحديد__________', 'لا')}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Payment methods: {!substitute(jOwn.Payment_methods__pc, ';', ', ')}
+                          <p style="display: {!IF((jOwn.Payment_methods__pc == 'Cheques' || jOwn.Payment_methods__pc == 'Bank Transfer' || jOwn.Payment_methods__pc == 'Cheques;Bank Transfer'), '', 'none')}">Bank Name: {!jOwn.Bank_Name__pc}</p>
+                      </div> 
+                      <div class="column-div ar-lang" style="width: 50%;">طرق الدفع: {!jointPaymentMethodsArabicById[jOwn.Id]}
+                          <p style="display: {!IF((jOwn.Payment_methods__pc == 'Cheques' || jOwn.Payment_methods__pc == 'Bank Transfer' || jOwn.Payment_methods__pc == 'Cheques;Bank Transfer'), '', 'none')}">اسم البنك: {!jOwn.Bank_Name_Arabic__pc}</p>
+                      </div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Currency: {!jOwn.Currency__pc}
+                          <p style="display: {!IF(jOwn.Currency__pc == 'Others', '', 'none')}">{!jOwn.Currency_Other__pc}</p>
+                      </div>
+                      <div class="column-div ar-lang" style="width: 50%;">العملة: {!IF(jOwn.Currency__pc == 'AED', 'درهم اماراتى', 'آخر')}
+                          <p style="display: {!IF(jOwn.Currency__pc == 'Others', '', 'none')}">{!jOwn.Currency_Other_Arabic__pc}</p>
+                      </div>
+                  </div>
+              </div>
+             </apex:repeat>
+             </apex:outputPanel>
+             <!-- Start of Shared Contacts Due Diligence for Non-Person Accounts -->
+             <apex:outputPanel rendered="{!AND(oppData['personAccountRecordType'] <> oppData['accountRecordType'], NOT(ISNULL(oppData['sharedContacts'])), oppData['sharedContacts'] != 'Null', NOT(hasJointOwners))}">
+             <apex:variable value="{!2}" var="sharedContactCount" />
+             <apex:repeat value="{!oppData['sharedContacts']}" var="sCont">
+                 <apex:outputPanel rendered="{!sCont.Primary__c != true}">
+                 <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+                 <div class="table-div">
+                     <div class="row-div">
+                         <div class="column-div table-title" style="border-right: none;">CUSTOMER DUE DILIGENCE - SHAREHOLDER {!sharedContactCount}</div>
+                         <div class="column-div table-title ar-lang" style="border-left: none;">التدقيق اللازم للعميل - المساهم رقم {!sharedContactCount}</div>
+                     </div>
+                 </div>
+                 <div class="table-div">
+                     <div class="row-div">
+                         <div class="column-div" style="width: 50%;">Date of Birth: 
+                             <apex:outputText value="{0, date, dd MMMM yyyy}">
+                                 <apex:param value="{!sCont.Birth_Date__c}" /> 
+                             </apex:outputText>
+                         </div>
+                         <div class="column-div ar-lang" style="width: 50%;">تاريخ الميلاد:
+                             <apex:outputText value="{0, date, yyyy MMMM dd}">
+                                 <apex:param value="{!sCont.Birth_Date__c}" /> 
+                             </apex:outputText>
+                         </div>
+                     </div>
+                    <div class="row-div">
+                        <div class="column-div" style="width: 50%;">Place of Birth: {!sCont.Place_of_Birth__c}</div>
+                        <div class="column-div ar-lang" style="width: 50%;">مكان الميلاد: {!IF(ISBLANK(sCont.Place_of_Birth_Arabic__c), '', sCont.Place_of_Birth_Arabic__c)}</div>
+                    </div>
+                     <div class="row-div">
+                         <div class="column-div" style="width: 50%;">Occupation and Name of Employer: {!sCont.Occupation__c}</div>
+                         <div class="column-div ar-lang" style="width: 50%;">المهنة /صاحب العمل: {!sCont.Occupation_Arabic__c}</div>
+                     </div>
+                     <div class="row-div">
+                         <div class="column-div" style="width: 50%;">Nature of Business: {!sCont.Nature_of_Business__c}</div>
+                         <div class="column-div ar-lang" style="width: 50%;">طبيعة العمل: {!sCont.Nature_of_Business_Arabic__c}</div>
+                     </div>
+                     <div class="row-div">
+                         <div class="column-div" style="width: 50%;">Source of Fund: {!sCont.Source_of_Funds__c}{!IF(sCont.Source_of_Funds__c == 'Other', '__________', '')}</div>
+                         <div class="column-div ar-lang" style="width: 50%;">مصدر الأموال: {!oppData['sharedContactFundSourceArabic'][sCont.Id]}</div>
+                     </div>
+                     <div class="row-div">
+                         <div class="column-div" style="width: 50%;">Are you a politically exposed person, or a close family member or asoociate of one?<br /> {!IF(sCont.Politically_Exposed__c == 'Yes, please specify', 'Yes, please specify__________', 'No')}</div>
+                         <div class="column-div ar-lang" style="width: 50%;">هل أنت من أصحاب النفوذ السياسي، أو أحد أفراد عائلتك المقربة أو معرفك؟ <br /> {!IF(sCont.Politically_Exposed__c == 'Yes, please specify', 'نعم, يرجى التحديد__________', 'لا')}</div>
+                     </div>
+                     <div class="row-div">
+                         <div class="column-div" style="width: 50%;">Are you or any of the ultimate owners subject to any sanctions?<br />{!IF(sCont.Subject_to_Sanction__c == 'Yes', 'Yes, please specify__________', 'No')}</div>
+                         <div class="column-div ar-lang" style="width: 50%;">هل أنت أو أي من المالكين النهائيين عرضة لأي عقوبات؟<br />  {!IF(sCont.Subject_to_Sanction__c == 'Yes', 'نعم, يرجى التحديد__________', 'لا')}</div>
+                     </div>
+                     <div class="row-div">
+                         <div class="column-div" style="width: 50%;">Payment methods: {!substitute(sCont.Payment_methods__c, ';', ', ')}
+                             <p style="display: {!IF((sCont.Payment_methods__c == 'Cheques' || sCont.Payment_methods__c == 'Bank Transfer' || sCont.Payment_methods__c == 'Cheques;Bank Transfer'), '', 'none')}">Bank Name: {!sCont.Bank_Name__c}</p>
+                         </div> 
+                         <div class="column-div ar-lang" style="width: 50%;">طرق الدفع: {!oppData['sharedContactPaymentMethodsArabic'][sCont.Id]}
+                             <p style="display: {!IF((sCont.Payment_methods__c == 'Cheques' || sCont.Payment_methods__c == 'Bank Transfer' || sCont.Payment_methods__c == 'Cheques;Bank Transfer'), '', 'none')}">اسم البنك: {!sCont.Bank_Name_Arabic__c}</p>
+                         </div>
+                     </div>
+                     <div class="row-div">
+                         <div class="column-div" style="width: 50%;">Currency: {!sCont.Currency__c}
+                             <p style="display: {!IF(sCont.Currency__c == 'Others', '', 'none')}">{!sCont.Currency_Other__c}</p>
+                         </div>
+                         <div class="column-div ar-lang" style="width: 50%;">العملة: {!IF(sCont.Currency__c == 'AED', 'درهم اماراتى', 'آخر')}
+                             <p style="display: {!IF(sCont.Currency__c == 'Others', '', 'none')}">{!sCont.Currency_Other_Arabic__c}</p>
+                         </div>
+                     </div>
+                 </div>
+                 <apex:variable value="{!sharedContactCount+1}" var="sharedContactCount" />
+                 </apex:outputPanel>
+             </apex:repeat>
+             </apex:outputPanel>
+             <!-- End of Due Diligence -->
+             
+             <!-- Start of Initital Terms & Conditions -->
+              <br />
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div table-title" style="border-right: none;">Terms &amp; Conditions</div>
+                      <div class="column-div table-title ar-lang" style="border-left: none;">الشروط والاحكام</div>
+                  </div>
+              </div>
+              <div class="table-div" style="text-align: justify;">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">1.</div>
+                      <div class="column-div" style="width: 49%;">This unconditional and irrevocable Offer to Purchase the Property is made by the abovementioned purchaser(s) (the "Purchaser") to the Vendor and is binding on the Purchaser. The sale of the Property is subject to approval by the Vendor as per Clause (3) below.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">قدم عرض شراء الوحدة العقارية هذا، وهو غير مشروط وغير قابل للنقض، من قبل المشتري/المشتريين المذكور/المذكورين أعلاه (المشتري) إلى البائع، وهو ملزم على المشتري. إن بيع الوحدة العقارية يخضع لموافقة البائع وفقاً للبند (3) أدناه.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0661;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">2.</div>
+                      <div class="column-div" style="width: 49%;">The Purchaser unconditionally, irrevocably and finally agrees to purchase the Property from the Vendor at the above Purchase Price, in accordance with the following Payment Schedule:</div>
+                      <div class="column-div ar-lang" style="width: 49%;">يوافق المشتري ، دون قيد أو شرط وبشكل نهائي غير قابل للرجوع عنه، على شراء الوحدة العقارية من البائع مقابل ثمن الشراء المذكور أعلاه، ووفقا لجدول الدفع التالي:</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0662;.</div>
+                  </div>
+              </div>
+             <!-- End of Initial Terms & Conditions -->
+             
+             <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+             
+             <!-- Start of Payment Plans -->
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div table-title" style="border-right: none;">Payment Plan</div>
+                      <div class="column-div table-title" style="border-left: none; text-align: right;">خطة السداد</div>
+                  </div>
+              </div>
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%; text-align: center;">Sr.No</div>
+                      <div class="column-div" style="width: 15%; text-align: center;"><p style="margin: 0;">Installment Date</p><p style="margin: 0;">تاريخ القسط</p></div>
+                      <div class="column-div" style="width: 10%; text-align: center;"><p style="margin: 0;">Payment Percentage</p> <p style="margin: 0;">نسبة الدفع</p></div>
+                      <div class="column-div" style="width: 15%; text-align: center;"><p style="margin: 0;">Amount</p> <p style="margin: 0;">المبلغ</p></div>
+                      <div class="column-div" style="width: 22%; text-align: center;">Milestone</div>
+                      <div class="column-div" style="width: 22%; text-align: center;">نسبة البناء</div>
+                  </div>
+                 <apex:variable value="{!0}" var="pCount" />
+                 <apex:repeat value="{!oppData['paymentPlans']}" var="pp">
+                 <apex:variable value="{!pCount+1}" var="pCount" />
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%; text-align: center;">{!pCount}</div>
+                      <div class="column-div" style="width: 15%; text-align: center;">{!pp['paymentDate']}</div>
+                      <div class="column-div" style="width: 10%; text-align: center;">{!pp['percent']}%</div>
+                      <div class="column-div" style="width: 15%; text-align: center;">{!pp['amount']}</div>
+                      <div class="column-div" style="width: 22%; text-align: center;">{!pp['milestone']}</div>
+                      <div class="column-div" style="width: 22%; text-align: center;">{!oppData['arabicMilestones'][pp['milestone']]}</div>
+                  </div>
+                 </apex:repeat>
+              </div>
+             <!-- End of Payment Plans -->
+             
+             <!-- Start of Payment Plan Continuation -->
+             <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right; display: {!IF(oppData['paymentPlansContinuation'] != 'Null', '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+             <div class="table-div" style="display: {!IF(oppData['paymentPlansContinuation'] != 'Null', '', 'none')}">
+                 <div class="row-div">
+                      <div class="column-div" style="width: 1%; text-align: center;">Sr.No</div>
+                      <div class="column-div" style="width: 15%; text-align: center;"><p style="margin: 0;">Installment Date</p><p style="margin: 0;">تاريخ القسط</p></div>
+                      <div class="column-div" style="width: 10%; text-align: center;"><p style="margin: 0;">Payment Percentage</p> <p style="margin: 0;">نسبة الدفع</p></div>
+                      <div class="column-div" style="width: 15%; text-align: center;"><p style="margin: 0;">Amount</p> <p style="margin: 0;">المبلغ</p></div>
+                      <div class="column-div" style="width: 22%; text-align: center;">Milestone</div>
+                      <div class="column-div" style="width: 22%; text-align: center;">نسبة البناء</div>
+                 </div>
+              </div>
+              <apex:outputPanel rendered="{!AND(NOT(ISNULL(oppData['paymentPlansContinuation'])),oppData['paymentPlansContinuation'] != 'Null')}">
+              <apex:repeat value="{!oppData['paymentPlansContinuation']}" var="ppc">
+              <apex:variable value="{!pCount+1}" var="pCount" />
+              <div class="table-div" style="border-top: 0">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 2%; text-align: center; padding: 0 13px 0 13px;">{!pCount}</div>
+                      <div class="column-div" style="width: 15%; text-align: center;">{!ppc['paymentDate']}</div>
+                      <div class="column-div" style="width: 10%; text-align: center;">{!ppc['percent']}%</div>
+                      <div class="column-div" style="width: 15%; text-align: center;">{!ppc['amount']}</div>
+                      <div class="column-div" style="width: 22%; text-align: center;">{!ppc['milestone']}</div>
+                      <div class="column-div" style="width: 22%; text-align: center;">{!oppData['arabicMilestones'][ppc['milestone']]}</div>
+                  </div>
+             </div>
+             </apex:repeat>
+             </apex:outputPanel>
+             <!-- End of Payment Plan Continuation -->
+             
+             <!-- Start of Final Terms & Conditions -->
+             <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+             <div class="table-div" style="text-align: justify;">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">3.</div>
+                      <div class="column-div" style="width: 49%;">During a period of one hundred twenty (120) days from the date of signing this Offer to Purchase, the Vendor shall be entitled not to proceed in the sale of the Property at any time and to terminate this Offer to Purchase without the need to disclose the reason for termination, and without the need for notices or any legal proceedings or court judgment, and without any liability whatsoever. In case of such termination, and subject to the receipt of the Deposit in full, the Vendor shall refund the Deposit to the Purchaser without any interest and without any other compensation of any kind. The Purchaser hereby explicitly and finally waives any rights to claim any interest or compensation in respect of the foregoing that might be provided/allowed under any applicable laws. The signature by the Vendor on the Vendor’s Sales and Purchase Agreement shall constitute approval by the Vendor to sell the Property to the purchaser.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">خلال فترة مئة وعشرين (١٢٠) وماً من تاريخ توقيع عرض الشراء هذا، يحق للبائع عدم المضي في بيع الوحدة العقارية في أي وقت يشاء، وإنهاء عرض الشراء هذا دون الحاجة إلى الكشف عن سبب الإنهاء، ودون الحاجة إلى إشعارات أو أي إجراءات قانونية أو حكم قضائي، ودون أي مسؤولية من أي نوع كانت. وفي حالة الإنهاء هذه، وشرط أن يكون قد تم قبض العربون بالكامل، يقوم البائع بإرجاع العربون إلى المشتري دون أية فوائد أو أي تعويض آخر من أي نوع كان. ويتنازل المشتري بموجبه بشكل نهائي وصريح عن أية حقوق في المطالبة بأية فائدة أو تعويض قد يكون منصوص عليهما أو مسموح بهما بموجب أية قوانين معمول بها. ويعتبر توقيع البائع على اتفاقية البيع والشراء تأكيداً منه على قبوله بيع الوحدة العقارية للمشتري.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0663;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">4.</div>
+                      <div class="column-div" style="width: 49%;">The Purchaser shall provide complete and accurate contact information, as requested in this Offer to Purchase, and submit it to the Vendor on the signing hereof.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">يجب على المشتري توفير معلومات كاملة ودقيقة للاتصال به، كما هو مطلوب في عرض الشراء هذا، وتقديمها للبائع عند توقيع هذا العرض.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0664;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">5.</div>
+                      <div class="column-div" style="width: 49%;">The Purchaser shall pay the above Deposit by means of payment acceptable to the Vendor on the signing hereof (or on any other date specified by the Vendor in writing). The Vendor may, at its sole discretion, request the Purchaser to pay the above Deposit by more than one mean of payment (such as, and without limitation, to pay a portion of the Deposit by credit card or cheque and the balance to be effected by wire transfer to the Vendor’s bank account). The Purchaser agrees to and accepts the foregoing provisions and that except in case of termination by the Vendor in accordance with Clause (3) above, the Deposit (or any paid portion thereof) is not refundable to the Purchaser for any reason whatsoever.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">يلتزم المشتري بدفع العربون المذكور أعلاه  بواسطة وسيلة دفع مقبولة من البائع بتاريخ توقيع عرض الشراء هذا(أو بأي تاريخ آخر يحدده البائع خطياً). ويحق للبائع، وفقاً لتقديره المطلق، الطلب من المشتري دفع العربون المذكور أعلاه بواسطة أكثر من وسيلة دفع (على سبيل المثال ودون حصر أن يتم دفع جزء من العربون بواسطة بطاقة الائتمان أو الشيك والرصيد المتبقي بواسطة حوالة بنكية الى حساب البائع المصرفي). قبل المشتري ووافق على جميع ما تقدم وبأن العربون (أو أي جزء مدفوع منه)، باستثناء حالة إنهاء عرض الشراء من قبل البائع وفقاً للبند (٣) أعلاه، هو غير قابل لاسترداد من قبل المشتري الى سبب من الأسباب.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0665;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">6.</div>
+                      <div class="column-div" style="width: 49%;">In addition to the Purchase Price, the Purchaser agrees to pay, immediately upon the first request of the Vendor and without any delay, all pre-registration and/or final registration charges, and any other related amounts, as may be levied by the Land Department and ERES from time to time, for the transfer and registration of the Property with the Land Department. The pre-registration and/or final registration charges may be changed by the Land Department, ERES and/or the Vendor from time to time, and the Purchaser undertakes to pay any additional or changed charges. Moreover, the Purchase Price is exclusive of all taxes which shall be borne by the Purchaser.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">بالإضافة إلى ثمن الشراء، يوافق المشتري على دفع الفوري عند أول طلب من البائع وبدون أي تـأخير كافة رسوم التسجيل المبدئي و/أو رسوم التسجيل النهائي وأية مبالغ أخرى ذات الصلة قد تفرضها دائرة الأراضي والاملاك وشركة الإمارات للحلول العقارية من وقت الى آخر لنقل ملكية وتسجيل الوحدة العقارية لدى دائرة الأراضي والاملاك. قد تقوم دائرة الأراضي والاملاك، شركة الإمارات للحلول العقارية و/أو البائع من وقت آخر بتعديل مبلغ التسجيل المبدئي و/أو رسوم التسجيل النهائي، ويتعهد المشتري بدفع أي رسم تسجيل إضافي أو معدّل. علاوة على ذلك فإن ثمن الشراء لا يشمل الضرائب وسوف يتحملها المشتري.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0666;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">7.</div>
+                      <div class="column-div" style="width: 49%;">The Purchaser shall sign the Vendor’s Sales and Purchase Agreement not later than (5) five working days from the date on which the Purchaser is notified by the Vendor to sign the Vendor’s Sales and Purchase Agreement. For the avoidance of doubt, the signature of the Purchaser on the Vendor’s Sales and Purchase Agreement shall not affect the rights of the Vendor under the above Clause (3). If the Purchaser fails to sign the Vendor’s Sale and Purchase Agreement within the prescribed period for any reason whatsoever, this Offer to Purchase shall automatically terminate upon the expiry of said period and the Deposit shall be forfeited to the Vendor, without need for notice or any further proceedings, legal or otherwise. The Vendor may, at its sole discretion, extend the aforesaid period for further period(s), in which case automatic termination of this Offer to Purchase and the right to forfeit the Deposit will apply on the first day following the extended period.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">يجب على المشتري توقيع اتفاقية البيع والشراء الخاصة بالبائع في مهلة لا تتجاوز (٥) خمسة أيام عمل من التاريخ الذي يتم فيه إخطار المشتري من قبل البائع لتوقيع اتفاقية البيع والشراء المذكورة. ومنعاً للشك، أن توقيع المشتري على اتفاقية البيع والشراء الخاصة بالبائع لا يؤثر على حقوق البائع بموجب البند (٣) اعلاه. وإذا تخلف المشتري عن توقيع اتفاقية البيع والشراء الخاصة بالبائع خلال المهلة المحددة لذلك لأي سبب كان، ينتهي عرض الشراء هذا تلقائياً عند انتهاء المهلة المذكورة، ويتم مصادرة العربون لمصلحة البائع، دون الحاجة إلى إخطار أو أية إجراءات إضافية، سواء قانونية أو غير ذلك. ويحق للبائع، وفقاً لتقديره المطلق، تمديد المهلة المذكورة لمهلة (أو مهل) أخرى، وفي هذه الحالة يسري الإنهاء التلقائي لعرض الشراء هذا والحق في مصادرة العربون اعتباراً من اليوم الأول الذي يلي انتهاء المهلة الممددة.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0667;.</div>
+                  </div>
+             </div>
+              
+             <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+             <div class="table-div" style="text-align: justify;">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">8.</div>
+                      <div class="column-div" style="width: 49%;">If any amount is paid by cheque and the cheque is not settled by the bank, if the pre- registration/registration charges and fees have not been settled by the Purchaser in a timely manner and/or if the Deposit has not been received by the Vendor in full within the time period specified in Clause (5) above, the Vendor may immediately terminate this Offer to Purchase without the need for notice or any further proceedings (legal or otherwise) or court judgment and any amounts received by the Vendor pursuant to this Offer to Purchase shall be absolutely forfeited by the Vendor. Such termination shall be without prejudice to the Vendor’s right to recover the Deposit amount in full and/or cheque value from the Purchaser or any additional amount as compensation. The Vendor may, at its sole discretion, allow the Purchaser to substitute the returned cheque by another form of payment acceptable to the Vendor or extend the time period for the full payment of the Deposit.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">إذا تم دفع أي مبلغ بواسطة شيك ولم يتم تسديد قيمة الشيك من قبل البنك، و/أو في حال لم يقم المشتري أو تأخر في سداد رسوم ونفقات التسجيل المبدئي أو النهائي، و/أو إذا لم يتم استلام كامل العربون من قبل البائع في غضون المهلة المحددة في البند (٥) أعلاه، يعود للبائع انهاء عرض الشراء هذا فوراً دون الحاجة إلى إخطار أو أية إجراءات أخرى (سواء قانونية أو غير ذلك) أو حكم قضائي ويقوم البائع بمصادرة كافة المبالغ المقبوضة من قبله بمقتضى عرض الشراء هذا. ويكون هذا الإنهاء دون أي إخلال بحق البائع في تحصيل العربون بالكامل و/أو قيمة الشيك من المشتري أو تحصيل أي مبلغ إضافي كتعويض. ويمكن للبائع، وفقاً لتقديره المطلق، السماح للمشتري باستبدال الشيك المرتجع بأية وسيلة أخرى من وسائل الدفع تكون مقبولة من البائع أو تمديد المهلة المحددة لسداد كامل العربون.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0668;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">9.</div>
+                      <div class="column-div" style="width: 49%;">All payments made by the Purchaser pursuant to this Offer to Purchase shall be effected in Arab Emirates Dirham-AED (the lawful currency of the United Arab Emirates). In the event any payment is effected in any other currency for any installment, the credit to the Purchaser account would be given based on amount realized in AED by the Vendor. Accordingly, any shortfall/surplus due to exchange rate differences shall be recovered/adjusted towards the next installment payment.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">إن كافة الدفعات التي يقوم بها المشتري بموجب عرض الشراء هذا تتم بالدرهم الإماراتي (العملة القانونية لدولة الإمارات العربية المتحدة). وفي حال تم سداد قيمة أي قسط بأية عملة أخرى، فيتم إيداع المبلغ في حساب المشتري وفقاً للقيمة المحّصلة من البائع بالدرهم الإماراتي. وعليه، فإن أي نقص/فائض في القيمة تنجم عن الفارق في سعر الصرف يتم إضافته/خصمه من قيمة القسط التالي.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0669;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">10.</div>
+                      <div class="column-div" style="width: 49%;">Subject to Clauses (3) and (7) above, and until the signing of the Vendor’s Sales and Purchase Agreement, this Offer to Purchase shall constitute a binding and enforceable contract on the Purchaser for the purchase of the Property subject to the terms and conditions of the Vendor’s Sales and Purchase Agreement, a copy of which has been made available to the Purchaser for inspection prior to the signing hereof. This Offer to Purchase is not transferable or assignable by the Purchaser and any such attempted transfer or assignment will be considered null and void.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">مع الاحتفاظ بالحقوق المنصوص عليها بالبند ْين (٣) و (٧) أعلاه، وإلى أن يتم توقيع اتفاقية البيع والشراء الخاصة بالبائع، يشكل عرض الشراء هذا عقداً ملزماً للمشتري واجب النفاذ لشراء الوحدة العقارية وفقاً لأحكام وشروط اتفاقية البيع والشراء الخاصة بالبائع، والتي تم تزويد المشتري بنسخة منها للاطلاع عليها قبل توقيع عرض الشراء هذا. ان عرض الشراء هذا غير قابل للتحويل أو للتنازل من قبل المشتري، وتعتبر أية محاولة تحويل أو تنازل لاغية وباطلة.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0661;&#x0660;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">11.</div>
+                      <div class="column-div" style="width: 49%;">The Purchaser irrevocably and finally represents and confirms, at the Purchaser’s full responsibility, having complied with all regulations, laws and requirements in all relevant jurisdictions (inter alia all relevant exchange control requirements) and obtained all licenses, consents or permissions that are required to enter into and perform his/its obligations under this Offer to Purchase and/or under any document executed or to be executed pursuant to this Offer to Purchase.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">يصرح المشتري ويؤكد على مسؤوليته الكاملة وبشكل نهائي غير قابل للرجوع عنه، بأنه امتثل لجميع القوانين والأنظمة والمتطلبات (ومن بينها جميع متطلبات الرقابة على الصرف ذات الصلة) في جميع الأنظمة القضائية والدول المختصة، واستحصل على جميع التراخيص والموافقات والأذونات المطلوبة للتوقيع على ولأداء التزاماته بموجب عرض الشراء هذا و/أو بموجب أي وثيقة حررت أو ستحرر وفقاً لعرض الشراء هذا.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0661;&#x0661;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">12.</div>
+                      <div class="column-div" style="width: 49%;">The Purchaser guarantees at the Purchaser’s sole responsibility that all payments of any kind made under or pursuant to this Offer to Purchase are paid by funds of legitimate source and that the same are not the proceeds of any crime or illegal activity.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">يضمن المشتري على كامل مسؤوليته بأن جميع المدفوعات من أي نوع كانت التي تتم بموجب أو وفقاً لعرض الشراء هذا هي أموال من مصدر مشروع وبأنها ليست ناتجة من أي جرم أو نشاط غير قانوني.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0661;&#x0662;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">13.</div>
+                      <div class="column-div" style="width: 49%;">The Purchaser irrevocably and finally agrees and authorizes the Vendor (including its parent company and their affiliates and subsidiaries) (together the “Group”) to collect, transfer, store and use the Purchaser’s information for any legitimate purpose inter alia for internal record keeping, to contact the Purchaser either directly or through any third party service provider and/or to comply with any legal requirements. The Purchaser accepts and agrees that although the Group employs security measures in order to protect the information of its customers, the Group cannot guarantee that the security measures will protect against the loss or misuse of the Purchaser’s information and accordingly the Group shall bear no responsibility of any kind in respect thereof.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">يوافق ويسمح المشتري للبائع (بما في ذلك شركته الأم والشركات التابعة والمتفرعة عنها) (معاً "المجموعة") بشكل نهائي غير قابل للرجوع عنه، بجمع ونقل وتخزين واستخدام المعلومات العائدة للمشتري ألية غاية مشروعة ومنها لحفظها في السجلات الداخلية و/أو للاتصال بالمشتري سواء بشكل مباشر أو عن طريق أي مزود خدمات من الغير و/أو لاستيفاء أية متطلبات قانونية. يقر المشتري ويوافق على أنه بالرغم من أن المجموعة تتخذ تدابير امنية من أجل حماية المعلومات العائدة لعملائها، فإن المجموعة لا يمكنها أن تضمن أن التدابير الأمنية ستوفر الحماية التامة ضد فقدان أو إساءة استخدام المعلومات الخاصة بالمشتري، وعليه فإن المجموعة لا تتحمل أية مسؤولية من أي نوع كانت بشأن ما تقدم.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0661;&#x0663;.</div>
+                  </div>
+             </div>
+              
+             <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+             <div class="table-div" style="text-align: justify;">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">14.</div>
+                      <div class="column-div" style="width: 49%;">Without prejudice to any other rights or remedies available to the Vendor, the Purchaser shall pay to the Vendor all costs and expenses of any kind (including without limitation and as applicable the legal fees, the notary public fees, the Dubai Land Department deregistration fees, etc.) incurred by the Vendor as a result of or in connection with (i) claiming, serving notices or suing to recover the payment of any sum due to the Vendor under this Offer to Purchase; or (ii) the enforcement of or the preservation of any rights of the Vendor hereunder.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">دون المساس بأية حقوق أو وسائل أخرى متاحة للبائع، يتوجب على المشتري أن يدفع للبائع جميع التكاليف والنفقات من أي نوع كانت (بما في ذلك وليس على سبيل الحصر، ووفقاً للحال، رسوم ونفقات الإجراءات القضائية، ورسوم كاتب العدل، ورسوم شطب التسجيل لدى دائرة الأراضي الأملاك، الخ). التي تكبدها البائع بنتيجة أو فيما يتعلق بـ (أ) المطالبة أو توجيه الإخطارات أو التقاضي لتحصيل أي مبلغ مستحق للبائع بموجب عرض الشراء هذا؛ أو (ب)إنفاذ أو المحافظة على أي من حقوق البائع المذكورة في عرض الشراء هذا.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0661;&#x0664;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">15.</div>
+                      <div class="column-div" style="width: 49%;">This Offer to Purchase shall be governed and construed in accordance with the laws of the Emirate of Dubai and the federal laws of the United Arab Emirates as applied in the Emirate of Dubai. All disputes between the parties hereto in respect of or in connection with this Offer to Purchase shall be referred to Dubai Courts.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">يخضع عرض الشراء هذا ويفسر وفقاً لقوانين إمارة دبي والقوانين الاتحادية لدولة الإمارات العربية المتحدة كما هي معمول بها في إمارة دبي. وتحال جميع المنازعات بين الطرفين فيما يختص أو يتعلق بعرض الشراء هذا لمحاكم دبي.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0661;&#x0665;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">16.</div>
+                      <div class="column-div" style="width: 49%;">This Offer to Purchase has been originally drafted in English and translated into Arabic. In the event of any discrepancy between the English version and the Arabic translation of this Offer to Purchase, the provisions set forth in English shall prevail and be applicable.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">إن عرض الشراء هذا تم صياغته أصالً باللغة الإنكليزية وتمت ترجمته إلى اللغة العربية. وفي حال وجود أي تعارض أو تناقض فيما بين النسخة الإنكليزية والترجمة العربية لعرض الشراء هذا، فإن البنود المكتوبة باللغة الإنكليزية ترجح وتكون واجبة التطبيق.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0661;&#x0666;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">17.</div>
+                      <div class="column-div" style="width: 49%;">All amounts to be paid to the Vendor pursuant to this Offer to Purchase are exclusive of the Value Added Tax (“VAT”) applicable in the United Arab Emirates. The Purchaser shall pay to the Vendor the applicable VAT without delay. Subject to the applicable laws and regulations, in the event any amount due to the Vendor pursuant to this Offer to Purchase is made in instalments or through deferred payments, the Vendor shall issue a VAT invoice to the Purchaser in respect of the due VAT upon the encashment by the Vendor of the relevant instalment or the deferred payment (as applicable).</div>
+                      <div class="column-div ar-lang" style="width: 49%;">إن جميع المبالغ المتوجبة الدفع للبائع بموجب عرض الشراء هذا لا تشمل ضريبة القيمة المضافة ("ضريبة القيمة المضافة") المطبّقة في دولة الإمارات العربية المتحدة. على المشتري أن يدفع إلى البائع ضريبة القيمة المضافة المطبّقة دون تأخير. مع مراعاة القوانين والأنظمة المرعية الأجراء، في حال سداد أي مبلغ مستحق للبائع وفقاً لعرض الشراء هذا على دفعات أو من خلال دفعات مؤجلة، سيقوم البائع بإصدار فاتورة ضريبة القيمة المضافة للمشتري فيما يتعلق بضريبة القيمة المضافة المستحقة عند قيام البائع باستيفاء الدفعة ذات الصلة أو الدفعة المؤجلة (كما تكون عليه الحال).</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0661;&#x0667;.</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 1%;">18.</div>
+                      <div class="column-div" style="width: 49%;">The Purchaser hereby agrees to provide all necessary information and documents requested by the Vendor to complete the required Customer Due Diligence under applicable laws.</div>
+                      <div class="column-div ar-lang" style="width: 49%;">يقر المشتري على تقديم جميع المعلومات و المستندات اللازمة التي يطلبها البائع لإكمال التدقيق اللازم للعميل بموجب القوانين المطبقة.</div>
+                      <div class="column-div ar-lang" style="width: 1%;">&#x0661;&#x0668;.</div>
+                  </div>
+             </div><br />
+             <!-- End of Final Terms & Conditions -->
+             
+             <!-- Start of Agent's Information -->
+             <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div table-title" style="border-right: none;">AGENTS INFORMATION</div>
+                      <div class="column-div table-title ar-lang" style="border-left: none;">معلومات عن الوسطاء</div>
+                  </div>
+              </div>
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Are you being assisted by any of Vendor’s registered agents: {!oppData['agentAssistEng']}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">هل تمت مساعدتكم من قبل أي من الوسطاء المسجلين مع البائع: {!oppData['agentAssistArabic']}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Agency Name: {!oppData['Opportunity'].Agency__r.Name}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">اسم الوسيط العقاري: {!oppData['Opportunity'].Agency__r.Account_Name_Arabic__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Agency Representative’s Name: {!oppData['Opportunity'].Agent__r.Name}</div>
+                      <div class="column-div ar-lang" style="width: 50%;">اسم ممثل الوسيط العقاري: {!oppData['Opportunity'].Agent__r.Contact_First_Name_Arabic__c} {!oppData['Opportunity'].Agent__r.Contact_Middle_Name_Arabic__c} {!oppData['Opportunity'].Agent__r.Contact_Last_Name_Arabic__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">Agency Representative’s Signature:</div>
+                      <div class="column-div ar-lang" style="width: 50%;">توقيع ممثل الوسيط العقاري:</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;"><br />________________________<br />{!IF(hasJointOwners, 'Puchaser 1 Signature', IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'Puchaser 1 Signature', 'Purchaser Signature'))}<br /><br />{!oppData['Opportunity'].Account.Name}</div>
+                      <div class="column-div ar-lang" style="width: 50%;"><br />________________________<br />{!IF(hasJointOwners, 'توقيع المشتري رقم 1', IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'توقيع المشتري رقم 1', 'توقيع المشتري'))}<br /><br/ >{!oppData['arabicAccountName']}</div>
+                  </div>
+                </div>
+                
+                <apex:variable value="{!1}" var="countpur" />
+                <apex:outputPanel rendered="{!hasJointOwners}">
+                <apex:repeat value="{!jointOwnerAccounts}" var="jop">
+                <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right; display: {!IF(countpur == 3, '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+                <apex:variable value="{!countpur+1}" var="countpur" />
+                <div class="table-div" style="border-top: 0px;">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;"><br />________________________<br />Puchaser {!TEXT(countpur)} Signature<br /><br />{!IF(jop.IsPersonAccount, IF(ISBLANK(jop.FirstName), jop.Name, jop.FirstName + ' ' + jop.MiddleName + ' ' + jop.LastName), jop.Name)}</div>
+                      <div class="column-div ar-lang" style="width: 50%;"><br />________________________<br />توقيع المشتري رقم {!TEXT(countpur)}<br /><br/ >{!jointArabicNameById[jop.Id]}</div>
+                  </div>
+                </div>
+                </apex:repeat>
+                </apex:outputPanel>
+               
+                <div class="table-div" style="border-top: 0px;">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;"><br />________________________<br />Sales Advisor Name &amp; Signature (on Behalf of the Vendor)<br /><br />{!oppData['Opportunity'].Owner.Name}</div>
+                      <div class="column-div ar-lang" style="width: 50%;"><br />________________________<br />اسم وتوقيع مستشار المبيعات (ممثل البائع)<br /><br />{!oppData['Opportunity'].Owner.Name}</div>
+                  </div>
+              </div>
+             <!-- End of Agent's Information -->
+             
+             <!-- Start of Floor Plan -->
+             <apex:repeat value="{!imageUrlToStyleKeySet}" var="imageUrlToStyleKey">
+             <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div>
+             <p style="margin: 0;">FLOOR PLAN</p>
+             <div class='col align-center' style="text-align: center;">
+                 <apex:image url="{!imageUrlToStyleKey}" height="1010px" />
+                 <div style='color: #9A9EA9'>{!imageUrlToDesc[imageUrlToStyleKey]}</div>
+             </div>
+             </apex:repeat>
+             <!-- End of Floor Plan -->
+             
+          </div>
+      </body>
+  </html>
+</apex:page>

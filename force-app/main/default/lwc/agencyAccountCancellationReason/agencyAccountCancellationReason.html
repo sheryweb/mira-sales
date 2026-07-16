@@ -1,0 +1,10 @@
+<template>
+    <lightning-card title="Reason of Cancellation" icon-name="standard:account">
+        <template if:true={isCancelled}>
+            <p class="slds-p-horizontal_small reason-text">{reason}</p>
+        </template>
+        <template if:false={isCancelled}>
+            <p class="slds-p-horizontal_small">&nbsp;&nbsp;This account is not cancelled.</p>
+        </template>
+    </lightning-card>
+</template>

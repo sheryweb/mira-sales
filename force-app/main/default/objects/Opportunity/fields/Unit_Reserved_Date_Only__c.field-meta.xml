@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Unit_Reserved_Date_Only__c</fullName>
+    <formula>DATEVALUE( Reserved_Date_Time__c )</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Unit Reserved Date Only</label>
+    <required>false</required>
+    <type>Date</type>
+</CustomField>

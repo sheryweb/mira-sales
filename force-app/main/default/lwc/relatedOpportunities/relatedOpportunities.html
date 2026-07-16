@@ -1,0 +1,68 @@
+<template>
+    <lightning-card title={cardTitle} icon-name="standard:opportunity">
+        <div class="slds-p-around_medium">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </template>
+            
+            <template if:true={error}>
+                <div class="slds-text-color_error">
+                    An error occurred while loading opportunities: {error.body.message}
+                </div>
+            </template>
+            
+            <template if:true={hasOpportunities}>
+                <div class="slds-table_header-fixed_container">
+                    <div class="slds-scrollable_y" style="height: 300px;">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Name">Name</div>
+                                    </th>
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Status">Status</div>
+                                    </th>
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="RM">RM</div>
+                                    </th>
+                                    <th class="slds-text-title_caps" scope="col">
+                                        <div class="slds-truncate" title="Booking Date">Booking Date</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={opportunities} for:item="opp">
+                                    <tr key={opp.Id}>
+                                        <td data-label="Name">
+                                            <div class="slds-truncate">
+                                                <a href="javascript:void(0);" onclick={navigateToOpportunity} data-id={opp.Id}>{opp.Name}</a>
+                                            </div>
+                                        </td>
+                                        <td data-label="Status">
+                                            <div class="slds-truncate">{opp.StageName}</div>
+                                        </td>
+                                        <td data-label="RM">
+                                            <div class="slds-truncate">{opp.Owner.Name}</div>
+                                        </td>
+                                        <td data-label="Booking Date">
+                                            <div class="slds-truncate">
+                                                <lightning-formatted-date-time value={opp.CloseDate} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </template>
+            
+            <template if:false={hasOpportunities}>
+                <div if:false={isLoading} class="slds-text-align_center slds-p-around_medium">
+                    No related opportunities found.
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

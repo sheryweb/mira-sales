@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Queue xmlns="http://soap.sforce.com/2006/04/metadata">
+    <doesIncludeBosses>true</doesIncludeBosses>
+    <doesSendEmailToMembers>false</doesSendEmailToMembers>
+    <name>Payment Plan Approvers</name>
+    <queueMembers>
+        <users>
+            <user>jad.orabi@miradevelopments.ae</user>
+            <user>sheraz.h@miradevelopments.ae</user>
+        </users>
+    </queueMembers>
+    <queueSobject>
+        <sobjectType>Approval_Request__c</sobjectType>
+    </queueSobject>
+</Queue>

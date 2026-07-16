@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Status --></label>
+    <name>Status__c</name>
+    <picklistValues>
+        <masterLabel>Available</masterLabel>
+        <translation><!-- Available --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Blocked</masterLabel>
+        <translation><!-- Blocked --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Booked</masterLabel>
+        <translation><!-- Booked --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>On Approval</masterLabel>
+        <translation><!-- On Approval --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Reserved</masterLabel>
+        <translation><!-- Reserved --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Sold</masterLabel>
+        <translation><!-- Sold --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

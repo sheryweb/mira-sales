@@ -1,0 +1,50 @@
+<template>
+    <template if:true={isLoading}>
+        <div class="slds-p-around_medium">
+            <lightning-spinner alternative-text="Loading..." size="small"></lightning-spinner>
+        </div>
+    </template>
+
+    <template if:false={isLoading}>
+        <template if:true={error}>
+            <div class="slds-p-around_medium">
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">Error</span>
+                    <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+                        <lightning-icon icon-name="utility:error" alternative-text="error" size="x-small"></lightning-icon>
+                    </span>
+                    <h2>Error loading account data: {error}</h2>
+                </div>
+            </div>
+        </template>
+
+        <template if:false={error}>
+            <div class="slds-p-around_medium">
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture" role="alert">
+                    <span class="slds-assistive-text">Information</span>
+                    <span class="slds-icon_container slds-icon-utility-info slds-m-right_x-small" title="Description of icon when needed">
+                        <lightning-icon icon-name="utility:info" alternative-text="info" size="x-small"></lightning-icon>
+                    </span>
+                    <h2 class={messageColor}>{displayMessage}</h2>
+                </div>
+                
+                <template if:true={showNotificationButton}>
+                    <div class="slds-m-top_medium">
+                        <div class="notification-container">
+                            <div class="notification-count-text">
+                                <span class="notification-label">Notification Count:</span>
+                                <span class="notification-value">{notificationCount}</span>
+                            </div>
+                            <lightning-button 
+                                variant="brand" 
+                                label="Send Expiry Notification" 
+                                onclick={handleSendNotification}
+                                class="notification-button">
+                            </lightning-button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </template>
+</template>

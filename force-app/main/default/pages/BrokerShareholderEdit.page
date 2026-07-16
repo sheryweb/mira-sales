@@ -1,0 +1,93 @@
+<apex:page controller="BrokerShareholderEditController" action="{!checkLogin}" showHeader="false"
+           sidebar="false" standardStylesheets="false" cache="false" docType="html-5.0" title="Broker Portal — Edit Shareholders">
+<head><meta name="viewport" content="width=device-width, initial-scale=1"/></head>
+<body>
+    <c:BrokerStyles />
+    <div class="bp-shell">
+        <c:BrokerSidebar active="profile" />
+        <div class="bp-main">
+            <c:BrokerTopbar title="Edit Shareholders" company="{!brokerCompanyName}" />
+            <div class="bp-content">
+                <div class="bp-h">
+                    <h2>Edit Shareholders</h2>
+                    <p>Ownership must total exactly 100%. Changes take effect immediately.</p>
+                </div>
+
+                <apex:form >
+                <apex:outputPanel id="shAll" layout="block">
+
+                    <!-- Submitted -->
+                    <apex:outputPanel rendered="{!submitted}" layout="block">
+                        <div class="bp-card">
+                            <div class="ok" style="margin:0 0 14px;">{!message}</div>
+                            <p style="color:#6b7280; margin:0 0 18px;">Your shareholder details have been saved.</p>
+                            <a class="bp-btn bp-btn-primary" href="{!$Page.BrokerProfile}">Back to profile</a>
+                        </div>
+                    </apex:outputPanel>
+
+                    <!-- Session expired -->
+                    <apex:outputPanel rendered="{!AND(locked, NOT(submitted))}" layout="block">
+                        <div class="bp-card">
+                            <div class="bp-soft-note" style="margin:0 0 16px;">Your session has expired. Please log in again.</div>
+                            <a class="bp-btn bp-btn-ghost" href="{!$Page.BrokerLogin}">Go to login</a>
+                        </div>
+                    </apex:outputPanel>
+
+                    <!-- Edit form -->
+                    <apex:outputPanel rendered="{!AND(NOT(locked), NOT(submitted))}" layout="block">
+                        <apex:outputPanel rendered="{!message != null}" styleClass="bp-soft-note" layout="block">{!message}</apex:outputPanel>
+                        <div class="bp-card">
+                            <h3>Shareholders</h3>
+                            <p class="bp-sub">Edit, add or remove shareholders. The total ownership must equal 100%.</p>
+                            <table class="bp-table bp-mt">
+                                <thead><tr><th style="width:55%;">Shareholder</th><th style="width:25%;">Ownership %</th><th style="width:20%;"></th></tr></thead>
+                                <tbody>
+                                    <apex:repeat value="{!rows}" var="r">
+                                        <tr>
+                                            <td><apex:inputText value="{!r.holder}" styleClass="bp-input"/></td>
+                                            <td><apex:inputText value="{!r.percent}" styleClass="bp-input sh-pct" onkeyup="shTotal();"/></td>
+                                            <td>
+                                                <apex:commandButton value="Remove" action="{!removeRow}" rerender="shAll" styleClass="bp-btn bp-btn-ghost bp-btn-sm">
+                                                    <apex:param name="rk" value="{!r.rowKey}" assignTo="{!removeKey}"/>
+                                                </apex:commandButton>
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+                                </tbody>
+                            </table>
+                            <apex:outputPanel layout="block" rendered="{!NOT hasRows}">
+                                <p style="padding:14px; text-align:center; color:#6b7280; margin:0;">No shareholders yet. Add one below.</p>
+                            </apex:outputPanel>
+
+                            <div class="bp-mt" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                                <apex:commandButton value="+ Add shareholder" action="{!addRow}" rerender="shAll" styleClass="bp-btn bp-btn-ghost"/>
+                                <div style="font-weight:600;">Total: <span id="shTotalLive">{!totalPercent}</span>%</div>
+                            </div>
+                        </div>
+
+                        <div class="bp-card bp-mt">
+                            <apex:commandButton styleClass="bp-btn bp-btn-primary" value="Save changes" action="{!save}" rerender="shAll"/>
+                            <a class="bp-btn bp-btn-ghost" href="{!$Page.BrokerProfile}" style="margin-left:8px;">Cancel</a>
+                        </div>
+                    </apex:outputPanel>
+
+                </apex:outputPanel>
+                </apex:form>
+
+                <script>
+                    function shTotal(){
+                        var els = document.getElementsByClassName('sh-pct');
+                        var t = 0;
+                        for (var i = 0; i < els.length; i++){
+                            var v = parseFloat(els[i].value);
+                            if (!isNaN(v)) t += v;
+                        }
+                        var el = document.getElementById('shTotalLive');
+                        if (el) { el.textContent = (Math.round(t * 100) / 100); }
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+</body>
+</apex:page>

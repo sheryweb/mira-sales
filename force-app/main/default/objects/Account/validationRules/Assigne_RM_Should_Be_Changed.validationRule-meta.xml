@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Assigne_RM_Should_Be_Changed</fullName>
+    <active>true</active>
+    <description>Put a restriction that when agreement issued, Assigned RM name should not be Sheraz Hassan and it should be changed to actual RM name</description>
+    <errorConditionFormula>AND(
+ ISCHANGED( Status__c ),
+ TEXT( Status__c ) == &apos;Agreement Issued&apos;,
+ Owner.FirstName == &apos;Sheraz&apos;
+)</errorConditionFormula>
+    <errorDisplayField>OwnerId</errorDisplayField>
+    <errorMessage>Please select Account Owner as per Assigned RM name</errorMessage>
+</ValidationRule>

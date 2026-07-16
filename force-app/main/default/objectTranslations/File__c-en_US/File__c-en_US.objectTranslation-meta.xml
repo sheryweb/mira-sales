@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>File</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Files</value>
+    </caseValues>
+    <layouts>
+        <layout>File Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Only Admin or Inventory Manager can add this type of files --></errorMessage>
+        <name>Users_Cannot_create_redundunt_files</name>
+    </validationRules>
+</CustomObjectTranslation>

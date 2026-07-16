@@ -1,0 +1,32 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body style="height: auto; min-height: auto;"><span style="font-family:Arial,Helvetica,sans-serif;">Dear&nbsp;{{{Account.Name}}},<br />
+<br />
+Greetings from MIRA Developments!<br />
+<br />
+Thank you for your request to register your company with us. Your registration number is as follow:<br />
+<br />
+<strong>Registration #:</strong>&nbsp;{{{Account.Registration_Number__c}}}<br />
+<br />
+<strong>Assigned RM:</strong>&nbsp;{{{Account.Assigned_RM__c}}}<br />
+<br />
+We have successfully received your application.<br />
+<br />
+Our team will review your submission, and if everything is satisfactory, we will issue the<br />
+Broker Agency Agreement. If we need any additional information or documentation, we<br />
+will contact you.<br />
+<br />
+We appreciate your interest and look forward to potentially working together.<br />
+<br />
+<br />
+Regards,<br />
+<br />
+Agent Relations<br />
+<br />
+MIRA Developments</span><br />
+<br />
+<br />
+<img alt="MIRA Development Logo" src="https://main-info-bucket.s3.us-east-1.amazonaws.com/mira_logo_small.jpeg" style="max-width: 1623.55px" title="MIRA Development Logo" /></body>
+</html>

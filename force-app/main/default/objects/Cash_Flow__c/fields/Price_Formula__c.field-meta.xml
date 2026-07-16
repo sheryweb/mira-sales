@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Price_Formula__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+    Unit__r.Project_Name_F__c = &apos;GIANFRANCO FERRE RESIDENCES&apos;,
+    Oqood_Registration_For_GFF__c,
+
+    IF(
+        Name = &quot;Oqood&quot;,
+        CASE(
+            Unit__r.DLD_Fee_Percentage__c,
+            &quot;Fully paid by the Purchaser&quot;, 3150,
+            &quot;Fully paid by the Seller&quot;, 0,
+            &quot;50% payable by Purchaser, 50% payable by Seller, Purchaser pays all administration fees&quot;, 3150,
+            &quot;25% payable by Purchaser, 75% payable by Seller, Purchaser pays all administration fees&quot;, 3150,
+            3150
+        ),
+
+        IF(
+            Name = &quot;DLD Fee&quot;,
+            Unit__r.Cost_AED__c *
+            CASE(
+                Unit__r.DLD_Fee_Percentage__c,
+                &quot;Fully paid by the Purchaser&quot;, 0.04,
+                &quot;Fully paid by the Seller&quot;, 0,
+                &quot;50% payable by Purchaser, 50% payable by Seller, Purchaser pays all administration fees&quot;, 0.02,
+                &quot;25% payable by Purchaser, 75% payable by Seller, Purchaser pays all administration fees&quot;, 0.01,
+                0
+            ),
+
+            IF(
+                Constant__c &lt;&gt; 0,
+                Constant__c,
+
+                IF(
+                    Unit__r.Project_Name_F__c = &apos;Trussardi Residences MIRA VERDE&apos;,
+                    Unit__r.Cost_USD_Number__c * Percent__c,
+                    Unit__r.Cost_AED__c * Percent__c
+                )
+            )
+        )
+    )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Price</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

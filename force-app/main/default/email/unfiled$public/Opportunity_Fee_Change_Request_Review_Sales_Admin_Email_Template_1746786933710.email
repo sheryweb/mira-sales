@@ -1,0 +1,19 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body style="height: auto; min-height: auto;">
+<p><span style="font-family:Arial,Helvetica,sans-serif;">Dear Jad,</span></p>
+
+<p><span style="font-family:Arial,Helvetica,sans-serif;">A Registration Fee change request has been submitted with following details.<br />
+<br />
+Client Name:&nbsp;{{{Opportunity.Account_Name__c}}}<br />
+Opportunity:&nbsp;{{{Opportunity.Name}}}<br />
+Unit:&nbsp;{{{Opportunity.Unit_Title__c}}}<br />
+RM:&nbsp;{{{Opportunity.Owner_Name__c}}}<br />
+Current Fee Value:&nbsp;{{{Opportunity.Registration_Fees__c}}}<br />
+Requested Fee Value:&nbsp;<br />
+<br />
+Please click on the following link to explore the Opportunity:</span></p>
+</body>
+</html>

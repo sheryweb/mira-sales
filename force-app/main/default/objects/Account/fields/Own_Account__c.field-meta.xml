@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Own_Account__c</fullName>
+    <formula>IF(Account_Owner_Full_Name__c == $User.FirstName&amp;&quot; &quot;&amp; $User.LastName,
+ true,
+ IF($Profile.Name == &apos;System Administrator&apos;,
+ true,
+ false
+ )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Own Account</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

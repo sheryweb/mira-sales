@@ -1,0 +1,35 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body style="height: auto; min-height: auto; font-family: Arial, Helvetica, sans-serif;">
+<p>Dear Aymen,</p>
+
+<p>A new cancellation request for Opportunity has been submitted to Sales Admin. Please find below the details of Request.</p>
+
+<table>
+	
+		<tr>
+			<td style=""><strong>Opportunity</strong>:-</td>
+			<td>{{{Opportunity.Name}}}</td>
+		</tr>
+		<tr>
+			<td style=""><strong>Project</strong>:-</td>
+			<td>{{{Opportunity.Project_Name__c}}}</td>
+		</tr>
+		<tr>
+			<td style=""><strong>Tower</strong>:-</td>
+			<td>{{{Opportunity.Building__c}}}</td>
+		</tr>
+		<tr>
+			<td><strong>Unit</strong>:-</td>
+			<td>{{{Opportunity.Unit_Title__c}}}</td>
+		</tr>
+		<tr>
+			<td><strong>Requester</strong>:-</td>
+			<td>{{{Sender.FirstName}}}&nbsp;{{{Sender.LastName}}}</td>
+		</tr>
+	
+</table>
+</body>
+</html>

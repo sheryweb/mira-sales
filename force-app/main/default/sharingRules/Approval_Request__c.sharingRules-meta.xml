@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingCriteriaRules>
+        <fullName>Approval_Access_for_Agency_Relationship_Manager</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Approval Access for Agency Relationship Manager</label>
+        <sharedTo>
+            <role>Agency_Relationship_Manager</role>
+        </sharedTo>
+        <booleanFilter>1 OR 2 OR 3</booleanFilter>
+        <criteriaItems>
+            <field>Request_Type__c</field>
+            <operation>equals</operation>
+            <value>Agency Profile Update</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Request_Type__c</field>
+            <operation>equals</operation>
+            <value>Bank Detail Update</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Request_Type__c</field>
+            <operation>equals</operation>
+            <value>Document Re-upload</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+</SharingRules>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingOwnerRules>
+        <fullName>Sales_Director_1_Access</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Sales Director 1 Access</label>
+        <sharedTo>
+            <role>Sales_Director_1</role>
+        </sharedTo>
+        <sharedFrom>
+            <allInternalUsers></allInternalUsers>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Sales_Director_2_Access</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Sales Director 2 Access</label>
+        <sharedTo>
+            <role>Sales_Director_2</role>
+        </sharedTo>
+        <sharedFrom>
+            <allInternalUsers></allInternalUsers>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Sales_Director_3_Access</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Sales Director 3 Access</label>
+        <sharedTo>
+            <role>Sales_Director_3</role>
+        </sharedTo>
+        <sharedFrom>
+            <allInternalUsers></allInternalUsers>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Sales_Director_4_Access</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Sales Director 4 Access</label>
+        <sharedTo>
+            <role>Sales_Director_4</role>
+        </sharedTo>
+        <sharedFrom>
+            <allInternalUsers></allInternalUsers>
+        </sharedFrom>
+    </sharingOwnerRules>
+    <sharingOwnerRules>
+        <fullName>Sharing_Access_To_Agency_Manager_Limited</fullName>
+        <accessLevel>Edit</accessLevel>
+        <label>Sharing Access To Agency Manager Limited</label>
+        <sharedTo>
+            <role>Agency_Relationship_Manager_Limited</role>
+        </sharedTo>
+        <sharedFrom>
+            <allInternalUsers></allInternalUsers>
+        </sharedFrom>
+    </sharingOwnerRules>
+</SharingRules>

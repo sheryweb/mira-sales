@@ -1,0 +1,23 @@
+/* Ensure close button X is visible - text character is most reliable */
+.close-btn-with-x .close-x {
+    display: block;
+    font-size: 1.75rem;
+    line-height: 1;
+    font-weight: 300;
+    color: #000000 !important;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    text-align: center;
+}
+
+/* Taller modal to accommodate lookup dropdowns without scrolling */
+.slds-modal__container.modal-container-tall {
+    min-height: 38rem;
+    max-height: 90vh;
+}
+
+.modal-container-tall .slds-modal__content {
+    min-height: 26rem;
+    max-height: calc(90vh - 8rem);
+    overflow-y: auto;
+}

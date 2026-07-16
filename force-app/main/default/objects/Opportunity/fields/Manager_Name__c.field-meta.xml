@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Manager_Name__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(
+ Owner.UserRole.Name,
+ &quot;Sales Manager 1&quot;, &quot;Vijendra Singh&quot;,
+ &quot;Sales Manager 2&quot;, &quot;Aiham Alkeilani&quot;,
+ &quot;Sales Manager 3&quot;, &quot;Khalid Samir&quot;,
+ &quot;Sales Manager 4&quot;, &quot;Honghao Cheng&quot;,
+ &quot;Not Assigned&quot;
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Manager</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <aggregates>
+        <calculatedFormula>Unit__c.Total_Received_Amount__c:SUM - Unit__c.Oqood_DLD_Fee_Amount__c:SUM</calculatedFormula>
+        <datatype>currency</datatype>
+        <developerName>FORMULA1</developerName>
+        <isActive>true</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Received Amount Without DLD</masterLabel>
+        <scale>2</scale>
+    </aggregates>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Unit__c$Cost_AED__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Unit__c$Total_Received_Amount__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Unit__c$Oqood_DLD_Fee_Amount__c</field>
+    </columns>
+    <currency>AED</currency>
+    <filter>
+        <criteriaItems>
+            <column>Unit__c$Status__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>Booked,Reserved,Sold</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Unit__c$Project_Name_Text__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Trussardi Residences 2</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Unit__c$Project_Name_Text__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Unit__c$Building__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Unit__c$Title__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Sales &amp; Collection Report - Finance</name>
+    <params>
+        <name>co</name>
+        <value>0</value>
+    </params>
+    <reportType>Units_with_Receipts__c</reportType>
+    <scope>organization</scope>
+    <showDetails>false</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>false</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Unit__c.Receipts__r$Payment_Date__c</dateColumn>
+        <endDate>2026-12-31</endDate>
+        <interval>INTERVAL_CUSTOM</interval>
+        <startDate>2023-03-01</startDate>
+    </timeFrameFilter>
+</Report>

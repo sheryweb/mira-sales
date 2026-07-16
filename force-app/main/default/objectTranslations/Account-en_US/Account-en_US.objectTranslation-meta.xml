@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <layouts>
+        <layout>Agency Account Layout</layout>
+        <sections>
+            <label><!-- Business Information --></label>
+            <section>Business Information</section>
+        </sections>
+        <sections>
+            <label><!-- Director / Authorized Signatory --></label>
+            <section>Director / Authorized Signatory</section>
+        </sections>
+        <sections>
+            <label><!-- Status Information --></label>
+            <section>Status Information</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Business Account Layout</layout>
+        <sections>
+            <label><!-- SPA Information --></label>
+            <section>SPA Information</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Person Account Layout</layout>
+        <layoutType>PersonAccount</layoutType>
+        <sections>
+            <label><!-- Additional Information --></label>
+            <section>Additional Information</section>
+        </sections>
+        <sections>
+            <label><!-- Customer Due Diligence --></label>
+            <section>Customer Due Diligence</section>
+        </sections>
+        <sections>
+            <label><!-- SPA Information --></label>
+            <section>SPA Information</section>
+        </sections>
+    </layouts>
+    <quickActions>
+        <label><!-- Cancel Request --></label>
+        <name>Cancel_Request</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Child Account --></label>
+        <name>Child_Account</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Force Half Execute / Complete Registration --></label>
+        <name>Force_Half_Execute_Complete_Registration</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Re-Send Agreement --></label>
+        <name>Re_Send_Agreement</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Send Agreement --></label>
+        <name>Send_Agreement</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Send Georgia Agency Agreement --></label>
+        <name>Send_Georgia_Agency_Agreement</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Update Progress --></label>
+        <name>Update_Progress</name>
+    </quickActions>
+    <recordTypes>
+        <label><!-- Agency --></label>
+        <name>Agency</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- for business accounts --></description>
+        <label><!-- Company --></label>
+        <name>Company</name>
+    </recordTypes>
+    <validationRules>
+        <errorMessage><!-- Please select Account Owner as per Assigned RM name --></errorMessage>
+        <name>Assigne_RM_Should_Be_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Account Name cannot be changed because of the Booking this Account has --></errorMessage>
+        <name>Restrict_Account_Name_Change</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Download_Brokers_Agreement --></label>
+        <name>Download_Brokers_Agreement</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Download_Brokers_Agreement_Georgia --></label>
+        <name>Download_Brokers_Agreement_Georgia</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Download_NOC --></label>
+        <name>Download_NOC</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Download_Projects_Detail --></label>
+        <name>Download_Projects_Detail</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- GoogleMaps --></label>
+        <name>GoogleMaps</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- GoogleNews --></label>
+        <name>GoogleNews</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- GoogleSearch --></label>
+        <name>GoogleSearch</name>
+    </webLinks>
+</CustomObjectTranslation>

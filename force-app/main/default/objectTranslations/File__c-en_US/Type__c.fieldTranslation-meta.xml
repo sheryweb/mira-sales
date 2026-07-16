@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Type --></label>
+    <name>Type__c</name>
+    <picklistValues>
+        <masterLabel>Client Passport Scan</masterLabel>
+        <translation><!-- Client Passport Scan --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Floor Plan</masterLabel>
+        <translation><!-- Floor Plan --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>News Content Photo</masterLabel>
+        <translation><!-- News Content Photo --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>News Preview</masterLabel>
+        <translation><!-- News Preview --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Other</masterLabel>
+        <translation><!-- Other --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Photos</masterLabel>
+        <translation><!-- Photos --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Project Cover Image</masterLabel>
+        <translation><!-- Project Cover Image --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Project Exterior Photos</masterLabel>
+        <translation><!-- Project Exterior Photos --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Project Interior Photos</masterLabel>
+        <translation><!-- Project Interior Photos --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Project Map Image</masterLabel>
+        <translation><!-- Project Map Image --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Project Preview</masterLabel>
+        <translation><!-- Project Preview --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Project USP Image</masterLabel>
+        <translation><!-- Project USP Image --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Sales Offer</masterLabel>
+        <translation><!-- Sales Offer --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Schemas/PDFs</masterLabel>
+        <translation><!-- Schemas/PDFs --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Trade License Scan</masterLabel>
+        <translation><!-- Trade License Scan --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Unit Layout Preview</masterLabel>
+        <translation><!-- Unit Layout Preview --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

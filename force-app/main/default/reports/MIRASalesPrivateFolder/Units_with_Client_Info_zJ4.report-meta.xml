@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Unit__c.Title__c</field>
+    </columns>
+    <columns>
+        <field>Unit__c.Account__c</field>
+    </columns>
+    <columns>
+        <field>Unit__c.Account_Email__c</field>
+    </columns>
+    <columns>
+        <field>Unit__c.Account_Contact__c</field>
+    </columns>
+    <currency>AED</currency>
+    <description>Units showing Client Email and Phone</description>
+    <filter>
+        <booleanFilter>1 AND 2</booleanFilter>
+        <criteriaItems>
+            <column>Unit__c.Status__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Booked,Reserved,Sold</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Unit__c.Project_Name_Text__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>MIRA Villas Designed by Bentley Home</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Unit__c.Project_Name_Text__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Units with Client Info</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$Unit__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CUST_CREATED_DATE</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

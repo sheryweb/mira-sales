@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>View_Approval_History</name>
+    </customPermissions>
+    <description>Grants the View Approval History custom permission, used to gate the Opportunity Approval History component (Unit Price Change and Payment Plan Change timeline).</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Approval History Viewer</label>
+</PermissionSet>

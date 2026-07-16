@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SPA_Status__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+    ISPICKVAL(StageName, &quot;Sold&quot;),
+    &quot;SPA Fully Executed&quot;,
+    IF(
+        AND(
+            NOT(ISPICKVAL(StageName, &quot;Sold&quot;)),
+            SPA_Signed_By_Customer__c
+        ),
+        &quot;SPA Half Executed&quot;,
+        IF(
+            AND(
+                NOT(ISPICKVAL(StageName, &quot;Sold&quot;)),
+                NOT(SPA_Signed_By_Customer__c),
+                NOT(ISBLANK(SPA_Generated_Date__c))
+            ),
+            &quot;SPA Issued&quot;,
+            &quot;SPA Under Issue&quot;
+        )
+    )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>SPA Status</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

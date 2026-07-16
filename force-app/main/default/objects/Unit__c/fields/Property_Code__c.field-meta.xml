@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Property_Code__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(Project__r.Name,
+ &quot;Trussardi Residences&quot;, Project__r.Project_Code__c + &quot;-&quot; + Title__c,
+ &quot;MIRA Villas Designed by Bentley Home&quot;, Project__r.Project_Code__c + &quot;-&quot; + Title__c,
+ &quot;Trussardi Residences Phase 2&quot;, Project__r.Project_Code__c + &quot;-&quot; + TEXT(Tower__c) + Title__c,
+ &quot;John Richmond Residences&quot;, Extended_Property_Code_for_Richmond__c,
+ &quot;Trussardi Residences MIRA VERDE&quot;, Project__r.Project_Code__c + &quot;-&quot; + Building__c + Title__c,
+ Property_Code_Text__c
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Property Code</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

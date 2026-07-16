@@ -1,0 +1,53 @@
+<apex:page renderAs="pdf" showHeader="false" applyBodyTag="false" applyHtmlTag="false" standardController="Account">
+    <html>
+        <head>
+            <title>No Objection Certificate (NOC)</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.4; font-size: 10pt; margin: 2px; text-align: justify; }
+                .title { text-align: center; font-size: 14pt; font-weight: bold; margin-top: 10px; text-decoration: underline; }
+                .content { margin: 20px; }
+                .bold { font-weight: bold; }
+                .signature { margin-top: 20px; }
+                .input-line { display: inline-block; width: 150px; border-bottom: 1px solid black; }
+                .space { margin-top: 10px; }
+            </style>
+        </head>
+        <body>
+            <div style="text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div>
+            <div class="content">
+                <p class="title">NO OBJECTION CERTIFICATE (NOC)</p>
+                <p>DATE: _________________</p>
+
+                <div class="space">
+                    <p>TO:</p>
+                    <p style="text-align: left;">{!Account.Name}<br />{!Account.BillingStreet}</p>
+                    <p>Attention: The Company Signatory</p>
+                </div>
+
+                <div class="space">
+                    <p class="bold" style="text-decoration: underline; text-align: center;">RE: NO OBJECTION CERTIFICATE TO MARKET PROPERTIES FOR MIRA DEVELOPMENTS LLC PROJECTS</p>
+                    <p>Dear Sir/Madam,</p>
+
+                    <p>In accordance with the Real Estate Brokerage Agency Agreement, which fully complies with the laws and regulations of the {!IF(Account.Agency_Category__c == 'Georgian', 'Georgia', 'United Arab Emirates (UAE)')}, executed between {!Account.Name}, registered under {!IF(Account.Agency_Category__c == 'Georgian', '', 'Trade')} License No: {!Account.Trade_License_Number__c}, hereinafter referred to as the "{!IF(Account.Agency_Category__c == 'Georgian', 'AGENT', 'Broker')}," and Mira Developments LLC, dated _______________________, Mira Developments LLC hereby issues this official No Objection Certificate (NOC).</p>
+
+                    <p>This NOC serves as our formal acknowledgment and confirmation that we have no objections whatsoever to the Broker actively marketing the Properties within our Developments in {!IF(Account.Agency_Category__c == 'Georgian', 'Georgia', 'Dubai and the broader UAE')} .</p>
+
+                    <p>In compliance with the Broker Agency Agreement, we kindly request that the Broker diligently adheres to the provision requiring all marketing materials, whether in print, digital, or social media formats{!IF(Account.Agency_Category__c == 'Georgian', '.', ', to be submitted to Mira Developments LLC for meticulous review and subsequent written approval before any form of publication or dissemination.')}</p>
+
+                    <p>We highly value your cooperation and understanding of these vital procedural requirements, as they ensure our compliance with the prevailing laws and regulations governing property transactions and brokerages within {!IF(Account.Agency_Category__c == 'Georgian', 'Georgia', 'the UAE')}.</p>
+
+                    <p>Should you have any inquiries or require further clarification regarding this matter, please do not hesitate to reach out to us. We remain at your disposal to provide any assistance you may require.</p>
+                </div>
+
+                <div class="space signature">
+                    <p>Yours faithfully,</p>
+                    <p>For and on behalf of Mira Developments LLC</p>
+                    <p>NAME: <span class="bold" style="text-decoration: underline;">{!IF(Account.Agency_Category__c == 'Georgian', 'BEKA KURTSIKIDZE', 'TIMUR MAMAIKHANOV')}</span></p>
+                    <p>DESIGNATION: <span class="bold" style="text-decoration: underline;">{!IF(Account.Agency_Category__c == 'Georgian', 'DIRECTOR', 'GENERAL MANAGER')}</span></p>
+                    <p>SIGNATURE: _______________________</p>
+                    <p>(Company Stamp)</p>
+                </div>
+            </div>
+        </body>
+    </html>
+</apex:page>

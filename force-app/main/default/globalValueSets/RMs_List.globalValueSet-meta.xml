@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Abid Gull</fullName>
+        <default>false</default>
+        <label>Abid Gull</label>
+    </customValue>
+    <customValue>
+        <fullName>Ahmad Suleiman</fullName>
+        <default>false</default>
+        <label>Ahmad Suleiman</label>
+    </customValue>
+    <customValue>
+        <fullName>Ahmed Nagimeldin</fullName>
+        <default>false</default>
+        <label>Ahmed Nagimeldin</label>
+    </customValue>
+    <customValue>
+        <fullName>Alexandra Tatarinova</fullName>
+        <default>false</default>
+        <label>Alexandra Tatarinova</label>
+    </customValue>
+    <customValue>
+        <fullName>Amina Moussa</fullName>
+        <default>false</default>
+        <label>Amina Moussa</label>
+    </customValue>
+    <customValue>
+        <fullName>Amira Rachid</fullName>
+        <default>false</default>
+        <label>Amira Rachid</label>
+    </customValue>
+    <customValue>
+        <fullName>Angelique Smythe</fullName>
+        <default>false</default>
+        <label>Angelique Smythe</label>
+    </customValue>
+    <customValue>
+        <fullName>Asma Baratli</fullName>
+        <default>false</default>
+        <label>Asma Baratli</label>
+    </customValue>
+    <customValue>
+        <fullName>Batyrkhan Orazbayev</fullName>
+        <default>false</default>
+        <label>Batyrkhan Orazbayev</label>
+    </customValue>
+    <customValue>
+        <fullName>Danil Teshev</fullName>
+        <default>false</default>
+        <label>Danil Teshev</label>
+    </customValue>
+    <customValue>
+        <fullName>Delia Lahlou</fullName>
+        <default>false</default>
+        <label>Delia Lahlou</label>
+    </customValue>
+    <customValue>
+        <fullName>Diana Mohammad</fullName>
+        <default>false</default>
+        <label>Diana Mohammad</label>
+    </customValue>
+    <customValue>
+        <fullName>Durdona Igamberdieva</fullName>
+        <default>false</default>
+        <label>Durdona Igamberdieva</label>
+    </customValue>
+    <customValue>
+        <fullName>Elena Maisuradze</fullName>
+        <default>false</default>
+        <label>Elena Maisuradze</label>
+    </customValue>
+    <customValue>
+        <fullName>Gulnara Mirzakarimova</fullName>
+        <default>false</default>
+        <label>Gulnara Mirzakarimova</label>
+    </customValue>
+    <customValue>
+        <fullName>Haitham Mohammad</fullName>
+        <default>false</default>
+        <label>Haitham Mohammad</label>
+    </customValue>
+    <customValue>
+        <fullName>Hamida Ouadah</fullName>
+        <default>false</default>
+        <label>Hamida Ouadah</label>
+    </customValue>
+    <customValue>
+        <fullName>Honeyeh Ghasemi</fullName>
+        <default>false</default>
+        <label>Honeyeh Ghasemi</label>
+    </customValue>
+    <customValue>
+        <fullName>Iakub Amirov</fullName>
+        <default>false</default>
+        <label>Iakub Amirov</label>
+    </customValue>
+    <customValue>
+        <fullName>Inder Arora</fullName>
+        <default>false</default>
+        <label>Inder Arora</label>
+    </customValue>
+    <customValue>
+        <fullName>Ionela Condurat</fullName>
+        <default>false</default>
+        <label>Ionela Condurat</label>
+    </customValue>
+    <customValue>
+        <fullName>Iris Piccione</fullName>
+        <default>false</default>
+        <label>Iris Piccione</label>
+    </customValue>
+    <customValue>
+        <fullName>Isahak Keshishyan</fullName>
+        <default>false</default>
+        <label>Isahak Keshishyan</label>
+    </customValue>
+    <customValue>
+        <fullName>Juveriya Shehreen</fullName>
+        <default>false</default>
+        <label>Juveriya Shehreen</label>
+    </customValue>
+    <customValue>
+        <fullName>Khaled Ghallab</fullName>
+        <default>false</default>
+        <label>Khaled Ghallab</label>
+    </customValue>
+    <customValue>
+        <fullName>Laiba Jamal</fullName>
+        <default>false</default>
+        <label>Laiba Jamal</label>
+    </customValue>
+    <customValue>
+        <fullName>Majid Yosuf</fullName>
+        <default>false</default>
+        <label>Majid Yosuf</label>
+    </customValue>
+    <customValue>
+        <fullName>Mary Akiishi</fullName>
+        <default>false</default>
+        <label>Mary Akiishi</label>
+    </customValue>
+    <customValue>
+        <fullName>Miaojun Lai</fullName>
+        <default>false</default>
+        <label>Miaojun Lai</label>
+    </customValue>
+    <customValue>
+        <fullName>Mohamed Hassan</fullName>
+        <default>false</default>
+        <label>Mohamed Hassan</label>
+    </customValue>
+    <customValue>
+        <fullName>Mohammad Alzubaidi</fullName>
+        <default>false</default>
+        <label>Mohammad Alzubaidi</label>
+    </customValue>
+    <customValue>
+        <fullName>Mohammed Ashad</fullName>
+        <default>false</default>
+        <label>Mohammed Ashad</label>
+    </customValue>
+    <customValue>
+        <fullName>Mohammed Azeem</fullName>
+        <default>false</default>
+        <label>Mohammed Azeem</label>
+    </customValue>
+    <customValue>
+        <fullName>Montana Allan</fullName>
+        <default>false</default>
+        <label>Montana Allan</label>
+    </customValue>
+    <customValue>
+        <fullName>Moonis Akram</fullName>
+        <default>false</default>
+        <label>Moonis Akram</label>
+    </customValue>
+    <customValue>
+        <fullName>Mosad Elsharkawy</fullName>
+        <default>false</default>
+        <label>Mosad Elsharkawy</label>
+    </customValue>
+    <customValue>
+        <fullName>Muhamed Albana</fullName>
+        <default>false</default>
+        <label>Muhamed Albana</label>
+    </customValue>
+    <customValue>
+        <fullName>Muhammad Usman</fullName>
+        <default>false</default>
+        <label>Muhammad Usman</label>
+    </customValue>
+    <customValue>
+        <fullName>Muhammed Kocak</fullName>
+        <default>false</default>
+        <label>Muhammed Kocak</label>
+    </customValue>
+    <customValue>
+        <fullName>Nikoloz Nairashvili</fullName>
+        <default>false</default>
+        <label>Nikoloz Nairashvili</label>
+    </customValue>
+    <customValue>
+        <fullName>Noel David</fullName>
+        <default>false</default>
+        <label>Noel David</label>
+    </customValue>
+    <customValue>
+        <fullName>Nusrat Mirza</fullName>
+        <default>false</default>
+        <label>Nusrat Mirza</label>
+    </customValue>
+    <customValue>
+        <fullName>Oluwafemi Olaniran</fullName>
+        <default>false</default>
+        <label>Oluwafemi Olaniran</label>
+    </customValue>
+    <customValue>
+        <fullName>Prabhjot Khandpur</fullName>
+        <default>false</default>
+        <label>Prabhjot Khandpur</label>
+    </customValue>
+    <customValue>
+        <fullName>Rateb Rahimzad</fullName>
+        <default>false</default>
+        <label>Rateb Rahimzad</label>
+    </customValue>
+    <customValue>
+        <fullName>Saad Niazi</fullName>
+        <default>false</default>
+        <label>Saad Niazi</label>
+    </customValue>
+    <customValue>
+        <fullName>Sabia Afzar</fullName>
+        <default>false</default>
+        <label>Sabia Afzar</label>
+    </customValue>
+    <customValue>
+        <fullName>Shamil Omarov</fullName>
+        <default>false</default>
+        <label>Shamil Omarov</label>
+    </customValue>
+    <customValue>
+        <fullName>Shota Tcholadze</fullName>
+        <default>false</default>
+        <label>Shota Tcholadze</label>
+    </customValue>
+    <customValue>
+        <fullName>Tamar Kukava</fullName>
+        <default>false</default>
+        <label>Tamar Kukava</label>
+    </customValue>
+    <customValue>
+        <fullName>Usman Qureshi</fullName>
+        <default>false</default>
+        <label>Usman Qureshi</label>
+    </customValue>
+    <customValue>
+        <fullName>Vaibhav Singh</fullName>
+        <default>false</default>
+        <label>Vaibhav Singh</label>
+    </customValue>
+    <customValue>
+        <fullName>Viola Koshcheeva</fullName>
+        <default>false</default>
+        <label>Viola Koshcheeva</label>
+    </customValue>
+    <customValue>
+        <fullName>Yanal Bashkour</fullName>
+        <default>false</default>
+        <label>Yanal Bashkour</label>
+    </customValue>
+    <customValue>
+        <fullName>Yan Zhang</fullName>
+        <default>false</default>
+        <label>Yan Zhang</label>
+    </customValue>
+    <masterLabel>RMs List</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

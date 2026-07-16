@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Re-Selling Unit Request Approval Email Template</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Re-Selling Unit Request Approval Email Template</name>
+    <relatedEntityType>Opportunity</relatedEntityType>
+    <style>none</style>
+    <subject>Re-Selling Request Approved</subject>
+    <type>custom</type>
+    <uiType>SFX</uiType>
+</EmailTemplate>

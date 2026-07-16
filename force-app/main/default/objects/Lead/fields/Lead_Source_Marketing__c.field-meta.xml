@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lead_Source_Marketing__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+    CONTAINS(UTM__c, &quot;utm_source=adwords&quot;),
+    &quot;Adwords&quot;,
+    IF(
+        CONTAINS(UTM__c, &quot;utm_medium=organic&quot;),
+        &quot;SEO&quot;,
+        IF(
+            NOT(CONTAINS(UTM__c, &quot;utm_&quot;)),
+            &quot;Social Media&quot;,
+            &quot;Other&quot;
+        )
+    )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Lead Source Marketing</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

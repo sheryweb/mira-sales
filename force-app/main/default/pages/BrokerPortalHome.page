@@ -1,0 +1,129 @@
+<apex:page controller="BrokerDashboardController" action="{!checkLogin}" showHeader="false"
+           sidebar="false" standardStylesheets="false" cache="false" title="Broker Portal — Dashboard">
+<head><meta name="viewport" content="width=device-width, initial-scale=1"/></head>
+<body>
+    <c:BrokerStyles />
+    <div class="bp-shell">
+        <c:BrokerSidebar active="dashboard" />
+        <div class="bp-main">
+            <c:BrokerTopbar title="Dashboard" company="{!brokerCompanyName}" />
+            <div class="bp-content">
+
+                <div class="bp-h">
+                    <h2>Welcome back{!IF(brokerCompanyName == null, '', ', ' + brokerCompanyName)}</h2>
+                    <p>Here's a snapshot of your activity with MIRA Developments.</p>
+                </div>
+
+                <!-- KPI cards — bookings -->
+                <div class="bp-grid bp-kpis-3">
+                    <div class="bp-card bp-kpi">
+                        <div class="bp-ic ic-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
+                        <div class="bp-val">{!totalDeals}</div>
+                        <div class="bp-lbl">Total Deals</div>
+                        <div class="bp-lbl" style="font-size:11.5px">Excludes cancelled &amp; transferred</div>
+                    </div>
+                    <div class="bp-card bp-kpi">
+                        <div class="bp-ic ic-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-7h6v7"/></svg></div>
+                        <div class="bp-val">{!unitsBooked}</div>
+                        <div class="bp-lbl">Units Booked</div>
+                        <div class="bp-lbl" style="font-size:11.5px">Booked only</div>
+                    </div>
+                    <div class="bp-card bp-kpi">
+                        <div class="bp-ic ic-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-7h6v7"/></svg></div>
+                        <div class="bp-val">{!unitsSold}</div>
+                        <div class="bp-lbl">Units Sold</div>
+                        <div class="bp-lbl" style="font-size:11.5px">Reserved or sold</div>
+                    </div>
+                </div>
+
+                <!-- charts -->
+                <div class="bp-grid bp-2col bp-mt">
+                    <div class="bp-card">
+                        <h3>Deals by Stage</h3>
+                        <p class="bp-sub">Distribution of your {!donutTotal} deals</p>
+                        <apex:outputPanel layout="none" rendered="{!hasDeals}">
+                            <div class="bp-donut-wrap">
+                                <svg width="180" height="180" viewBox="0 0 180 180">
+                                    <circle cx="90" cy="90" r="70" fill="none" stroke="#eef1f6" stroke-width="26"/>
+                                    <apex:repeat value="{!stageSlices}" var="s">
+                                        <circle cx="90" cy="90" r="70" fill="none" stroke="{!s.color}" stroke-width="26"
+                                                stroke-dasharray="{!s.dash}" transform="{!s.xform}"/>
+                                    </apex:repeat>
+                                    <text x="90" y="84" text-anchor="middle" font-size="30" font-weight="800" fill="#16325c">{!donutTotal}</text>
+                                    <text x="90" y="104" text-anchor="middle" font-size="12" fill="#6b7280">Total deals</text>
+                                </svg>
+                                <ul class="bp-legend">
+                                    <apex:repeat value="{!stageSlices}" var="s">
+                                        <li><span class="dot" style="background:{!s.color}"></span><span class="bp-lname">{!s.label}</span><span class="bp-lval">{!s.cnt}</span></li>
+                                    </apex:repeat>
+                                </ul>
+                            </div>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!NOT(hasDeals)}">
+                            <p class="bp-sub">No deals yet.</p>
+                        </apex:outputPanel>
+                    </div>
+
+                    <div class="bp-card">
+                        <h3>Bookings — last 6 months</h3>
+                        <p class="bp-sub">Units booked per month &nbsp; <span style="color:#2563eb">■</span> Booked &nbsp; <span style="color:#16a34a">■</span> Sold</p>
+                        <div class="bp-bars">
+                            <apex:repeat value="{!monthlyBars}" var="m">
+                                <div class="bp-bar">
+                                    <div class="bar-stack" style="{!m.stackStyle}">
+                                        <div class="seg-sold" style="{!m.soldStyle}"></div>
+                                        <div class="seg-booked"></div>
+                                    </div>
+                                    <small>{!m.label}</small>
+                                </div>
+                            </apex:repeat>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI cards — commission -->
+                <div class="bp-grid bp-kpis-3 bp-mt">
+                    <div class="bp-card bp-kpi">
+                        <div class="bp-ic ic-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 6.5A4 4 0 0 0 13 4h-2a3.5 3.5 0 0 0 0 7h2a3.5 3.5 0 0 1 0 7h-2a4 4 0 0 1-4-2.5"/></svg></div>
+                        <div class="bp-val">{!totalCommission}</div>
+                        <div class="bp-lbl">Total Commission</div>
+                        <div class="bp-lbl" style="font-size:11.5px">Incl. VAT where applicable</div>
+                    </div>
+                    <div class="bp-card bp-kpi">
+                        <div class="bp-ic ic-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg></div>
+                        <div class="bp-val">{!paidCommission}</div>
+                        <div class="bp-lbl">Paid Commission</div>
+                        <div class="bp-lbl" style="font-size:11.5px">Received to date</div>
+                    </div>
+                    <div class="bp-card bp-kpi">
+                        <div class="bp-ic ic-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+                        <div class="bp-val">{!remainingCommission}</div>
+                        <div class="bp-lbl">Remaining Commission</div>
+                        <div class="bp-lbl" style="font-size:11.5px">Pending payment</div>
+                    </div>
+                </div>
+
+                <!-- recent bookings -->
+                <div class="bp-card bp-mt">
+                    <h3>Recent Bookings</h3>
+                    <p class="bp-sub">Your latest deals</p>
+                    <table class="bp-table">
+                        <thead><tr><th>Project</th><th>Unit</th><th>Tower</th><th>Client</th><th>Stage</th><th>Price</th><th>Booked on</th></tr></thead>
+                        <tbody>
+                            <apex:repeat value="{!recentBookings}" var="b">
+                                <tr><td>{!b.project}</td><td>{!b.unit}</td><td>{!b.tower}</td><td>{!b.client}</td>
+                                    <td><span class="bp-badge {!b.badgeClass}">{!b.stage}</span></td>
+                                    <td class="num">{!b.price}</td><td>{!b.bookedOn}</td></tr>
+                            </apex:repeat>
+                        </tbody>
+                    </table>
+                    <apex:outputPanel layout="none" rendered="{!NOT(hasRecent)}">
+                        <p class="bp-sub">No bookings yet.</p>
+                    </apex:outputPanel>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</apex:page>

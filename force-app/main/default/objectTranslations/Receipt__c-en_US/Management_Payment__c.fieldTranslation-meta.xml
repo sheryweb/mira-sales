@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Management Payment --></label>
+    <name>Management_Payment__c</name>
+    <picklistValues>
+        <masterLabel>Mr. Muaeed</masterLabel>
+        <translation><!-- Mr. Muaeed --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Mr. Timur</masterLabel>
+        <translation><!-- Mr. Timur --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

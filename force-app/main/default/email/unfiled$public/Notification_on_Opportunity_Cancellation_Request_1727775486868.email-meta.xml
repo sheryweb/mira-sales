@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>This notification is sent to System Admin, when there is a Cancellation request for Opportunity to Sales Admin</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Notification on Opportunity Cancellation Request</name>
+    <relatedEntityType>Opportunity</relatedEntityType>
+    <style>none</style>
+    <subject>Opportunity Cancellation Request</subject>
+    <type>custom</type>
+    <uiType>SFX</uiType>
+</EmailTemplate>

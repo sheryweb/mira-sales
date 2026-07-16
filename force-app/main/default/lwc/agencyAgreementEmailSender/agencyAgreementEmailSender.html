@@ -1,0 +1,162 @@
+<template>
+    <lightning-card title="Renewal Agency Agreement Email" icon-name="standard:email">
+        <div class="slds-p-around_medium">
+            <lightning-spinner if:true={isLoading} alternative-text="Processing..." size="small"></lightning-spinner>
+            
+            <div class="slds-text-body_small slds-text-color_weak slds-m-bottom_medium">
+                This will update the related Account's "Registered In" field and send a renewal agency agreement email with the subject prefix "Renewal -".
+            </div>
+            
+            <lightning-button 
+                variant="brand" 
+                label="Issue Renewal Agreement" 
+                onclick={handleOpenModal} 
+                disabled={isLoading}
+                class="slds-m-top_small slds-m-right_small">
+            </lightning-button>
+
+            <lightning-button 
+                variant="brand" 
+                label="Send Signed Renewal Agreement" 
+                onclick={handleOpenSignedModal} 
+                disabled={isLoading}
+                class="slds-m-top_small">
+            </lightning-button>
+        </div>
+    </lightning-card>
+
+    <!-- Modal Structure for Renewal Agreement -->
+    <template if:true={showModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+                        <template if:true={isConfirmationStage}>Confirm Renewal</template>
+                        <template if:false={isConfirmationStage}>Enter Details</template>
+                    </h2>
+                </header>
+
+                <!-- Modal Body -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-spinner if:true={isLoadingModalAction} alternative-text="Processing..." size="small"></lightning-spinner>
+                    
+                    <!-- Confirmation Stage -->
+                    <template if:true={isConfirmationStage}>
+                        <p>Are you sure you want to issue the Renewal Agency Agreement? This will update the Account and send an email.</p>
+                    </template>
+
+                    <!-- Input Stage -->
+                    <template if:false={isConfirmationStage}>
+                        <lightning-input 
+                            label="Registered In" 
+                            value={registeredInValue} 
+                            onchange={handleRegisteredInChange}
+                            required
+                            message-when-value-missing="Registered In value is required."
+                            class="slds-m-bottom_medium">
+                        </lightning-input>
+                        <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_medium">
+                           Enter the value for the 'Registered In' field on the Account record.
+                        </p>
+                        <lightning-combobox
+                            name="issuingAuthority"
+                            label="Issuing Authority"
+                            value={issuingAuthorityValue}
+                            options={issuingAuthorityOptions}
+                            onchange={handleIssuingAuthorityChange}
+                            required
+                            message-when-value-missing="Issuing Authority value is required."
+                            class="slds-m-bottom_medium">
+                        </lightning-combobox>
+                        <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_medium">
+                           Select the value for the 'Issuing Authority' field on the Account record.
+                        </p>
+                    </template>
+                </div>
+
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <!-- Confirmation Stage Buttons -->
+                    <template if:true={isConfirmationStage}>
+                        <lightning-button label="Cancel" onclick={closeModal} class="slds-m-right_x-small"></lightning-button>
+                        <lightning-button variant="brand" label="Confirm" onclick={handleConfirmClick} disabled={isLoadingModalAction}></lightning-button>
+                    </template>
+                    <!-- Input Stage Buttons -->
+                    <template if:false={isConfirmationStage}>
+                        <lightning-button label="Cancel" onclick={closeModal} class="slds-m-right_x-small"></lightning-button>
+                        <lightning-button variant="brand" label="Issue" onclick={handleIssueClick} disabled={isLoadingModalAction}></lightning-button>
+                    </template>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <!-- File Upload Modal Structure -->
+    <template if:true={showFileModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="file-modal-heading" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeFileModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="file-modal-heading" class="slds-modal__title slds-hyphenate">
+                        Upload Signed Agreement
+                    </h2>
+                </header>
+
+                <!-- Modal Body -->
+                <div class="slds-modal__content slds-p-around_medium" id="file-modal-content">
+                    <lightning-spinner if:true={isLoadingFileAction} alternative-text="Processing..." size="small"></lightning-spinner>
+                    
+                    <div class="slds-text-body_small slds-text-color_weak slds-m-bottom_medium">
+                        Upload the signed agreement document. This file will be stored in Salesforce and sent as an email attachment.
+                    </div>
+
+                    <!-- File Upload Area -->
+                    <div class="slds-form-element slds-size_1-of-1" style="width: 100%;">
+                        <div class="slds-form-element__control slds-size_1-of-1" style="width: 100%;">
+                            <div class="slds-file-selector slds-file-selector_files slds-size_1-of-1" style="width: 100%;">
+                                <div class="slds-file-selector__dropzone slds-size_1-of-1" 
+                                     style="min-height: 200px; width: 100%; border: 2px dashed #dddbda; border-radius: 0.25rem; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem;">
+                                    <lightning-file-upload
+                                        label="Upload Agreement"
+                                        name="fileUploader"
+                                        accept={acceptedFormats}
+                                        record-id={recordId}
+                                        onuploadfinished={handleUploadFinished}
+                                        multiple="false">
+                                    </lightning-file-upload>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeFileModal} class="slds-m-right_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="Send" onclick={handleSendSignedClick} disabled={isLoadingFileAction}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={isLoading}>
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </template>
+</template>

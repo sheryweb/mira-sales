@@ -1,0 +1,19 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body style="height: auto; min-height: auto;">
+<p><span style="font-family:Arial,Helvetica,sans-serif;">Dear&nbsp;{{{Account.Account_Owner_Full_Name__c}}},</span></p>
+
+<p>&nbsp;</p>
+
+<p><font face="Arial, Helvetica, sans-serif">An Agency with following details has been assigned to you:<br />
+<br />
+Name:&nbsp;{{{Account.Name}}}<br />
+Company Email:&nbsp;{{{Account.Company_Email__c}}}<br />
+Mobile: {{{Account.Phone}}}<br />
+Landline#:&nbsp;{{{Account.Landline_Number__c}}}<br />
+Admin Email:&nbsp;{{{Account.Contact_Email__c}}}<br />
+Admin Contact:&nbsp;{{{Account.Admin_Number__c}}}</font></p>
+</body>
+</html>

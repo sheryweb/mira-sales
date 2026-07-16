@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- DLD Fee Percentage --></label>
+    <name>DLD_Fee_Percentage__c</name>
+    <picklistValues>
+        <masterLabel>25% payable by Purchaser, 75% payable by Seller, Purchaser pays all administration fees</masterLabel>
+        <translation><!-- 25% payable by Purchaser, 75% payable by Seller, Purchaser pays all administration fees --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>50% payable by Purchaser, 50% payable by Seller, Purchaser pays all administration fees</masterLabel>
+        <translation><!-- 50% payable by Purchaser, 50% payable by Seller, Purchaser pays all administration fees --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>75% payable by Purchaser, 25% payable by Seller, Purchaser pays all administration fees</masterLabel>
+        <translation><!-- 75% payable by Purchaser, 25% payable by Seller, Purchaser pays all administration fees --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Fully paid by the Purchaser</masterLabel>
+        <translation><!-- Fully paid by the Purchaser --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Fully paid by the Seller</masterLabel>
+        <translation><!-- Fully paid by the Seller --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

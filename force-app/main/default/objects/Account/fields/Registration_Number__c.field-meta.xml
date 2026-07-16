@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Registration_Number__c</fullName>
+    <externalId>false</externalId>
+    <formula>&quot;REG-&quot; &amp; TEXT(YEAR(DATEVALUE(CreatedDate))) &amp; &quot;-&quot; &amp; LEFT(Id, 5) &amp; &quot;-&quot; &amp;
+MID(TEXT(HOUR(TIMEVALUE(CreatedDate))), 1, 2) &amp;
+MID(TEXT(MINUTE(TIMEVALUE(CreatedDate))), 1, 2) &amp;
+MID(TEXT(SECOND(TIMEVALUE(CreatedDate))), 1, 2)&amp; &quot;-&quot;&amp; TEXT(Serial__c)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Registration Number</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,614 @@
+<apex:page controller="AgencyController">
+  <html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company Information</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .bg-dark {
+            background: #f8f9fa !important;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .step-indicator div {
+            width: 45%;
+            height: 10px;
+            background-color: lightgray;
+            border-radius: 5px;
+            position: relative;
+        }
+        .step-indicator div:last-child::before {
+            content: 'Documents Upload';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            color: #80808052;
+        }
+        .step-indicator div.active {
+            background-color: #007bff;
+        }
+
+        .step-indicator div.active::before {
+            content: 'Agency Information';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+        }
+
+        #loader {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 8px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 8px solid #3498db;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-message {
+            color: red;
+            display: none;
+            margin-top: 10px;
+            font-size: 25px;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333; /* Optional: footer background color */
+            color: white;           /* Optional: footer text color */
+            text-align: center;
+            padding: 10px 0;
+            z-index: 1000;          /* Optional: keeps footer on top of other elements */
+        }
+
+        .logo {
+            width: 200px;
+            height: 70px;
+            padding: 10px;
+        }
+        .required-elements::after {
+            content: '*';
+            color: red;
+        }
+        .error-message-percentage {
+            color: red;
+            font-size: 0.9em;
+            display: none;
+        }
+        .btn {
+            background-image: none !important;  /* Remove any background images applied by Salesforce */
+            border: none !important;  /* Remove any borders if they exist */
+        }
+        .btn-primary {
+            background-color: #0d6efd !important;
+            color: white !important;
+            padding: 10px 15px 10px 15px !important;
+            border-radius: 5px !important;
+            font-weight: normal !important;
+            font-size: 16px !important;
+        }
+        .btn-secondary {
+            background-color: #6c757d !important;  /* Secondary color */
+            color: white !important;
+        }
+        .btn-success {
+            background-color: var(--bs-green) !important;
+            color: white !important;
+            padding: 5px !important;
+            border-radius: 5px !important;
+            font-weight: normal !important;
+            font-size: 16px !important;
+            width: 60px;
+        }
+        .btn-success:hover {
+            background-color: #146c43 !important;
+            color: white !important;
+            padding: 5px !important;
+            border-radius: 5px !important;
+            font-weight: normal !important;
+            font-size: 16px !important;
+            width: 60px;
+        }
+        .btn-danger {
+            background-color: #dc3545 !important;  /* Danger color */
+            color: white !important;
+        }
+        .modal .btn-close {
+            color: #000 !important;
+        }
+        .form-switch .form-check-input {
+            width: 50px;
+            height: 25px;
+            margin-left: -2.5em;
+            background: #ddd;
+            border-radius: 25px;
+            position: relative;
+            transition: background-color 0.3s;
+        }
+
+        .form-switch .form-check-input:checked {
+            background: #0d6efd;
+        }
+
+        .form-switch .form-check-input::before {
+            content: '';
+            position: absolute;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .form-switch .form-check-input:checked::before {
+            transform: translateX(25px);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <a href="/agency"><img src="{!URLFOR($Resource.MiraDocLogo)}" alt="Logo" class="logo" /></a> <!-- Replace with your logo -->
+    <header class="bg-dark text-center py-4">
+        <h1>Agency Registration</h1>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <form id="registrationForm" action="submit.php" method="post" onsubmit="validateForm(event);">
+            <!-- Company Information -->
+            <h3 class="mb-4">Company Information</h3>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="internationalAgency" value="No" id="internationalAgency" onchange="chkbxfunction();" />
+                <label class="form-check-label" for="internationalAgency">International Agency</label>
+            </div>
+            <br />
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="companyName" class="form-label required-elements">Company Name</label>
+                    <input type="text" class="form-control" id="companyName" name="companyName" required="true" />
+                </div>
+                <div class="col-md-6">
+                    <label for="tradeLicenseNumber" class="form-label required-elements">Trade License Number</label>
+                    <input type="text" class="form-control" id="tradeLicenseNumber" name="tradeLicenseNumber" required="true" onblur="checkTradeLicense();" />
+                    <div id="tradeLicenseMessage" style="color: red;"></div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="issueDate" class="form-label required-elements">Issue Date</label>
+                    <input type="date" class="form-control" id="issueDate" name="issueDate" required="true" />
+                </div>
+                <div class="col-md-6">
+                    <label for="expiryDate" class="form-label required-elements">Expiry Date</label>
+                    <input type="date" class="form-control" id="expiryDate" name="expiryDate" required="true" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="ornNumber" class="form-label">ORN Number</label>
+                    <input type="text" class="form-control" id="ornNumber" name="ornNumber" />
+                </div>
+                <div class="col-md-6">
+                    <label for="trnNumber" class="form-label required-elements">TRN Number</label>
+                    <div class="d-flex align-items-center">
+                        <input type="text" class="form-control me-2" id="trnNumber" name="trnNumber" required="true" />
+                        <label class="form-check-label me-2" for="trnSwitch">No</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="trnSwitch" checked='checked' onchange="toggleTRNField()" />
+                        </div>&nbsp;
+                        <label class="form-check-label me-2" for="trnSwitch">Yes</label>
+                    </div>
+                    <!--<label for="trnNumber" class="form-label required-elements">TRN Number</label>
+                    <input type="text" class="form-control" id="trnNumber" name="trnNumber" required="true" />-->
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="companyAddress" class="form-label required-elements">Company Address</label>
+                    <input type="text" class="form-control" id="companyAddress" name="companyAddress" required="true" />
+                </div>
+                <div class="col-md-6">
+                    <label for="poBox" class="form-label required-elements">P.O Box</label>
+                    <input type="text" class="form-control" id="poBox" name="poBox" required="true" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="email" class="form-label required-elements">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required="true" />
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label required-elements">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" required="true" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="landline" class="form-label required-elements">Landline</label>
+                    <input type="text" class="form-control" id="landline" name="landline" />
+                </div>
+                <div class="col-md-6">
+                    <label for="adminEmail" class="form-label required-elements">Admin Email</label>
+                    <input type="email" class="form-control" id="adminEmail" name="adminEmail" required="true" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="adminMobile" class="form-label required-elements">Admin Mobile</label>
+                    <input type="text" class="form-control" id="adminMobile" name="adminMobile" required="true" />
+                </div>
+                <div class="col-md-6">
+                    <label for="relationManager" class="form-label required-elements">MIRA Relationship Manager</label>
+                    <input type="text" class="form-control" id="relationManager" name="relationManager" required="true" />
+                </div>
+            </div>
+
+            <!-- Signatory Information -->
+            <h3 class="mb-4">Signatory Information</h3><br />
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="signatoryName" class="form-label required-elements">Name</label>
+                    <input type="text" class="form-control" id="signatoryName" name="signatoryName" required="true" />
+                </div>
+                <div class="col-md-6">
+                    <label for="signatoryEmail" class="form-label required-elements">Email</label>
+                    <input type="email" class="form-control" id="signatoryEmail" name="signatoryEmail" required="true" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="signatoryMobile" class="form-label required-elements">Mobile</label>
+                    <input type="text" class="form-control" id="signatoryMobile" name="signatoryMobile" required="true" />
+                </div>
+            </div>
+
+            <!-- Shareholders Information -->
+            <div class="row" style="padding: 30px 0 30px 0;">
+                <div class="col-md-6"><h3>Shareholders Details</h3></div>
+                <div class="col-md-6" style="text-align: right;">
+                    <button type="button" class="btn btn-success" onclick="addShareholder()">+Add</button>
+                </div>
+            </div>
+            <div id="shareholdersContainer">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="shareholderName" class="form-label required-elements">Name</label>
+                        <input type="text" class="form-control" name="shareholderName[]" required="true" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="shareholderPercentage" class="form-label required-elements">Percentage</label>
+                        <input type="number" class="form-control percentage" name="shareholderPercentage[]" required="true" />
+                    </div>
+                </div>
+            </div>
+            <div id="error-message-percentage" class="error-message-percentage"><strong>Percentage in total must be equal to 100.</strong></div>
+
+            <!-- Bank Information -->
+            <div class="row" style="padding: 30px 0 30px 0;">
+                <div class="col-md-6"><h3>Company Bank Account Details</h3></div>
+                <div class="col-md-6" style="text-align: right;">
+                    <button type="button" class="btn btn-success" onclick="addBankAccount()">+Add</button>
+                </div>
+            </div>
+            <div id="bankAccountsContainer">
+                <div class="row mb-3">
+                    <div class="col-md-2">
+                        <label for="bankName" class="form-label required-elements">Bank Name</label>
+                        <input type="text" class="form-control" name="bankName[]" required="true" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="accountName" class="form-label required-elements">Account Name</label>
+                        <input type="text" class="form-control" name="accountName[]" required="true" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="accountNumber" class="form-label required-elements">Account Number</label>
+                        <input type="number" class="form-control" name="accountNumber[]" required="true" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="accountIBAN" class="form-label required-elements">IBAN</label>
+                        <input type="text" class="form-control" name="accountIBAN[]" required="true" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="accountSwift" class="form-label required-elements">Swift Code</label>
+                        <input type="text" class="form-control" name="accountSwift[]" required="true" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="branchName" class="form-label required-elements">Branch Name</label>
+                        <input type="text" class="form-control" name="branchName[]" required="true" />
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <!-- Google reCAPTCHA widget -->
+            <div class="g-recaptcha" data-sitekey="6LcN6JEqAAAAAJdQHLOnPO0CxW83LxxhwQY9dLss"></div>
+
+            <!-- Next Button -->
+            <div class="text-center mt-5">
+                <div id="loader"></div>
+                <div class="error-message" id="errorMessage"></div>
+                <button type="submit" class="btn btn-primary">Next &gt;&gt;</button>
+            </div>
+        </form>
+    </div><br /><br />
+    <!-- Footer with Copyright and Power Info -->
+    <footer>
+        <p>&copy; 2024 M I R A Developments LLC. Powered by MIRA Developments</p>
+    </footer>
+    <script src="https://www.google.com/recaptcha/api.js" async="true" defer="true"></script>
+    <script>
+        function checkTradeLicense(callback) {
+            var tradeLicenseNumber = document.getElementById('tradeLicenseNumber').value;
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.AgencyController.getAccountExist}',
+                tradeLicenseNumber,
+                function(result, event) {
+                    var messagePanel = document.getElementById('tradeLicenseMessage');
+                    console.log(result);
+                    if (event.status) {
+                        if (result === 'Account Exist') {
+                            messagePanel.innerHTML = 'Agency already exist!';
+                            messagePanel.style.color = 'red';
+                            document.getElementById('registrationForm').dataset.accountExist = 'true';
+                        } else if (result === 'Account Not Found') {
+                            messagePanel.innerHTML = 'You are good to go!';
+                            messagePanel.style.color = 'green';
+                            document.getElementById('registrationForm').dataset.accountExist = 'false';
+                        } else {
+                            messagePanel.innerHTML = result;
+                            messagePanel.style.color = 'red';
+                        }
+                    } else {
+                        messagePanel.innerHTML = 'Error checking account';
+                        messagePanel.style.color = 'red';
+                    }
+                    if (callback) callback();
+                }
+            );
+        }
+
+        function toggleTRNField() {
+            var trnSwitch = document.getElementById('trnSwitch');
+            var trnNumberField = document.getElementById('trnNumber');
+
+            if (trnSwitch.checked) {
+                trnNumberField.disabled = false;
+                trnNumberField.required = true;
+                trnNumberField.classList.add('required-elements');
+            } else {
+                trnNumberField.disabled = true;
+                trnNumberField.required = false;
+                trnNumberField.classList.remove('required-elements');
+            }
+        }
+
+        // Ensure the TRN field is correctly set on page load
+        window.onload = function() {
+            toggleTRNField();
+        };
+
+        function validateForm(event) {
+            event.preventDefault(); // Prevent form submission
+            showLoader(true);
+            checkTradeLicense(function() {
+                if (document.getElementById('registrationForm').dataset.accountExist === 'true') {
+                    alert('Account already exists. Please use a different Trade License Number.');
+                    showLoader(false);
+                } else {
+                    if (validatePercentages()) {
+                        submitForm(); // Submit the form if no account exists and percentages are valid
+                    } else {
+                        showLoader(false);
+                    }
+                }
+            });
+        }
+
+        //Form Submission
+        function submitForm() {
+            var form = document.getElementById('registrationForm');
+            var formData = new FormData(form);
+
+            var internationalAgency = formData.get('internationalAgency') === 'Yes' ? 'Yes' : 'No'; // Ensure this is a String
+            var companyName = formData.get('companyName');
+            var tradeLicenseNumber = formData.get('tradeLicenseNumber');
+            var issueDate = formData.get('issueDate');
+            var expiryDate = formData.get('expiryDate');
+            var ornNumber = formData.get('ornNumber');
+            var trnNumber = formData.get('trnNumber');
+            var companyAddress = formData.get('companyAddress');
+            var poBox = formData.get('poBox');
+            var email = formData.get('email');
+            var phone = formData.get('phone');
+            var landline = formData.get('landline');
+            var adminEmail = formData.get('adminEmail');
+            var adminMobile = formData.get('adminMobile');
+            var relationManager = formData.get('relationManager');
+            var signatoryName = formData.get('signatoryName');
+            var signatoryEmail = formData.get('signatoryEmail');
+            var signatoryNumber = formData.get('signatoryMobile'); // Ensure this matches the Apex method parameter name
+            var shareholderNames = formData.getAll('shareholderName[]');
+            var shareholderPercentages = formData.getAll('shareholderPercentage[]');
+            var bankNames = formData.getAll('bankName[]');
+            var accountNames = formData.getAll('accountName[]');
+            var accountNumbers = formData.getAll('accountNumber[]');
+            var accountIBANs = formData.getAll('accountIBAN[]');
+            var accountSwifts = formData.getAll('accountSwift[]');
+            var branchNames = formData.getAll('branchName[]');
+            var trnSwitchValue = document.getElementById('trnSwitch').checked ? 'Yes' : 'No'; // Get the value of the toggle switch
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.AgencyController.handleCompanyRegistration}',
+                internationalAgency,
+                companyName,
+                tradeLicenseNumber,
+                issueDate,
+                expiryDate,
+                ornNumber,
+                trnNumber,
+                companyAddress,
+                poBox,
+                email,
+                phone,
+                landline,
+                adminEmail,
+                adminMobile,
+                relationManager,
+                signatoryName,
+                signatoryEmail,
+                signatoryNumber, // Ensure this matches the Apex method parameter name
+                shareholderNames,
+                shareholderPercentages,
+                bankNames,
+                accountNames,
+                accountNumbers,
+                accountIBANs,
+                accountSwifts,
+                branchNames,
+                trnSwitchValue,
+                function(result, event) {
+                    showLoader(false);
+                    if (event.status) {
+                        if (result[0] === 'Account Added Successfully') {
+                            var accountId = result[1];
+                            var encodedInternationalAgency = btoa(internationalAgency); // Base64 encode the internationalAgency value
+                            var encodedTrnSwitchValue = btoa(trnSwitchValue); // Base64 encode the trnSwitch value
+                            window.location.href = '/agency/AgencyFileUpload?accountId=' + accountId + '&internationalAgency=' + encodedInternationalAgency + '&trnSwitch=' + encodedTrnSwitchValue;
+                        } else {
+                            console.log('Apex response:', result);
+                            alert(result[0]);
+                        }
+                    } else {
+                        console.log('Apex error:', event.message);
+                        alert('Error submitting form: ' + event.message);
+                    }
+                }
+            );
+        }
+
+        function showLoader(show) {
+            var loader = document.getElementById('loader');
+            var submitButton = document.querySelector('button[type="submit"]');
+            if (show) {
+                loader.style.display = 'block';
+                submitButton.disabled = true;
+            } else {
+                loader.style.display = 'none';
+                submitButton.disabled = false;
+            }
+        }
+
+        function addShareholder() {
+            var html = `
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="shareholderName[]" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="number" class="form-control percentage" name="shareholderPercentage[]" required>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger" onclick="removeShareholder(this)">-Remove</button>
+                    </div>
+                </div>`;
+            document.getElementById('shareholdersContainer').insertAdjacentHTML('beforeend', html);
+        }
+
+        function removeShareholder(button) {
+            button.closest('.row').remove();
+        }
+
+        function addBankAccount() {
+            var html = `
+                <div class="row mb-3">
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="bankName[]" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="accountName[]" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" class="form-control" name="accountNumber[]" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="accountIBAN[]" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="accountSwift[]" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="branchName[]" required>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end" style="padding-top: 5px;">
+                        <button type="button" class="btn btn-danger" onclick="removeBankAccount(this)">-Remove</button>
+                    </div>
+                </div>`;
+            document.getElementById('bankAccountsContainer').insertAdjacentHTML('beforeend', html);
+        }
+
+        function removeBankAccount(button) {
+            button.closest('.row').remove();
+        }
+
+        function chkbxfunction() {
+            var checkBox = document.getElementById("internationalAgency");
+            var allFileUploadFields = document.querySelectorAll('.file-upload-field');
+
+            if (checkBox.checked == true) {
+                checkBox.value = "Yes";
+                allFileUploadFields.forEach(function(field) {
+                    field.style.display = 'none';
+                });
+            } else {
+                checkBox.value = "No";
+                allFileUploadFields.forEach(function(field) {
+                    field.style.display = '';
+                });
+            }
+        }
+
+        function validatePercentages() {
+            // Select all elements with class 'percentage'
+            const percentageFields = document.querySelectorAll('.percentage');
+            let total = 0;
+            const errorMessage = document.getElementById("error-message-percentage");
+
+            // Sum up the values of all percentage fields
+            percentageFields.forEach(field => {
+                total += parseFloat(field.value) || 0;
+            });
+
+            // Check if the sum equals 100
+            if (total !== 100) {
+                errorMessage.style.display = "block";
+                return false; // Prevent form submission
+            } else {
+                errorMessage.style.display = "none"; // Hide error if sum is 100
+                return true; // Allow form submission
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>
+</apex:page>

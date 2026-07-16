@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Value_P_Booked_Reserved_Sold_Units_POST__c</fullName>
+    <formula>IF(Project_Value_Post__c &gt; 0,
+Value_Booked_Reserved_Sold_Units_POST__c / Project_Value_Post__c,
+0
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>% Value Booked/Reserved/Sold Units POST</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

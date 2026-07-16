@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Structure --></label>
+    <name>Structure__c</name>
+    <picklistValues>
+        <masterLabel>Not a Typical 1BD</masterLabel>
+        <translation><!-- Not a Typical 1BD --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Not a Typical 2BD</masterLabel>
+        <translation><!-- Not a Typical 2BD --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Not a Typical Studio</masterLabel>
+        <translation><!-- Not a Typical Studio --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Standard 1BD</masterLabel>
+        <translation><!-- Standard 1BD --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Standard 2BD</masterLabel>
+        <translation><!-- Standard 2BD --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Standard Studio</masterLabel>
+        <translation><!-- Standard Studio --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

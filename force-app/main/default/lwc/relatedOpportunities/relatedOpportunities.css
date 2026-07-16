@@ -1,0 +1,31 @@
+.slds-table_header-fixed_container {
+    position: relative;
+    padding-top: 2rem;
+    border-top: 1px solid rgb(221, 219, 218);
+    border-bottom: 1px solid rgb(221, 219, 218);
+}
+
+.slds-scrollable_y {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.slds-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+/* Add hover effect to rows */
+.slds-table tbody tr:hover {
+    background-color: #f3f2f2;
+}
+
+/* Style links */
+.slds-truncate a {
+    color: rgb(0, 112, 210);
+    text-decoration: none;
+}
+
+.slds-truncate a:hover {
+    text-decoration: underline;
+}

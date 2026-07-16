@@ -1,0 +1,98 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    padding: 20px;
+}
+.invoice-container {
+    width: 800px;
+    margin: auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+.header, .footer {
+    text-align: left;
+    font-weight: bold;
+}
+.invoice-header {
+    margin-bottom: 20px;
+}
+.invoice-header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.invoice-info {
+    margin-bottom: 20px;
+}
+.details-section {
+    margin-bottom: 30px;
+}
+.details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+.details-table th {
+    background-color: #f2f2f2;
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+.details-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+.details-table p {
+    margin: 5px 0;
+}
+.invoice-items {
+    margin-top: 30px;
+}
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+.items-table th {
+    background-color: #f2f2f2;
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+.items-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+.serial-col {
+    width: 5%;
+}
+.desc-col {
+    width: 35%;
+}
+.items-table th:not(.serial-col):not(.desc-col),
+.items-table td:not(.serial-col):not(.desc-col) {
+    width: 15%;
+}
+.total-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+.total-in-words {
+    flex: 2;
+    margin-right: 20px;
+}
+.total-amounts {
+    flex: 1;
+    text-align: right;
+}
+.total-amounts p {
+    margin: 5px 0;
+}
+.signature {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+}

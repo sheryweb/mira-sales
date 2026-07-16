@@ -1,0 +1,307 @@
+<apex:page renderAs="" showHeader="true" title="Booking Form" sidebar="false" standardStylesheets="false" applyBodyTag="true" applyHtmlTag="true" controller="BookingFormEliePDFController">
+<html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 12px;
+                //font-family: "Lucida Console", "Courier New", monospace;
+            }
+            .clearfix {
+                clear: both;
+            }
+            table {
+                width: 100%;
+            }
+            .table-div {
+                display: table;
+                width: 100%;
+                border: 1px solid #dddddd;
+            }
+            .row-div {
+                display: table-row;
+            }
+            .column-div {
+                display: table-cell;
+                padding: 5px;
+            }
+            .table-title {
+                width: 100%;
+                font-size: 14px;
+                font-weight: bold;
+                background: #f1e8f7;
+                border-bottom: none;
+            }
+            @page {
+                size: A4 portait;
+                margin: 0.5cm 1cm 0.5cm 1cm;
+            }
+            @media print {
+                div#page-footer {
+                    display: block;
+                    padding: 5px;
+                    position: fixed;
+                    bottom: 0;
+                }
+                #print-btn {
+                    display: none;
+                }
+            }
+            .logo {
+                width: 100%;
+                padding-bottom: 10px;
+                text-align: right;
+            }
+            .ar-lang {
+                direction: rtl;
+            }
+            
+        .page {
+                position: relative;
+                counter-increment: page;
+        }
+        /*page numbers*/
+        div.page:after {
+            display: block;
+            content: " Page - "counter(page);
+            position: absolute;
+            bottom: -1110px;
+            right: 15px;
+            padding: 2px 12px;
+            font-size: 14px;
+        }
+        .floor-plan-title {
+            width: 100%;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .text-justify {
+            text-align: justify;
+        }
+        </style>
+    </head>
+    <body class="page-content" onload="">
+        <div class="footer grey-txt" id="page-footer">
+            <div>Signed by the Purchaser ______________________________</div>
+        </div>
+        <p id="print-btn"><button onclick="window.print()">Download PDF</button></p>
+        <div id="page-content">
+            <div class="table-div page" style="border: none !important;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 30%;"><apex:image styleClass="float-right" url="{!$Resource.ALogo}" height="40" /></div>
+                    <div class="column-div" style="width: 40%; text-align: center;"><apex:image styleClass="float-right" url="{!$Resource.PostElieLogoBig}" height="80" /></div>
+                    <div class="column-div" style="width: 30%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div>
+                </div>
+            </div>
+            <br />
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div" style="text-align: center; width: 100%;"><strong>RESERVATION FORM</strong></div>
+                </div>
+            </div>
+            <br />
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">Object</div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 30%;">Appartment</div>
+                    <div class="column-div" style="width: 70%;">{!oppData['Opportunity'].Unit__r.Title__c}</div>
+                </div>
+                <div class="row-div">
+                <div class="column-div" style="width: 30%;">Details</div>
+                <div class="column-div" style="width: 70%;">{!oppData['Opportunity'].Unit__r.Number_of_bedrooms__c}-Bedroom {!oppData['Opportunity'].Unit__r.Type__c}, {!oppData['floorText']} floor, Building {!oppData['Opportunity'].Unit__r.Building__c}, Unit {!oppData['Opportunity'].Unit__r.Title__c}</div>
+            </div>
+            </div>
+            <br />
+            <div class="table-div">
+            <div class="row-div">
+                <div class="column-div table-title" style="border-right: none;">Purchase Price</div>
+            </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 30%;">Appartment</div>
+                    <div class="column-div" style="width: 70%;">CHF {!oppData['formattedNumbers']['formattedUnitCostCHF']}</div>
+                </div>
+                <div class="row-div">
+                <div class="column-div" style="width: 30%;">Furniture package</div>
+                <div class="column-div" style="width: 70%;">Included (value CHF _________________________________________________________)</div>
+                </div>
+                <div class="row-div">
+                <div class="column-div" style="width: 30%;">TOTAL PURCHASE PRICE</div>
+                <div class="column-div" style="width: 70%;">CHF {!oppData['formattedNumbers']['formattedUnitCostCHF']}</div>
+                </div>
+            </div>
+            <br />
+            <!-- Start of Mode of Purchase -->
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">Mode of Purchase</div>
+                </div>
+            </div>
+            <div class="table-div">
+                <apex:repeat value="{!oppData['paymentPlans']}" var="pp">
+                    <div class="row-div">
+                        <div class="column-div" style="width: 30%;">{!pp['modeOfPaymentFirstColumn']}</div>
+                        <div class="column-div" style="width: 30%;">{!pp['modeOfPaymentSecondColumn']}</div>
+                        <div class="column-div" style="width: 20%; text-align: center;">{!pp['paymentDate']}</div>
+                        <div class="column-div" style="width: 40%; text-align: left;">CHF {!pp['amount']}</div>
+                    </div>
+                </apex:repeat>
+            </div>
+            <!-- End of Mode of Purchase -->
+            <br />
+            <!-- Start of Purchase Party -->
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none; width: 30%;">Purchasing Party</div>
+                    <div class="column-div table-title" style="border-right: none; width: 30%; text-align: center;">Buyer</div>
+                    <div class="column-div table-title" style="border-right: none; width: 30%; text-align: center;">Co-Buyer</div>
+                </div>
+            </div>
+            <div class="table-div">
+                <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId != personAccountRecordTypeId, 'none', '')}">
+                    <div class="column-div" style="width: 30%; padding-top: 10px;">First Name</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['personInformation']['firstName']}</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['jointOwner']['firstName']}</div>
+                </div>
+                <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId != personAccountRecordTypeId, 'none', '')}">
+                    <div class="column-div" style="width: 30%; padding-top: 10px;">Last Name</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['personInformation']['lastName']}</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['jointOwner']['lastName']}</div>
+                </div>
+                <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId != personAccountRecordTypeId, '', 'none')}">
+                    <div class="column-div" style="width: 30%; padding-top: 10px;">Name</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['personInformation']['firstName']} {!oppData['personInformation']['lastName']}</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['jointOwner']['firstName']} {!oppData['jointOwner']['lastName']}</div>
+                </div>
+                <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId != personAccountRecordTypeId, 'none', '')}">
+                    <div class="column-div" style="width: 30%; padding-top: 10px;">Date of Birth</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['DueDeligence']['contactBirthDate']}</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;"><!--{!oppData['jointOwner']['PersonBirthdate']}--></div>
+                </div>
+                <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId != personAccountRecordTypeId, 'none', '')}">
+                    <div class="column-div" style="width: 30%; padding-top: 10px;">Nationality</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['formattedNationality']}</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['jointOwner']['Nationality__c']}</div>
+                </div>
+                <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId != personAccountRecordTypeId, 'none', '')}">
+                    <div class="column-div" style="width: 30%; padding-top: 10px;">Place of Birth</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['DueDeligence']['contactBirthPlace']}</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['jointOwner']['Place_of_Birth__pc']}</div>
+                </div>
+                <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId != personAccountRecordTypeId, 'none', '')}">
+                    <div class="column-div" style="width: 30%; padding-top: 10px;">ID nr.</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['Opportunity'].Account.Passport_No__c}</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['jointOwner']['Passport_No__c']}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 30%; padding-top: 10px;">Address</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['Opportunity'].Account.BillingStreet}</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['jointOwner']['BillingStreet']}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 30%; padding-top: 10px;">Zip code and place</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['Opportunity'].Account.BillingPostalCode} {!oppData['Opportunity'].Account.BillingCity}</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['jointOwner']['BillingPostalCode']} {!oppData['jointOwner']['BillingCity']}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 30%; padding-top: 10px;">Phone</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['personInformation']['personPhone']}</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['jointOwner']['Phone']}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 30%; padding-top: 10px;">Email</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['personInformation']['personEmail']}</div>
+                    <div class="column-div" style="width: 30%; text-align: center; padding-top: 10px;">{!oppData['jointOwner']['PersonEmail']}</div>
+                </div>
+                <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId != personAccountRecordTypeId, '', 'none')}">
+                    <div class="column-div" style="width: 30%; padding-top: 20px;">Trade License Number</div>
+                        <div class="column-div" style="width: 30%; text-align: center; padding-top: 20px;">{!IF(oppData['licenseNumberValue'] != null, oppData['licenseNumberValue'], '')}</div>
+                        <div class="column-div" style="width: 30%; text-align: center; padding-top: 20px;"></div>
+                </div>
+                <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId != personAccountRecordTypeId, '', 'none')}">
+                    <div class="column-div" style="width: 30%; padding-top: 20px;">Country of Incorporation</div>
+                        <div class="column-div" style="width: 30%; text-align: center; padding-top: 20px;">{!IF(oppData['incorporationCountry'] != null, oppData['incorporationCountry'], '')}</div>
+                        <div class="column-div" style="width: 30%; text-align: center; padding-top: 20px;"></div>
+                </div>
+            </div>
+            <!-- End of Purchase Party -->
+            <div class="table-div page" style="border: none !important; page-break-before: always; margin-top: 2%;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 30%;"><apex:image styleClass="float-right" url="{!$Resource.ALogo}" height="40" /></div>
+                    <div class="column-div" style="width: 40%; text-align: center;"><apex:image styleClass="float-right" url="{!$Resource.PostElieLogoBig}" height="80" /></div>
+                    <div class="column-div" style="width: 30%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div>
+                </div>
+            </div><br />
+            <!--<div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />-->
+            <p class="text-justify"><strong>I.</strong><br /> The parties undertake to enter into a real estate purchase agreement for the object indicated above, at the price indicated in this Reservation Form.</p>
+            <p class="text-justify"><strong>II.</strong><br /> When signing the Reservation Form, it will be necessary to have paid 15,000 CHF, which will be deducted from the purchase price. This amount is not refundable.<br/>Applicable fees for cost of purchase taxes are 1.5% of the purchase price.</p>
+            <p class="text-justify" style="margin-bottom: 5px;"><strong>III.</strong><br /> Within 5 business days after signing the Reservation Form, the purchasing party shall proceed with the payment of the reservation fee in the amount of 10% of total purchase price, after deducting the 15,000 CHF paid in advance, to the following bank details:</p>
+            <strong>Heading:</strong> Andermatt Post Hotel AG<br />
+            <strong>Bank:</strong> Raiffeisen <br />
+            <strong>IBAN:</strong> CH3780808004894507888 <br />
+            <strong>SWIFT/BIC:</strong> RAIFCH23 <br />
+            <strong>CURRENCY:</strong> CHF
+            <br /><br />
+            <strong>Bank Name:</strong> Emirates NBD PJSC<br />
+            <strong>Account Name:</strong> M I R A DEVELOPMENTS LLC <br />
+            <strong>Account Number:</strong> 1025816055106<br />
+            <strong>IBAN:</strong> AE030260001025816055106 <br />
+            <strong>SWIFT Code:</strong> EBILAEADXXX
+            <p class="text-justify">In case of non-payment by the specified deadline, the reserved item will be put back on the market without 
+                further notice. Reservation is confirmed only upon receipt of the 10% of the reservation fee. 
+                If there are multiple confirmations of reservation of the same object, priority will be determined chronologically, 
+                i.e. by the timing of receipt of the deposit.  
+                Payment of the amount of the reservation fee shall be made from an account in the personal name of the 
+                purchasing party.
+            </p>
+            <p class="text-justify"><strong>IV.</strong><br /> The public notarial deed will be signed, at the invitation of the selling party, before the appointed Swiss Notary Public, within two months after the payment of 10% of the total purchase price. Condition for the signing of the public deed is the payment of another 10% on the total purchase price in addition to the 10% paid at the signing of the reservation (total amount 20% of the total purchase price). In case of failure to finalize the real estate purchase agreement (Public Deed) in a 2-month period from the signature of the Reservation, Andermatt Post Hotel AG will keep the amount paid by the Purchase Party as management and operating expenses.
+            </p>
+            <p class="text-justify"><strong>V.</strong><br /> Swiss law shall apply to this reservation contract.  
+                The place of jurisdiction for both parties is the place of situation of the real estate property, namely Andermatt 
+                (Uri).
+            </p>
+            <p class="text-justify"><strong>VI.</strong><br /> Place and date: ___________________________________________________________</p>
+            <p class="text-justify"><strong>VII.</strong><br /> Signatures</p><br />
+            <div class="row-div">
+                <div class="column-div" style="width: 35%;">______________________________________</div>
+                <div class="column-div" style="width: 35%; text-align: center;">______________________________________</div>
+                <div class="column-div" style="width: 30%; text-align: center;">______________________________________</div>
+            </div>
+            <div class="row-div">
+                <div class="column-div" style="width: 35%;">Buyer</div>
+                <div class="column-div" style="width: 35%;">Co-Buyer</div>
+                <div class="column-div" style="width: 30%;">Andermatt Post Hotel AG</div>
+            </div><br />
+            <div class="row-div">
+                <div class="column-div" style="width: 35%;">Are you being assisted by any of Vendor`s registered agents: {!IF(oppData['Opportunity'].Assisted_by_agent__c == true, 'Yes', 'No')}</div>
+            </div>
+            <div class="row-div">
+                <div class="column-div" style="width: 35%;">Agency`s Name: {!oppData['Opportunity'].Agency__r.Name}</div>
+            </div>
+            <div class="row-div">
+                <div class="column-div" style="width: 35%;">Agency Representative Name: {!oppData['Opportunity'].Agent__r.Name}</div>
+            </div>
+            <div class="row-div">
+                <div class="column-div" style="width: 35%;">Agency Representative Signature: _________________________________________</div>
+            </div><br />
+            <div class="row-div">
+                <div class="column-div" style="width: 35%;">Sales advisor name &amp; signature: _________________________________________</div>
+            </div>
+            <div class="row-div">
+                <div class="column-div" style="width: 35%;"><strong>{!oppData['Opportunity'].Owner.Name}</strong></div>
+            </div>
+            <p><strong>Documents to attach:</strong></p>
+            <p style="margin-bottom: 3px;">Photocopy of an identity document (valid ID card or passport).</p>
+            <p class="text-justify" style="font-style: italic; font-size: 11px;">We process personal data in accordance with the requirements of the Swiss Federal Data Protection Act (hereinafter: "DPA") and if, to the extent 
+                applicable, in accordance with the European Union General Data Protection Regulation (hereinafter: "GDPR"). If we deem it appropriate, we may provide 
+                the acquiring party with additional privacy policies. At the following web address you will find the full privacy policy and all contact detail: [•]</p>
+        </div>
+    </body>
+</html>
+</apex:page>

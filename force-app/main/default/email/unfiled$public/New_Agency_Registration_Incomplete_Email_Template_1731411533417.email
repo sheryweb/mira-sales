@@ -1,0 +1,28 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body style="height: auto; min-height: auto;"><span style="font-family:Arial,Helvetica,sans-serif;">Dear&nbsp;{{{Account.Name}}},<br />
+<br />
+Please be informed that we have received your registration request.<br />
+<br />
+You are requested to visit the registration link again and follow the below steps:<br />
+<br />
+1.&nbsp;&nbsp; &nbsp;Click on the link https://agency.miradevelopments.ae/<br />
+2.&nbsp;&nbsp; &nbsp;Select “<strong>Existing registration</strong>”<br />
+3.&nbsp;&nbsp; &nbsp;Enter your Registration #:&nbsp;<strong>{{{Account.Registration_Number__c}}}</strong><br />
+4.&nbsp;&nbsp; &nbsp;Upload the documents<br />
+5.&nbsp;&nbsp; &nbsp;Click “<strong>Complete Registration Request</strong>”<br />
+<br />
+If you have any doubts, please feel free to contact us.<br />
+<br />
+<br />
+Regards,<br />
+<br />
+Agent Relations<br />
+<br />
+MIRA Developments</span><br />
+<br />
+<br />
+<img alt="MIRA Development Logo" src="https://main-info-bucket.s3.us-east-1.amazonaws.com/mira_logo_small.jpeg" style="max-width: 1623.55px" title="MIRA Development Logo" /></body>
+</html>

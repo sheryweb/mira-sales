@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Restrict_To_Agency_Completed_Status</fullName>
+    <active>true</active>
+    <description>Opportunity should be restricted from marking as Sold until the Agency is marked as Completed</description>
+    <errorConditionFormula>AND(
+ISCHANGED( StageName ),
+ Assisted_by_Agent__c = true,
+TEXT(StageName) = &apos;Sold&apos;,
+TEXT(Agency__r.Status__c) &lt;&gt; &apos;Completed&apos;
+)</errorConditionFormula>
+    <errorMessage>Agency registration should be Completed before closing the deal</errorMessage>
+</ValidationRule>

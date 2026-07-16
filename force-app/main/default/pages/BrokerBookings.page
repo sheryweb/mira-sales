@@ -1,0 +1,60 @@
+<apex:page controller="BrokerBookingsController" action="{!checkLogin}" showHeader="false"
+           sidebar="false" standardStylesheets="false" cache="false" title="Broker Portal — Bookings">
+<head><meta name="viewport" content="width=device-width, initial-scale=1"/></head>
+<body>
+    <c:BrokerStyles />
+    <div class="bp-shell">
+        <c:BrokerSidebar active="bookings" />
+        <div class="bp-main">
+            <c:BrokerTopbar title="Bookings" company="{!brokerCompanyName}" />
+            <div class="bp-content">
+                <div class="bp-h">
+                    <h2>Your Bookings</h2>
+                    <p>All deals where your agency is the booking partner.</p>
+                </div>
+                <div class="bp-grid bp-kpis-5">
+                    <div class="bp-card bp-kpi bp-stat s-new"><div class="bp-val">{!countNew}</div><div class="bp-lbl">New</div></div>
+                    <div class="bp-card bp-kpi bp-stat s-booked"><div class="bp-val">{!countBooked}</div><div class="bp-lbl">Booked</div></div>
+                    <div class="bp-card bp-kpi bp-stat s-reserved"><div class="bp-val">{!countReserved}</div><div class="bp-lbl">Reserved</div></div>
+                    <div class="bp-card bp-kpi bp-stat s-sold"><div class="bp-val">{!countSold}</div><div class="bp-lbl">Sold</div></div>
+                    <div class="bp-card bp-kpi bp-stat s-cancelled"><div class="bp-val">{!countCancelled}</div><div class="bp-lbl">Cancelled</div></div>
+                </div>
+
+                <div class="bp-card bp-mt">
+                    <table class="bp-table">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Unit</th>
+                                <th>Tower</th>
+                                <th>Client</th>
+                                <th>Stage</th>
+                                <th>Price</th>
+                                <th style="text-align:center;">Booked on</th>
+                                <th style="text-align:center;">Sold on</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <apex:repeat value="{!bookings}" var="b">
+                                <tr>
+                                    <td>{!b.project}</td>
+                                    <td>{!b.unit}</td>
+                                    <td>{!b.tower}</td>
+                                    <td>{!b.client}</td>
+                                    <td><span class="bp-badge {!b.badgeClass}">{!b.stage}</span></td>
+                                    <td class="num">{!b.price}</td>
+                                    <td style="text-align:center;">{!b.bookedOn}</td>
+                                    <td style="text-align:center;">{!b.soldOn}</td>
+                                </tr>
+                            </apex:repeat>
+                        </tbody>
+                    </table>
+                    <apex:outputPanel layout="block" rendered="{!NOT hasBookings}">
+                        <p style="padding:26px; text-align:center; color:#6b7280; margin:0;">You have no bookings yet.</p>
+                    </apex:outputPanel>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</apex:page>

@@ -1,0 +1,124 @@
+.request-status-box {
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.request-status-box--pending {
+    background: #fff3cd;
+    border-left: 4px solid #e2a60e;
+}
+
+.request-status-box--approved {
+    background: #d9f0e3;
+    border-left: 4px solid #2e844a;
+}
+
+.request-status-box--rejected {
+    background: #fde7e7;
+    border-left: 4px solid #ba0517;
+}
+
+/* Add / Edit installment modal — sits above the main payment plan modal */
+.installment-editor-modal {
+    z-index: 9002;
+}
+
+.installment-editor-backdrop {
+    z-index: 9001;
+    background: rgba(8, 7, 7, 0.6);
+}
+
+.installment-editor-container {
+    border: none;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.24);
+    max-width: 34rem;
+}
+
+.installment-editor-header {
+    background: #ffffff;
+    border-bottom: 1px solid #ecebea;
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.installment-editor-subtitle {
+    color: #706e6b;
+}
+
+.installment-editor-content {
+    background: #f3f3f3;
+}
+
+.installment-editor-footer {
+    background: #ffffff;
+    border-top: 1px solid #ecebea;
+    border-radius: 0 0 0.25rem 0.25rem;
+}
+
+.installment-editor-panel {
+    background: #ffffff;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.875rem 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.installment-editor-panel:last-child {
+    margin-bottom: 0;
+}
+
+.installment-editor-panel__title {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #706e6b;
+    margin: 0 0 0.625rem;
+    padding-bottom: 0.375rem;
+    border-bottom: 1px solid #f3f3f3;
+}
+
+.installment-editor-panel--accent {
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.installment-editor-panel--accent .installment-editor-panel__title {
+    color: #0176d3;
+    border-bottom-color: #d8edff;
+    padding-left: 0.5rem;
+    border-left: 3px solid #0176d3;
+}
+
+.installment-editor-help-text {
+    font-size: 0.75rem;
+    color: #706e6b;
+    margin: 0.5rem 0 0;
+}
+
+.installment-editor-link {
+    display: inline;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-size: 0.8125rem;
+    color: #0176d3;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.installment-editor-link:hover,
+.installment-editor-link:focus {
+    text-decoration: underline;
+    color: #014486;
+}
+
+/* Hide the main modal chrome while the installment editor is open */
+.main-modal-hidden {
+    visibility: hidden;
+}

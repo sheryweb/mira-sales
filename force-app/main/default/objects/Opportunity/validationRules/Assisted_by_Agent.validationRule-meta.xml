@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Assisted_by_Agent</fullName>
+    <active>true</active>
+    <errorConditionFormula>Assisted_by_Agent__c =true &amp;&amp; ( Agent__c =&apos;&apos; || Agency__c =&apos;&apos;)
+
+||
+
+Assisted_by_Agent__c =false &amp;&amp; ( Agent__c &lt;&gt;&apos;&apos; || Agency__c &lt;&gt;&apos;&apos;)</errorConditionFormula>
+    <errorDisplayField>Assisted_by_Agent__c</errorDisplayField>
+    <errorMessage>Please fill in Agent and Agency if this Opportunity was assisted by Agent. If not, clear these fields.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Available_Copy_of_All</fullName>
+    <columns>NAME</columns>
+    <columns>Title_Formula__c</columns>
+    <columns>Building__c</columns>
+    <columns>Status__c</columns>
+    <columns>Type__c</columns>
+    <columns>Project_Name_Text__c</columns>
+    <columns>Cost_AED__c</columns>
+    <columns>Total_Area__c</columns>
+    <columns>Number_of_Bedrooms__c</columns>
+    <columns>Tower__c</columns>
+    <columns>Project_Published__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Project_Published__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Published</value>
+    </filters>
+    <label>Available Units</label>
+</ListView>

@@ -1,0 +1,212 @@
+<apex:page renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
+    <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <title>KYB Form - MIRA Developments LLC</title>
+          <style>
+            body {
+              font-family: Calibri, sans-serif;
+              margin: 2px;
+              font-size: 14px;
+              /*line-height: 0;*/
+            }
+            h1, h2, h3 {
+              text-align: center;
+              margin: 0;
+            }
+            h1 {
+              font-size: 20px;
+              font-weight: bold;
+            }
+            h2 {
+              font-size: 18px;
+              margin-top: 5px;
+            }
+            h3 {
+              font-size: 16px;
+              margin-top: 10px;
+              font-style: italic;
+            }
+            .section {
+              margin-top: 30px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+            }
+            th, td {
+              padding: 5px;
+              text-align: left;
+              vertical-align: top;
+              border: 1px solid black;
+            }
+            .identity-table td {
+              width: 50%;
+            }
+            .types-table {
+              width: 100%;
+              margin-top: 10px;
+              border: none;
+            }
+            .types-table td {
+              border: none;
+              padding: 5px 10px;
+              width: 25%;
+            }
+            .underline {
+              text-decoration: underline;
+              font-weight: bold;
+            }
+            .declaration {
+              margin-top: 20px;
+            }
+            .signature-line {
+              margin-top: 40px;
+            }
+            .internal-note {
+              text-align: left;
+              margin-top: 60px;
+              font-weight: bold;
+              font-size: 14px;
+            }
+            .checkbox-box {
+              display: inline-block;
+              width: 12px;
+              height: 12px;
+              border: 1px solid #000;
+              margin-right: 5px;
+            }
+          </style>
+        </head>
+        <body>
+        
+          <div class="page" style="text-align: right;"><apex:image value="{!$Resource.MiraDocLogo}" alt="Logo" width="18%;"/></div><br />
+          <h3>KNOW YOUR BROKER (KYB)</h3>
+          <p style="text-align: center;">(This form is only for onboarding the Broker/Agent)</p>
+          <table>
+            <tr>
+              <td style="padding-left:0px; border: none;">Please fill this form in ENGLISH and in BLOCK LETTERS.</td>
+              <td style="text-align: right; border: none;"><strong>DATE:</strong> ______________</td>
+            </tr>
+          </table>
+        
+          <div class="section">
+            <span class="underline">Identity Details</span>
+            <table class="identity-table">
+              <tr><td colspan="2">1. Full Legal Company Name:</td></tr>
+              <tr><td colspan="2">2. Core Business Activity:</td></tr>
+              <tr><td>3. Trade License Issue Date:</td><td>4. Place of Issue:</td></tr>
+              <tr><td>5. Trade License No.:</td><td>6. Tax Registration No.:</td></tr>
+              <tr><td>7. Address - Building and Street:</td><td style="padding-left: 20px;">Building &amp; Street:</td></tr>
+              <tr><td style="padding-left: 20px;">City/Town/Village:</td><td style="padding-left: 20px;">Zip / Postal Box:</td></tr>
+              <tr><td style="padding-left: 20px;">Country:</td><td style="padding-left: 20px;">Tel. (Office):</td></tr>
+              <tr><td style="padding-left: 20px;">Mobile:</td><td style="padding-left: 20px;">Fax:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Email:</td></tr>
+            </table>
+          </div>
+        
+          <div class="section">
+            <table class="types-table">
+              <tr>
+                <td><label><span class="checkbox-box"></span> Private Ltd. Co.</label></td>
+                <td><label><span class="checkbox-box"></span> Sole Proprietorship</label></td>
+                <td><label><span class="checkbox-box"></span> Partnership</label></td>
+              </tr>
+              <tr>
+                <td><label><span class="checkbox-box"></span> Charities/NGOs</label></td>
+                <td><label><span class="checkbox-box"></span> Non-Bank Fin. Inst.</label></td>
+                <td><label><span class="checkbox-box"></span> Free Zone (FZE / FZCO)</label></td>
+              </tr>
+              <tr>
+                <td><label><span class="checkbox-box"></span> PJSC &amp; PSC</label></td>
+                <td><label><span class="checkbox-box"></span> LLC</label></td>
+                <td><label><span class="checkbox-box"></span> Association / Club / Society</label></td>
+              </tr>
+              <tr>
+                <td><label><span class="checkbox-box"></span> Gov`t Body</label></td>
+                <td><label><span class="checkbox-box"></span> State Enterprise</label></td>
+                <td><label><span class="checkbox-box"></span> Other</label></td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="section">
+            <span class="underline">Owners / Partner / Director / Shareholder</span>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 5%;">S.No</th>
+                  <th>Name</th>
+                  <th>DOB</th>
+                  <th>Nationality</th>
+                  <th>ID Type</th>
+                  <th>ID Number</th>
+                  <th>Share %</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="width: 5%;">1</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td style="width: 5%;">2</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td style="width: 5%;">3</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td style="width: 5%;">4</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td style="width: 5%;">5</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr><td style="width: 5%;">6</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="page-break-after: always;"></div>
+          <div class="page" style="text-align: right;"><apex:image value="{!$Resource.MiraDocLogo}" alt="Logo" width="18%;"/></div>
+        
+          <div class="section">
+            <span class="underline">Details Of Services (Provide the details of the service to MIRA Developments)</span>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 5%;">S.No</th>
+                  <th>Type of Services</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="width: 5%;">1</td><td></td></tr>
+                <tr><td style="width: 5%;">2</td><td></td></tr>
+                <tr><td style="width: 5%;">3</td><td></td></tr>
+                <tr><td style="width: 5%;">4</td><td></td></tr>
+              </tbody>
+            </table>
+        
+            <p>Does your company have any sister / parent / subsidiary company, if YES: 
+              <label><span class="checkbox-box"></span> Locally</label>
+              <label><span class="checkbox-box"></span> Internationally</label>
+            </p>
+            <p>Does your company is Politically Exposed Entity: 
+              <label><span class="checkbox-box"></span> Yes</label>
+              <label><span class="checkbox-box"></span> No</label>
+            </p>
+            <p>Are you registered with goAML: 
+              <label><span class="checkbox-box"></span> Yes</label>
+              <label><span class="checkbox-box"></span> No</label>
+              <label><span class="checkbox-box"></span> Not Applicable</label>
+            </p>
+          </div>
+        
+          <div class="declaration">
+            <span class="underline">DECLARATION</span>
+            <p>
+              I/we hereby declare that the details furnished above are true and correct to the best of my/our knowledge and belief and I/we undertake to inform MIRA Developments LLC immediately of any changes therein. I/we aware that my/our refusal to provide any information can result in MIRA Developments LLC refusing to provide me/us with the services I/we require.
+            </p>
+          </div>
+        
+          <div class="signature-line">
+            <p><strong>NAME &amp; SIGNATURES OF AUTHORISED PERSON(S) AND COMPANY STAMP</strong></p>
+            <p>______________________________________________________________________<br />DO NOT FILL BELOW THIS LINE</p>
+          </div>
+        
+          <div class="internal-note">
+            FOR INTERNAL USE ONLY<br /><br />
+            Approval:
+          </div>
+
+        </body>
+        </html>
+</apex:page>

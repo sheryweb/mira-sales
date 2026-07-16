@@ -1,0 +1,138 @@
+<template>
+    <!-- New Template -->
+    <div class="container">
+        <div class="header">
+            <p><strong>M I R A DEVELOPMENTS LLC</strong></p>
+            <p>Park Heights Square 1, Dubai Hills, Office No. 601-606</p>
+            <p>P.O. BOX 213983, DUBAI, UNITED ARAB EMIRATES</p>
+            <p>VAT: 104070222500003</p>
+        </div>
+        <p style="text-align: center;"><strong>RECEIPT VOUCHER</strong></p>
+        <hr />
+        <div class="details">
+            <p><span><strong>Journal No.:</strong> {singleItemReceipt.Name}</span> <span style="text-align: right;"><strong>Date:</strong> {singleItemReceipt.formattedReceiptDate}</span></p><br />
+            <p style="display: inline;"><strong>Received with thanks from:</strong> {accountName}</p>
+            <hr />
+            <div class="row">
+                <div class="column"><strong>On Account of:</strong> {accountName}</div>
+                <div class="column"><strong>Description:</strong> {receiptDescription}</div>
+                <div class="column"><strong>Voucher:</strong></div>
+            </div>
+            <div class="row">
+                <div class="column"><strong>Project:</strong> {projectName}</div>
+                <div class="column"><strong>Tower:</strong> {towerName}</div>
+                <div class="column"><strong>Unit No:</strong> {unitName}</div>
+            </div>
+        </div>
+        <div class="table-container">
+            <table class="table">
+                <tr>
+                    <th>Customer Reference</th>
+                    <th>Invoice</th>
+                    <th>Date</th>
+                    <th>Due Amount</th>
+                    <th>Paid Amount</th>
+                    <th>Balance</th>
+                </tr>
+                <template for:each={invoiceDetails} for:item="invoice">
+                    <tr key={invoice.Id}>
+                        <td>{invoice.Description__c}</td>
+                        <td>{invoice.Invoice_Number__c}</td>
+                        <td>{invoice.formattedInvoiceDate}</td>
+                        <td>{invoice.formattedDueAmount}</td>
+                        <td><strong>{invoice.formattedPaidAmount}</strong></td>
+                        <td>{invoice.formattedBalanceAmount}</td>
+                    </tr>
+                </template>
+            </table>
+        </div>
+        <div class="table-container">
+            <template for:each={parsedPayments} for:item="payment">
+                <div key={payment.id} class="payment-table-container">
+                    <!-- Cash, Bank Transfer, Card, Online Payment -->
+                    <template if:true={payment.isSimplePayment}>
+                        <table class="table">
+                            <tr>
+                                <th colspan="4">Payment By {payment.Mode_of_Payment__c}</th>
+                            </tr>
+                            <tr>
+                                <th>Payment Reference</th>
+                                <th>Invoice</th>
+                                <th>Amount</th>
+                                <th>Mode of Payment</th>
+                            </tr>
+                            <tr>
+                                <td>{payment.Reference_Number__c}</td>
+                                <td>{payment.Invoice_Number__c}</td>
+                                <td>{payment.formattedReceiptAmount}</td>
+                                <td>{payment.Mode_of_Payment__c}</td>
+                            </tr>
+                        </table>
+                    </template>
+
+                    <!-- Cheque -->
+                    <template if:true={payment.isChequePayment}>
+                        <table class="table">
+                            <tr>
+                                <th colspan="6">Payment By Cheque</th>
+                            </tr>
+                            <tr>
+                                <th>Payment Reference</th>
+                                <th>Invoice</th>
+                                <th>Amount</th>
+                                <th>Cheque#</th>
+                                <th>Cheque Date</th>
+                                <th>Bank Name</th>
+                            </tr>
+                            <tr>
+                                <td>{payment.Reference_Number__c}</td>
+                                <td>{payment.Invoice_Number__c}</td>
+                                <td>{payment.formattedReceiptAmount}</td>
+                                <td>{payment.Cheque_Number__c}</td>
+                                <td>{payment.formattedChequeDate}</td>
+                                <td>{payment.Bank_Name__c}</td>
+                            </tr>
+                        </table>
+                    </template>
+
+                    <!-- POS Machine -->
+                    <template if:true={payment.isPOSPayment}>
+                        <table class="table">
+                            <tr>
+                                <th colspan="5">Payment By POS Machine</th>
+                            </tr>
+                            <tr>
+                                <th>Payment Reference</th>
+                                <th>Invoice</th>
+                                <th>Amount</th>
+                                <th>POS Receipt#</th>
+                                <th>Mode of Payment</th>
+                            </tr>
+                            <tr>
+                                <td>{payment.Reference_Number__c}</td>
+                                <td>{payment.Invoice_Number__c}</td>
+                                <td>{payment.formattedReceiptAmount}</td>
+                                <td>{payment.POS_Receipt_Number__c}</td>
+                                <td>{payment.Mode_of_Payment__c}</td>
+                            </tr>
+                        </table>
+                    </template>
+                </div>
+            </template>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+            <div style="flex: 2;"><strong>Amount in words:</strong> {amountInWords}</div>
+            <div style="flex: 1; text-align: right;"><strong>Amount:</strong> AED {formattedReceivedAmount}</div>
+        </div>
+        <hr />
+        <div class="terms">
+            <p><strong>Terms and Conditions:</strong></p>
+            <ul>
+                <li>- The Purchaser must provide proof of all payments to finance@miradevelopments.ae</li>
+                <li>- The Purchaser is responsible for providing accurate details during booking to ensure correct payment allocation.</li>
+                <li>- For cheque payments, receipt is contingent upon cheque clearance.</li>
+            </ul>
+        </div><br />
+        <p><em>This is a system-generated receipt and does not require signatures.</em></p>
+    </div>
+</template>

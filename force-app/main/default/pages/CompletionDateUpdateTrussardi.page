@@ -1,0 +1,246 @@
+<apex:page controller="NoticeOfCompletion" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
+<html lang="en">
+<head>
+  <meta charset="utf-8"></meta>
+  <title>Letter of Completion Date</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"></meta>
+  <style>
+    /* General */
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      color: #000;
+      margin: 8px 38px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Header / meta */
+    .date {
+      text-align: left;
+      margin-bottom: 6px;
+    }
+
+    .recipient {
+      margin-bottom: 6px;
+    }
+
+    .subject {
+      margin: 4px 0 6px 0;
+    }
+
+    /* Body paragraphs */
+    p {
+      margin: 6px 0;
+      text-align: justify;
+    }
+
+    /* Strong/Bold elements */
+    strong {
+      font-weight: 700;
+    }
+
+    /* Project details block */
+    .details {
+      margin: 6px 0 8px 0;
+    }
+
+    .details .title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 6px;
+      table-layout: fixed;
+    }
+
+    .details-table th,
+    .details-table td {
+      border: 1px solid #999;
+      padding: 4px 8px;
+      vertical-align: top;
+    }
+
+    .details-table th {
+      width: 30%;
+      background: #f6f6f6;
+      text-align: left;
+      font-weight: bold;
+    }
+
+    /* Quotation */
+    blockquote {
+      margin: 4px 0;
+      padding: 6px 12px;
+      border-left: 4px solid #888;
+      background: #fbfbfb;
+      font-style: italic;
+      white-space: pre-wrap;
+    }
+
+    /* Contact and signature */
+    .contact {
+      margin-top: 6px;
+    }
+
+    .signature {
+      margin-top: 10px;
+      page-break-inside: avoid;
+    }
+
+    .company {
+      font-weight: bold;
+      letter-spacing: 3px;
+      margin-top: 4px;
+    }
+
+    /* Footer small print */
+    .small {
+      font-size: 12px;
+      color: #333;
+      margin-top: 10px;
+    }
+    
+    .body-text {
+      page-break-inside: avoid;
+    }
+    
+    .legal {
+      page-break-inside: avoid;
+    }
+
+    /* Make sure long placeholders wrap */
+    .wrap {
+      word-wrap: break-word;
+    }
+
+    /* Header layout */
+    .header {
+      display: table;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .header-left,
+    .header-right {
+      display: table-cell;
+      vertical-align: top;
+    }
+
+    .header-left {
+      text-align: left;
+      width: 60%;
+    }
+
+    .header-right {
+      text-align: left;
+      font-size: 12px;
+      line-height: 1.6;
+      width: 40%;
+    }
+
+    .header-right p {
+      margin: 2px 0;
+      text-align: left;
+    }
+
+    .header-right a {
+      color: #ff6600;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main" aria-labelledby="title">
+    <div class="header">
+      <div class="header-left">
+        <apex:image url="{!$Resource.MiraDocLogo}" height="40" />
+      </div>
+      <div class="header-right">
+        <p><strong>Address:</strong> Art of Living Mall, Ground Floor,<br/>Al Barsha 2, Dubai, United Arab Emirates,<br/>P.O Box - 27009</p>
+        <p><strong>Phone:</strong> +971 4 881 7668</p>
+        <p><strong>Email:</strong> <a href="mailto:info@miradevelopments.ae">info@miradevelopments.ae</a></p>
+      </div>
+    </div>
+
+    <div class="date">
+      <p><strong>Date:</strong> {!todayDate}</p>
+    </div>
+
+    <div class="recipient">
+      <p><strong>To:</strong> {!clientName}</p>
+      <p><strong>Address:</strong> {!clientAddress}</p>
+      <p><strong>Email:</strong> {!clientEmail}</p>
+    </div>
+
+    <div class="subject">
+      <p><strong>Subject:</strong> Update regarding Completion Date of Unit <strong>{!unitTitle}</strong> at <strong>{!projectName}</strong></p>
+    </div>
+
+    <div class="body-text">
+      <p>By this letter we would like to bring to your attention that the project Completion Date shall be <strong>31 December 2026</strong>.</p>
+
+      <p>The below information is provided in reference to SPA as following:</p>
+
+      <div class="details">
+        <div class="title"><strong>Project Details:</strong></div>
+
+        <p>This letter concerns your property:</p>
+
+        <table class="details-table" summary="Project details table">
+          <tr>
+            <th>Detail</th>
+            <th>Information</th>
+          </tr>
+          <tr>
+            <td class="wrap">Project Name</td>
+            <td class="wrap">{!projectName}</td>
+          </tr>
+          <tr>
+            <td class="wrap">Unit Number</td>
+            <td class="wrap">{!unitTitle}</td>
+          </tr>
+          <tr>
+            <td class="wrap">Anticipated Completion Date</td>
+            <td class="wrap">31 July 2026</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="legal">
+        <h3 style="font-size:15px; margin:0 0 8px 0; font-weight:bold;"><strong>Legal Compliance and Contractual Reference:</strong></h3>
+
+        <p>Please note that this information is made in accordance with the terms of your Sale and Purchase Agreement (SPA) with reference to article 4.3 of the SPA as following:</p>
+
+        <p style="font-style: italic;">
+          "The Anticipated Completion Date is the date mentioned in this Agreement and is a forecast of the Completion Date. Without prejudice to the Seller’s rights in this Agreement, the Seller reserves the right to Extend the Completion Date by up to twelve (12) months without claim or objection by the Buyer..."
+        </p>
+      </div>
+
+      <p>Should you have any questions, please contact your dedicated Relationship Manager, or Contact us on <strong>+971 4 881 7668</strong>, or via email at <a href="mailto:info@miradevelopments.ae">info@miradevelopments.ae</a>.</p>
+
+      <p>Thank you once again for your understanding and continued confidence.</p>
+
+      <div class="signature">
+        <p>Kind Regards,</p>
+
+        <p class="company">M I R A Developments LLC</p>
+        <apex:image value="{!$Resource.MIRAStampProjectNotification}" alt="Logo" width="18%;"/>
+      </div>
+
+      <div class="small">
+        <p><strong>Note:</strong> This Notice is system generated and does not require a signature</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+</apex:page>

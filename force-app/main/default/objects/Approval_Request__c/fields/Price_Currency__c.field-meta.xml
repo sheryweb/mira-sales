@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Price_Currency__c</fullName>
+    <description>Currency the requested unit price is entered in (AED, USD, or CHF), derived from the unit&apos;s project.</description>
+    <label>Price Currency</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>AED</fullName>
+                <default>false</default>
+                <label>AED</label>
+            </value>
+            <value>
+                <fullName>USD</fullName>
+                <default>false</default>
+                <label>USD</label>
+            </value>
+            <value>
+                <fullName>CHF</fullName>
+                <default>false</default>
+                <label>CHF</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- % Count Booked/Reserved/Sold Tower A --></label>
+    <name>Count_Perc_Booked_Reserved_Sold_Tower_A__c</name>
+</CustomFieldTranslation>

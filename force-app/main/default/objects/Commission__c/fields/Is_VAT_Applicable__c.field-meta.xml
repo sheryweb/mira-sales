@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_VAT_Applicable__c</fullName>
+    <formula>IF(Is_VAT_Paid__c = true,
+  true,
+  IF(VAT_Exempted__c = true,
+    false,
+    IF(TEXT(Agency__r.VAT_TRN__c) = &quot;Yes&quot;,
+      true,
+      false
+    )
+  )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Is VAT Applicable</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

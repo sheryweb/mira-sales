@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <defaultLandingTab>standard-AppLauncher</defaultLandingTab>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
+    <tabs>standard-AppLauncher</tabs>
+    <tabs>standard-Quote</tabs>
+    <tabs>Project__c</tabs>
+    <tabs>Unit__c</tabs>
+    <tabs>Client__c</tabs>
+    <tabs>Booking__c</tabs>
+    <tabs>News__c</tabs>
+    <tabs>Notification__c</tabs>
+    <tabs>File__c</tabs>
+    <tabs>Opportunity_Payment_Plan__c</tabs>
+    <tabs>Bank__c</tabs>
+    <tabs>Shareholder__c</tabs>
+    <tabs>Reports</tabs>
+    <tabs>Payment_Plans_Collector__c</tabs>
+    <tabs>Invoice__c</tabs>
+    <tabs>Financial_Detail__c</tabs>
+    <tabs>Agency_RM__c</tabs>
+    <tabs>Blocked_Under_Protection__c</tabs>
+    <tabs>Opportunity_Monthly_Activity__c</tabs>
+    <tabs>App_User__c</tabs>
+    <tabs>Sales_Target__c</tabs>
+    <tabs>Commission__c</tabs>
+    <tabs>Approval_Request__c</tabs>
+</CustomApplication>

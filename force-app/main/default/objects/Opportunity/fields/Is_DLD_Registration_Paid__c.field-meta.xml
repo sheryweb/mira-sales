@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_DLD_Registration_Paid__c</fullName>
+    <formula>IF(
+    Unit__r.Project_Name_F__c == &apos;GIANFRANCO FERRE RESIDENCES&apos;,
+    TRUE,
+    IF(
+        AND(
+            NOT(ISBLANK(Unit__r.Oqood_DLD_Fee_Amount__c)),
+            Unit__r.Oqood_DLD_Fee_Amount__c &gt;= 10000
+        ),
+        TRUE,
+        IF(
+            ISPICKVAL(Registration_Fees__c, &quot;Fully paid by the Seller&quot;),
+            TRUE,
+            Unit__r.Is_DLD_Registration_Paid__c
+        )
+    )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Is DLD/Registration Paid</label>
+    <type>Checkbox</type>
+</CustomField>

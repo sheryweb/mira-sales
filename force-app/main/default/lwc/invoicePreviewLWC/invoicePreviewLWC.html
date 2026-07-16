@@ -1,0 +1,108 @@
+<template>
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <h1>PROFORMA INVOICE</h1>
+            <div class="invoice-info">
+                <p>Invoice Number: {singleItemInvoice.Name}</p>
+                <p>Date of Issuing: {singleItemInvoice.formattedInvoiceDate}</p>
+            </div>
+        </div>
+
+        <div class="details-section">
+            <table class="details-table">
+                <tr>
+                    <th>Bank Details</th>
+                    <th>Issued To</th>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">
+                        <p><strong>TRN:</strong> 104070222500003</p>
+                        <p><strong>Address:</strong> Office No601-606, Park Heights Square 1, Dubai Hills, Dubai, 213983, Dubai</p>
+                        <p><strong>Tel:</strong> ________</p>
+                        <p><strong>Email:</strong> finance@miradevelopments.ae</p>
+                    </td>
+                    <td style="width: 50%;">
+                        <p><strong>Customer Name: </strong> {customerName}</p>
+                        <p><strong>Customer ID:</strong> {customerId}</p>
+                        <p>&nbsp;</p>
+                        <p>&nbsp;</p>
+                    </td>
+                </tr>
+            </table>
+
+            <table class="details-table">
+                <tr>
+                    <th>Bank Details</th>
+                    <th>Project Details</th>
+                </tr>
+                <tr>
+                    <td style="width: 50%;">
+                        <p><strong>Bank Name:</strong> {bankName}</p>
+                        <p><strong>Account Name:</strong> {accountName}</p>
+                        <p><strong>Account No:</strong> {accountNumber}</p>
+                        <p><strong>IBAN:</strong> {iban}</p>
+                        <p><strong>Swift:</strong> {swiftCode}</p>
+                        <template if:true={branchName}>
+                            <p><strong>Branch:</strong> {branchName}</p>
+                        </template>
+                    </td>
+                    <td style="width: 50%;">
+                        <p><strong>Project Name:</strong> {projectName}</p>
+                        <p><strong>Sale Price:</strong> AED {salePrice}</p>
+                        <p><strong>Property Details:</strong> {propertyDetails}</p>
+                        <p><strong>Unit No:</strong> {unitName}</p>
+                        <p>&nbsp;</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="invoice-items">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th class="serial-col">#</th>
+                        <th class="desc-col">Description</th>
+                        <th>Amount (Excl. VAT) AED</th>
+                        <th>VAT%</th>
+                        <th>VAT Amount AED</th>
+                        <th>Amount (Incl. VAT) AED</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={parsedLineItems} for:item="item">
+                        <tr key={item.id}>
+                            <td class="serial-col">{item.serialNumber}</td>
+                            <td class="desc-col">{item.Description}</td>
+                            <td>{item.formattedAmount}</td>
+                            <td>0%</td>
+                            <td>{item.formattedVATAmount}</td>
+                            <td>{item.formattedTotalAmount}</td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+
+            <div class="total-section">
+                <div class="total-in-words">
+                    <p><strong>Total in Words:</strong> {totalInWords}</p>
+                </div>
+                <div class="total-amounts">
+                    <p><strong>Sub Total:</strong> AED {subTotalAmount}</p>
+                    <p><strong>Total VAT:</strong> AED {totalVATAmount}</p>
+                    <p><strong>Grand Total:</strong> AED {grandTotalAmount}</p>
+                </div>
+            </div>
+            
+            <!-- Secondary Currency Section -->
+            <template if:true={hasSecondaryCurrency}>
+                <div class="secondary-currency-section" style="margin-top: 20px; border: 1px solid #ddd; padding: 10px;">
+                    <div class="secondary-amounts">
+                        <p><strong>Amount in {secondaryCurrencyType}:</strong> {secondaryCurrencySymbol} {secondaryCurrencyAmount}</p>
+                        <p><strong>Amount in Words ({secondaryCurrencyType}):</strong> {secondaryCurrencyInWords}</p>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

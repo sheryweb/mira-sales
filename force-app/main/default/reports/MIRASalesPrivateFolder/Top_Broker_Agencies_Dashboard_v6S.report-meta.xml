@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <aggregates>
+        <calculatedFormula>Opportunity.Unit_Price__c:SUM</calculatedFormula>
+        <datatype>currency</datatype>
+        <description>Unit Price Summary</description>
+        <developerName>FORMULA1</developerName>
+        <isActive>true</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Unit Price</masterLabel>
+        <scale>2</scale>
+    </aggregates>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>CDF1</field>
+    </columns>
+    <columns>
+        <field>Opportunity$Project_Name__c</field>
+    </columns>
+    <columns>
+        <field>Opportunity$Property_Code__c</field>
+    </columns>
+    <columns>
+        <field>Opportunity$Unit__c</field>
+    </columns>
+    <columns>
+        <field>Opportunity$Unit_Booked_Date_Only__c</field>
+    </columns>
+    <currency>AED</currency>
+    <customDetailFormulas>
+        <calculatedFormula>1</calculatedFormula>
+        <dataType>Double</dataType>
+        <description>Total Number of Units</description>
+        <developerName>CDF1</developerName>
+        <label>Units</label>
+        <scale>0</scale>
+    </customDetailFormulas>
+    <description>Report to show Top 10 Agencies Yearly Basis</description>
+    <filter>
+        <booleanFilter>1 AND 2 AND 3</booleanFilter>
+        <criteriaItems>
+            <column>Opportunity$StageName</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>Sold</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Opportunity$Assisted_by_Agent__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>1</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Opportunity$Is_it_a_Resell__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>false</isUnlocked>
+            <operator>equals</operator>
+            <value>0</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Opportunity$Agency__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Top Broker Agencies - Dashboard</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Opportunities_Custom_Report_Type__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Opportunity$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

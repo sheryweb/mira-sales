@@ -1,0 +1,375 @@
+<apex:page controller="BrokerProfileController" action="{!checkLogin}" showHeader="false"
+           sidebar="false" standardStylesheets="false" cache="false" title="Broker Portal — Company Profile">
+<head><meta name="viewport" content="width=device-width, initial-scale=1"/></head>
+<body>
+    <c:BrokerStyles />
+    <style>
+        /* green glow around each document card */
+        #paneDocs .bp-doccard{ box-shadow:0 2px 14px rgba(22,163,74,0.28); border:1px solid rgba(22,163,74,0.45); }
+        #paneDocs .bp-doccard:hover{ box-shadow:0 6px 22px rgba(22,163,74,0.45); }
+        /* re-upload popup */
+        .bp-modal-overlay{ position:fixed; inset:0; background:rgba(15,23,42,0.55); display:flex; align-items:center; justify-content:center; z-index:1000; }
+        .bp-modal{ background:#fff; border-radius:14px; padding:22px 24px; width:min(540px,92vw); box-shadow:0 24px 70px rgba(0,0,0,0.35); }
+        .bp-modal-head{ display:flex; align-items:center; justify-content:space-between; }
+        .bp-modal-x{ font-size:26px; line-height:1; color:#6b7280; text-decoration:none; }
+        .bp-modal-x:hover{ color:#111827; }
+        /* drag and drop zone */
+        .bp-dropzone{ margin-top:14px; border:2px dashed #cbd5e1; border-radius:12px; padding:30px 18px; text-align:center; cursor:pointer; color:#6b7280; transition:.15s; }
+        .bp-dropzone:hover{ border-color:#0176d3; background:#f5faff; color:#0176d3; }
+        .bp-dropzone.drag{ border-color:#16a34a; background:#f0fdf4; color:#166534; }
+        .bp-drop-text{ margin-top:10px; font-size:14px; }
+        .bp-drop-link{ color:#0176d3; font-weight:600; text-decoration:underline; }
+        .bp-drop-name{ margin-top:10px; font-weight:600; color:#0f172a; }
+        .bp-file-raw{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); border:0; }
+        .bp-modal-actions{ display:flex; align-items:center; }
+        /* file viewer popup (larger than the re-upload one) */
+        .bp-modal-view{ width:min(1180px,96vw); padding:18px 22px; }
+        .bp-view-body{ margin-top:12px; text-align:center; }
+        .bp-view-body img{ max-width:100%; max-height:84vh; border-radius:8px; }
+        .bp-view-body iframe{ width:100%; height:84vh; border:0; border-radius:8px; }
+        /* loader shown on the View button while the file is fetched */
+        .bp-spin{ display:inline-block; width:12px; height:12px; margin-right:6px; border:2px solid rgba(99,102,114,0.35); border-top-color:#0176d3; border-radius:50%; vertical-align:-2px; animation:bpspin .6s linear infinite; }
+        @keyframes bpspin{ to{ transform:rotate(360deg); } }
+    </style>
+    <div class="bp-shell">
+        <c:BrokerSidebar active="profile" />
+        <div class="bp-main">
+            <c:BrokerTopbar title="Company Profile" company="{!brokerCompanyName}" />
+            <div class="bp-content">
+                <!-- profile header -->
+                <div class="bp-card bp-phead">
+                    <div class="bp-pavatar">{!initials}</div>
+                    <div class="bp-pinfo">
+                        <h2>{!company.Name}</h2>
+                        <div class="bp-chips">
+                            <span class="bp-badge b-booked">{!company.Status__c}</span>
+                            <span class="bp-chip">{!company.Agency_Registered_Emirate__c}</span>
+                            <span class="bp-chip">TL: {!company.Trade_License_Number__c}</span>
+                            <span class="bp-chip">VAT: {!company.VAT_TRN__c}</span>
+                        </div>
+                    </div>
+                    <apex:outputPanel rendered="{!NOT hasPendingRequest}" layout="none">
+                        <apex:outputLink value="{!$Page.BrokerProfileEdit}" styleClass="bp-btn bp-btn-primary">Edit details</apex:outputLink>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!hasPendingRequest}" layout="none">
+                        <span class="bp-badge b-new">Changes pending approval</span>
+                    </apex:outputPanel>
+                </div>
+
+                <apex:outputPanel rendered="{!hasPendingRequest}" layout="block">
+                    <div class="bp-soft-note" style="margin-top:18px;">You have profile changes awaiting approval. Editing is disabled until they're approved or rejected.</div>
+                </apex:outputPanel>
+
+                <!-- tabs -->
+                <div class="bp-tabs">
+                    <button type="button" class="bp-tab active" onclick="bpShowTab(this,'paneInfo')">Company Details</button>
+                    <button type="button" id="bpDocTab" class="bp-tab" onclick="bpShowTab(this,'paneDocs')">Documents</button>
+                </div>
+
+                <div id="paneInfo" class="bp-tabpane active">
+                <!-- Company information -->
+                <div class="bp-card bp-mt">
+                    <h3>Company Information</h3>
+                    <p class="bp-sub">Registered details on file with MIRA</p>
+                    <div class="bp-grid bp-form bp-mt">
+                        <div class="bp-field"><label>Company Name</label><div class="bp-ro">{!company.Name}</div></div>
+                        <div class="bp-field"><label>Emirate</label><div class="bp-ro">{!company.Agency_Registered_Emirate__c}</div></div>
+                        <div class="bp-field"><label>Company Email</label><div class="bp-ro">{!company.Company_Email__c}</div></div>
+                        <div class="bp-field"><label>Phone</label><div class="bp-ro">{!company.Phone}</div></div>
+                        <div class="bp-field"><label>Landline</label><div class="bp-ro">{!company.Landline_Number__c}</div></div>
+                        <div class="bp-field"><label>Admin Email</label><div class="bp-ro">{!company.Contact_Email_2__c}</div></div>
+                        <div class="bp-field"><label>Admin Mobile</label><div class="bp-ro">{!company.Admin_Number__c}</div></div>
+                        <div class="bp-field"><label>Relationship Manager</label><div class="bp-ro">{!company.Assigned_RM__c}</div></div>
+                        <div class="bp-field"><label>Address</label><div class="bp-ro">{!company.BillingStreet}</div></div>
+                        <div class="bp-field"><label>P.O. Box</label><div class="bp-ro">{!company.BillingPostalCode}</div></div>
+                    </div>
+                </div>
+
+                <!-- Business information -->
+                <div class="bp-card bp-mt">
+                    <h3>Business Information</h3>
+                    <p class="bp-sub">Licensing and tax details</p>
+                    <div class="bp-grid bp-form bp-mt">
+                        <div class="bp-field"><label>Type</label><div class="bp-ro">{!company.Type}</div></div>
+                        <div class="bp-field"><label>Trade License Number</label><div class="bp-ro">{!company.Trade_License_Number__c}</div></div>
+                        <div class="bp-field"><label>Trade License Issue Date</label><div class="bp-ro">{!licenseIssueDate}</div></div>
+                        <div class="bp-field"><label>Trade License Expiry Date</label><div class="bp-ro">{!licenseExpiryDate}</div></div>
+                        <div class="bp-field"><label>ORN-RERA Number</label><div class="bp-ro">{!company.ORN_Number__c}</div></div>
+                        <div class="bp-field"><label>TRN Number</label><div class="bp-ro">{!company.TRN_Number__c}</div></div>
+                        <div class="bp-field"><label>VAT TRN</label><div class="bp-ro">{!company.VAT_TRN__c}</div></div>
+                    </div>
+                </div>
+
+                <!-- Signatory information -->
+                <div class="bp-card bp-mt">
+                    <h3>Signatory Information</h3>
+                    <p class="bp-sub">Authorised signatory on record</p>
+                    <div class="bp-grid bp-form bp-mt">
+                        <div class="bp-field"><label>Signatory Name</label><div class="bp-ro">{!company.Signatory_Name__c}</div></div>
+                        <div class="bp-field"><label>Signatory Email</label><div class="bp-ro">{!company.Signatory_Email__c}</div></div>
+                        <div class="bp-field"><label>Signatory Mobile</label><div class="bp-ro">{!company.Signatory_Number__c}</div></div>
+                    </div>
+                </div>
+
+                <!-- Bank details -->
+                <div class="bp-card bp-mt">
+                    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+                        <div>
+                            <h3>Bank Details</h3>
+                            <p class="bp-sub">Bank accounts on file</p>
+                        </div>
+                        <apex:outputPanel rendered="{!NOT hasPendingBankRequest}" layout="none">
+                            <apex:outputLink value="{!$Page.BrokerBankEdit}" styleClass="bp-btn bp-btn-ghost bp-btn-sm">Edit</apex:outputLink>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!hasPendingBankRequest}" layout="none">
+                            <span class="bp-badge b-new">Changes pending approval</span>
+                        </apex:outputPanel>
+                    </div>
+                    <table class="bp-table bp-mt">
+                        <thead><tr><th>Bank</th><th>Account Name</th><th>Account Number</th><th>IBAN</th><th>Swift Code</th><th>Branch</th></tr></thead>
+                        <tbody>
+                            <apex:repeat value="{!banks}" var="b">
+                                <tr>
+                                    <td>{!b.bank}</td>
+                                    <td>{!b.accountName}</td>
+                                    <td>{!b.accountNumber}</td>
+                                    <td>{!b.iban}</td>
+                                    <td>{!b.swift}</td>
+                                    <td>{!b.branch}</td>
+                                </tr>
+                            </apex:repeat>
+                        </tbody>
+                    </table>
+                    <apex:outputPanel layout="block" rendered="{!NOT hasBanks}">
+                        <p style="padding:20px; text-align:center; color:#6b7280; margin:0;">No bank accounts on file.</p>
+                    </apex:outputPanel>
+                </div>
+
+                <!-- Shareholders -->
+                <div class="bp-card bp-mt">
+                    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+                        <div>
+                            <h3>Shareholders</h3>
+                            <p class="bp-sub">Ownership on file</p>
+                        </div>
+                        <apex:outputLink value="{!$Page.BrokerShareholderEdit}" styleClass="bp-btn bp-btn-ghost bp-btn-sm">Edit</apex:outputLink>
+                    </div>
+                    <table class="bp-table bp-mt">
+                        <thead><tr><th>Shareholder</th><th>Ownership %</th></tr></thead>
+                        <tbody>
+                            <apex:repeat value="{!shareholders}" var="s">
+                                <tr><td>{!s.holder}</td><td>{!s.percentage}</td></tr>
+                            </apex:repeat>
+                        </tbody>
+                    </table>
+                    <apex:outputPanel layout="block" rendered="{!NOT hasShareholders}">
+                        <p style="padding:20px; text-align:center; color:#6b7280; margin:0;">No shareholders on file.</p>
+                    </apex:outputPanel>
+                </div>
+                </div> <!-- /paneInfo -->
+
+                <!-- Documents tab -->
+                <div id="paneDocs" class="bp-tabpane">
+                    <div class="bp-card bp-mt">
+                        <h3>Documents</h3>
+                        <p class="bp-sub">Company documents on file. A re-upload is sent to MIRA for approval before it replaces the document on file.</p>
+
+                        <apex:outputPanel rendered="{!docMessage != null}" layout="block">
+                            <div class="{!IF(docSubmitted,'ok','bp-soft-note')}" style="margin:6px 0 14px;">{!docMessage}</div>
+                        </apex:outputPanel>
+
+                        <!-- Staged re-uploads: one approval request for all of them -->
+                        <apex:outputPanel rendered="{!hasStaged}" layout="block">
+                            <div class="bp-soft-note" style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin:6px 0 14px;">
+                                <span><b>{!stagedCount}</b> document(s) staged for re-upload — submit them together for approval.</span>
+                                <span style="display:flex; gap:8px;">
+                                    <apex:form style="display:inline;">
+                                        <apex:commandButton styleClass="bp-btn bp-btn-primary bp-btn-sm" value="Submit for approval" action="{!submitAllDocs}"/>
+                                    </apex:form>
+                                    <apex:form style="display:inline;">
+                                        <apex:commandButton styleClass="bp-btn bp-btn-ghost bp-btn-sm" value="Discard" action="{!discardDraft}"/>
+                                    </apex:form>
+                                </span>
+                            </div>
+                        </apex:outputPanel>
+
+                        <apex:outputPanel layout="block" rendered="{!NOT hasDocuments}">
+                            <p style="padding:20px; text-align:center; color:#6b7280; margin:0;">No documents on file.</p>
+                        </apex:outputPanel>
+
+                        <div class="bp-grid bp-docs-grid bp-mt">
+                            <apex:repeat value="{!documents}" var="doc">
+                                <div class="bp-card bp-doccard">
+                                    <div class="bp-docbig"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+                                    <div class="bp-docttl">{!doc.fileName}</div>
+                                    <div class="bp-lbl" style="font-size:12.5px">{!doc.fileType} · Added {!doc.dateAdded}</div>
+                                    <div class="bp-docrow">
+                                        <span class="bp-badge b-sold">On file</span>
+                                        <a class="bp-btn bp-btn-ghost bp-btn-sm" href="javascript:void(0)" onclick="bpView(this,'{!doc.contentDocumentId}');">View</a>
+                                        <apex:outputPanel rendered="{!doc.pending}" layout="none">
+                                            <span class="bp-badge b-new">Re-upload pending approval</span>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!doc.staged}" layout="none">
+                                            <span class="bp-badge b-new">Staged for re-upload</span>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!AND(doc.canReupload, NOT doc.pending, NOT doc.staged)}" layout="none">
+                                            <a class="bp-btn bp-btn-ghost bp-btn-sm" href="javascript:void(0)" onclick="bpPickDoc('{!doc.contentDocumentId}','{!JSENCODE(doc.fileName)}');">Re-upload</a>
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                            </apex:repeat>
+                        </div>
+
+                        <!-- ONE shared re-upload form in a popup (no per-card forms -> reliable multipart submit) -->
+                        <apex:form enctype="multipart/form-data">
+                            <div id="bpReupModal" class="bp-modal-overlay" style="display:none;">
+                                <div class="bp-modal">
+                                    <div class="bp-modal-head">
+                                        <h3 style="margin:0;">Re-upload document</h3>
+                                        <a href="javascript:void(0)" class="bp-modal-x" onclick="bpCancelReup();">&#215;</a>
+                                    </div>
+                                    <p class="bp-sub" style="margin-top:4px;">Replacing: <b><span id="bpReplName"></span></b></p>
+                                    <apex:inputHidden value="{!selectedDocId}" id="selDocShared"/>
+                                    <div id="bpDrop" class="bp-dropzone">
+                                        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+                                        <div class="bp-drop-text">Drag &amp; drop a file here, or <span class="bp-drop-link">browse</span></div>
+                                        <div id="bpDropName" class="bp-drop-name"></div>
+                                    </div>
+                                    <div class="bp-file-raw"><apex:inputFile value="{!docFileBody}" filename="{!docFileName}"/></div>
+                                    <div class="bp-mt bp-modal-actions">
+                                        <apex:commandButton styleClass="bp-btn bp-btn-primary bp-btn-sm" value="Stage re-upload" action="{!stageDoc}"/>
+                                        <a class="bp-btn bp-btn-ghost bp-btn-sm" href="javascript:void(0)" onclick="bpCancelReup();" style="margin-left:8px;">Cancel</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </apex:form>
+
+                        <!-- File viewer: loads the chosen file as a base64 data URI, shows it in a popup -->
+                        <apex:form >
+                            <apex:actionFunction name="bpLoadView" action="{!viewDoc}" reRender="bpViewPanel" oncomplete="bpAfterView();">
+                                <apex:param name="vdoc" value="" assignTo="{!viewDocId}"/>
+                            </apex:actionFunction>
+                            <apex:outputPanel id="bpViewPanel" layout="block">
+                                <apex:outputPanel rendered="{!viewFile != null}" layout="none">
+                                    <div id="bpViewModal" class="bp-modal-overlay" style="display:none;">
+                                        <div class="bp-modal bp-modal-view">
+                                            <div class="bp-modal-head">
+                                                <h3 style="margin:0; max-width:88%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{!viewFile.fileName}</h3>
+                                                <a href="javascript:void(0)" class="bp-modal-x" onclick="bpCloseView();">&#215;</a>
+                                            </div>
+                                            <div class="bp-view-body">
+                                                <apex:outputPanel rendered="{!viewFile.isImage}" layout="none">
+                                                    <img src="{!viewFile.dataUri}" alt="{!viewFile.fileName}"/>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!viewFile.isPdf}" layout="none">
+                                                    <iframe src="{!viewFile.dataUri}"></iframe>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!viewFile.downloadOnly}" layout="block">
+                                                    <p class="bp-sub" style="margin:16px 0;">{!viewFile.note}</p>
+                                                    <apex:outputPanel rendered="{!viewFile.dataUri != null}" layout="none">
+                                                        <a class="bp-btn bp-btn-primary bp-btn-sm" href="{!viewFile.dataUri}" download="{!viewFile.fileName}">Download</a>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </apex:form>
+                    </div>
+                </div>
+
+                <script>
+                //<![CDATA[
+                    function bpShowTab(btn, id){
+                        var t = document.getElementsByClassName('bp-tab');
+                        for (var i = 0; i < t.length; i++) { t[i].className = 'bp-tab'; }
+                        btn.className = 'bp-tab active';
+                        var p = document.getElementsByClassName('bp-tabpane');
+                        for (var j = 0; j < p.length; j++) { p[j].className = 'bp-tabpane'; }
+                        document.getElementById(id).className = 'bp-tabpane active';
+                    }
+                    // The single shared re-upload form's hidden field (id ends with 'selDocShared').
+                    function bpFindShared(){
+                        var hs = document.querySelectorAll('input[type=hidden]');
+                        for (var i = 0; i < hs.length; i++){
+                            var key = (hs[i].name || '') + '|' + (hs[i].id || '');
+                            if (/selDocShared(\||$)/.test(key)) return hs[i];
+                        }
+                        return null;
+                    }
+                    // A document card's "Re-upload" link records which file to replace, then opens the popup.
+                    function bpPickDoc(docId, name){
+                        var h = bpFindShared(); if (h) { h.value = docId; }
+                        var lbl = document.getElementById('bpReplName'); if (lbl) { lbl.textContent = name; }
+                        var m = document.getElementById('bpReupModal'); if (m) { m.style.display = 'flex'; }
+                    }
+                    function bpCancelReup(){
+                        var m = document.getElementById('bpReupModal'); if (m) { m.style.display = 'none'; }
+                        var h = bpFindShared(); if (h) { h.value = ''; }
+                        var dn = document.getElementById('bpDropName'); if (dn) { dn.textContent = ''; }
+                        var fi = m ? m.querySelector('input[type=file]') : null; if (fi) { fi.value = ''; }
+                    }
+                    function bpShowDropName(n){ var el = document.getElementById('bpDropName'); if (el) { el.textContent = 'Selected: ' + n; } }
+                    // File viewer popup: show a loader on the clicked button, fetch the bytes (bpLoadView is the
+                    // actionFunction), then bpAfterView restores the button and opens the modal.
+                    var bpViewBtn = null;
+                    function bpView(btn, docId){
+                        bpViewBtn = btn;
+                        if (btn){
+                            btn.setAttribute('data-label', btn.innerHTML);
+                            btn.innerHTML = '<span class="bp-spin"></span>Loading';
+                            btn.style.pointerEvents = 'none';
+                            btn.style.opacity = '0.75';
+                        }
+                        bpLoadView(docId);
+                    }
+                    function bpRestoreViewBtn(){
+                        if (!bpViewBtn) return;
+                        var l = bpViewBtn.getAttribute('data-label');
+                        if (l !== null) { bpViewBtn.innerHTML = l; }
+                        bpViewBtn.style.pointerEvents = '';
+                        bpViewBtn.style.opacity = '';
+                        bpViewBtn = null;
+                    }
+                    function bpAfterView(){
+                        bpRestoreViewBtn();
+                        var m = document.getElementById('bpViewModal'); if (m) { m.style.display = 'flex'; }
+                    }
+                    function bpCloseView(){ var m = document.getElementById('bpViewModal'); if (m) { m.style.display = 'none'; } }
+                    function bpInitDropzone(){
+                        var drop = document.getElementById('bpDrop');
+                        var m = document.getElementById('bpReupModal');
+                        if (!drop || !m) return;
+                        var fileInput = m.querySelector('input[type=file]');
+                        if (!fileInput) return;
+                        drop.addEventListener('click', function(){ fileInput.click(); });
+                        drop.addEventListener('dragover', function(e){ e.preventDefault(); drop.classList.add('drag'); });
+                        drop.addEventListener('dragleave', function(){ drop.classList.remove('drag'); });
+                        drop.addEventListener('drop', function(e){
+                            e.preventDefault(); drop.classList.remove('drag');
+                            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length){
+                                try { fileInput.files = e.dataTransfer.files; } catch (ex) {}
+                                bpShowDropName(e.dataTransfer.files[0].name);
+                            }
+                        });
+                        fileInput.addEventListener('change', function(){
+                            if (fileInput.files && fileInput.files.length){ bpShowDropName(fileInput.files[0].name); }
+                        });
+                    }
+                    document.addEventListener('DOMContentLoaded', bpInitDropzone);
+                //]]>
+                </script>
+                <apex:outputPanel rendered="{!docMessage != null}" layout="none">
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function(){
+                            var b = document.getElementById('bpDocTab');
+                            if (b) { b.click(); }
+                        });
+                    </script>
+                </apex:outputPanel>
+            </div>
+        </div>
+    </div>
+</body>
+</apex:page>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Stages_Restrictions</fullName>
+    <active>true</active>
+    <description>Sales Manager cant set Reserved and Sold statuses</description>
+    <errorConditionFormula>($Profile.Name = &apos;Sales Manager MIRA&apos;) &amp;&amp;
+
+(
+
+TEXT(StageName) = &apos;Reserved&apos; || TEXT(StageName) = &apos;Sold&apos;
+
+)</errorConditionFormula>
+    <errorDisplayField>StageName</errorDisplayField>
+    <errorMessage>Only Sales Admin can select Reserved and Sold stages</errorMessage>
+</ValidationRule>

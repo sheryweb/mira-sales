@@ -1,0 +1,21 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body style="height: auto; min-height: auto;"><span style="font-family:Arial,Helvetica,sans-serif;">Dear Ayman,<br />
+<br />
+I am requesting a resell of a Unit with the following details:<br />
+-&nbsp;<strong>Project</strong>:&nbsp;{{{Opportunity.Project_Name__c}}}<br />
+-&nbsp;<strong>Tower</strong>:&nbsp;{{{Opportunity.Building__c}}}<br />
+-&nbsp;<strong>Unit</strong>:&nbsp;{{{Opportunity.Unit_Title__c}}}<br />
+-&nbsp;<strong>Unit Price</strong>:&nbsp;{{{Opportunity.Unit_Price__c}}}<br />
+-&nbsp;<strong>Existing&nbsp;Client</strong>:&nbsp;{{{Opportunity.Account_Name__c}}}<br />
+<br />
+<br />
+{{{Opportunity.Open_Opportunity__c}}}</span><br />
+<br />
+<span style="font-family:Arial,Helvetica,sans-serif;">Regards<br />
+<br />
+Jad Orabi<br />
+Sales Admin</span></body>
+</html>

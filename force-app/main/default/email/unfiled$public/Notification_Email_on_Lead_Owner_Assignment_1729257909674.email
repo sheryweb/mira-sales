@@ -1,0 +1,24 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body style="height: auto; min-height: auto;"><span style="font-family:Arial,Helvetica,sans-serif;">Dear {{{Recipient.RM_Name__c}}},<br />
+<br />
+<br />
+You have a new opportunity.<br />
+<br />
+{{{Recipient.Name_From_Web__c}}}&nbsp;is waiting to be contacted regarding {{{Recipient.Project__c}}}.<br />
+<br />
+Call Now:&nbsp;{{{Recipient.Phone}}}<br />
+<br />
+<br />
+Please keep in mind that you have:<br />
+<br />
+- 30 minutes to update the lead.<br />
+<br />
+Please let your line manager know if you could not do the needful.<br />
+<br />
+<br />
+Regards<br />
+Mira Development Bot</span></body>
+</html>

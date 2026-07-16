@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
+    <label>Policy Center</label>
+    <navType>Standard</navType>
+    <tabs>standard-home</tabs>
+    <tabs>standard-DataMgmtPolicy</tabs>
+    <tabs>Invoice__c</tabs>
+    <tabs>Financial_Detail__c</tabs>
+    <tabs>Agency_RM__c</tabs>
+    <tabs>Blocked_Under_Protection__c</tabs>
+    <tabs>Opportunity_Monthly_Activity__c</tabs>
+    <tabs>App_User__c</tabs>
+    <tabs>Sales_Target__c</tabs>
+    <tabs>Commission__c</tabs>
+    <tabs>Approval_Request__c</tabs>
+    <uiType>Lightning</uiType>
+</CustomApplication>

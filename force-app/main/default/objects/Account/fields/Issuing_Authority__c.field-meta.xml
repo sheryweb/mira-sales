@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Issuing_Authority__c</fullName>
+    <label>Issuing Authority</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Ajman Freezone Authority</fullName>
+                <default>false</default>
+                <label>Ajman Freezone Authority</label>
+            </value>
+            <value>
+                <fullName>Canada Business Corporations Act</fullName>
+                <default>false</default>
+                <label>Canada Business Corporations Act</label>
+            </value>
+            <value>
+                <fullName>Creative City Media Free Zone, Fujairah</fullName>
+                <default>false</default>
+                <label>Creative City Media Free Zone, Fujairah</label>
+            </value>
+            <value>
+                <fullName>Department of Economic Development - Abu Dhabi</fullName>
+                <default>false</default>
+                <label>Department of Economic Development - Abu Dhabi</label>
+            </value>
+            <value>
+                <fullName>Department of Economic Development - Ajman</fullName>
+                <default>false</default>
+                <label>Department of Economic Development - Ajman</label>
+            </value>
+            <value>
+                <fullName>Department of Economic Development - Dubai</fullName>
+                <default>false</default>
+                <label>Department of Economic Development - Dubai</label>
+            </value>
+            <value>
+                <fullName>Department of Economic Development - Ras Al Khaimah</fullName>
+                <default>false</default>
+                <label>Department of Economic Development - Ras Al Khaimah</label>
+            </value>
+            <value>
+                <fullName>Department of Economic Development - Sharjah</fullName>
+                <default>false</default>
+                <label>Department of Economic Development - Sharjah</label>
+            </value>
+            <value>
+                <fullName>Dubai Integrated Economic Zones Authority</fullName>
+                <default>false</default>
+                <label>Dubai Integrated Economic Zones Authority</label>
+            </value>
+            <value>
+                <fullName>Ministry of Micro, Small and Medium Enterprises (MSME), Government of India</fullName>
+                <default>false</default>
+                <label>Ministry of Micro, Small and Medium Enterprises (MSME), Government of India</label>
+            </value>
+            <value>
+                <fullName>Ras Al Khaimah Economic Zone (RAKEZ)</fullName>
+                <default>false</default>
+                <label>Ras Al Khaimah Economic Zone (RAKEZ)</label>
+            </value>
+            <value>
+                <fullName>Registrar of Companies - Hong Kong</fullName>
+                <default>false</default>
+                <label>Registrar of Companies - Hong Kong</label>
+            </value>
+            <value>
+                <fullName>Sharjah Media City - Free Zone Authority</fullName>
+                <default>false</default>
+                <label>Sharjah Media City - Free Zone Authority</label>
+            </value>
+            <value>
+                <fullName>Sharjah Publishing City - Free Zone Authority</fullName>
+                <default>false</default>
+                <label>Sharjah Publishing City - Free Zone Authority</label>
+            </value>
+            <value>
+                <fullName>Tartu County Court Registration Department</fullName>
+                <default>false</default>
+                <label>Tartu County Court Registration Department</label>
+            </value>
+            <value>
+                <fullName>The Registrar of Companies for England and Wales</fullName>
+                <default>false</default>
+                <label>The Registrar of Companies for England and Wales</label>
+            </value>
+            <value>
+                <fullName>Ministry of Commerce, Industry &amp; Investment Promotion - Sultanate of Oman</fullName>
+                <default>false</default>
+                <label>Ministry of Commerce, Industry &amp; Investment Promotion - Sultanate of Oman</label>
+            </value>
+            <value>
+                <fullName>Istanbul Trade Registry Directorate - Republic of Turkiye</fullName>
+                <default>false</default>
+                <label>Istanbul Trade Registry Directorate - Republic of Turkiye</label>
+            </value>
+            <value>
+                <fullName>The Netherlands Chamber of Commerce KVK</fullName>
+                <default>false</default>
+                <label>The Netherlands Chamber of Commerce KVK</label>
+            </value>
+            <value>
+                <fullName>Ankara Chamber of Commerce</fullName>
+                <default>false</default>
+                <label>Ankara Chamber of Commerce</label>
+            </value>
+            <value>
+                <fullName>The Kolkata Municipal Corporation</fullName>
+                <default>false</default>
+                <label>The Kolkata Municipal Corporation</label>
+            </value>
+            <value>
+                <fullName>İSTANBUL TİCARET ODASI (ISTANBUL CHAMBER OF COMMERCE)</fullName>
+                <default>false</default>
+                <label>İSTANBUL TİCARET ODASI (ISTANBUL CHAMBER OF COMMERCE)</label>
+            </value>
+            <value>
+                <fullName>Companies Registration Office (CRO), Ireland</fullName>
+                <default>false</default>
+                <label>Companies Registration Office (CRO), Ireland</label>
+            </value>
+            <value>
+                <fullName>Revenue Service of Georgia</fullName>
+                <default>false</default>
+                <label>Revenue Service of Georgia</label>
+            </value>
+            <value>
+                <fullName>Sharjah Research Technology and Innovation Park Free Zone Authority (SRTIP)</fullName>
+                <default>false</default>
+                <label>Sharjah Research Technology and Innovation Park Free Zone Authority (SRTIP)</label>
+            </value>
+            <value>
+                <fullName>National Agency of Public Registry (LEPL)</fullName>
+                <default>false</default>
+                <label>National Agency of Public Registry (LEPL)</label>
+            </value>
+            <value>
+                <fullName>Federal Board of Revenue (FBR) - Government of Pakistan</fullName>
+                <default>false</default>
+                <label>Federal Board of Revenue (FBR) - Government of Pakistan</label>
+            </value>
+            <value>
+                <fullName>Dubai Aviation City Corporation</fullName>
+                <default>false</default>
+                <label>Dubai Aviation City Corporation</label>
+            </value>
+            <value>
+                <fullName>Ajman Nuventures Centre Free Zone (ANC)</fullName>
+                <default>false</default>
+                <label>Ajman Nuventures Centre Free Zone (ANC)</label>
+            </value>
+            <value>
+                <fullName>Magistrat der Stadt Büdingen - Gewerbeamt (Trade Office of the City of Buedingen) Germany</fullName>
+                <default>false</default>
+                <label>Magistrat der Stadt Büdingen - Gewerbeamt (Trade Office of the City of Buedingen) Germany</label>
+            </value>
+            <value>
+                <fullName>Ministry of Corporate Affairs (MCA services), ROC Delhi, India</fullName>
+                <default>false</default>
+                <label>Ministry of Corporate Affairs (MCA services), ROC Delhi, India</label>
+            </value>
+            <value>
+                <fullName>Ministry of Justice of Georgia - LEPL National Agency of Public Registry</fullName>
+                <default>false</default>
+                <label>Ministry of Justice of Georgia - LEPL National Agency of Public Registry</label>
+            </value>
+            <value>
+                <fullName>State of Kuwait - Ministry of Commerce &amp; Industry</fullName>
+                <default>false</default>
+                <label>State of Kuwait - Ministry of Commerce &amp; Industry</label>
+            </value>
+            <value>
+                <fullName>Ministry of Government and Consumer Services, Ontario</fullName>
+                <default>false</default>
+                <label>Ministry of Government and Consumer Services, Ontario</label>
+            </value>
+            <value>
+                <fullName>Ministry of Commerce &amp; Industry, State of Qatar</fullName>
+                <default>false</default>
+                <label>Ministry of Commerce &amp; Industry, State of Qatar</label>
+            </value>
+            <value>
+                <fullName>Municipal Court in Prague</fullName>
+                <default>false</default>
+                <label>Municipal Court in Prague</label>
+            </value>
+            <value>
+                <fullName>ADGM</fullName>
+                <default>false</default>
+                <label>ADGM</label>
+            </value>
+            <value>
+                <fullName>Ministry of Economic Development and Technology, Republic of Poland</fullName>
+                <default>false</default>
+                <label>Ministry of Economic Development and Technology, Republic of Poland</label>
+            </value>
+            <value>
+                <fullName>Chamber of Commerce, Industry, Handicrafts and Agriculture MONTE ROSA LAGHI ALTO PIEMONTE</fullName>
+                <default>false</default>
+                <label>Chamber of Commerce, Industry, Handicrafts and Agriculture MONTE ROSA LAGHI ALTO PIEMONTE</label>
+            </value>
+            <value>
+                <fullName>Interdistrict Inspectorate of the Federal Tax Service No. 39 for the Republic of Bashkortostan</fullName>
+                <default>false</default>
+                <label>Interdistrict Inspectorate of the Federal Tax Service No. 39 for the Republic of Bashkortostan</label>
+            </value>
+            <value>
+                <fullName>State of California</fullName>
+                <default>false</default>
+                <label>State of California</label>
+            </value>
+            <value>
+                <fullName>Registro Mercantil de Mallorca</fullName>
+                <default>false</default>
+                <label>Registro Mercantil de Mallorca</label>
+            </value>
+            <value>
+                <fullName>SECURITIES AND EXCHANGE COMMISSION OF PAKISTAN</fullName>
+                <default>false</default>
+                <label>SECURITIES AND EXCHANGE COMMISSION OF PAKISTAN</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

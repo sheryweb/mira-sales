@@ -1,0 +1,382 @@
+<template>
+
+    <!-- ── Unit-page trigger area ────────────────────────────────────────── -->
+    <template if:true={recordId}>
+
+        <template if:true={showStatusBanner}>
+            <div class={statusBannerClass}>
+                <lightning-icon
+                    icon-name={statusBannerIcon}
+                    size="small"
+                    class="slds-m-right_x-small">
+                </lightning-icon>
+                <span class="slds-text-heading_small">Payment Plan Change — {displayStatusLabel}</span>
+                <span class="slds-m-left_small slds-text-body_regular slds-text-color_weak">
+                    {approvalRequestName}
+                </span>
+                <template if:true={approvalStageLabel}>
+                    <span class="slds-m-left_small slds-text-body_regular">
+                        {approvalStageLabel}
+                    </span>
+                </template>
+                <a href={approvalRequestUrl} target="_blank" class="slds-m-left_small">
+                    View Request &#x2197;
+                </a>
+            </div>
+        </template>
+
+        <template if:true={showRequestButton}>
+            <div class="slds-p-around_small">
+                <lightning-button
+                    variant="brand"
+                    label="Request Payment Plan Change"
+                    icon-name="utility:approval"
+                    onclick={handleOpenModal}
+                    disabled={loading}>
+                </lightning-button>
+            </div>
+        </template>
+
+    </template>
+
+    <!-- ── Standalone mode (no recordId — unit lookup) ───────────────────── -->
+    <template if:false={recordId}>
+        <lightning-card title="Payment Plan Change Approval" icon-name="standard:approval">
+            <div class="slds-p-around_medium">
+                <c-custom-lookup
+                    object-api-name="Unit__c"
+                    search-field="Title__c"
+                    label-name="Unit"
+                    placeholder="Search units..."
+                    icon-name="standard:product"
+                    required
+                    onrecordselected={handleUnitSelected}>
+                </c-custom-lookup>
+
+                <template if:true={hasUnit}>
+                    <div class="slds-m-top_medium">
+                        <lightning-button
+                            variant="brand"
+                            label="Open Payment Plan Editor"
+                            onclick={handleOpenModal}>
+                        </lightning-button>
+                    </div>
+                </template>
+            </div>
+        </lightning-card>
+    </template>
+
+    <!-- ── Main editor modal ─────────────────────────────────────────────── -->
+    <template if:true={showMainModal}>
+        <section role="dialog" tabindex="-1"
+                 aria-labelledby="ppa-modal-title"
+                 class={mainModalClass}>
+            <div class="slds-modal__container">
+
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick={handleCloseModal}>
+                        <lightning-icon icon-name="utility:close" size="small" alternative-text="Close"></lightning-icon>
+                    </button>
+                    <h2 id="ppa-modal-title" class="slds-text-heading_medium">
+                        Payment Plan Change Request
+                    </h2>
+                    <template if:true={hasUnit}>
+                        <p class="slds-text-body_small slds-m-top_xx-small slds-text-color_weak">
+                            {modalSubtitle}
+                        </p>
+                    </template>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium">
+
+                    <template if:true={showPlanTruncatedWarning}>
+                        <div class="slds-notify slds-notify_alert slds-theme_warning slds-m-bottom_medium" role="alert" style="border-radius:4px;">
+                            <lightning-icon icon-name="utility:warning" alternative-text="Warning" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            <span>{planTruncatedMessage}</span>
+                        </div>
+                    </template>
+
+                    <!-- Pending warning inside modal -->
+                    <template if:true={showStatusBanner}>
+                        <div class="slds-notify slds-notify_alert slds-theme_warning slds-m-bottom_medium" role="alert" style="border-radius:4px;">
+                            <lightning-icon icon-name={statusBannerIcon} alternative-text="Status" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            <span>
+                                Request <strong>{approvalRequestName}</strong> is <strong>{displayStatusLabel}</strong>.
+                                <template if:true={approvalStageLabel}>
+                                    &nbsp;{approvalStageLabel}.
+                                </template>
+                                The payment plan is locked until the request is resolved.
+                                &nbsp;<a href={approvalRequestUrl} target="_blank">View Request &#x2197;</a>
+                            </span>
+                        </div>
+                    </template>
+
+                    <!-- Justification -->
+                    <template if:true={hasUnit}>
+                        <lightning-textarea
+                            label="Justification"
+                            value={justification}
+                            required
+                            disabled={isReadOnly}
+                            onchange={handleJustificationChange}>
+                        </lightning-textarea>
+
+                        <template if:false={isReadOnly}>
+                            <div class="slds-m-top_medium">
+                                <lightning-combobox
+                                    label="Approver"
+                                    value={selectedApproverId}
+                                    placeholder="Select approver"
+                                    options={approverOptions}
+                                    required
+                                    disabled={loading}
+                                    onchange={handleApproverChange}>
+                                </lightning-combobox>
+                                <template if:false={hasApproverOptions}>
+                                    <p class="slds-text-body_small slds-text-color_error slds-m-top_xx-small">
+                                        No approvers found. Active users need the Sales Director MIRA profile.
+                                    </p>
+                                </template>
+                                <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                                    Choose who will review this payment plan change request.
+                                </p>
+                            </div>
+                        </template>
+
+                        <!-- Table header -->
+                        <div class="slds-m-top_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                            <div class="slds-text-heading_small">Payment Plan Installments</div>
+                            <template if:false={isReadOnly}>
+                                <lightning-button
+                                    label="Add Installment"
+                                    icon-name="utility:add"
+                                    onclick={handleAddRow}>
+                                </lightning-button>
+                            </template>
+                        </div>
+
+                        <!-- Spinner -->
+                        <template if:true={loading}>
+                            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                        </template>
+
+                        <!-- Installments table -->
+                        <div class="slds-m-top_small">
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th scope="col">Action</th>
+                                        <th scope="col">Milestone</th>
+                                        <th scope="col">Installment</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Cash Flow Sum</th>
+                                        <th scope="col">Percent</th>
+                                        <th scope="col">Constant</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={tableRows} for:item="row">
+                                        <tr key={row.clientKey} class={row.rowClass}>
+                                            <td>{row.actionLabel}</td>
+                                            <td>{row.milestoneName}</td>
+                                            <td>{row.installmentMilestone}</td>
+                                            <td>{row.installmentDate}</td>
+                                            <td>{row.cashFlowSumName}</td>
+                                            <td>{row.percentDisplay}</td>
+                                            <td>{row.constantAmount}</td>
+                                            <td>
+                                                <lightning-button-icon
+                                                    icon-name="utility:edit"
+                                                    alternative-text="Edit"
+                                                    data-key={row.clientKey}
+                                                    disabled={row.disableEdit}
+                                                    onclick={handleEditRow}>
+                                                </lightning-button-icon>
+                                                <lightning-button-icon
+                                                    icon-name="utility:delete"
+                                                    alternative-text="Delete"
+                                                    data-key={row.clientKey}
+                                                    disabled={row.disableDelete}
+                                                    onclick={handleDeleteRow}>
+                                                </lightning-button-icon>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Percentage total indicator -->
+                        <div class="slds-grid slds-grid_align-end slds-m-top_x-small">
+                            <div class={percentSummaryClass}>
+                                <lightning-icon
+                                    icon-name={percentSummaryIcon}
+                                    size="xx-small"
+                                    class="slds-m-right_xx-small">
+                                </lightning-icon>
+                                <strong>Total: {totalPercent}% / 100%</strong>
+                                <template if:false={percentIsValid}>
+                                    &nbsp;&mdash; Percentages must total exactly 100% to submit.
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
+                </div><!-- /modal content -->
+
+                <footer class="slds-modal__footer">
+                    <div class="slds-grid slds-grid_align-end slds-gutters_small">
+                        <lightning-button
+                            label="Cancel"
+                            onclick={handleCloseModal}
+                            disabled={loading}
+                            class="slds-m-right_small">
+                        </lightning-button>
+                        <template if:false={isReadOnly}>
+                            <lightning-button
+                                variant="brand"
+                                label="Submit for Approval"
+                                onclick={handleSubmitForApproval}
+                                disabled={disableSubmit}>
+                            </lightning-button>
+                        </template>
+                    </div>
+                </footer>
+
+            </div>
+        </section>
+        <div class={mainModalBackdropClass}></div>
+    </template>
+
+    <!-- ── Add / Edit installment modal ─────────────────────────────────── -->
+    <template if:true={showEditorModal}>
+        <section role="dialog" tabindex="-1"
+                 aria-labelledby="installment-editor-title"
+                 class="slds-modal slds-fade-in-open installment-editor-modal">
+            <div class="slds-modal__container installment-editor-container">
+                <header class="slds-modal__header installment-editor-header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick={handleModalCancel}>
+                        <lightning-icon icon-name="utility:close" size="small" alternative-text="Close"></lightning-icon>
+                    </button>
+                    <h2 id="installment-editor-title" class="slds-text-heading_medium">
+                        {installmentEditorTitle}
+                    </h2>
+                    <p class="slds-text-body_small slds-m-top_xx-small installment-editor-subtitle">
+                        {installmentEditorSubtitle}
+                    </p>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium installment-editor-content">
+                    <div class="installment-editor-panel">
+                        <p class="installment-editor-panel__title">Installment Details</p>
+                        <lightning-input
+                            label="Milestone Name"
+                            value={editingRow.milestoneName}
+                            data-field="milestoneName"
+                            required
+                            onchange={handleModalFieldChange}>
+                        </lightning-input>
+                        <lightning-input
+                            type="date"
+                            label="Installment Date"
+                            value={editingRow.installmentDate}
+                            data-field="installmentDate"
+                            required
+                            class="slds-m-top_small"
+                            onchange={handleModalFieldChange}>
+                        </lightning-input>
+                    </div>
+
+                    <div class="installment-editor-panel installment-editor-panel--accent">
+                        <p class="installment-editor-panel__title">Cash Flow Sum (Year)</p>
+                        <c-custom-lookup
+                            data-id="cash-flow-sum-lookup"
+                            object-api-name="Cash_Flow_Sum__c"
+                            search-field="Name"
+                            label-name="Select Year"
+                            placeholder="Search year (e.g. 2026)..."
+                            icon-name="standard:calibration"
+                            filter-field="Unit__c"
+                            filter-value={selectedUnitId}
+                            required={editingRowRequiresCashFlowSum}
+                            onrecordselected={handleCashFlowSumSelected}>
+                        </c-custom-lookup>
+                        <template if:false={showNewYearForm}>
+                            <p class="slds-m-top_x-small">
+                                <button type="button" class="installment-editor-link" onclick={handleShowNewYearForm}>
+                                    Add New Year
+                                </button>
+                            </p>
+                        </template>
+                        <template if:true={showNewYearForm}>
+                            <div class="slds-grid slds-gutters_x-small slds-m-top_small slds-grid_vertical-align-end">
+                                <div class="slds-col slds-grow">
+                                    <lightning-input
+                                        label="New Year"
+                                        value={newCashFlowSumYear}
+                                        placeholder="e.g. 2026"
+                                        maxlength="4"
+                                        onchange={handleNewCashFlowSumYearChange}>
+                                    </lightning-input>
+                                </div>
+                                <div class="slds-col slds-no-flex">
+                                    <lightning-button
+                                        label="Add Year"
+                                        variant="brand-outline"
+                                        onclick={handleCreateCashFlowSum}
+                                        disabled={creatingCashFlowSum}>
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </template>
+                        <p class="installment-editor-help-text">
+                            Cash Flow Sum groups installments by year for this unit.
+                        </p>
+                    </div>
+
+                    <div class="installment-editor-panel">
+                        <p class="installment-editor-panel__title">Amounts</p>
+                        <div class="slds-grid slds-gutters_small">
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-input
+                                    type="number"
+                                    label="Percent"
+                                    value={editingRow.percent}
+                                    data-field="percent"
+                                    step="0.01"
+                                    onchange={handleModalFieldChange}>
+                                </lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-input
+                                    type="number"
+                                    label="Constant Amount"
+                                    value={editingRow.constantAmount}
+                                    data-field="constantAmount"
+                                    step="0.01"
+                                    onchange={handleModalFieldChange}>
+                                </lightning-input>
+                            </div>
+                        </div>
+                        <lightning-input
+                            type="checkbox"
+                            label="Additional Payment"
+                            checked={editingRow.isAdditionalPayment}
+                            data-field="isAdditionalPayment"
+                            class="slds-m-top_small"
+                            onchange={handleModalFieldChange}>
+                        </lightning-input>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer installment-editor-footer">
+                    <lightning-button label="Cancel" onclick={handleModalCancel}></lightning-button>
+                    <lightning-button variant="brand" label="Save Installment" onclick={handleModalSave}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open installment-editor-backdrop"></div>
+    </template>
+
+</template>

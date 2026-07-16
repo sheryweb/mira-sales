@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Agency Registered Emirate --></label>
+    <name>Agency_Registered_Emirate__c</name>
+    <picklistValues>
+        <masterLabel>Abu Dhabi</masterLabel>
+        <translation><!-- Abu Dhabi --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ajman</masterLabel>
+        <translation><!-- Ajman --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Dubai</masterLabel>
+        <translation><!-- Dubai --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Fujairah</masterLabel>
+        <translation><!-- Fujairah --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Ras Al Khaimah</masterLabel>
+        <translation><!-- Ras Al Khaimah --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Sharjah</masterLabel>
+        <translation><!-- Sharjah --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Umm Al Quwain</masterLabel>
+        <translation><!-- Umm Al Quwain --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

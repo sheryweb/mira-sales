@@ -1,0 +1,316 @@
+<apex:page controller="AgencyAccountDetail">
+  <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Account Registration</title>
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <!-- Bootstrap Icons CSS -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet" />
+        <style>
+            body {
+                background-color: #f8f9fa;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+            }
+            .container {
+                display: flex;
+                justify-content: space-between;
+                max-width: 800px;
+                margin-top: 20px;
+            }
+            .icon-box {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                height: 250px;
+                border-radius: 10px;
+                background-color: #ffffff;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s;
+            }
+            .icon-box:hover {
+                transform: translateY(-5px);
+            }
+            .icon-box i {
+                font-size: 70px;
+                margin-bottom: 20px;
+                color: #007bff;
+            }
+            .icon-title {
+                font-size: 24px;
+                font-weight: 500;
+                color: #3170b3;
+            }
+            .col {
+                padding: 10px;
+            }
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+            .navbar-brand img {
+                height: 50px;
+            }
+            .header {
+                margin: 20px 0;
+                text-align: center;
+                font-size: 32px;
+                font-weight: bold;
+                color: #c3c3c3f5;
+            }
+            .modal-content {
+                border-radius: 20px;
+                padding: 20px;
+                text-align: center;
+            }
+            #loader {
+                display: none;
+                width: 50px;
+                height: 50px;
+                border: 8px solid #f3f3f3;
+                border-radius: 50%;
+                border-top: 8px solid #3498db;
+                animation: spin 2s linear infinite;
+                margin: 20px auto;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            .error-message {
+                color: red;
+                display: none;
+                margin-top: 10px;
+            }
+    
+            footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background-color: #333;
+                color: white;
+                text-align: center;
+                padding: 10px 0;
+                z-index: 1000;
+            }
+            .status-message {
+                display: none;
+                margin-top: 20px;
+                padding: 15px;
+                border-radius: 10px;
+                color: white;
+            }
+            .status-yellow { background-color: yellow; color: black; }
+            .status-orange { background-color: orange; }
+            .status-blue { background-color: blue; }
+            .status-green { background-color: green; }
+            .status-red { background-color: red; }
+            .status-pink { background-color: lightpink; color: #af0000; }
+            .status-icon {
+                margin-right: 8px;
+            }
+            .btn {
+                background-image: none !important;  /* Remove any background images applied by Salesforce */
+                border: none !important;  /* Remove any borders if they exist */
+            }
+            .btn-primary {
+                background-color: #0d6efd !important;  /* Primary color */
+                color: white !important;
+                padding: 5px !important;
+                border-radius: 50px !important;
+                font-weight: normal !important;
+                font-size: 16px !important;
+            }
+            .btn-secondary {
+                background-color: #6c757d !important;  /* Secondary color */
+                color: white !important;
+            }
+        
+            .btn-danger {
+                background-color: #dc3545 !important;  /* Danger color */
+                color: white !important;
+            }
+            .modal .btn-close {
+                color: #000 !important;
+            }
+            .status-message {
+                display: none; /* Initially hidden */
+                margin-top: 20px;
+                padding: 15px;
+                border-radius: 10px;
+                color: white;
+            }
+            .status-yellow { background-color: yellow; color: black; }
+            .status-orange { background-color: orange; }
+            .status-blue { background-color: blue; }
+            .status-green { background-color: green; }
+            .status-red { background-color: red; }
+            .status-pink { background-color: lightpink; color: #af0000; }
+            .status-icon {
+                margin-right: 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/agency">
+                    <img src="{!URLFOR($Resource.MiraDocLogo)}" alt="Logo" class="logo" />
+                </a>
+            </div>
+        </nav>
+        <div class="header">
+            Welcome to MIRA Agency Registration Portal
+        </div>
+        <div class="container">
+            <!-- Left Division for New Registration -->
+            <div class="col">
+                <a href="/agency/AgencyRegistration">
+                    <div class="icon-box">
+                        <i class="bi bi-person-plus-fill"></i> <!-- New Registration Icon -->
+                        <span class="icon-title">New Registration</span>
+                    </div>
+                </a>
+            </div>
+    
+            <!-- Right Division for Existing Account -->
+            <div class="col">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#existingAccountModal">
+                    <div class="icon-box">
+                        <i class="bi bi-person-check-fill"></i> <!-- Existing Account Icon -->
+                        <span class="icon-title">Existing Agency</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <!-- Modal for Existing Account Registration Number -->
+        <div class="modal fade" id="existingAccountModal" tabindex="-1" aria-labelledby="existingAccountModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="existingAccountModalLabel">Enter Registration Number</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="registrationForm">
+                            <div class="mb-3">
+                                <label style="font-size: 14px;">Please provide the Registration# you received by email</label>
+                                <input type="text" class="form-control" id="registrationNumber" placeholder="REG-xxx-xxxxx-xxxxx" required="true" />
+                            </div>
+                            <div id="loader"></div>
+                            <div class="error-message" id="errorMessage">Invalid Registration Number</div>
+                            <button type="button" id="submitBtn" onClick="checkRegistrationNumber();" class="btn btn-primary w-100">Submit</button>
+                        </form>
+                        <div id="statusMessage" class="status-message"></div>
+                        <!--<div id="statusMessage"></div>-->
+                        <div id="accountStatus"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer with Copyright and Power Info -->
+        <footer>
+            <p>&copy; 2024 M I R A Developments LLC. Powered by MIRA Developments</p>
+        </footer>
+        
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <script>
+            function checkRegistrationNumber() {
+                var registrationNumber = document.getElementById("registrationNumber").value;
+                var statusMessage = document.getElementById("statusMessage");
+                var accountStatus = document.getElementById("accountStatus");
+                var loader = document.getElementById("loader");
+                var submitBtn = document.getElementById("submitBtn");
+                
+                //Clear existing messages
+                statusMessage.innerHTML = '';
+                accountStatus.innerHTML = '';
+        
+                //Show loader and disable submit button
+                loader.style.display = "block";
+                submitBtn.disabled = true;
+                
+                //Call Apex method asynchronously using Visualforce remoting
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.AgencyAccountDetail.checkAccountStatus}', 
+                    registrationNumber,
+                    function(result, event) {
+                        //Hide loader and re-enable submit button
+                        loader.style.display = "none";
+                        submitBtn.disabled = false;
+                        const parser = new DOMParser();
+                        const decodedResult = parser.parseFromString(result, 'text/html').documentElement.textContent;
+                        let accountDetails;
+                        if (event.status) {
+                            try {
+                                accountDetails = JSON.parse(decodedResult);
+                                
+                                if (accountDetails.status === 'error' || !accountDetails.data) {
+                                    statusMessage.innerHTML = 'Invalid registration number';
+                                    accountStatus.innerHTML = '';
+                                } else {
+                                    const accountId = accountDetails.data.Id;
+                                    const accountName = accountDetails.data.Name;
+                                    const accountStatus = accountDetails.data.Status__c;
+                                    const accountInternational = accountDetails.data.Is_Agency_International__c;
+                                    const statusColorClass = getStatusColor(accountStatus);
+                                    const trnvat = btoa(accountDetails.data.VAT_TRN__c || '');
+                                    const emirate = btoa(accountDetails.data.Agency_Registered_Emirate__c || '');
+                                    
+                                    submitBtn.style.display = 'none';
+                                    statusMessage.style.display = 'block';
+                                    statusMessage.className = 'status-message ' + statusColorClass;
+                                    statusMessage.innerHTML = '<i class="bi bi-check-circle status-icon"></i>' +
+                                        'The registration status on Agency <strong>' + accountName + '</strong> is <strong>' + accountStatus + '</strong>.'+'<br /><a href="/agency/AgencyFileUpload?accountId='+ accountId +'&internationalAgency='+btoa(accountInternational)+'&trnSwitch='+trnvat+'&emirate='+emirate+'" style="text-decoration: underline; font-weight: bold;">Open Files</a>';
+                                }
+                            } catch (e) {
+                                statusMessage.innerHTML = 'Error processing response';
+                                accountStatus.innerHTML = '';
+                            }
+                        } else {
+                            statusMessage.innerHTML = 'Error: ' + event.message;
+                            accountStatus.innerHTML = '';
+                        }
+                    }
+                );
+            }
+
+            //Reset registration number and clear status when the modal is closed
+            var modal = document.getElementById('existingAccountModal');
+            modal.addEventListener('hidden.bs.modal', function() {
+                document.getElementById('registrationNumber').value = '';
+                document.getElementById('statusMessage').innerHTML = '';
+                document.getElementById('accountStatus').innerHTML = '';
+            });
+            
+            function getStatusColor(status) {
+                switch (status) {
+                    case 'In Process':
+                        return 'status-yellow';
+                    case 'Agreement Issued':
+                        return 'status-orange';
+                    case 'Half Executed':
+                        return 'status-blue';
+                    case 'Completed':
+                        return 'status-green';
+                    case 'Cancelled':
+                        return 'status-red';
+                    default:
+                        return 'status-pink';
+                }
+            }
+        </script>
+     </body>
+    </html>
+</apex:page>

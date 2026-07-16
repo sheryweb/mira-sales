@@ -1,0 +1,609 @@
+<apex:page renderAs="pdf" showHeader="false" applyBodyTag="false" applyHtmlTag="false" controller="AgencyAgreementController">
+    <html>
+        <head>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    font-size: 9pt;
+                    margin: 40px;
+                }
+                h1, h2, h3, h4 {
+                    font-family: Arial, sans-serif;
+                    font-weight: bold;
+                }
+                h1 {
+                    font-size: 12pt;
+                    text-align: center;
+                    margin-bottom: 20px;
+                    text-decoration: underline;
+                }
+                h2 {
+                    font-size: 11pt;
+                    margin-top: 30px;
+                    margin-bottom: 10px;
+                    text-decoration: none;
+                }
+                h3 {
+                    font-size: 10pt;
+                    margin-top: 20px;
+                    margin-bottom: 10px;
+                    text-decoration: underline;
+                }
+                @page {
+                  size: A4 portait;
+                  margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+                }
+                /*page numbers*/
+                .page {
+                 counter-increment: page;
+                }
+               /*page numbers*/
+                div.page:after {
+                    display: block;
+                    content: "Page " counter(page) " of " counter(pages);
+                    padding: 2px 12px;
+                    font-size: 14px;
+                }
+                div#page-footer {
+                    display: block;
+                    padding: 5px;
+                    position: fixed;
+                    bottom: 0;
+                }
+                .table-div {
+                    display: table;
+                    width: 100%;
+                }
+                .row-div {
+                    display: table-row;
+                }
+                .column-div {
+                    display: table-cell;
+                    padding: 5px;
+                }
+                .content-div {
+                    width: 100%;
+                    text-align: justify;
+                }
+                .end-page {
+                    font-size: 12pt;
+                    text-align: center;
+                }
+
+                ol.level-1, ol.level-2, ol.level-3, ol.level-4 {
+                    list-style: none;
+                    padding-left: 0;
+                    margin: 0 0 1em 0;
+                }
+
+                ol.level-1 {
+                    counter-reset: item;
+                }
+
+                ol.level-1 > li {
+                    counter-increment: item;
+                    display: grid;
+                    grid-template-columns: 2.5em 1fr;
+                    column-gap: 0.5em;
+                    margin-bottom: 0.5em;
+                    text-align: justify;
+                    text-align-last: left;
+                    line-height: 1.5;
+                }
+
+                ol.level-1 > li::before {
+                    content: counter(item) ".";
+                    font-weight: bold;
+                    justify-self: end;
+                    user-select: none;
+                }
+
+                /* Level 2 */
+                ol.level-2 {
+                    counter-reset: subitem;
+                    padding-left: 0;
+                    margin: 0.3em 0;
+                }
+
+                ol.level-2 > li {
+                    counter-increment: subitem;
+                    position: relative;
+                    padding-left: 3.5em;
+                    margin-bottom: 0.3em;
+                    text-align: justify;
+                    text-align-last: left;
+                    line-height: 1.5;
+                }
+
+                ol.level-2 > li::before {
+                    content: attr(data-parent) "." counter(subitem)".&nbsp;";
+                    position: absolute;
+                    left: 0;
+                    width: 3.5em;
+                    text-align: right;
+                    font-weight: normal;
+                    user-select: none;
+                }
+
+                /* Level 3 */
+                ol.level-3 {
+                    counter-reset: subsubitem;
+                    padding-left: 0;
+                    margin: 0.3em 0;
+                }
+
+                ol.level-3 > li {
+                    counter-increment: subsubitem;
+                    position: relative;
+                    padding-left: 4.5em;
+                    margin-bottom: 0.3em;
+                    text-align: justify;
+                    text-align-last: left;
+                    line-height: 1.5;
+                }
+
+                ol.level-3 > li::before {
+                    content: attr(data-parent) "." counter(subsubitem) ".&nbsp;";
+                    position: absolute;
+                    left: 0;
+                    width: 4.5em;
+                    text-align: right;
+                    font-weight: normal;
+                    user-select: none;
+                }
+
+                /* Level 4 */
+                ol.level-4 {
+                    counter-reset: roman;
+                    padding-left: 0;
+                    margin: 0.2em 0 0.6em 0;
+                }
+
+                ol.level-4 > li {
+                    counter-increment: roman;
+                    position: relative;
+                    padding-left: 3em;
+                    margin-bottom: 0.2em;
+                    text-align: justify;
+                    text-align-last: left;
+                    line-height: 1.5;
+                }
+
+                ol.level-4 > li::before {
+                    content: counter(roman, lower-roman) ".&nbsp;";
+                    position: absolute;
+                    left: 0;
+                    width: 3em;
+                    text-align: right;
+                    font-weight: bold;
+                    user-select: none;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="footer grey-txt table-div" id="page-footer">
+                <div class="table-row">
+                    <div class="column-div" style="width: 25%;">_____________________________________________ <br />Broker`s Initials &amp; Stamp</div>
+                    <div class="column-div page" style="text-align: right;"><br /><br /></div>
+                </div>
+            </div>
+            <div class='col size-1-of-2' style="text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div>
+            <h1 style="display: block; text-align: center;">REAL ESTATE BROKERAGE AGENCY AGREEMENT</h1>
+            
+            <p>The Agency Agreement ("Agreement") has entered into force on the date of _____________________, by and between:</p>
+            
+            <h2>The Parties:</h2>
+            <p class="content-div">(1) <strong>M I R A DEVELOPMENTS LLC,</strong> a Company incorporated in United Arab Emirates with license No.1075912, from from DED, with registered office 601- 606 located at Park Heights Square 1, Dubai Hills, Dubai, UAE. (<strong>the "Developer"</strong>)</p>
+            
+            <h2 style="text-decoration: none; margin-top: 0px;">AND</h2>
+            <p class="content-div">(2) <strong>{!accData['agencyAccount']['Name']}</strong>, a company incorporated in {!accData['agencyAccount']['Registered_In__c']} with license No. {!accData['agencyAccount']['Trade_License_Number__c']}, from {!accData['agencyAccount']['Issuing_Authority__c']}, with registered office located at {!accData['agencyAccount']['BillingStreet']}. (the "<strong>Agent</strong>").</p>
+            <p style="margin-top: -10px;">
+                Telephone Number: {!accData['agencyAccount']['Phone']}<br/>
+                Email: {!accData['agencyAccount']['Company_Email__c']}
+            </p>
+            
+            <h2>PREAMBLE:</h2>
+            <p class="content-div"><strong>WHEREAS</strong>, the Developer is engaged in the development, sales, and management of real estate projects, including various ongoing projects located inside UAE, and desires to appoint an Agent to market and advertise one or more of these projects to potential Clients; and</p>
+            <p class="content-div"><strong>WHEREAS</strong>, the Agent is a duly licensed real estate Agent with expertise in marketing and promoting real estate properties inside UAE to the Developer`s projects; and</p>
+            <p class="content-div"><strong>WHEREAS</strong>, the Agent accepted the appointment to market and promote the sales of the Developer`s properties in one or more of the Developer`s Projects, as mutually agreed upon by the Parties, in accordance to the terms and conditions set forth herein; and</p>
+            <p class="content-div"><strong>WHEREAS</strong>, the Parties wish to establish a clear framework for their collaboration, outlining the responsibilities of the Agent, the commission structure, and other relevant terms for the specific projects to be marketed;</p>
+            <p class="content-div"><strong>NOW, THEREFORE</strong>, in consideration of the mutual covenants and Agreements contained herein, the Parties agree as follows:</p>
+
+            <ol class="level-1">
+                <li>
+                    <span style="text-decoration: underline;"><strong>DEFINITIONS</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="1"><span><strong>"Agreement"</strong> means this Real Estate Sales Mandate, including all schedules, exhibits, and appendices attached hereto, as amended from time to time.</span></li>
+                        <li data-parent="1"><span><strong>"Affiliate"</strong> means, in respect of the Agent, the following: (i) an officer, director, manager, shareholder, employee, Agent or contractor; (ii) a relative or a relative of a Party named in paragraph (i) above; or (iii) a subsidiary or holding company, or a company which is a subsidiary of that holding company.</span></li>
+                        <li data-parent="1"><span><strong>"Booking Form"</strong> shall refer to the preliminary document outlining the proposed terms of sale, including property details, purchase price, and initial deposits, utilized to reserve a property prior to the execution of the Sales and Purchase Agreement ('SPA').</span></li>
+                        <li data-parent="1"><span><strong>"Agent"</strong> means any duly licensed entity or individual, as applicable, engaged to perform real estate agency services under this Agreement, including its permitted successors and assigns.</span></li>
+                        <li data-parent="1"><span><strong>"Client"</strong> means any person or entity introduced by the Agent to the Developer who enters or is potential to enter into a purchase Agreement for a Property.</span></li>
+                        <li data-parent="1"><span><strong>"Commission"</strong> means the fee payable by the Developer to the Agent for a Successful Sale. The commission rate shall be as specified in the relevant Project Notification, and payment shall be subject to the terms and conditions of this Agreement.</span></li>
+                        <li data-parent="1"><span><strong>"Developer"</strong> means M I R A DEVELOPMENTS LLC.</span></li>
+                    </ol>
+
+                    <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+
+                    <ol class="level-2" style="counter-reset: subitem 7;">
+                        <li data-parent="1"><span><strong>"Developer`s Policies"</strong> means the policies and procedures established by the Developer from time to time relating to the sale and marketing of the Properties, including but not limited to, commission rates, payment terms, and Client registration.</span></li>
+                        <li data-parent="1"><span><strong>"Deposit"</strong> refers to the initial monetary payment made by the Client to the Developer, as specified in the Booking Form, to secure the reservation of the Property.</span></li>
+                        <li data-parent="1"><span><strong>"Project Notification"</strong> refers to the Developer's formal communication to the Agent, delivered by email or other designated means, which formally notifies and authorizes the Agent to market a specified Project. Which it might include for example but limited to: i. marketing details and the applicable commission structure ii. Encompassing commission rate(s), iii. and may also specify any special terms and conditions relevant to that Project.</span></li>
+                        <li data-parent="1"><span><strong>"Lead"</strong> shall refer to any individual or entity identified by the Developer as a potential purchaser of the Property, registered in the Developer's database prior to any introduction by the Agent.</span></li>
+                        <li data-parent="1"><span><strong>"Intellectual Property"</strong> means all trademarks, service marks, trade names, logos, copyrights, patents, and other intellectual property rights owned by the Developer.</span></li>
+                        <li data-parent="1"><span><strong>"NOC"</strong> or <strong>"No Objection Certificate"</strong> shall mean the formal certificate issued by the Developer to the Agent, confirming that the Developer has no objection to the Agent actively marketing the Properties within the Developer's Developments in Dubai and the broader UAE.</span></li>
+                        <li data-parent="1"><span><strong>"Project"</strong> shall mean the real estate development within the UAE, including residential, commercial, or mixed-use properties, as detailed in the relevant project documentation, and which the Agent is authorized to market it Properties.</span></li>
+                        <li data-parent="1"><span><strong>"Properties"</strong> mean the residential and/or commercial real estate units within the Project(s) that are being offered for sale by the Developer.</span></li>
+                        <li data-parent="1"><span><strong>"Successful Sale"</strong> means a sale of a Property to a Client introduced by the Agent, where the purchase Agreement has been fully executed and the Developer has received the required payments as specified in the Agreement or/and the Project notification.</span></li>
+                        <li data-parent="1"><span><strong>"SPA"</strong> shall refer to the legally binding contract between the buyer and the seller (Developer) that details all terms and conditions of the property sale.</span></li>
+                        <li data-parent="1"><span><strong>"Term"</strong> means the initial term of this Agreement, as set out in Article 7.1, and any renewals thereof.</span></li>
+                        <li data-parent="1"><span><strong>"UAE"</strong> means the United Arab Emirates.</span></li>
+                        <li data-parent="1"><span><strong>"VAT"</strong> means Value Added Tax.</span></li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>APPOINTMENTS</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="2"><span>The Developer hereby appoints the Agent as a non-exclusive Agent to market and promote the sales of the Properties within the Developer's Project subject to the terms and conditions of this Agreement.</span></li>
+                        <li data-parent="2"><span>The Agent hereby accepts such appointment and agrees to act as a non-exclusive Agent for the Developer for the purpose of marketing and promoting the sales of the Properties within the Developers Project.</span></li>
+                        <li data-parent="2"><span>The specific commission rate applicable to each Property shall be as notified to the Agent in the relevant Project Notification.</span></li>
+                        <li data-parent="2"><span>The Developer reserves the right to set different commission rates for different Projects. This Commission shall constitute the sole and exclusive compensation due to the Agent for the services rendered under this Agreement.</span></li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>AGENT'S OBLIGATIONS</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="3"><span>The Agent undertakes and agrees with the Developer at all times during the Term (as defined in Article (7.1) and any renewals thereof:</span></li>
+                        <li data-parent="3"><span>To declare and warrant that it holds all necessary and valid licenses to provide real estate Agency services in the Project location, and in compliance with all applicable laws and regulations.</span></li>
+                        <li data-parent="3"><span>To comply with the terms and conditions of the Agreement, the Developer's Policies, and all instructions or directions (whether written or oral) of the Developer concerning the marketing and sale of the Properties concerning the Project, at all times.</span></li>
+                    </ol>
+
+                    <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+
+                    <ol class="level-2" style="counter-reset: subitem 3;">
+                        <li data-parent="3"><span>At all times, to not misrepresent itself as being anything but an independent sales Agent of the Developer and not incur any liabilities on behalf of the Developer, their affiliates, subsidiaries, and/or any joint venture companies in which the Developer is part.</span></li>
+                        <li data-parent="3"><span>To be responsible for obtaining all licenses, registrations, permits, and approvals necessary or advisable for the promotion and marketing of the Properties in the Project location, and the performance of its other obligations under this Agreement, including but not limited to any required Project location real estate Agent licenses or permits.</span></li>
+                        <li data-parent="3"><span>To act at all times professionally and decently and in accordance with all applicable laws, codes of ethics, and practices in its relations with the Clients and potential purchasers of the Properties, and to do nothing that could be prejudicial to the Developer 's brand image, goodwill, and/or commercial interests.</span></li>
+                        <li data-parent="3"><span>To comply with all applicable laws and regulations based on the project location relevant to the marketing and sale of real estate, including but not limited to any requirements related to advertising, Client interactions, and transaction procedures.</span></li>
+                        <li data-parent="3"><span>The Agent shall not act as, nor be considered, a buyer or seller in any transaction related to the Properties under this Agreement. The Agent shall have no right to claim or receive any commission or other compensation for any transaction where the Agent, or any related party to the Agent, is a buyer or seller. Any such transaction shall be outside the scope of this Agreement.</span></li>
+                        <li data-parent="3"><span>To comply with all applicable Anti-Money Laundering (AML) regulations of the Project, including but not limited to, conducting necessary Client due diligence and reporting suspicious transactions if required.</span></li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>SALES OF THE PROPERTIES</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="4"><span>All payments by Clients for the purchase of the Property/Properties shall be made in accordance with the payment instructions provided by the Developer.</span></li>
+                        <li data-parent="4"><span>The Developer shall have the sole right to determine the recipient of such payments, which may include, but is not limited to, a notary, an escrow account, or another party as specified in writing by the Developer.</span></li>
+                        <li data-parent="4"><span>The Agent shall not receive or intend to receive any payment from the Clients for the purchase of the Property/Properties.</span></li>
+                        <li data-parent="4"><span>The Developer reserves the right to terminate this Agreement and recover any commission previously paid due to non-compliance and/or breach of this Agreement and/or the Developer`s Policies.</span></li>
+                        <li data-parent="4"><span>In the event of a dispute or conflict arising from the introduction of a Client who has also been presented by another third-party agent, the Agent irrevocably agrees that the Developer's internal database and records of Client introductions shall be the sole and decisive authority in determining the effective introduction of said Client.</span></li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>COMMISSION AND PAYMENTS</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="5"><span><strong>Commission Calculation and Terms:</strong> The commission rate, method of calculation, payment terms, and other conditions shall be determined and paid according to the Articles of the Agreement and the Project Notification, as may be amended by the Developer from time to time. The Developer reserves the right to issue different commission rates for special events or Projects, which shall govern the sales of those specific Properties.</span></li>
+                        <li data-parent="5"><span><strong>Agent's Tax Obligations:</strong> The Agent shall be solely responsible for all applicable taxes including but not limited to VAT arising from or in connection with this Agreement, as well as taxes on commissions and any other amounts paid by the Developer to the Agent.</span></li>
+                        <li data-parent="5"><span><strong>Commission Forfeiture:</strong> Failure by the Agent to strictly observe and adhere to this Agreement and/or the Developer's Policies shall result in the immediate and complete forfeiture of the Agent's right to claim any commissions on related transactions.</span></li>
+                        <li data-parent="5">
+                            <span><strong>Commission Payment and Taxes:</strong> The Agent`s commission will be paid subject to the agreed purchase payments being received by the Developer. The commission amount paid by the Developer shall be deemed to include all applicable taxes, VAT, and other expenses related to the transaction. The payment process differs based on the Agent's VAT registration status, as detailed below:</span>
+                            <ol class="level-3">
+                                <li data-parent="5.4"><span><strong>For Non-VAT Registered Companies:</strong> The Agent is required to present a valid invoice to the Developer to receive commission payments.</span></li>
+                            </ol>
+
+                            <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+
+                            <ol class="level-3" style="counter-reset: subsubitem 1;">
+                                <li data-parent="5.4">
+                                    <span><strong>For VAT-Registered Companies:</strong></span>
+                                    <ol class="level-4">
+                                        <li>The Developer will implement an automated payment method for commission payments.</li>
+                                        <li>The Developer will generate a self-invoice containing commission details, including the date, total amount, invoice number, TRN, address, VAT amount, commission amount, and payment terms.</li>
+                                        <li>The self-generated invoice will be submitted through a designated system for payment processing.</li>
+                                        <li>The Developer will process the commission payment automatically upon receipt of the self-invoice, adhering to the agreed-upon payment terms and timelines.</li>
+                                        <li>The Agent is not required to send commission claim invoices to the Developer; however, nothing in this Article shall preclude the Developer from requesting an invoice from the Agent if required.</li>
+                                        <li>The Developer will automatically issue the payment to the Agent as per the terms of the sales and purchase agreement.</li>
+                                    </ol>
+                                </li>
+                            </ol>
+                        </li>
+                        <li data-parent="5"><span><strong>Commission Overpayment:</strong> In the event that the Developer pays a commission to the Agent and the amount has been incorrectly calculated or processed, the Developer shall have the right to demand an immediate refund of the excess commission amount, which the Agent shall promptly reimburse.</span></li>
+                        <li data-parent="5">
+                            <span><strong>Commission Non-Entitlement</strong></span>
+                            <p>The Agent shall not be entitled to any Commission for a Sale of a Property in any of the following circumstances:</p>
+                            <ol class="level-4">
+                                <li>The Agent, or any affiliate of the Agent, is the buyer or a party to the purchase of the Property.</li>
+                                <li>The Client was either previously registered as a Lead by the Developer, already in an Opportunity Phase at the time of the Agent's involvement, or introduced to the Developer directly or through a third-party Agent to the Developer.</li>
+                                <li>The Developer does not receive the Deposit from the Client as specified in the Booking Form, unless such non-receipt is directly attributable to the Developer's fault.</li>
+                                <li>The execution of the SPA with the potential Client does not occur within the period specified in the Booking Form or any agreed-upon extension granted by the Developer at its sole discretion.</li>
+                                <li>The Client withdraws from the transaction after the cancellation period outlined in the Booking Form or SPA, without a valid reason accepted by the Developer.</li>
+                                <li>The sale is not completed due to reasons outside the Developer control.</li>
+                                <li>The Client fails to fulfill their obligations as outlined in the SPA or the Booking Form, leading to be terminated.</li>
+                                <li>The sales transaction is canceled due to the Client's breach of any applicable laws or regulations.</li>
+                                <li>Changes in legislation or regulations that make the sale of the Property impossible.</li>
+                                <li>The Agent breaches any term of this Agreement, as reasonably determined by the Developer.</li>
+                                <li>The Agent does not follow the Developer's instruction regarding the sales process.</li>
+                                <li>The Agent fails to provide the Developer with all necessary documentation and information required for the sale within the specified timeframe.</li>
+                                <li>The Agent engages in any unethical or fraudulent activity related to the sale of the Property.</li>
+                                <li>The Agent makes any false, misleading, or inaccurate representation or statement to the Client regarding the Property, its features, specifications, condition, legal status, or the terms and conditions of its sale or lease.</li>
+                                <li>The Agent fails to adhere to the Developer`s marketing or promotional guidelines.</li>
+                                <li>The Agent did not provide the required Anti Money laundering documentation if required. </li>
+                            </ol>
+                        </li>
+                        <li data-parent="5">
+                            <span><strong>Commission Recovery</strong></span>
+                            <ol class="level-3">
+                                <li data-parent="5.7"><span>Notwithstanding any prior commission payments, the Developer reserves the right to claim a full refund of any commission paid to the Agent, or to deduct such amount from any future commission or/and payments due to the Agent, if it is subsequently determined that any of the circumstances outlined in Article 5.6 (Commission Non-Entitlement) have occurred. </span></li>
+                            </ol>
+
+                            <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+
+                            <ol class="level-3" style="counter-reset: subsubitem 1;">
+                                <li data-parent="5.7">
+                                    <span><strong>Method of Recovery:</strong> The Developer may recover such commission through:</span>
+                                    <ol class="level-4">
+                                        <li>A direct demand for repayment from the Agent, which the Agent shall comply with within (5) days of such demand; or</li>
+                                        <li>Deduction from any future commission or other payments due to the Agent from the Developer.</li>
+                                        <li>Hold and freeze any future commission or other payments due to the Agent from the Developer, pending the full resolution of any claim for commission recovery.</li>
+                                    </ol>
+                                </li>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>ADVERTISING AND PROMOTION</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="6"><span><strong>Agent`s Responsibility and Intellectual Property:</strong> The Agent shall be solely responsible for all advertising and promotion of the Properties, bearing all associated marketing costs. The Agent is strictly prohibited from using any intellectual property and/or rights belonging to the Developer, including but not limited to copyrights, logos, trademarks, and trade names, without the Developer’s explicit prior written approval. Any unauthorized use of the Developer’s Intellectual Property shall be considered a material breach of this Agreement.</span></li>
+                        <li data-parent="6"><span><strong>Developer`s Directives, Approvals, and Training:</strong> The Developer may, at its discretion, provide the Agent with training or briefings on the Project and its details. The Agent shall meticulously observe and comply with all directions, instructions, and training provided by the Developer regarding the promotion and advertisement of the Properties. </span></li>
+                        <li data-parent="6"><span><strong>Prohibitions:</strong> The Agent shall refrain from offering, paying, or facilitating any illegal exchange of payments, payment of a fee, or any value between various professionals involved, inducement, or other form of improper benefit to any Client. For the purposes of this Agreement, the prohibition shall apply on any payments, fee, commission, credit, gift, gratuity, thing of value, or any other compensation of any kind offered or provided by the Agent or its employees to a Client, with the intent to influence the Client's decision to utilize the Agent's services or to dissuade the Client from purchasing a property directly from the Developer.</span></li>
+                        <li data-parent="6"><span><strong>Accurate Project Representation and Client Promises:</strong> The Agent shall accurately represent the Project and its details as provided by the Developer and shall not market or promote the Project in a manner that contradicts the Developer’s instructions or training. The Agent shall not make any promises, offers, or guarantees to Clients regarding the Properties unless expressly authorized in writing by the Developer. Any unauthorized promises or representations shall be considered a material breach of this Agreement.</span></li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>DURATION AND TERMINATION</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="7"><span><strong>Initial Term and Renewal:</strong> This Agreement shall commence on the date of the Effective Date and shall remain in effect for an initial term of one (1) year. Upon expiration of the initial term, this Agreement shall automatically renew for the same Initial term or/and terms under the same terms and conditions, unless either Party provides a written notice of non-renewal to the other Party at least thirty (30) calendar days prior to the expiration of the term, or unless it is earlier terminated in accordance with Articles 7.2 or 7.3.</span></li>
+                        <li data-parent="7">
+                            <span><strong>Termination for Cause by Developer:</strong> The Developer shall have the right to terminate this Agreement with immediate effect, without any requirement for prior notice, legal proceedings, or court judgment, upon the occurrence of any of the following events:</span>
+                            <ol class="level-3">
+                                <li data-parent="7.2"><span>The Agent commits a material breach of any term or provision of this Agreement or any applicable laws or regulations, and such breach is not cured by the Agent within ten (10) calendar days after receiving written notice from the Developer specifying the breach and demanding its cure, provided that such breach is capable of being cured.</span></li>
+                                <li data-parent="7.2"><span>The Agent files for bankruptcy, enters into liquidation proceedings, ceases or threatens to cease conducting its business operations, or experiences any other event indicative of insolvency or financial instability.</span></li>
+                            </ol>
+                        </li>
+                        <li data-parent="7"><span><strong>Termination for Convenience by Developer:</strong> The Developer may terminate this Agreement for its convenience at any time by providing fifteen (15) calendar days' prior written notice to the Agent. Such termination shall be without cause, and the Developer shall not be liable for any compensation or damages to the Agent arising from such termination, except for any commissions due and payable for Successful Sales completed prior to the effective date of termination.</span></li>
+                    </ol>
+                </li>
+            </ol>
+
+            <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+
+            <ol class="level-1" style="counter-reset: subitem 7;">
+                <li>
+                    <span style="text-decoration: underline;"><strong>EFFECTS OF TERMINATION</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="8">
+                            <span><strong>TERMINATION AND CONSEQUENCES</strong></span>
+                            <ol class="level-3">
+                                <li data-parent="8.1"><span><strong>Preservation of Accrued Rights and Liabilities:</strong> Termination of this Agreement, regardless of the cause, shall be without prejudice to any rights, remedies, or liabilities that have accrued to either party as of the date of termination.</span></li>
+                            </ol>
+                        </li>
+                        <li data-parent="8">
+                            <span><strong><strong>Consequences of Termination:</strong> Upon termination of this Agreement for any reason:</strong></span>
+                            <ol class="level-3">
+                                <li data-parent="8.2"><span>The Agent shall not be entitled to any indemnification or compensation related to the termination of this Agreement, except as expressly provided in Article 7.3.</span></li>
+                                <li data-parent="8.2"><span>The Agent shall immediately cease all promotional, marketing, and advertising activities related to the Developer`s Properties.</span></li>
+                                <li data-parent="8.2"><span>The Agent shall immediately cease representing itself as an Agent of the Developer. All approvals granted for the use of the Developer’s Intellectual Property shall be deemed revoked, and the Agent shall immediately discontinue any such use.</span></li>
+                                <li data-parent="8.2"><span><strong>Commission Entitlement:</strong> Subject to the Agent's strict adherence to all terms and conditions of this Agreement, the Agent shall be entitled to receive any outstanding commissions for Successful Sale transactions that were fully completed and finalized prior to the termination of this Agreement. Furthermore, notwithstanding Article (7), the Agent shall also be entitled to receive commission for a Successful Sale, as defined herein, where a Client was directly introduced to the Developer by the Agent during the term of this Agreement, even if the Successful Sale occurs post-termination.</span></li>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>CONFIDENTIALITY</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="9"><span><strong>Confidentiality Obligation:</strong> The Agent agrees that it shall, at all times during and after the termination of this Agreement, maintain the strict confidentiality of, and shall not use (other than strictly for the purposes of performing its obligations under this Agreement), and shall not, without the Developer 's explicit prior written consent, disclose to any third party, any information communicated to the Agent that is identified as confidential or that, by its nature, should reasonably be understood to be confidential. This includes, but is not limited to, this Agreement, the Developer’s Policies, and any communication from the Developer, Client information, marketing data, business strategies, and any other information not intended for public dissemination.</span></li>
+                        <li data-parent="9"><span><strong>Data Security Measures:</strong> The Agent shall implement and maintain the highest industry-standard security measures to protect the confidentiality, integrity, and availability of all confidential information and data received from or generated on behalf of the Developer. This includes, but is not limited to, implementing robust access controls, encryption, firewalls, and other appropriate technical and organizational measures to prevent unauthorized access, use, disclosure, alteration, or destruction of such information. The Agent shall promptly notify the Developer of any actual or suspected data breach or security incident.</span></li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>PERSONAL DATA PROTECTION</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="10"><span><strong>Compliance with Applicable Laws: </strong> The Agent shall comply with all applicable personal data protection laws and regulations, including but not limited to, the Project location law, to all relevant data protection laws in the Agent's jurisdiction, and the UAE Federal Decree Law No. 45 of 2021 Regarding Personal Data Protection, as applicable, in connection with the processing of personal data under this Agreement.</span></li>
+                        <li data-parent="10"><span><strong>Data Processing Purposes:</strong> The Agent shall only process personal data either provided by the Developer or collected by the Agent in connection with this Agreement for the specific purposes of marketing and promoting the Properties as outlined herein, and shall not use such data for any other purpose without the Developer’s explicit prior written consent.</span></li>
+                        <li data-parent="10"><span><strong>Data Minimization and Accuracy: </strong> The Agent shall ensure that personal data processed under this Agreement is adequate, relevant, and limited to what is necessary for the purposes for which it is processed. The Agent shall take all reasonable steps to ensure the accuracy of personal data and to promptly rectify or erase inaccurate data.</span></li>
+                        <li data-parent="10"><span><strong>Data Security:</strong> The Agent shall implement and maintain appropriate technical and organizational measures to protect personal data against unauthorized or unlawful processing and against accidental loss, destruction, or damage, using the highest industry-standard security measures, including but not limited to robust access controls, encryption, and firewalls.</span></li>
+                    </ol>
+
+                    <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+
+                    <ol class="level-2" style="counter-reset: subsubitem 4;">
+                        <li data-parent="10"><span><strong>Data Subject Rights:</strong> The Agent shall cooperate with the Developer in facilitating the exercise of data subject rights, including the rights of access, rectification, erasure, restriction of processing, data portability, and objection, in accordance with applicable data protection laws.</span></li>
+                        <li data-parent="10"><span><strong>Data Breach Notification:</strong> The Agent shall delete all personal data received from the Developer upon the termination of this Agreement, unless otherwise agreed in writing by the Developer.</span></li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>ASSIGNMENT</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="11"><span><strong>Agent's Prohibition of Assignment:</strong> The Agent shall not assign, transfer, or otherwise dispose of this Agreement or any of its rights or obligations hereunder, whether in whole or in part, without the Developer’s explicit prior written consent. Any attempted assignment by the Agent without such consent shall be null and void and shall constitute a material breach of this Agreement.</span></li>
+                        <li data-parent="11"><span><strong>Developer's Right to Assignment:</strong> The Developer may, at its sole discretion, assign, transfer, or otherwise dispose of this Agreement, or any or all of its rights and/or obligations hereunder, to any person or entity of the Developer 's choosing, without requiring the Agent's consent. The Agent hereby acknowledges and agrees to such assignment and shall fully cooperate with the assignee in the performance of its obligations under this Agreement.</span></li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>INDEMNITY</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="12"><span><strong>Agent's Liability and Indemnification</strong></span>
+                            <ol class="level-3">
+                                <li data-parent="12.1"><span>The Developer shall have no liability for any acts or defaults of the Agent in connection with this Agreement or in connection with any defects or delays in the handover of the purchased Properties.</span></li>
+                                <li data-parent="12.1"><span>The Agent shall indemnify and hold harmless the Developer, including its directors, shareholders, consultants, servants, Agents, and employees, against any and all losses, liabilities, costs, claims, actions, and/or demands arising out of or in connection with this Agreement.</span></li>
+                                <li data-parent="12.1"><span>The Agent shall indemnify and hold harmless the Developer from any and all damages, fines, or liabilities imposed upon the Developer due to any default or non-compliance by the Agent with any applicable law, article of this Agreement, or regulatory requirement.</span></li>
+                                <li data-parent="12.1"><span>This Article 12.1 shall survive the expiry or termination of this Agreement.</span></li>
+                            </ol>
+                        </li>
+                        <li data-parent="12">
+                            <span><strong>Developer`s Limited Indemnification</strong></span>
+                            <p style="margin-top: 5px;">The Developer agrees to indemnify and hold the Agent harmless from any losses directly resulting from the Developer’s material omissions or negligent failures to perform its obligations as outlined in this Agreement. This indemnification is strictly limited to direct losses and excludes any indirect, consequential, or punitive damages.</p>
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>DISPUTE RESOLUTION AND GOVERNING LAW</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="13"><span><strong>Dispute Resolution Process:</strong> In the event of any dispute arising out of or relating to the interpretation or performance of this Agreement, the Parties agree to the following dispute resolution process:</span></li>
+                        <li data-parent="13"><span><strong>Initial Meeting:</strong> The Parties shall first endeavor to resolve the dispute amicably through good-faith negotiations. To this end, within fifteen (15) calendar days of either party notifying the other of the dispute, representatives of both Parties shall meet to discuss the issue and attempt to reach a mutually acceptable solution.</span></li>
+                        <li data-parent="13"><span><strong>Escalation to Jurisdiction:</strong> If the dispute is not resolved within ten (10) calendar days from the date of the initial meeting, or if the Parties fail to reach a mutually acceptable solution during the meeting itself, then either party shall have the right to submit the dispute to the competent jurisdiction as outlined below.</span></li>
+                        <li data-parent="13"><span><strong>Governing Law and Jurisdiction:</strong> This Agreement shall be governed by and construed in accordance with the laws of UAE. The exclusive legal venue for the resolution of any dispute arising out of or relating to this Agreement shall be the competent courts of UAE.</span></li>
+                    </ol>
+                </li>
+                <li>
+                    <span><strong>QUALIFICATION CRITERIA FOR REGISTRATION OF LOCAL / INTERNATIONAL REAL ESTATE AGENTS:</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="14"><span>All Agents, whether local or International, must comply with the laws and regulations governing real estate agency practice in the UAE and the location of the Project.</span></li>
+                    </ol>
+
+                    <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+
+                    <ol class="level-2" style="counter-reset: subsubitem 1;">
+                        <li data-parent="14">
+                            <span><strong>Mandatory Licensing for UAE Services:</strong> For any marketing or real estate agency services provided by the Agent within the United Arab Emirates, the Agent shall, at all times during the term of this Agreement, ensure full compliance with all applicable licensing laws and regulations within the UAE. This compliance includes, but is not limited to, the following requirements:</span>
+                            <ol class="level-3">
+                                <li data-parent="14.2"><span>Full compliance with all applicable licensing laws and regulations within the UAE.</span></li>
+                                <li data-parent="14.2"><span><strong>For Agents Registered in Dubai:</strong> Duly registered with the Dubai Land Department and holding all valid licenses and agent cards as legally required for their operations in Dubai, maintaining their validity throughout the Agreement's duration.</span></li>
+                                <li data-parent="14.2"><span><strong>For Agents Registered in other Emirates:</strong> Duly registered with the relevant licensing authority in their respective Emirate of registration and holding a valid Trade License explicitly mentioning real estate activity, maintaining its validity throughout the Agreement's duration.</span></li>
+                            </ol>
+                        </li>
+                        <li data-parent="14"><span>International Real Estate Agents must operate as a registered company or establishment holding a trade license or equivalent registration with an activity relevant to real estate business. Documents provided by such International Real Estate Agents are required to be translated into English or Arabic. Legal notarization of these documents shall only be required if specifically requested by the Developer at their discretion.</span></li>
+                        <li data-parent="14"><span>International Real Estate Agent holding the necessary registration or license as per Article 14.3 has the right to market the Properties to Clients who are based and located outside the United Arab Emirates.</span></li>
+                        <li data-parent="14"><span>If an International Real Estate Agent has more than one office, they shall designate a principal office and delegate a representative to liaise with the Developer.</span></li>
+                        <li data-parent="14">
+                            <span>In addition to points 13.4 and 13.5, International Real Estate Agents should also adhere to the following:</span>
+                            <ol class="level-3">
+                                <li data-parent="14.6"><span>Shall not engage in any form of direct or indirect real estate agency activity within UAE, including but not limited to, introducing buyers to sellers, negotiating sale or purchase agreements, unless they hold a valid and appropriate license issued by the relevant authorities.</span></li>
+                                <li data-parent="14.6"><span>Prior to obtaining the necessary license, shall be strictly prohibited from conducting any marketing, advertising, or promotional activities for real estate properties located within UAE, aimed at clients inside the UAE, without first obtaining the required permits.</span></li>
+                                <li data-parent="14.6"><span>Failure to comply with these regulations may result in significant penalties, including fines, suspension of activities, blacklisting, and legal action, as per the laws enforced by the Dubai Land Department and other relevant authorities.</span></li>
+                            </ol>
+                        </li>
+                        <li data-parent="14"><span>Re-registration of blacklisted/terminated Real Estate Agents shall be subject to Management approval.</span></li>
+                        <li data-parent="14">
+                            <span>Agents can be blacklisted if the Agent does not meet the specific duties and responsibilities outlined in the legally binding <strong>“Agreement”</strong> signed with the relevant party. This could include, but is not limited to:</span>
+                            <ol class="level-3">
+                                <li data-parent="14.8"><span>Failure to market the property as agreed, including adherence to agreed-upon international marketing standards and practices.</span></li>
+                                <li data-parent="14.8"><span>Neglecting to present all offers to the Client, or failing to transparently communicate the details of each offer.</span></li>
+                                <li data-parent="14.8"><span>Breaching confidentiality Agreements, including the unauthorized disclosure of sensitive Client information to third Parties across international borders.</span></li>
+                                <li data-parent="14.8"><span>Mishandling Client funds, including failure to comply with international escrow account standards and regulations.</span></li>
+                                <li data-parent="14.8"><span>Not adhering to agreed-upon timelines, or causing unreasonable delays that may impact international transactions.</span></li>
+                                <li data-parent="14.8"><span>Failure to provide accurate and complete documentation as required for international real estate transactions.</span></li>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>COMMISSION STRUCTURE &amp; DISBURSEMENT</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="15"><span><strong>Commission Structure:</strong> The commission structure applicable to the sale of Properties, within Off-plan Projects and/or during sales launches and events including rates and conditions, as detailed in the Agreement and/or notified by "Project Notification" which is incorporated herein by reference.</span></li>
+                    </ol>
+
+                    <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+                    
+                    <ol class="level-2" style="counter-reset: subsubitem 1;">
+                        <li data-parent="15"><span><strong>Amendments to Commission Structure:</strong> The Developer reserves the sole right to amend to the commission structure and disbursement, as detailed either in the Agreement or/and the Project Notification. Any amendments shall be communicated in writing to the Agent and shall apply to deals presented by the Agent after the effective date of the amendment which will be defined in the Amendment letter. Unless the nature of the deal or applicable regulations require otherwise, amendments shall not apply retroactively to deals already presented by the Agent prior to the amendment's effective date.</span></li>
+                        <li data-parent="15"><span><strong>Management Discretion:</strong> The commission payout, as described in Article (15) or/and in the Project Notification is subject to change as per Developer decision, and any changes shall be communicated separately in writing. Additionally, any changes will not be applied to prior bookings.</span></li>
+                        <li data-parent="15">
+                            <span><strong>Commission Disbursement</strong></span>
+                            <ol class="level-3">
+                                <li data-parent="15.4"><span>The disbursement of the commission earned by the Agent for sales of Properties within off-plan projects, or during sales launches and events.</span></li>
+                                <li data-parent="15.4"><span><strong>Disbursement Trigger:</strong> The Commission for Successful Sales shall be disbursed by the Developer to the Agent within sixty (60) days following the successful clearance of a payment equivalent to twenty percent (20%) of the Net Property Price by the Client. The sixty (60) day period for commission disbursement is an estimated timeframe and is not of the essence. Any delay beyond sixty (60) days shall not, by itself, constitute a breach of this Agreement, provided the Developer continues to use reasonable efforts to disburse the commission.</span></li>
+                                <li data-parent="15.4"><span><strong>Pre-Conditions for Disbursement:</strong> In addition to the condition set out in Article 14.1.2, Commission disbursement is strictly contingent upon the fulfillment of all the following conditions: A) Completion of payment for all applicable registration fees, stamp duties, and any other related governmental or administrative charges, including; B) Receipt by the Developer of the Sale and Purchase Agreement (SPA) duly executed by both the Client and the Developer, accompanied by all other necessary supporting documents required for the registration and finalization of the transaction.</span></li>
+                                <li data-parent="15.4">14.1.4 <span><strong>Subject to Amendment:</strong> The Agent acknowledges and agrees that the Commission Disbursement outlined in this Article 15.1 is subject to amendment or modification by the Developer's Management at its sole discretion. Any such amendments or modifications shall become effective upon written notice being provided to the Agent and shall apply only to bookings made on or after the effective date specified in such written notice.</span></li>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>DOCUMENTATION REQUIREMENTS</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="16"><span>If the Agent or third-party acts on behalf of a Client in a legal capacity, a valid, notarized, and duly legalized Power of Attorney (POA) Agreement, granting the authority to execute the property sale, must be provided. If the POA is issued outside the jurisdiction where the property sale is finalized, it must be notarized in the country of issuance and attested by the relevant embassy/consular office and foreign affairs authority, as applicable.</span></li>
+                        <li data-parent="16"><span>The Developer has the right to request the Agent/third party to accompany the Client to the Developer’s designated sales center or location and witness the property sales transaction by signing the Property Booking Form or/and the SPA or equivalent documentation. This must be finalized at the time of purchase.</span></li>
+                        <li data-parent="16"><span><strong>General Documentation Requirements:</strong> The Client and Agent/third party shall provide all documents required by applicable laws and regulations in the project's jurisdiction. The Developer also reserves the right to request any additional documentation from the Client or the Agent/third party, as deemed necessary.</span></li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>CLIENT REGISTRATION</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="17"><span><strong>Agent Identification and Client Registration:</strong> For all Project registrations and general Client registrations, the Agent is required to register and accurately identify themselves in accordance with the directives issued by the Developer. Furthermore, the Agent shall strictly adhere to any instructions, whether written or verbal, provided by the Developer concerning the client registration and identification process.</span></li>
+                        <li data-parent="17"><span><strong>Agent Responsibility:</strong> Agents are responsible for informing their Clients of this registration requirement to protect the Agent's commission entitlement and the Client's best interests. Failure to properly register and identify themselves in accordance to the Developer’s instructions at the time of registration will result in the Agent's ineligibility for any commission related to that Client's purchase.</span></li>
+                    </ol>
+                </li>
+            </ol>
+
+            <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+
+            <ol class="level-1" style="counter-reset: subitem 18;">
+                <li>
+                    <span style="text-decoration: underline;"><strong>RELATIONSHIP</strong></span>
+                    <p>It is expressly understood and agreed that the relationship between the Developer and the Agent is that of independent Parties. Nothing in this Agreement shall be construed to create a partnership, joint venture, agency, fiduciary, or employment relationship between the Parties.</p>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>NOTICES</strong></span>
+                    <ol class="level-2">
+                        <li data-parent="19"><span><strong>Method of Delivery:</strong> All notices, requests, demands, and other communications required or permitted to be given under this Agreement shall be in writing and shall be deemed to have been duly given when (a) delivered personally, (b) sent by a reputable pre-paid first-class commercial courier service, (c) sent by registered or certified mail, return receipt requested, or (d) sent by email, as provided in Article 19.2.</span></li>
+                        <li data-parent="19"><span><strong>Email Notices:</strong> Notices sent by email shall be deemed to have been duly received upon the generation of an electronic receipt or delivery confirmation from the recipient's email server. If no such electronic receipt or delivery confirmation is generated, the notice shall be deemed to have been duly received upon successful transmission to the recipient's email server, provided that the sender retains a record of such transmission.</span></li>
+                        <li data-parent="19"><span><strong>Address for Notices:</strong> Notices shall be addressed to the respective Parties at the addresses set forth at the beginning of this Agreement, or to such other address as a party may designate by giving fifteen (15) days' prior written notice to the other Party in accordance with this Article 19.</span></li>
+                        <li data-parent="19"><span><strong>Language of Notices:</strong> All notices pursuant to this Agreement shall be in the English language.</span></li>
+                    </ol>
+                </li>
+                <li>
+                    <span style="text-decoration: underline;"><strong>SURVIVAL</strong></span>
+                    <p>Notwithstanding any provision to the contrary, the following Articles of this Agreement shall survive the expiration or termination of this Agreement for any reason and shall continue in full force and effect:</p>
+                    <ol class="level-2">
+                        <li data-parent="20"><span>Article 8: EFFECTS OF TERMINATION (specifically concerning the preservation of accrued rights and liabilities)</span></li>
+                        <li data-parent="20"><span>Article 9: CONFIDENTIALITY</span></li>
+                        <li data-parent="20"><span>Article 10: PERSONAL DATA PROTECTION</span></li>
+                        <li data-parent="20"><span>Article 12: INDEMNITY</span></li>
+                        <li data-parent="20"><span>Article 13: DISPUTE RESOLUTION AND GOVERNING LAW</span></li>
+                    </ol>
+                </li>
+            </ol>
+
+            <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+
+            <ol class="level-1" style="counter-reset: subitem 21;">
+                <li>
+                    <span style="text-decoration: underline;"><strong>COUNTERPARTS</strong></span>
+                    <p>This Agreement is executed in two (2) copies, each of which is deemed to be an original and all of which taken together constitute one and the same Agreement.</p>
+                    <p>The Parties hereby agree to the terms and conditions set forth in this Agreement. This Agreement is demonstrated by their signatures below:</p>
+                </li>
+            </ol>
+            <h2 style="text-align: center; display: block; text-decoration: underline;">AGENCY AGREEMENT EXECUTED BY THE PARTIES HEREIN</h2><br /><br />
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 50%; padding-bottom: 25px;"><strong>M I R A DEVELOPMENTS LLC</strong></td>
+                    <td style="width: 50%; padding-bottom: 25px;"><strong>{!accData['agencyAccount']['Name']}</strong></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%; padding-bottom: 25px;"><strong>Name of Signatory:</strong> <span style="text-decoration: underline;">TIMUR MAMAIKHANOV</span></td>
+                    <td style="width: 50%; padding-bottom: 25px;"><strong>Name of Signatory:</strong> <span style="text-decoration: underline;">{!accData['agencyAccount']['Signatory_Name__c']}</span></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%; padding-bottom: 25px;"><strong>Designation:</strong> <span style="text-decoration: underline;">GENERAL MANAGER</span></td>
+                    <td style="width: 50%; padding-bottom: 25px;"><strong>Designation:</strong> <span style="">________________________</span></td>
+                </tr>
+                <tr>
+                    <td style="width: 50%; padding-bottom: 25px;"><strong>Signature:</strong>___________________________</td>
+                    <td style="width: 50%; padding-bottom: 25px;"><strong>Signature:</strong>___________________________</td>
+                </tr>
+                <tr>
+                    <td style="width: 50%; padding-bottom: 25px;"><strong>Date:</strong>___________________________</td>
+                    <td style="width: 50%; padding-bottom: 25px;"><strong>Date:</strong>___________________________</td>
+                </tr>
+                <tr>
+                    <td style="width: 50%; padding-bottom: 25px;">&nbsp;</td>
+                    <td style="width: 50%; padding-bottom: 25px;">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td style="width: 50%; padding-bottom: 25px;"><strong>Company Stamp:</strong></td>
+                    <td style="width: 50%; padding-bottom: 25px;"><strong>Company Stamp:</strong></td>
+                </tr>
+            </table>
+        </body>
+    </html>
+</apex:page>

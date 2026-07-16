@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BookedReservedSold_Value__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+    OR(
+        ISPICKVAL(Status__c, &quot;Booked&quot;),
+        ISPICKVAL(Status__c, &quot;Reserved&quot;),
+        ISPICKVAL(Status__c, &quot;Sold&quot;)
+    ),
+    IF(Project_Name_F__c &lt;&gt; &apos;POST HOTEL &amp; RESIDENCES By ELIE SAAB&apos;, Cost_AED__c, Cost_CHF_Number__c), 0
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>BookedReservedSold Value</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

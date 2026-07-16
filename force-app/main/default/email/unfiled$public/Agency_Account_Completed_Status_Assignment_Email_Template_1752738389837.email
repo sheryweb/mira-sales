@@ -1,0 +1,27 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body style="height: auto; min-height: auto;">
+<p><span style="font-family:Arial,Helvetica,sans-serif;">Dear {{{Account.Name}}},<br />
+<br />
+<br />
+We are pleased to introduce&nbsp;{{{Account.Account_Owner_Full_Name__c}}}&nbsp;as your new Relationship Manager at Mira Developments. This appointment ensures you will continue to receive the highest level of support and communication.<br />
+<br />
+To maintain seamless coordination, please add {{{Account.Account_Owner_Full_Name__c}}} to your existing WhatsApp group for agents. Alternatively, you may create a new group including all relevant team members. The contact details are:</span></p>
+
+<p><span style="font-family:Arial,Helvetica,sans-serif;">Name: {{{Account.Account_Owner_Full_Name__c}}}<br />
+Mobile: {{{Account.Assigned_RM_Contact__c}}}<br />
+<br />
+<br />
+Should you require any assistance or have questions, please feel free to contact us.<br />
+<br />
+Thank you for your cooperation.<br />
+<br />
+Best regards,<br />
+NAZEER PALEKAR<br />
+Mira Developments</span><br />
+<br />
+<img alt="MIRA Development Logo" src="https://main-info-bucket.s3.us-east-1.amazonaws.com/mira_logo_small.jpeg" style="max-width: 1623.55px" title="MIRA Development Logo" /></p>
+</body>
+</html>

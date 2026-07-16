@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Sales_Manager_F__c</fullName>
+    <formula>Profile.Name =&apos;Sales Manager MIRA&apos;</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Allow this user to be selected as Sales Manager in the Mobile App while searching</inlineHelpText>
+    <label>Is Sales Manager F</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

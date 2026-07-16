@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Pending</fullName>
+        <default>true</default>
+        <label>Pending</label>
+    </customValue>
+    <customValue>
+        <fullName>Fully Paid</fullName>
+        <default>false</default>
+        <label>Fully Paid</label>
+    </customValue>
+    <customValue>
+        <fullName>Partially Paid</fullName>
+        <default>false</default>
+        <label>Partially Paid</label>
+    </customValue>
+    <customValue>
+        <fullName>Cancelled</fullName>
+        <default>false</default>
+        <label>Cancelled</label>
+    </customValue>
+    <masterLabel>Payment Status</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

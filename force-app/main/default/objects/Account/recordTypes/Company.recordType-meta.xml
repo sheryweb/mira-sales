@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Company</fullName>
+    <active>true</active>
+    <description>for business accounts</description>
+    <label>Company</label>
+    <picklistValues>
+        <picklist>AccountSource</picklist>
+        <values>
+            <fullName>Adwords</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Agency App</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Agent Assisted</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hybrid</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SEO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Self Gen</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Social Media</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Website%2FMarketing</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Yas Mall</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Added_Via__c</picklist>
+        <values>
+            <fullName>Data Entry</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>External Source</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Import</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Agency_Category__c</picklist>
+        <values>
+            <fullName>Georgian</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>United Arab Emirates</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Agency_Registered_Emirate__c</picklist>
+        <values>
+            <fullName>Abu Dhabi</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ajman</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Dubai</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Fujairah</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ras Al Khaimah</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sharjah</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Umm Al Quwain</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Arabic_Picklists_technical__c</picklist>
+        <values>
+            <fullName>%3F%3F%3F%3F</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Compliance_Status__c</picklist>
+        <values>
+            <fullName>Completed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pending</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Country_of_Incorporation__c</picklist>
+        <values>
+            <fullName>%3F%3F%3F%3F</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Country_of_Residence__c</picklist>
+        <values>
+            <fullName>%3F%3F%3F%3F</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Gender__c</picklist>
+        <values>
+            <fullName>Female</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Male</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Industry</picklist>
+        <values>
+            <fullName>Agriculture</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Apparel</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Banking</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Biotechnology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chemicals</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Communications</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Construction</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Consulting</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Education</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Electronics</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Energy</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Engineering</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Entertainment</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Environmental</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Finance</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Food %26 Beverage</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Government</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Healthcare</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hospitality</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Insurance</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Machinery</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Manufacturing</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Media</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Not For Profit</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Recreation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Retail</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Shipping</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Technology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Telecommunications</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Transportation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Utilities</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Is_Agency_International__c</picklist>
+        <values>
+            <fullName>No</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Yes</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Issuing_Authority__c</picklist>
+        <values>
+            <fullName>ADGM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ajman Freezone Authority</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ajman Nuventures Centre Free Zone %28ANC%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ankara Chamber of Commerce</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Canada Business Corporations Act</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chamber of Commerce%2C Industry%2C Handicrafts and Agriculture MONTE ROSA LAGHI ALTO PIEMONTE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Companies Registration Office %28CRO%29%2C Ireland</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Department of Economic Development - Abu Dhabi</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Department of Economic Development - Ajman</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Department of Economic Development - Dubai</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Department of Economic Development - Ras Al Khaimah</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Department of Economic Development - Sharjah</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Dubai Aviation City Corporation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Dubai Integrated Economic Zones Authority</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Federal Board of Revenue %28FBR%29 - Government of%C2%A0Pakistan</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Interdistrict Inspectorate of the Federal Tax Service No%2E 39 for the Republic of Bashkortostan</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Istanbul Trade Registry Directorate - Republic of Turkiye</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Magistrat der Stadt Büdingen - Gewerbeamt %28Trade Office of the City of Buedingen%29 Germany</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ministry of Commerce %26 Industry%2C State of Qatar</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ministry of Commerce%2C Industry %26 Investment Promotion - Sultanate%C2%A0of%C2%A0Oman</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ministry of Corporate Affairs %28MCA services%29%2C ROC Delhi%2C India</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ministry of Economic Development and Technology%2C Republic of Poland</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ministry of Government and Consumer Services%2C Ontario</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ministry of Justice of Georgia - LEPL National Agency of Public Registry</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Municipal Court in Prague</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>National Agency of Public Registry %28LEPL%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ras Al Khaimah Economic Zone %28RAKEZ%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Registrar of Companies - Hong Kong</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Registro Mercantil de Mallorca</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Revenue Service of Georgia</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SECURITIES AND EXCHANGE COMMISSION OF PAKISTAN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sharjah Media City - Free Zone Authority</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sharjah Publishing City - Free Zone Authority</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sharjah Research Technology and Innovation Park Free Zone Authority %28SRTIP%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>State of California</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>State of Kuwait - Ministry of Commerce %26 Industry</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tartu County Court Registration Department</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>The Kolkata Municipal Corporation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>The Netherlands Chamber of Commerce KVK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>İSTANBUL TİCARET ODASI %28ISTANBUL CHAMBER OF COMMERCE%29</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Nationality__c</picklist>
+        <values>
+            <fullName>%3F%3F%3F%3F</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Ownership</picklist>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Private</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Public</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Subsidiary</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Rating</picklist>
+        <values>
+            <fullName>Cold</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hot</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Warm</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Status__c</picklist>
+        <values>
+            <fullName>Agreement Issued</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Completed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Half Executed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>In Process</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Incomplete Registration</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Type</picklist>
+        <values>
+            <fullName>Agency</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Analyst</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Competitor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Customer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Integrator</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Investor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Partner</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Press</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Prospect</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Reseller</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>VAT_TRN__c</picklist>
+        <values>
+            <fullName>No</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Yes</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

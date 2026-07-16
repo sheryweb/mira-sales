@@ -1,0 +1,6 @@
+<apex:page >
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1 style="font-size: 14px;">Trade License Expire</h1><br /><br />
+  <span style="color: red; font-size: 14px;">This Agency record shows the expired Trade License on it. Please inform the Agency to provide new Trade License.</span>
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

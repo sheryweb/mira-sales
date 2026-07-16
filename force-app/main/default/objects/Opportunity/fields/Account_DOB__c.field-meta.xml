@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Account_DOB__c</fullName>
+    <formula>IF( Account.IsPersonAccount, Account.PersonContact.Birthdate, Account.Date_of_Birth_Arabic__c)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Account DOB</label>
+    <required>false</required>
+    <type>Date</type>
+</CustomField>

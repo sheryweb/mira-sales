@@ -1,0 +1,117 @@
+<apex:page controller="WazzupChatAgencyController" showHeader="false" sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false">
+    <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <style>
+                .chat-container {
+                    width: 100%;
+                    height: auto;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 0;
+                    padding: 0;
+                    font-family: Arial, sans-serif;
+                    background-color: #f8f9fa;
+                }
+                .chat-frame {
+                    width: 100%;
+                    border: none;
+                    background-color: white;
+                }
+                .error-container {
+                    max-width: 500px;
+                    width: 90%;
+                    padding: 20px;
+                    border-radius: 8px;
+                    background-color: white;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    text-align: center;
+                }
+                .error-message {
+                    color: #dc3545;
+                    padding: 20px;
+                    border: 1px solid #dc3545;
+                    border-radius: 4px;
+                    background-color: #f8d7da;
+                    margin-bottom: 20px;
+                }
+                .error-title {
+                    color: #dc3545;
+                    margin: 0 0 10px 0;
+                    font-size: 1.5em;
+                }
+                .error-text {
+                    margin: 10px 0;
+                    color: #666;
+                }
+                .help-text {
+                    font-size: 0.9em;
+                    color: #666;
+                    margin-top: 20px;
+                    padding-top: 20px;
+                    border-top: 1px solid #eee;
+                    text-align: left;
+                }
+                ul {
+                    text-align: left;
+                    padding-left: 20px;
+                }
+                .chat-frame {
+                    width: 1000px !important;
+                    max-width: 1000px !important;
+                    height: 500px !important;
+                    border: none;
+                }
+
+                /* Mobile: Reduce width for smaller screens */
+                @media screen and (max-width: 600px) {
+                    .chat-frame {
+                        width: 100%;
+                        max-width: 400px;
+                        height: 450px;
+                    }
+                }
+
+                /* Tablet: Adjust for medium screens */
+                @media screen and (max-width: 1024px) and (min-width: 601px) {
+                    .chat-frame {
+                        width: 90%;
+                        max-width: 600px;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="chat-container">
+                <!-- Show the chat iframe if there is no error -->
+                <apex:outputPanel rendered="{!NOT(ISNULL(iframeUrl)) && NOT(CONTAINS(iframeUrl, 'Error'))}">
+                    <iframe style="" src="{!iframeUrl}" 
+                            class="chat-frame"
+                            allow="microphone; camera"
+                            sandbox="allow-same-origin allow-scripts allow-popups allow-forms">
+                    </iframe>
+                </apex:outputPanel>
+                
+                <!-- Show error message if iframe URL contains 'Error' -->
+                <apex:outputPanel rendered="{!ISNULL(iframeUrl) || CONTAINS(iframeUrl, 'Error')}" styleClass="error-container">
+                    <h3 class="error-title">Unable to load chat</h3>
+                    <div class="error-message">
+                        <p class="error-text">
+                            <apex:outputText value="{!IF(ISNULL(iframeUrl), 'Unknown error occurred. Please try again later.', iframeUrl)}"/>
+                        </p>
+                    </div>
+                    <div class="help-text">
+                        <p>To resolve this issue:</p>
+                        <ul>
+                            <li>Ensure you are accessing this page from an Agency RM record.</li>
+                            <li>Verify the Agency RM has a valid WhatsApp or phone number.</li>
+                            <li>Check if you have the necessary permissions.</li>
+                            <li>If the issue persists, please contact your system administrator.</li>
+                        </ul>
+                    </div>
+                </apex:outputPanel>
+            </div>
+        </body>
+    </html>
+</apex:page>

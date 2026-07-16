@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>send_email</name>
+        <label>send email</label>
+        <locationX>50</locationX>
+        <locationY>839</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddressesArray</name>
+            <value>
+                <elementReference>emailscollection</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderType</name>
+            <value>
+                <stringValue>OrgWideEmailAddress</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <stringValue>noreply@miradevelopments.ae</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>New Booking Notification</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>emailbody</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>60.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>emails_collection</name>
+        <label>emails collection</label>
+        <locationX>270</locationX>
+        <locationY>539</locationY>
+        <assignmentItems>
+            <assignToReference>emailscollection</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>loop_users.Email</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>loop_users</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>was_found</name>
+        <label>was found?</label>
+        <locationX>182</locationX>
+        <locationY>731</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>emailscollection</leftValueReference>
+                <operator>NotEqualTo</operator>
+            </conditions>
+            <connector>
+                <targetReference>send_email</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <interviewLabel>New Opp Notification to Sales Admin {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>New Opp Notification to Sales Admin</label>
+    <loops>
+        <name>loop_users</name>
+        <label>loop users</label>
+        <locationX>182</locationX>
+        <locationY>431</locationY>
+        <collectionReference>get_user</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>emails_collection</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>was_found</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>get_user</name>
+        <label>get user</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>loop_users</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>UserRoleId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>00EHp000001ncpg</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>IsActive</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>User</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>get_user</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Booked</stringValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+    <textTemplates>
+        <name>emailbody</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Hi Team, 
+
+Below opportunity has been booked on {!$Flow.CurrentDateTime} 
+
+Account Name - {!$Record.Account.Name}
+Opportunity Name - {!$Record.Name}
+Unit - {!$Record.Unit__r.Title_Formula__c}
+Unit Price - {!$Record.Unit__r.Cost_AED__c}
+Sales Manager - {!$Record.Owner.FirstName}  {!$Record.Owner.LastName}
+Agency Name - {!$Record.Agency__r.Name} 
+
+Please find below Opportunity details:
+https://miradevelopments.lightning.force.com/lightning/r/Opportunity/{!$Record.Id}/view 
+
+Kind regards,
+MIRA Developments</text>
+    </textTemplates>
+    <variables>
+        <name>emailscollection</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

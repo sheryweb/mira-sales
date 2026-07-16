@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>This notification email will trigger when a Unit is Sold</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Notification Email on Unit Sold</name>
+    <relatedEntityType>Opportunity</relatedEntityType>
+    <style>none</style>
+    <subject>Unit Sold Notification</subject>
+    <type>custom</type>
+    <uiType>SFX</uiType>
+</EmailTemplate>

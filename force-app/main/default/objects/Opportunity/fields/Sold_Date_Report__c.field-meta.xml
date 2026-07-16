@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sold_Date_Report__c</fullName>
+    <externalId>false</externalId>
+    <formula>TEXT(DAY(DATEVALUE(Sold_Date_Time__c))) &amp; &quot;/&quot; &amp;
+TEXT(MONTH(DATEVALUE(Sold_Date_Time__c))) &amp; &quot;/&quot; &amp;
+TEXT(YEAR(DATEVALUE(Sold_Date_Time__c)))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Sold Date</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,97 @@
+.field-label {
+    font-size: 0.6875rem;
+    color: #54698d;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    line-height: 1.25;
+}
+
+.field-value {
+    font-size: 0.875rem;
+    color: #16325c;
+    font-weight: 400;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.amount-emphasis {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #0070d2;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.875rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+    line-height: 1.25;
+}
+
+.status-eligible {
+    background-color: #0070d2;
+    color: #ffffff;
+}
+
+.status-invoiced {
+    background-color: #ff9a3c;
+    color: #ffffff;
+}
+
+.status-partially-paid {
+    background-color: #fdc02f;
+    color: #16325c;
+}
+
+.status-fully-paid {
+    background-color: #04844b;
+    color: #ffffff;
+}
+
+.status-on-hold {
+    background-color: #706e6b;
+    color: #ffffff;
+}
+
+.status-cancelled {
+    background-color: #c23934;
+    color: #ffffff;
+}
+
+.commission-link {
+    color: #0070d2;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.commission-link:hover,
+.commission-link:focus {
+    text-decoration: underline;
+    color: #005fb2;
+}
+
+.empty-state {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: #f3f2f2;
+    border-radius: 0.25rem;
+}
+
+.reasons-list {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0 0;
+}
+
+.reason-item {
+    color: #c23934;
+    font-size: 0.8125rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
+}

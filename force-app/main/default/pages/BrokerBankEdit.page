@@ -1,0 +1,66 @@
+<apex:page controller="BrokerBankEditController" action="{!checkLogin}" showHeader="false"
+           sidebar="false" standardStylesheets="false" cache="false" docType="html-5.0" title="Broker Portal — Edit Bank Details">
+<head><meta name="viewport" content="width=device-width, initial-scale=1"/></head>
+<body>
+    <c:BrokerStyles />
+    <div class="bp-shell">
+        <c:BrokerSidebar active="profile" />
+        <div class="bp-main">
+            <c:BrokerTopbar title="Edit Bank Details" company="{!brokerCompanyName}" />
+            <div class="bp-content">
+                <div class="bp-h">
+                    <h2>Edit Bank Details</h2>
+                    <p>Changes are sent to MIRA for approval before they take effect.</p>
+                </div>
+
+                <!-- Submitted -->
+                <apex:outputPanel rendered="{!submitted}" layout="block">
+                    <div class="bp-card">
+                        <div class="ok" style="margin:0 0 14px;">{!message}</div>
+                        <p style="color:#6b7280; margin:0 0 18px;">Your relationship manager will review the request. The changes will appear on your profile once approved.</p>
+                        <a class="bp-btn bp-btn-primary" href="{!$Page.BrokerProfile}">Back to profile</a>
+                    </div>
+                </apex:outputPanel>
+
+                <!-- Locked (a request is already pending) -->
+                <apex:outputPanel rendered="{!AND(locked, NOT(submitted))}" layout="block">
+                    <div class="bp-card">
+                        <div class="bp-soft-note" style="margin:0 0 16px;">You already have bank changes pending approval. You can edit again once they're approved or rejected.</div>
+                        <a class="bp-btn bp-btn-ghost" href="{!$Page.BrokerProfile}">Back to profile</a>
+                    </div>
+                </apex:outputPanel>
+
+                <!-- Edit form -->
+                <apex:outputPanel rendered="{!AND(NOT(locked), NOT(submitted))}" layout="block">
+                    <apex:form >
+                        <apex:outputPanel rendered="{!message != null}" styleClass="bp-soft-note" layout="block">{!message}</apex:outputPanel>
+                        <apex:outputPanel rendered="{!NOT hasRows}" layout="block">
+                            <div class="bp-card bp-mt">
+                                <p style="padding:20px; text-align:center; color:#6b7280; margin:0;">No bank accounts on file to edit.</p>
+                            </div>
+                        </apex:outputPanel>
+                        <apex:repeat value="{!rows}" var="r">
+                            <div class="bp-card bp-mt">
+                                <h3>Bank account</h3>
+                                <p class="bp-sub">Update the fields you need to change.</p>
+                                <div class="bp-grid bp-form bp-mt">
+                                    <div class="bp-field"><label>Bank</label><apex:inputText value="{!r.bankName}" styleClass="bp-input"/></div>
+                                    <div class="bp-field"><label>Account Name</label><apex:inputText value="{!r.accountName}" styleClass="bp-input"/></div>
+                                    <div class="bp-field"><label>Account Number</label><apex:inputText value="{!r.accountNumber}" styleClass="bp-input"/></div>
+                                    <div class="bp-field"><label>IBAN</label><apex:inputText value="{!r.iban}" styleClass="bp-input"/></div>
+                                    <div class="bp-field"><label>Swift Code</label><apex:inputText value="{!r.swift}" styleClass="bp-input"/></div>
+                                    <div class="bp-field"><label>Branch</label><apex:inputText value="{!r.branch}" styleClass="bp-input"/></div>
+                                </div>
+                            </div>
+                        </apex:repeat>
+                        <div class="bp-card bp-mt">
+                            <apex:commandButton rendered="{!hasRows}" styleClass="bp-btn bp-btn-primary" value="Submit for approval" action="{!save}"/>
+                            <a class="bp-btn bp-btn-ghost" href="{!$Page.BrokerProfile}" style="{!IF(hasRows, 'margin-left:8px;', '')}">Cancel</a>
+                        </div>
+                    </apex:form>
+                </apex:outputPanel>
+            </div>
+        </div>
+    </div>
+</body>
+</apex:page>

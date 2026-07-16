@@ -1,0 +1,82 @@
+<apex:page controller="BrokerInvoiceController" renderAs="pdf" showHeader="false" sidebar="false"
+           standardStylesheets="false" applyHtmlTag="true" title="Commission Tax Invoice">
+<head>
+    <style>
+        @page { margin: 1.4cm; }
+        body { font-family: Arial, Helvetica, sans-serif; color:#1f2733; font-size:12px; }
+        .hdr { width:100%; border-bottom:3px solid #16325c; padding-bottom:14px; }
+        .hdr td { vertical-align:top; }
+        .brand { font-size:24px; font-weight:bold; color:#16325c; letter-spacing:1px; }
+        .brand small { display:block; font-size:11px; color:#6b7280; font-weight:normal; letter-spacing:0; }
+        .doctype { text-align:right; }
+        .doctype .t { font-size:20px; font-weight:bold; color:#2563eb; }
+        .doctype .m { font-size:11px; color:#6b7280; margin-top:4px; }
+        .parties { width:100%; margin-top:24px; }
+        .parties td { vertical-align:top; width:50%; }
+        .lbl { font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:#6b7280; margin-bottom:4px; }
+        .val { font-size:13px; font-weight:bold; color:#16325c; }
+        .sub { font-size:11px; color:#444; }
+        table.items { width:100%; border-collapse:collapse; margin-top:28px; }
+        table.items th { background:#16325c; color:#fff; text-align:left; padding:9px 12px; font-size:11px; }
+        table.items th.r, table.items td.r { text-align:right; }
+        table.items td { padding:11px 12px; border-bottom:1px solid #e6e9f0; }
+        .totals { width:46%; margin-left:54%; margin-top:14px; border-collapse:collapse; }
+        .totals td { padding:7px 12px; font-size:12px; }
+        .totals td.r { text-align:right; }
+        .totals tr.grand td { border-top:2px solid #16325c; font-weight:bold; font-size:14px; color:#16325c; }
+        .note { margin-top:34px; font-size:10.5px; color:#6b7280; border-top:1px solid #e6e9f0; padding-top:12px; }
+    </style>
+</head>
+<body>
+    <apex:outputPanel rendered="{!NOT isValid}">
+        <p style="font-size:14px; color:#c23934;">This invoice is not available. A commission invoice can only be generated for an eligible commission belonging to a VAT-registered agency.</p>
+    </apex:outputPanel>
+
+    <apex:outputPanel rendered="{!isValid}">
+        <table class="hdr">
+            <tr>
+                <td><div class="brand">MIRA<small>Developments</small></div></td>
+                <td class="doctype">
+                    <div class="t">TAX INVOICE</div>
+                    <div class="m">Date: {!invoice.dateStr}</div>
+                    <div class="m">Ref: {!invoice.commNo}</div>
+                </td>
+            </tr>
+        </table>
+
+        <table class="parties">
+            <tr>
+                <td>
+                    <div class="lbl">Billed By</div>
+                    <div class="val">{!invoice.agencyName}</div>
+                    <apex:outputText rendered="{!invoice.agencyTrn != null}" styleClass="sub" value="TRN: {!invoice.agencyTrn}"/>
+                </td>
+                <td>
+                    <div class="lbl">Billed To</div>
+                    <div class="val">MIRA Developments</div>
+                    <div class="sub">United Arab Emirates</div>
+                </td>
+            </tr>
+        </table>
+
+        <table class="items">
+            <tr><th>Description</th><th class="r">Amount (AED)</th></tr>
+            <tr>
+                <td>Sales commission &mdash; Unit {!invoice.unit} {!invoice.tower} (rate {!invoice.rate})</td>
+                <td class="r">{!invoice.commissionAmount}</td>
+            </tr>
+        </table>
+
+        <table class="totals">
+            <tr><td>Subtotal</td><td class="r">AED {!invoice.commissionAmount}</td></tr>
+            <tr><td>VAT (5%)</td><td class="r">AED {!invoice.vatAmount}</td></tr>
+            <tr class="grand"><td>Total Due</td><td class="r">AED {!invoice.totalAmount}</td></tr>
+        </table>
+
+        <div class="note">
+            This tax invoice is generated from the MIRA Broker Portal for the referenced commission.
+            VAT is charged at 5% as the agency is VAT registered.
+        </div>
+    </apex:outputPanel>
+</body>
+</apex:page>

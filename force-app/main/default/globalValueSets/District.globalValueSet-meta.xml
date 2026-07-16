@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Discovery Gardens</fullName>
+        <default>true</default>
+        <label>Al Furjan, Discovery Gardens</label>
+    </customValue>
+    <customValue>
+        <fullName>Meydan</fullName>
+        <default>false</default>
+        <label>Meydan</label>
+    </customValue>
+    <customValue>
+        <fullName>Andermatt</fullName>
+        <default>false</default>
+        <label>Andermatt</label>
+    </customValue>
+    <customValue>
+        <fullName>Al Marjan Island - RAK</fullName>
+        <default>false</default>
+        <label>Al Marjan Island - RAK</label>
+    </customValue>
+    <customValue>
+        <fullName>TBILISI</fullName>
+        <default>false</default>
+        <label>TBILISI</label>
+    </customValue>
+    <masterLabel>District</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lead_Type__c</fullName>
+    <label>Lead Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>GDN</fullName>
+                <default>false</default>
+                <label>GDN</label>
+            </value>
+            <value>
+                <fullName>pMax</fullName>
+                <default>false</default>
+                <label>pMax</label>
+            </value>
+            <value>
+                <fullName>Search</fullName>
+                <default>false</default>
+                <label>Search</label>
+            </value>
+            <value>
+                <fullName>DemandGen</fullName>
+                <default>false</default>
+                <label>DemandGen</label>
+            </value>
+            <value>
+                <fullName>Youtube</fullName>
+                <default>false</default>
+                <label>Youtube</label>
+            </value>
+            <value>
+                <fullName>Social Organic</fullName>
+                <default>false</default>
+                <label>Social Organic</label>
+            </value>
+            <value>
+                <fullName>Paid Ads</fullName>
+                <default>false</default>
+                <label>Paid Ads</label>
+            </value>
+            <value>
+                <fullName>Bing SEO</fullName>
+                <default>false</default>
+                <label>Bing SEO</label>
+            </value>
+            <value>
+                <fullName>DuckDuckGo SEO</fullName>
+                <default>false</default>
+                <label>DuckDuckGo SEO</label>
+            </value>
+            <value>
+                <fullName>Rambler SEO</fullName>
+                <default>false</default>
+                <label>Rambler SEO</label>
+            </value>
+            <value>
+                <fullName>Google SEO</fullName>
+                <default>false</default>
+                <label>Google SEO</label>
+            </value>
+            <value>
+                <fullName>Yahoo SEO</fullName>
+                <default>false</default>
+                <label>Yahoo SEO</label>
+            </value>
+            <value>
+                <fullName>Mail.ru SEO</fullName>
+                <default>false</default>
+                <label>Mail.ru SEO</label>
+            </value>
+            <value>
+                <fullName>Yandex SEO</fullName>
+                <default>false</default>
+                <label>Yandex SEO</label>
+            </value>
+            <value>
+                <fullName>2GIS Maps</fullName>
+                <default>false</default>
+                <label>2GIS Maps</label>
+            </value>
+            <value>
+                <fullName>Google Maps</fullName>
+                <default>false</default>
+                <label>Google Maps</label>
+            </value>
+            <value>
+                <fullName>direct</fullName>
+                <default>false</default>
+                <label>direct</label>
+            </value>
+            <value>
+                <fullName>Hybrid</fullName>
+                <default>false</default>
+                <label>Hybrid</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

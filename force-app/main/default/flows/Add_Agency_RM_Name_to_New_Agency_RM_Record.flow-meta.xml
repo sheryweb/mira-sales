@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <environments>Default</environments>
+    <formulas>
+        <name>AgencyRMName</name>
+        <dataType>String</dataType>
+        <expression>IF(
+   LEN({!$Record.Agency__r.Name} &amp; &apos; - &apos; &amp; {!$Record.Relationship_Manager__r.FirstName} &amp; {!$Record.Relationship_Manager__r.LastName}) &gt; 80,
+   LEFT({!$Record.Agency__r.Name} &amp; &apos; - &apos; &amp; {!$Record.Relationship_Manager__r.FirstName} &amp; {!$Record.Relationship_Manager__r.LastName}, 80),
+   {!$Record.Agency__r.Name} &amp; &apos; - &apos; &amp; {!$Record.Relationship_Manager__r.FirstName} &amp; {!$Record.Relationship_Manager__r.LastName}
+)</expression>
+    </formulas>
+    <interviewLabel>Add Agency RM Name to New Agency RM Record {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Add Agency RM Name to New Agency RM Record</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Agency_Account_Record</name>
+        <label>Get Agency Account Record</label>
+        <locationX>176</locationX>
+        <locationY>287</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Update_Agency_RM_Name</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Agency__r.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Agency_RM_Name</name>
+        <label>Update Agency RM Name</label>
+        <locationX>176</locationX>
+        <locationY>395</locationY>
+        <inputAssignments>
+            <field>Name</field>
+            <value>
+                <elementReference>AgencyRMName</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>$Record.Relationship_Manager__r.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Agency_Account_Record</targetReference>
+        </connector>
+        <object>Agency_RM__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

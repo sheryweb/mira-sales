@@ -1,0 +1,9 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId">
+    <aura:attribute name="recordId" type="String"/>
+    <aura:handler name="change" value="{!v.recordId}" action="{!c.handleRecordIdChange}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:if isTrue="{!not(empty(v.recordId))}">
+        <c:generateSalesOfferPDF recordId="{!v.recordId}" onfilepreviewaura="{!c.handlePreview}"/>
+    </aura:if>
+    
+</aura:component>

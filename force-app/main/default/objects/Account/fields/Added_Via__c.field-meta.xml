@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Added_Via__c</fullName>
+    <label>Added Via</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Import</fullName>
+                <default>false</default>
+                <label>Import</label>
+            </value>
+            <value>
+                <fullName>Data Entry</fullName>
+                <default>false</default>
+                <label>Data Entry</label>
+            </value>
+            <value>
+                <fullName>External Source</fullName>
+                <default>false</default>
+                <label>External Source</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

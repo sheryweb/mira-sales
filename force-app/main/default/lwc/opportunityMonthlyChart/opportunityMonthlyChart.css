@@ -1,0 +1,63 @@
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    margin: 20px 0;
+}
+
+.chart-container canvas {
+    max-height: 400px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .chart-container {
+        height: 300px;
+    }
+    
+    .chart-container canvas {
+        max-height: 300px;
+    }
+}
+
+/* Custom styling for better chart appearance */
+.slds-card {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Summary section styling */
+.slds-text-heading_small {
+    font-weight: 600;
+}
+
+.slds-text-color_success {
+    color: #2ecc71;
+}
+
+.slds-text-color_brand {
+    color: #0070d2;
+}
+
+.slds-text-color_weak {
+    color: #706e6b;
+}
+
+.booked-color {
+    color: #3498db;
+}
+
+/* Print button styling */
+.print-button {
+    margin-left: 10px;
+}
+
+/* Print-specific styles */
+@media print {
+    .print-button {
+        display: none !important;
+    }
+    
+    .chart-container {
+        page-break-inside: avoid;
+    }
+}

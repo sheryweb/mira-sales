@@ -1,0 +1,1087 @@
+<apex:page renderAs="" showHeader="true" title="Booking Form ({!oppData['Opportunity'].Unit__r.Title_Formula__c})" sidebar="false" standardStylesheets="false" applyBodyTag="true" applyHtmlTag="true" controller="BookingFormPDFController">
+  <html>
+      <head>
+          <style>
+              body {
+                  font-family: Arial, Helvetica, sans-serif;
+                  font-size: 12px;
+                  //font-family: "Lucida Console", "Courier New", monospace;
+              }
+              .clearfix {
+                  clear: both;
+              }
+              table {
+                  width: 100%;
+              }
+              .table-div {
+                  display: table;
+                  width: 100%;
+                  border: 1px solid #dddddd;
+              }
+              .row-div {
+                  display: table-row;
+              }
+              .column-div {
+                  display: table-cell;
+                  padding: 5px;
+                  border: 1px solid #dddddd;
+              }
+              .table-title {
+                  width: 50%;
+                  font-size: 14px;
+                  font-weight: bold;
+                  background: #f1f1f1;
+                  border-bottom: none;
+              }
+              @page {
+                  size: A4 portait;
+                  margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+              }
+              @media print {
+                  div#page-footer {
+                      display: block;
+                      padding: 5px;
+                      position: fixed;
+                      top: 0;
+                  }
+                  #print-btn {
+                      display: none;
+                  }
+                  div#logo-footer {
+                    display: block;
+                    position: fixed;
+                    bottom: 0;
+                    left: 44%;
+                  }
+              }
+              .logo {
+                  width: 100%;
+                  padding-bottom: 10px;
+                  text-align: right;
+              }
+              .ar-lang {
+                  direction: rtl;
+              }
+              
+            .page {
+                 position: relative;
+                 counter-increment: page;
+            }
+           /*page numbers*/
+            div.page:after {
+                display: block;
+                content: " Page - "counter(page);
+                position: absolute;
+                bottom: -1045px;
+                right: 15px;
+                padding: 2px 12px;
+                font-size: 14px;
+            }
+            .floor-plan-title {
+                width: 100%;
+                text-align: center;
+                font-size: 20px;
+                font-weight: bold;
+            }
+          </style>
+      </head>
+      <body class="page-content" onload="">
+          <div class="footer grey-txt" id="page-footer">
+              <p>საცხოვრებელი უძრავი ქონების დაჯავშნის ხელშეკრულება № {!oppData['Opportunity'].Unit__r.Property_Code_Text__c}</p>
+              <p>Residential Real Estate Reservation Agreement № {!oppData['Opportunity'].Unit__r.Property_Code_Text__c}</p>
+          </div>
+          <div id="logo-footer"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="30" /></div>
+          <br />
+          <p id="print-btn"><button onclick="window.print()">Download PDF</button></p>
+          <div id="page-content">
+              <div class='col size-1-of-2 page' style="text-align: right; margin-top: 20px;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div>
+              <div class='logo'></div>
+              <div class="table-div" style="margin-top: 10px;">
+                  <div class="row-div">
+                      <div class="column-div table-title" style="border-right: none;">საცხოვრებელი უძრავი ქონების დაჯავშნის ხელშეკრულება № {!oppData['Opportunity'].Unit__r.Property_Code_Text__c}</div>
+                      <div class="column-div table-title" style="border-left: none;">Residential Real Estate Reservation Agreement № {!oppData['Opportunity'].Unit__r.Property_Code_Text__c}</div>
+                  </div>
+              </div>
+              <div class="table-div" style="text-align: justify;">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;"><strong>ხელშეკრულების დადების თარიღი:</strong> {!oppData['BookingDate']}</div>
+                      <div class="column-div" style="width: 50%;"><strong>Date of Execution of the Agreement:</strong> {!oppData['BookingDate']}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>ხელშეკრულების დადების ადგილი:</strong> თბილისი, საქართველო</div>
+                    <div class="column-div" style="width: 50%;"><strong>Place of Execution of the Agreement:</strong> Tbilisi, Georgia</div>
+                  </div>
+              </div>
+              <br />
+              <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მხარეთა მონაცემები:</div>
+                    <div class="column-div table-title" style="border-left: none;">Details of the Parties:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">ა. გამყიდველის მონაცემები</div>
+                    <div class="column-div table-title" style="border-left: none;">A. Seller’s Details</div>
+                </div>
+              </div>
+              <div class="table-div" style="text-align: justify;">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">სახელწოდება: შპს მირა დეველოპმენტს</div>
+                      <div class="column-div" style="width: 50%;">Name: MIRA DEVELOPMENTS LLC</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">საიდენტიფიკაციო ნომერი: 419625052</div>
+                      <div class="column-div" style="width: 50%;">Identification Number: 419625052</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">რეგისტრაციის მისამართი: ქ. ტყიბული, რეზო თაბუკაშვილის ქ. №14, ბინა №9</div>
+                    <div class="column-div" style="width: 50%;">Registered Address: Tkibuli, 14, Rezo Tabukashvili Str., Apartment 9</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ფაქტობრივი მისამართი:</div>
+                    <div class="column-div" style="width: 50%;">Actual Address:</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ელ. ფოსტა:</div>
+                    <div class="column-div" style="width: 50%;">Email:</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ტელეფონი:</div>
+                    <div class="column-div" style="width: 50%;">Telephone:</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">დირექტორი: ბექა ქურციკიძე</div>
+                    <div class="column-div" style="width: 50%;">Director: Beka Kurtsikidze</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">პირადი ნომერი: 41001020881</div>
+                    <div class="column-div" style="width: 50%;">Personal Number: 41001020881</div>
+                  </div>
+              </div>
+              <br />
+           <!-- Start of Buyer Information -->              
+              <div class="table-div">
+                  <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">{!IF(AND(NOT(ISNULL(oppData['jointOwners'])),oppData['jointOwners'] != 'Null'), 'მყიდველი 1 მონაცემები', 'მყიდველის მონაცემები')}</div>
+                    <div class="column-div table-title" style="border-right: none;">{!IF(AND(NOT(ISNULL(oppData['jointOwners'])),oppData['jointOwners'] != 'Null'), 'BUYER 1 DETAILS', 'BUYER`S DETAILS')}</div>
+                  </div>
+              </div>
+              <div class="table-div">
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">სახელი, გვარი: {!oppData['Opportunity'].Account.Name}</div>
+                      <div class="column-div" style="width: 50%;">Name, Surname: {!oppData['Opportunity'].Account.Name}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">საკუთრების წილი: {!oppData['Opportunity'].Ownership_Share_of_the_Main_Purchaser__c}%</div>
+                      <div class="column-div" style="width: 50%;">Ownership Share: {!oppData['Opportunity'].Ownership_Share_of_the_Main_Purchaser__c}%</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', '', 'none')}">
+                      <div class="column-div" style="width: 50%;">ლიცენზიის ნომერი. (For legal entities): {!oppData['licenseNumberValue']}</div>
+                      <div class="column-div" style="width: 50%;">License No. (For legal entities): {!oppData['licenseNumberValue']}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', '', 'none')}">
+                      <div class="column-div" style="width: 50%;">რეგისტრაციის ქვეყანა: {!oppData['incorporationCountry']}</div>
+                      <div class="column-div" style="width: 50%;">Country of Incorporation: {!oppData['incorporationCountry']}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', 'none', '')}">
+                      <div class="column-div" style="width: 50%;">მოქალაქეობა: {!oppData['Opportunity'].Account.Nationality__c}</div>
+                      <div class="column-div" style="width: 50%;">Citizenship: {!oppData['Opportunity'].Account.Nationality__c}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', 'none', '')}">
+                      <div class="column-div" style="width: 50%;">პასპორტის ნომერი: {!oppData['Opportunity'].Account.Passport_No__c}</div>
+                      <div class="column-div" style="width: 50%;">Passport No: {!oppData['Opportunity'].Account.Passport_No__c}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">პირადი ნომერი (არსებობის შემთხვევაში): {!oppData['personInformation']['personMobile']}</div>
+                    <div class="column-div" style="width: 50%;">Personal Number (if any): {!oppData['personInformation']['personMobile']}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">გაცემის ადგილი: {!oppData['Opportunity'].Account.Passport_Place_of_Issue__pc}</div>
+                    <div class="column-div" style="width: 50%;">Place of Issue: {!oppData['Opportunity'].Account.Passport_Place_of_Issue__pc}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">გაცემის თარიღი: {!oppData['PassportIssueDate']}</div>
+                    <div class="column-div" style="width: 50%;">Date of Issue: {!oppData['PassportIssueDate']}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">რეგისტრაციის მისამართი: {!oppData['Opportunity'].Account.BillingStreet}</div>
+                    <div class="column-div" style="width: 50%;">Registered Address: {!oppData['Opportunity'].Account.BillingStreet}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ფაქტობრივი მისამართი: {!oppData['Opportunity'].Account.BillingStreet}</div>
+                    <div class="column-div" style="width: 50%;">Actual Address: {!oppData['Opportunity'].Account.BillingStreet}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ელ. ფოსტა: {!oppData['personInformation']['personEmail']}</div>
+                    <div class="column-div" style="width: 50%;">Email: {!oppData['personInformation']['personEmail']}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ტელეფონი: {!oppData['personInformation']['personPhone']}</div>
+                    <div class="column-div" style="width: 50%;">Telephone: {!oppData['personInformation']['personPhone']}</div>
+                  </div>
+              </div>
+
+           <apex:variable value="{!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 1, 0)}" var="count" />
+           <apex:outputPanel rendered="{!AND(NOT(ISNULL(oppData['jointOwners'])),oppData['jointOwners'] != 'Null')}">
+           <apex:repeat value="{!oppData['jointOwners']}" var="jOwner">
+              <apex:variable value="{!count+1}" var="count" />
+              <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 20px;; text-align: right; display: {!IF((count == 2 || count == 4), '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+              
+              <div class="table-div">
+                  <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">{!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'მყიდველი ' + TEXT(count) + ' მონაცემები', 'BUYER`S DETAILS')}</div>
+                    <div class="column-div table-title" style="border-right: none;">{!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'BUYER ' + TEXT(count) + ' DETAILS', 'BUYER`S DETAILS')}</div>
+                  </div>
+              </div>
+              <div class="table-div">
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">სახელი, გვარი: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.Name, jOwner.FirstName + ' ' + jOwner.MiddleName + ' ' + jOwner.LastName)}</div>
+                      <div class="column-div" style="width: 50%;">Name, Surname: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.Name, jOwner.FirstName + ' ' + jOwner.MiddleName + ' ' + jOwner.LastName)}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">საკუთრების წილი: {!oppData['jointOwnersOwnership'][jOwner.Id]}%</div>
+                      <div class="column-div" style="width: 50%;">Ownership Share: {!oppData['jointOwnersOwnership'][jOwner.Id]}%</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), '', 'none')}">
+                      <div class="column-div" style="width: 50%;">ლიცენზიის ნომერი. (For legal entities): {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), oppData['jointOwnersLicenseValues'][jOwner.Id], '')}</div>
+                      <div class="column-div" style="width: 50%;">License No. (For legal entities): {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), oppData['jointOwnersLicenseValues'][jOwner.Id], '')}</div>
+                  </div>
+                  <div class="row-div" style="display: {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), '', 'none')}">
+                      <div class="column-div" style="width: 50%;">რეგისტრაციის ქვეყანა: {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), oppData['jointOwnersIncorporationValues'][jOwner.Id], '')}</div>
+                      <div class="column-div" style="width: 50%;">Country of Incorporation: {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), oppData['jointOwnersIncorporationValues'][jOwner.Id], '')}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">მოქალაქეობა: {!jOwner.Nationality__c}</div>
+                      <div class="column-div" style="width: 50%;">Citizenship: {!jOwner.Nationality__c}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">პასპორტის ნომერი: {!jOwner.Passport_No__c}</div>
+                      <div class="column-div" style="width: 50%;">Passport No: {!jOwner.Passport_No__c}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">პირადი ნომერი (არსებობის შემთხვევაში): {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.PersonMobilePhone, jOwner.MobilePhone)}</div>
+                    <div class="column-div" style="width: 50%;">PersonalNumber (if any): {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.PersonMobilePhone, jOwner.MobilePhone)}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">გაცემის ადგილი: {!jOwner.Passport_Place_of_Issue__pc}</div>
+                    <div class="column-div" style="width: 50%;">Place of Issue: {!jOwner.Passport_Place_of_Issue__pc}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">გაცემის თარიღი: {!oppData['jointOwnersPassportIssueDate'][jOwner.Id]}</div>
+                    <div class="column-div" style="width: 50%;">Date of Issue: {!oppData['jointOwnersPassportIssueDate'][jOwner.Id]}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">რეგისტრაციის მისამართი: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.BillingStreet, jOwner.Account.BillingStreet)}</div>
+                      <div class="column-div" style="width: 50%;">Registered Address: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.BillingStreet, jOwner.Account.BillingStreet)}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ფაქტობრივი მისამართი: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.BillingStreet, jOwner.Account.BillingStreet)}</div>
+                    <div class="column-div" style="width: 50%;">Actual Address: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.BillingStreet, jOwner.Account.BillingStreet)}</div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ელ. ფოსტა: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.PersonEmail, jOwner.Email)}</div>
+                    <div class="column-div" style="width: 50%;">Email: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.PersonEmail, jOwner.Email)}</div>
+                  </div>
+                  <div class="row-div">
+                      <div class="column-div" style="width: 50%;">ტელეფონი: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.Phone, jOwner.Phone)}</div>
+                      <div class="column-div" style="width: 50%;">Telephone: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.Phone, jOwner.Phone)}</div>
+                  </div>
+              </div>
+           </apex:repeat>
+           </apex:outputPanel>
+           <!-- End of Purchaser Information -->
+
+              <br />
+              
+              <!-- Start of Shared Contacts -->
+              <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right; display: {!IF(AND(NOT(ISNULL(oppData['jointOwners'])),oppData['jointOwners'] != 'Null'), 'none', '')}"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+              <apex:outputPanel rendered="{!AND(NOT(ISNULL(oppData['sharedContacts'])),oppData['sharedContacts'] != 'Null')}">
+              <div class="table-div" style="text-align: justify;">
+                  <div class="row-div" style="text-align: center;">
+                      <div class="column-div" style="width: 20%;">Name</div>
+                      <div class="column-div" style="width: 20%;">Position in Company</div>
+                      <div class="column-div" style="width: 10%;">Company Share</div>
+                      <div class="column-div" style="width: 20%;">Nationality</div>
+                      <div class="column-div" style="width: 20%;">Passport No.</div>
+                  </div>
+              </div>
+              <apex:repeat value="{!oppData['sharedContacts']}" var="sCont">
+              <div class="table-div" style="text-align: justify;">
+                  <div class="row-div" style="text-align: center;">
+                      <div class="column-div" style="width: 20%;">{!sCont.FirstName} {!sCont.MiddleName} {!sCont.LastName}</div>
+                      <div class="column-div" style="width: 20%;">{!sCont.Position_in_Company__c}</div>
+                      <div class="column-div" style="width: 10%;">{!sCont.Company_Share__c}%</div>
+                      <div class="column-div" style="width: 20%;">{!sCont.Nationality__c}</div>
+                      <div class="column-div" style="width: 20%;">{!sCont.Passport_No__c}</div>
+                  </div>
+              </div>
+              </apex:repeat>
+              </apex:outputPanel>
+              <!-- End of Shared Contacts -->
+              <br />
+             
+             <!-- <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br /> -->
+             
+             <!-- Start of Payment Plans -->
+             <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">Payment Plan</div>
+                    <div class="column-div table-title" style="border-left: none; text-align: right;">خطة السداد</div>
+                </div>
+            </div>
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div" style="width: 1%; text-align: center;"><p style="margin: 0;">Sr.No</p></div>
+                    <div class="column-div" style="width: 15%; text-align: center;"><p style="margin: 0;">Installment Date</p> <p style="margin: 0;">განვადების თარიღი</p></div>
+                    <div class="column-div" style="width: 10%; text-align: center;"><p style="margin: 0;">Payment Percentage</p> <p style="margin: 0;">გადახდის პროცენტი</p></div>
+                    <div class="column-div" style="width: 15%; text-align: center;"><p style="margin: 0;">Amount GEL</p> <p style="margin: 0;">თანხა ლარი</p></div>
+                    <div class="column-div" style="width: 15%; text-align: center;"><p style="margin: 0;">Amount USD</p> <p style="margin: 0;">თანხა აშშ დოლარი</p></div>
+                    <div class="column-div" style="width: 22%; text-align: center;"><p style="margin: 0;">Milestone</p></div>
+                </div>
+               <apex:variable value="{!0}" var="pCount" />
+               <apex:repeat value="{!oppData['paymentPlans']}" var="pp">
+               <apex:variable value="{!pCount+1}" var="pCount" />
+                <div class="row-div">
+                    <div class="column-div" style="width: 1%; text-align: center;">{!pCount}</div>
+                    <div class="column-div" style="width: 15%; text-align: center;">{!pp['paymentDate']}</div>
+                    <div class="column-div" style="width: 10%; text-align: center;">{!pp['percent']}%</div>
+                    <div class="column-div" style="width: 15%; text-align: center;">{!pp['amountGEL']}</div>
+                    <div class="column-div" style="width: 15%; text-align: center;">{!pp['amount']}</div>
+                    <div class="column-div" style="width: 22%; text-align: center;">{!pp['milestone']}</div>
+                </div>
+               </apex:repeat>
+            </div>
+            <!-- End of Payment Plans -->
+             
+            <!-- Start of Final Terms & Conditions -->
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%; font-weight: bold;">წინამდებარე საცხოვრებელი უძრავი ქონების დაჯავშნის ხელშეკრულება № {!oppData['Opportunity'].Unit__r.Property_Code_Text__c} იდება შემდეგ მხარეებს შორის:</div>
+                    <div class="column-div" style="width: 50%; font-weight: bold;">This Residential Real Estate Reservation Agreement № {!oppData['Opportunity'].Unit__r.Property_Code_Text__c} is entered into between the following parties:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>გამყიდველი:</strong> MIRA DEVELOPMENTS LLC (შემდგომში მოხსენიებული, როგორც „გამყიდველი“)</div>
+                    <div class="column-div" style="width: 50%;"><strong>Seller:</strong> MIRA DEVELOPMENTS LLC (hereinafter referred to as the “Seller”)</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">და</div>
+                    <div class="column-div" style="width: 50%;">AND</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>მყიდველი:</strong> {!oppData['Opportunity'].Account.Name} (შემდგომში მოხსენიებული, როგორც „მყიდველი“)</div>
+                    <div class="column-div" style="width: 50%;"><strong>Buyer:</strong> {!oppData['Opportunity'].Account.Name} (hereinafter referred to as the “Buyer”)</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">წინამდებარე ხელშეკრულების ფარგლებში გამყიდველი და მყიდველი ერთობლივად მოხსენიებულნი იქნებიან, როგორც <strong>„მხარეები“</strong>, ხოლო ცალ-ცალკე, როგორც <strong>„მხარე“</strong>;</div>
+                    <div class="column-div" style="width: 50%;">Within the framework of this Agreement, the Seller and the Buyer shall be jointly referred to as the <strong>“Parties”</strong> and individually as a <strong>“Party”</strong>;</div>
+                </div>
+            </div>
+            <br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%; font-weight: bold; text-align: center;">პრეამბულა</div>
+                    <div class="column-div" style="width: 50%; font-weight: bold; text-align: center;">Preamble</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>ვინაიდან,</strong> გამყიდველს დაგემილი აქვს (Gardabani Municipality, Teleti Village) მდებარე მიწის ნაკვეთის (საკადასტრო კოდი: 81.03.16.205) სამშენებლო დანიშნულებით განვითარება, მასზე სამშენებლო სამუშაოების განხორციელება, აშენებული საცხოვრებელი და არასაცხოვრებელი დანიშნულების უძრავი ქონებების რეალიზაცია და შემდგომში მათი მართვა;</div>
+                    <div class="column-div" style="width: 50%;"><strong>WHEREAS,</strong> the Seller is entitled to develop the land plot located at (Gardabani Municipality, Teleti Village) (cadastral code: 81.03.16.205) for construction purposes, to carry out construction works thereon, to sell the residential and non-residential immovable properties constructed on it, and subsequently to manage them;</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>ვინაიდან,</strong> მყიდველმა გამოხატა გამყიდველისაგან საცხოვრებელი უძრავი ქონების შეძენის ინტერესი და სურს, რომ დაჯავშნოს გამყიდველის მიერ ასაშენებელი საცხოვრებელი დანიშნულების უძრავი ქონება;</div>
+                    <div class="column-div" style="width: 50%;"><strong>WHEREAS,</strong> the Buyer has expressed interest in acquiring residential immovable property from the Seller and wishes to reserve residential immovable property to be constructed by the Seller;</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>შესაბამისად,</strong> მხარეები თანხმდებიან და დებენ წინამდებარე საცხოვრებელი უძრავი ქონების დაჯავშნის ხელშეკრულებას ამავე ხელშეკრულებით გათვალისწინებული წესებითა და პირობებით.</div>
+                    <div class="column-div" style="width: 50%;"><strong>THEREFORE,</strong> the Parties agree to enter into this Agreement for the reservation of residential immovable property on the terms and conditions set forth herein.</div>
+                </div>
+            </div>
+            <br />
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>1. უძრავი ქონების მახასიათებლები, ნასყიდობის ღირებულება და გადახდის წესი</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>1. Characteristics of the Immovable Property, Purchase Price and Payment Terms</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%; font-weight: bold;">1.1. უძრავი ქონების მახასიათებლები</div>
+                    <div class="column-div" style="width: 50%; font-weight: bold;">1.1. Characteristics of the Immovable Property</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">პროექტის სახელწოდება: {!oppData['Opportunity'].Unit__r.Project_Name_Text__c}</div>
+                    <div class="column-div" style="width: 50%;">Project Name: {!oppData['Opportunity'].Unit__r.Project_Name_Text__c}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ნივთის ნომერი: {!oppData['Opportunity'].Unit__r.Title__c}</div>
+                    <div class="column-div" style="width: 50%;">Unit Number: {!oppData['Opportunity'].Unit__r.Building__c} - {!oppData['Opportunity'].Unit__r.Title__c}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">დანიშნულება: საცხოვრებელი</div>
+                    <div class="column-div" style="width: 50%;">Purpose/Use: Residential</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">სართულის ნომერი: {!oppData['Opportunity'].Unit__r.Floor__c}</div>
+                    <div class="column-div" style="width: 50%;">Floor Number: {!oppData['Opportunity'].Unit__r.Floor__c}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">შიდა ფართობი: sq.ft. {!oppData['formattedNumbers'].formattedSuiteArea}</div>
+                    <div class="column-div" style="width: 50%;">Internal Area: sq.ft. {!oppData['formattedNumbers'].formattedSuiteArea}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">საზაფხულო ფართობი: {!oppData['Opportunity'].Unit__r.Balcony_Size__c}</div>
+                    <div class="column-div" style="width: 50%;">Terrace/Balcony Area: {!oppData['Opportunity'].Unit__r.Balcony_Size__c}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ჯამური ფართობი: sq.ft. {!oppData['formattedNumbers'].formattedTotalArea}</div>
+                    <div class="column-div" style="width: 50%;">Total Area: sq.ft. {!oppData['formattedNumbers'].formattedTotalArea}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">საკადასტრო კოდი (არსებობის შემთხვევაში): 81.03.16.205</div>
+                    <div class="column-div" style="width: 50%;">Cadastral Code (if applicable): 81.03.16.205</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%; font-weight: bold;">1.2 უძრავი ქონების ნასყიდობის ღირებულება</div>
+                    <div class="column-div" style="width: 50%; font-weight: bold;">1.2. Purchase Price of the Immovable Property</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">შესყიდვის ფასი: {!oppData['formattedNumbers'].formattedUnitCostGEL} ლარი ({!oppData['formattedNumbers'].formattedUnitCostUSD} აშშ დოლარის ეკვივალენტი)</div>
+                    <div class="column-div" style="width: 50%;">Purchase Price: {!oppData['formattedNumbers'].formattedUnitCostGEL} GEL  (equivalent of {!oppData['formattedNumbers'].formattedUnitCostUSD} USD)</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%; font-weight: bold;">1.3. საცხოვრებელი უძრავი ქონების დაჯავშნის ღირებულება: </div>
+                    <div class="column-div" style="width: 50%; font-weight: bold;">1.3. Reservation Fee for the Residential Immovable Property</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">საცხოვრებელი უძრავი ქონების დაჯავშნის საფასური: {!oppData['paymentPlans'][0]['amountGEL']} ლარი ({!oppData['paymentPlans'][0]['amount']} აშშ დოლარის ეკვივალენტი)</div>
+                    <div class="column-div" style="width: 50%;">Reservation Fee for the Residential Immovable Property: {!oppData['paymentPlans'][0]['amountGEL']} GEL (equivalent of {!oppData['paymentPlans'][0]['amount']} USD)</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%; font-weight: bold;">1.4. ნასყიდობის ღირებულების გადახდის გრაფიკი - განსაზღვრულია დანართი №3-ით</div>
+                    <div class="column-div" style="width: 50%; font-weight: bold;">1.4. Payment schedule of the purchase price - is set forth in Annex №3.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%; font-weight: bold;">1.5. ღირებულების ანგარიშსწორების მეთოდი:</div>
+                    <div class="column-div" style="width: 50%; font-weight: bold;">1.5. Method of Payment</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">საბანკო გადარიცხვა</div>
+                    <div class="column-div" style="width: 50%;">Bank transfer</div>
+                </div>
+            </div>
+            <br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%; font-weight: bold;">1.6. საბანკო ანგარიშის მონაცემები:</div>
+                    <div class="column-div" style="width: 50%; font-weight: bold;">1.6. Bank Account Details</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ბანკის დასახელება: Emirates Islamic Bank</div>
+                    <div class="column-div" style="width: 50%;">Bank Name: Emirates Islamic Bank</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ანგარიშის სახელი: M I R A DEVELOPMENTS LLC </div>
+                    <div class="column-div" style="width: 50%;">Account Name: M I R A DEVELOPMENTS LLC </div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ანგარიშის ნომერი: 3708470562408</div>
+                    <div class="column-div" style="width: 50%;">Account Number: 3708470562408</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">IBAN: AE830340003708470562408</div>
+                    <div class="column-div" style="width: 50%;">IBAN: AE830340003708470562408</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ფილიალი: EI Health Care City</div>
+                    <div class="column-div" style="width: 50%;">Branch: EI Health Care City</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">BIC კოდი: MEBLAEADXXX</div>
+                    <div class="column-div" style="width: 50%;">BIC Code: MEBLAEADXXX</div>
+                </div>
+            </div>
+            <br />
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>2. მხარეთა განცხადებები</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>2. Representations of the Parties</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%; font-weight: bold;">2.1. გამყიდველის განცხადებები</div>
+                    <div class="column-div" style="width: 50%; font-weight: bold;">2.1. Representations of the Seller</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">2.1.1. გამყიდველი აცხადებს, რომ იგი წარმოადგენს დეველოპერულ კომპანიას, რომელსაც დაგეგმილი აქვს (Gardabani Municipality, Teleti Village) მდებარე მიწის ნაკვეთის (საკადასტრო კოდი: 81.03.16.205) სამშენებლო დანიშნულებით განვითარება, მასზე სამშენებლო სამუშაოების განხორციელება, აშენებული საცხოვრებელი და არასაცხოვრებელი დანიშნულების უძრავი ქონებების რეალიზაცია და შემდგომში მათი მართვა; </div>
+                    <div class="column-div" style="width: 50%;">2.1.1. The Seller represents that it is a development company entitled to develop the land plot located at (Gardabani Municipality, Teleti Village) (cadastral code: 81.03.16.205) for construction purposes, to carry out construction works thereon, to sell the residential and non-residential immovable properties constructed on it, and subsequently to manage them.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">2.1.2. გამყიდველი აცხადებს, რომ წინამდებარე ხელშეკრულების 1.1 პუნქტით განსაზღვრული უძრავი ქონება წარმოადგენს სამომავლო ქონებას, რომლის მშენებლობა დამოკიდებულია მიწის ნაკვეთის განაშენიანებასთან დაკავშირებული სანებართვო დოკუმენტაციის შესაბამისი ადმინისტრაციული ორგანოების მიერ დამტკიცებაზე. შესაბამისად, შესაძლებელია, რომ განხორციელდეს ცვლილებები მყიდველისათვის გაცნობილ საპროექტო დოკუმენტაციაში.</div>
+                    <div class="column-div" style="width: 50%;">2.1.2. The Seller represents that the immovable property specified in Clause 1.1 of this Agreement constitutes future property, the construction of which is subject to approval by the relevant administrative authorities of the permitting documentation related to the development of the land plot. Accordingly, it is possible that changes may be made to the project documentation made available to the Buyer.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">2.1.3. გამყიდველი მიიღებს ყველა გონივრულ ზომას, რაც საჭიროა წინამდებარე ხელშეკრულებით გათვალისწინებული პირობების სრულყოფილად შესრულებისათვის. წინამდებარე განცხადება არ წარმოადგენს მყიდველისათვის რაიმე სახის გარანტიას და ვალდებულების შეუსრულებლობის შემთხვევაში, გამყიდველს არ დაეკისრება პასუხისმგებლობა ადმინისტრაციული ორგანოების მიერ საპროექტო დოკუმენტაციაში რაიმე ცვლილების მოთხოვნისას.</div>
+                    <div class="column-div" style="width: 50%;">2.1.3. The Seller shall take all reasonable measures necessary to fully perform its obligations under this Agreement. This representation shall not constitute any form of warranty to the Buyer, and the Seller shall not be held liable for any failure to fulfill obligations resulting from any request by the administrative authorities to make changes to the project documentation.</div>
+                </div>
+            </div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%; font-weight: bold;">2.2. მყიდველის განცხადებები</div>
+                    <div class="column-div" style="width: 50%; font-weight: bold;">2.2. Representations of the Buyer</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">2.2.1. მყიდველი აცხადებს და ადასტურებს, რომ ქონების დაჯავშნის გადაწყვეტილება მიღებულია მხოლოდ წინამდებარე დოკუმენტით განსაზღვრული პირობების საფუძველზე და რომ მისთვის არ არსებობს რაიმე სახის სხვა განცხადებები, რომელიც მყიდველისათვის შეიძლება ყოფილიყო მიწოდებული გამყიდველის ან მისი  უფლებამოსილი წარმომადგენლების მიერ.</div>
+                    <div class="column-div" style="width: 50%;">2.2.1. The Buyer represents and warrants that the decision to reserve the property has been made solely on the basis of the terms and conditions set forth in this Agreement, and that no other representations have been made to the Buyer by the Seller or its authorized representatives.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">2.2.2. მყიდველი ადასტურებს, რომ წინამდებარე ხელშეკრულების დადების მიზნით, იგი არ ეყრდნობა და არ განიხილავს სავალდებულოდ არცერთ ინფორმაციას ან მასალას, რომელიც შეიძლება ყოფილიყო მიწოდებული ან ხელმისაწვდომი სარეკლამო, საინფორმაციო ან პრეზენტაციული მიზნებით, მათ შორის, მაგრამ არა მხოლოდ - გაყიდვების ბროშურებს, გრაფიკულ ნამუშევრებს, პრეზენტაციაზე წარმოდგენილ ფოტო და ვიდეომასალებს ან საპროგნოზო ფინანსურ მონაცემებს/გათვლებს.</div>
+                    <div class="column-div" style="width: 50%;">2.2.2. The Buyer acknowledges that, for the purposes of entering into this Agreement, it does not rely on and does not consider any information or materials that may have been provided or made available for advertising, informational, or presentation purposes, including, without limitation, sales brochures, graphic materials, photos or videos presented at presentations, or forecasted financial data/calculations.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">2.2.3. მყიდველი ვალდებულია, გამყიდველის მოთხოვნიდან 2 (ორი) კალენდარული დღის ვადაში მიაწოდოს გამყიდველს ნებისმიერი ინფორმაცია ან დოკუმენტი, რაც გონივრულად შეიძლება იყოს დაკავშირებული ფულის გათეთრების საწინააღმდეგო კანონმდებლობის მოთხოვნებთან, კლიენტის იდენტიფიკაციასთან ან სანქციების აღსრულებასთან. ამ პუნქტით განსაზღვრულ ვადაში გამყიდველისათვის ამ უკანასკნელის მიერ მოთხოვნილი ინფორმაციის ან დოკუმენტაციის მიუწოდებლობა წარმოადგენს წინამდებარე ხელშეკრულების არსებით დარღვევას. შესაბამისად, გამყიდველი არ არის ვალდებული, დაუწესოს მყიდველს ვალდებულების შესრულებისათვის დამატებითი ვადა და უფლებამოსილია, დაუყოვნებლივ შეწყვიტოს ხელშეკრულება. ამ საფუძვლით ხელშეკრულების შეწყვეტის შემთხვევაში, ჯავშნის  ღირებულება არ ექვემდებარება მყიდველისათვის დაბრუნებას და ამავდროულად, გამყიდველს არ დაეკისრება მყიდველის სასარგებლოს რაიმე სახის ზიანის ანაზღაურების ვალდებულება.</div>
+                    <div class="column-div" style="width: 50%;">2.2.3. The Buyer shall provide the Seller, within 2 (two) calendar days from the Seller’s request, with any information or documents that may reasonably relate to the requirements of anti-money laundering (AML) legislation, client identification (KYC) or sanctions compliance. Failure by the Buyer to provide such information or documents within the timeframe specified in this Clause shall constitute a material breach of this Agreement. Accordingly, the Seller shall not be obliged to grant the Buyer any additional period to perform such obligation and shall be entitled to terminate this Agreement immediately. In the event of termination of the Agreement on this basis, the reservation fee shall be non-refundable, and the Seller shall have no liability whatsoever to the Buyer for any loss or damages.</div>
+                </div>
+            </div>
+            <br />
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>3. ხელშეკრულების საგანი</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>3. Subject of the Agreement</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.1. წინამდებარე ხელშეკრულების დადებით, მყიდველი ჯავშნის ხელშეკრულების 1.1 პუნქტით განსაზღვრულ საცხოვრებელი დანიშნულების უძრავ ქონებას, ხელშეკრულების 1.3 პუნქტით განსაზღვრული დაჯავშნის ღირებულების გადახდის სანაცვლოდ.</div>
+                    <div class="column-div" style="width: 50%;">3.1. By entering into this Agreement, the Buyer reserves the residential immovable property specified in Clause 1.1 of this Agreement, in exchange for payment of the reservation fee specified in Clause 1.3.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.2. მყიდველის მიერ დაჯავშნის თანხის გადახდისთანავე გამყიდველი დაჯავშნის ხელშეკრულების 1.1 პუნქტით განსაზღვრულ უძრავ ქონებას, რაც ნიშნავს, რომ იგი აღარ შესთავაზებს ქონებას პოტენციურ კლიენტებს ან მიჰყიდის ქონებას სხვა პირებს.</div>
+                    <div class="column-div" style="width: 50%;">3.2. Upon receipt of the reservation fee from the Buyer, the Seller shall reserve the immovable property specified in Clause 1.1, which means that the Seller shall no longer offer the property to other potential clients or sell it to any third parties.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.3. მყიდველის მიერ ხელშეკრულების 4.1 პუნქტით განსაზღვრულ ვადაში დაჯავშნის თანხის გამყიდველისათვის გადაუხდელობის შემთხვევაში, ჯავშანი ავტომატურად, დაუყოვნებლივ გაუქმდება და გამყიდველს აღარ ექნება მყიდველისათვის ვალდებულების შესრულებისათვის დამატებითი ვადის დაწესების ვალდებულება და გამყიდველი უფლებამოსილი იქნება, შესთავაზოს და მიჰყიდოს ქონება სხვა პირებს.</div>
+                    <div class="column-div" style="width: 50%;">3.3. In the event the Buyer fails to pay the reservation fee within the period specified in Clause 4.1 of this Agreement, the reservation shall be automatically and immediately canceled, and the Seller shall have no obligation to provide the Buyer with any additional period to fulfill its obligations. The Seller shall be entitled to offer and sell the property to other persons.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.4. მყიდველის მიერ გამყიდველისათვის დაჯავშნის თანხის გადახდის შემთხვევაში, მყიდველს წარმოეშობა უძრავ ქონებასთან დაკავშირებით უძრავი ქონების წინარე ნასყიდობის ხელშეკრულების დადების მოთხოვნის უფლებამოსილება ხელშეკრულების 5.1 პუნქტით განსაზღვრულ ვადაში და პირობებით.</div>
+                    <div class="column-div" style="width: 50%;">3.4. Upon payment of the reservation fee by the Buyer, the Buyer shall acquire the right to request the conclusion of a preliminary sale and purchase agreement for the immovable property within the period and on the terms set forth in Clause 5.1 of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.5. დაჯავშნის თანხა წარმოადგენს მხოლოდ უძრავი ქონების შეძენის ინტერესის გამოხატვის ფინანსურ გამოხატულებას, არ ექვემდებარება მყიდველისათვის დაბრუნებას და არ შეიძლება ჩაითვალოს საქართველოს კანონმდებლობით განსაზღვრულ „ბეს“ თანხად.</div>
+                    <div class="column-div" style="width: 50%;">3.5. The reservation fee constitutes solely the financial expression of the intent to purchase the immovable property, is non-refundable to the Buyer, and shall not be construed as “earnest money” under the legislation of Georgia.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.6. მყიდველის მიერ გამყიდველისათვის გადახდილი დაჯავშნის თანხა ჩაითვლება უძრავი ქონების ნასყიდობის ღირებულების ანგარიშში მყიდველის მიერ წინარე ნასყიდობის ხელშეკრულების საფუძველზე უძრავი ქონების ღირებულების სრულად გადახდის მომენტიდან.</div>
+                    <div class="column-div" style="width: 50%;">3.6. The reservation fee paid by the Buyer to the Seller shall be credited toward the purchase price of the immovable property from the moment the Buyer pays the full purchase price of the immovable property in accordance with the Preliminary Sale and Purchase Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.7. ყოველგვარი ბუნდოვანების გამოსარიცხად, მხარეები აცხადებენ, რომ დაჯავშნის თანხის გადახდა არ ადასტურებს მხარეთა შორის უძრავი ქონების წინარე ან ძირითადი ხელშეკრულების დადების ფაქტს. აღნიშნული ხელშეკრულებები წარმოადგენს დამოუკიდებელ ხელშეკრულებებს, რომელიც მხარეთა შორის დაიდება ამ ხელშეკრულებით გათვალისწინებული ვალდებულებების სრულად და ჯეროვნად შესრულების შემთხვევაში.</div>
+                    <div class="column-div" style="width: 50%;">3.7. For the avoidance of any doubts, the Parties acknowledge that the payment of the reservation fee does not constitute confirmation of the conclusion of a preliminary or main sale and purchase agreement for the immovable property between the Parties. Such agreements shall constitute independent documents, to be executed only upon full and proper performance of the obligations set forth in this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.8. წინამდებარე ხელშეკრულებაზე ხელმოწერა ან/და დაჯავშნის თანხის გადახდა მყიდველს არ ანიჭებს უფლებამოსილებას, მოსთხოვოს გამყიდველს სანებართვო საპროექტო დოკუმენტაციაში, დიზაინში, სამშენებლო ეტაპების მიმდინარეობაში, არქიტექტურულ, კონსტრუქციულ, საინჟინრო და დიზაინერულ გადაწყვეტებში რაიმე ცვლილების განხორციელება. ზემოთ ჩამოთვლილი საკითხები წარმოადგენს გამყიდველის ექსკლუზიურ და შეუზღუდავ უფლებამოსილებას.</div>
+                    <div class="column-div" style="width: 50%;">3.8. The execution of this Agreement and/or the payment of the reservation fee shall not entitle the Buyer to require the Seller to make any changes to the project documentation, design, construction stages or any architectural, structural, engineering or design decisions. The matters listed above shall remain the exclusive and unrestricted prerogative of the Seller.</div>
+                </div>
+            </div>
+            <br />
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>4. დაჯავშნის ღირებულების გადახდის წესი</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>4. Procedure for Payment of the Reservation Fee</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">4.1. მყიდველი ვალდებულია, უძრავი ქონების ჯავშნის ღირებულება გადაიხადოს წინამდებარე ხელშეკრულების ხელმოწერიდან 1 (ერთი) კალენდარული დღის ვადაში ხელშეკრულების 1.3-1.6 პუნქტებით განსაზღვრული წესებითა და პირობებით.</div>
+                    <div class="column-div" style="width: 50%;">4.1. The Buyer shall pay the reservation fee for the immovable property within 1 (one) calendar day from the execution of this Agreement, in accordance with the terms and conditions set forth in Clauses 1.3-1.6 of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">4.2. მყიდველი ვალდებულია, დაჯავშნის თანხა გადაიხადოს ლარში, თანხის გადახდის დღეს საქართველოს ეროვნული ბანკის მიერ დადგენილი ოფიციალური გაცვლითი კურსის შესაბამისად.</div>
+                    <div class="column-div" style="width: 50%;">4.2. The Buyer shall make the payment in GEL, based on the official exchange rate determined by the National Bank of Georgia on the date of payment.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">4.3. საქართველოს ფარგლებს გარედან შესრულებული გადარიცხვის დროს, გამმყიდველის წინასწარი თანხმობის შემთხვევაში, მყიდველი უფლებამოსილია, გადახდა განახორციელოს უცხოურ ვალუტაში, მხოლოდ გამყიდველის მიერ უცხოურ ვალუტაში გამოსახული ინვოისის საფუძველზე.</div>
+                    <div class="column-div" style="width: 50%;">4.3. In the case of a transfer made from outside the territory of Georgia, with the prior consent of the Seller, the Buyer is entitled to make the payment in foreign currency solely on the basis of an invoice issued by the Seller in foreign currency.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">4.4. მყიდველის მიერ გამყიდველისათვის თანხის ლარში გადახდის შემთხვევაში, მყიდველის მიერ გადახდილი თანხა განისაზღვრება გამყიდველის საბანკო ანგარიშზე თანხის ჩარიცხვის დღეს არსებული გაცვლითი კურსის შესაბამისი ოდენობით.</div>
+                    <div class="column-div" style="width: 50%;">4.4. In the event that the Buyer makes payment to the Seller in GEL, the amount paid by the Buyer shall be determined in accordance with the exchange rate applicable on the date the funds are credited to the Seller’s bank account.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">4.5. მყიდველი ვალდებულია, დაფაროს ყველა გადასახადი ან ხარჯი, რაც დაკავშირებული იქნება დაჯავშნის ღირებულების გამყიდველის საბანკო ანგარიშზე გადარიცხვასთან, მათ შორის, მაგრამ არამარტო, საბანკო ხარჯები, და საკომისიოები.</div>
+                    <div class="column-div" style="width: 50%;">4.5. The Buyer shall be obligated to cover any and all fees and expenses related to the transfer of reservation fee to the Seller’s bank account, including, without limitation, bank charges and commissions.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">4.6. მყიდველი ვალდებულია, გამყიდველს სრულად აუნაზღაუროს კურსთა შორის სხვაობით ან საბანკო გადარიცხვის საკომისიოებით გამოწვეული დანაკლისი ან დანახარჯი, გამყიდველის მიერ შეტყობინების მიღებიდან 1 (ერთი) კალენდარული დღის ვადაში.</div>
+                    <div class="column-div" style="width: 50%;">4.6. The Buyer shall fully reimburse the Seller for any shortfall or expense arising from exchange rate differences or bank transfer commissions within 1 (one) calendar day from receipt of the Seller’s notice.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>5. წინარე ნასყიდობის ხელშეკრულების დადების წესი</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>5. Procedure for Concluding the Preliminary Sale and Purchase Agreement</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">5.1. მყიდველის მიერ წინამდებარე ხელშეკრულებით გათვალისწინებული ყველა ვალდებულების შესრულების შემთხვევაში, წინამდებარე ხელშეკრულების ხელმოწერიდან 12 (თორმეტი) თვის განმავლობაში, გამყიდველი მყიდველს ამ ხელშეკრულებით დადგებული წესით გაუგზავნის შეტყობინებას წინარე ნასყიდობის ხელშეკრულების დადების თაობაზე და გადასცემს მას ხელშეკრულების პროექტს ხელმოსაწერად.</div>
+                    <div class="column-div" style="width: 50%;">5.1. Upon the Buyer’s fulfillment of all obligations under this Agreement, within 12 (twelve) months from the execution of this Agreement, the Seller shall notify the Buyer regarding the conclusion of the preliminary sale and purchase agreement and shall provide the draft agreement for signature in accordance with the terms of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">5.2. მყიდველი ვალდებულია, გამყიდველის მიერ გაგზავნილ წინარე ნასყიდობის ხელშეკრულებას ხელი მოაწეროს შეტყობინების მიღებიდან 5 (ხუთი) კალენდარული დღის ვადაში და გამყიდველს დაუბრუნოს ხელმოწერილი ხელშეკრულება ხელშეკრულების 5.5 პუნქტით განსაზღვრული ფორმით.</div>
+                    <div class="column-div" style="width: 50%;">5.2. The Buyer shall sign the preliminary sale and purchase agreement sent by the Seller within 5 (five) calendar days of receipt of the notification and shall return the signed agreement to the Seller in the form set forth in Clause 5.5 of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">5.3. წინარე ნასყიდობის ხელშეკრულება უნდა მოიცავდეს ამ ხელშეკრულებით გათვალისწინებულ ყველა პირობას, ხოლო იმ შემთხვევაში, თუ წინამდებარე ხელშეკრულების ხელმოწერიდან გამყიდველის მიერ მყიდველისათვის წინარე ნასყიდობის ხელშეკრულების დადების თაობაზე შეტყობინების გაგზავნიდან რაიმე ცვლილება შევიდა საპროექტო დოკუმენტაციაში, რომელმაც გამოიწვია რომელიმე პირობის ცვლილება, აღნიშნული ცვლილება უნდა აისახოს წინარე ნასყიდობის ხელშეკრულებაში.</div>
+                    <div class="column-div" style="width: 50%;">5.3. The preliminary sale and purchase agreement must include all terms provided by this Agreement, and in the case if after the execution of this Agreement, from the sending by the Seller to the Buyer of the notification regarding the conclusion of the preliminary sale and purchase agreement, any change occurs in the project documentation which caused a change of any term, such change must be reflected in the preliminary sale and purchase agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">5.4. გამყიდველი უფლებამოსილია, წინარე ნასყიდობის ხელშეკრულების დადების თაობაზე შეტყობინება გაუგზავნოს მყიდველს ამ ხელშეკრულების 5.1 პუნქტით განსაზღვრულ პერიოდში ნებისმიერ დროს.</div>
+                    <div class="column-div" style="width: 50%;">5.4. The Seller is entitled to send the notification to the Buyer regarding the conclusion of the preliminary sale and purchase agreement at any time within the period specified in Clause 5.1 of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">5.5. წინარე ნასყიდობის ხელშეკრულება შესაძლებელია დაიდოს, როგორც მატერიალურად, ისე ელექტრონულად. ხელშეკრულების დადების ფორმას ხელშეკრულების დადების შესახებ შეტყობინებით განსაზღვრავს ერთპიროვნულად გამყიდველი.</div>
+                    <div class="column-div" style="width: 50%;">5.5. The preliminary sale and purchase agreement may be concluded both materially and electronically. The form of concluding the agreement is determined by the Seller solely through the notification regarding the conclusion of the agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">5.6. გამყიდველი უფლებამოსილია, ცალმხრივად, მყიდველის დამატებითი თანხმობის გარეშე გაზარდოს ხელშეკრულების 5.1 პუნქტით განსაზღვრული ვადა არაუმეტეს 5 (ხუთი) თვის ვადით, რასთან დაკავშირებითაც მყიდველს არ წარმოეშობა გამყიდველის მიმართ რაიმე სახის პრეტენზია ან მოთხოვნის უფლება.</div>
+                    <div class="column-div" style="width: 50%;">5.6. The Seller is entitled, unilaterally, without additional consent of the Buyer, to extend the period specified in Clause 5.1 of this Agreement by no more than 5 (five) months, with respect to which the Buyer shall have no claim or right of demand against the Seller.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">5.7. მხარეთა შორის წინარე ნასყიდობის ხელშეკრულების დადების შემთხვევაში, მყიდველი ვალდებული იქნება, გადაიხადოს ნასყიდობის საფასური წინამდებარე ხელშეკრულების დანართი №3-ით გათვალისწინებული გრაფიკის შესაბამისად.</div>
+                    <div class="column-div" style="width: 50%;">5.7. In the case of conclusion of the preliminary sale and purchase agreement between the Parties, the Buyer shall be obliged to pay the purchase price according to the schedule provided in Annex №3 of this Agreement.</div>
+                </div>
+            </div>
+            <br/>
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>6. უარი წინარე ნასყიდობის ხელშეკრულების დადებაზე</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>6.   Refusal to Conclude the Preliminary Sale and Purchase Agreement</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">6.1. იმ შემთხვევაში, თუ გამყიდველის მიერ მყიდველისათვის წინამდებარე ხელშეკრულების 5.1 პუნქტით გათვალისწინებული წესით წინარე ნასყიდობის ხელშეკრულების დადების თაობაზე შეტყობინების გაგზავნიდან 5 (ხუთი) კალენდარული დღის ვადაში მყიდველი არ მოაწერს ხელს წინარე ნასყიდობის ხელშეკრულებას და არ დაუბრუნებს მას გამყიდველს, ეს უკანასკნელი მყიდველს დაუწესებს ვალდებულების შესრულებისათვის დამატებით ვადას 2 (ორი) კალენდარული დღის ოდენობით, რომლის უშედეგოდ გასვლის შემთხვევაში,  წინამდებარე ხელშეკრულება ავტომატურად შეწყდება და გამყიდველს აღარ ექნება მყიდველისათვის დამატებტი შეტყობინების გაგზავნის ვალდებულება.</div>
+                    <div class="column-div" style="width: 50%;">6.1. In the event that within 5 (five) calendar days from the sending by the Seller to the Buyer of the notification regarding the conclusion of the preliminary sale and purchase agreement in the manner specified in Clause 5.1 of this Agreement, the Buyer does not sign the preliminary sale and purchase agreement and does not return it to the Seller, the latter shall set an additional period of 2 (two) calendar days for the Buyer to perform the obligation, and in the event of its unsuccessful expiry, this Agreement shall automatically terminate and the Seller shall no longer have an obligation to send an additional notification to the Buyer.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">6.2. მყიდველის მიერ წინარე ნასყიდობის ხელშეკრულების დადებაზე უარის შემთხვევაში, გამყიდველი დაიტოვებს მყიდველის მიერ წინამდებარე ხელშეკრულების საფუძველზე გადახდის დაჯავშნის თანხას და იგი უფლებამოსილი იქნება, შეუზღუდავად შესთავაზოს ან გაასხვისოს ქონება სხვა პოტენციურ კლიენტებზე.</div>
+                    <div class="column-div" style="width: 50%;">6.2. In the event of the Buyer’s refusal to conclude the preliminary sale and purchase agreement, the Seller shall retain the reservation fee paid by the Buyer under this Agreement and shall be entitled to offer or dispose of the property to other potential clients without limitation.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">6.3. გამყიდველის მიერ ხელშეკრულების 5.1 პუნქტით გათვალისწინებული ვადის განმავლობაში მყიდველისათვის წინარე ნასყიდობის ხელშეკრულების დადებაზე შეტყობინების გაუგზავნელობის შემთხვევაში, მყიდველი ვალდებულია, გაუგზავნოს შეტყობინება გამყიდველს და დაუწესოს ვალდებულების შესრულებისათვის დამატებითი ვადა 4 (ოთხი) თვის ოდენობით. </div>
+                    <div class="column-div" style="width: 50%;">6.3. In the event that during the period specified in Clause 5.1 of this Agreement the Seller does not send the notification to the Buyer regarding the conclusion of the preliminary sale and purchase agreement, the Buyer shall send a notification to the Seller and shall set an additional period of 4 (four) months for the performance of the obligation.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">6.4. ხელშეკრულების 6.3 პუნქტით განსაზღვრულ ვადაში გამყიდველის მიერ მყიდველისათვის წინარე ნასყიდობის ხელშეკრულების დადებაზე შეტყობინების გაუგზავნელობის შემთხვევაში, მყიდველი ვალდებულია, აცნობოს გამყიდველს წინამდებარე ხელშეკრულების შეწყვეტის თაობაზე შეწყვეტამდე არანაკლებ 14 (თოთხმეტი) კალენდარული დღით ადრე შეტყობინების გაგზავნის გზით.</div>
+                    <div class="column-div" style="width: 50%;">6.4. In the event that during the period specified in Clause 6.3 of this Agreement the Seller does not send the notification to the Buyer regarding the conclusion of the preliminary sale and purchase agreement, the Buyer shall notify the Seller regarding the termination of this Agreement at least 14 (fourteen) calendar days prior to termination by sending a notification.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">6.5. წინამდებარე ხელშეკრულების 6.4 პუნქტის საფუძველზე წინამდებარე ხელშეკრულების შეწყვეტის შემთხვევაში, გამყიდველი ვალდებულია, მყიდველს დაუბრუნოს ამ უკანსკნელის მიერ გადახდილი დაჯავშნის თანხა სრულად ხელშეკრულების შეწყვეტიდან 14 (თოთხმეტი) კალენდარული დღის ვადაში.</div>
+                    <div class="column-div" style="width: 50%;">6.5. In the event of termination of this Agreement pursuant to Clause 6.4 of this Agreement, the Seller shall return to the Buyer the reservation fee paid by the latter in full within 14 (fourteen) calendar days from the termination of the Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">6.6. გამყიდველი უფლებამოსილია, ხელშეკრულების 6.5 პუნქტით განსაზღვრული 14-დღიანი ვადის განმავლობაში აცნობოს მყიდველს წინარე ნასყიდობის ხელშეკრულების დადების მზადყოფნის თაობაზე. ასეთ შემთხვევაში, მყიდველი კარგავს წინამდებარე ხელშეკრულების შეწყვეტის უფლებამოსილებას.</div>
+                    <div class="column-div" style="width: 50%;">6.6. The Seller shall be entitled, within the 14-day period specified in Clause 6.5 of this Agreement, to notify the Buyer regarding its readiness to conclude the preliminary sale and purchase agreement. In such case, the Buyer shall lose the right to terminate this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">6.7. გამყიდველის მიერ მყიდველისათვის ამ ხელშეკრულების 6.5 პუნქტის შესაბამისად დაჯავშნის თანხის დაბრუნების შემთხვევაში, გამყიდველს არ დაეკისრება ხელშეკრულების შეწყვეტიდან გამომდინარე მყიდველის სასარგებლოდ რაიმე სახის ანაზღაურების ვალდებულება. დაჯავშნის თანხის სრული დაბრუნება წარმოადგენს ერთადერთ და საკმარის ანაზღაურებას ხელშეკრულების შეწყვეტისათვის.</div>
+                    <div class="column-div" style="width: 50%;">6.7. In the event of return of the reservation fee to the Buyer by the Seller in accordance with Clause 6.5 of this Agreement, the Seller shall not have any obligation to pay any compensation to the Buyer arising from the termination of the Agreement. Full return of the reservation fee shall constitute the sole and sufficient compensation for the termination of the Agreement.</div>
+                </div>
+            </div>
+            <br/>
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>7. მოთხოვნის დათმობა და ვალდებულების გადაცემა</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>7. Assignment of Claim and Obligation</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">7.1. მყიდველი არ არის უფლებამოსილი, გამყიდველის წინასწარი წერილობითი თანხმობის გარეშე სხვა პირს გადასცეს წინამდებარე ხელშეკრულებით განსაზღვრული და მისგან გამომდინარე გამყიდველის მიმართ არსებული რაიმე სახის მოთხოვნის უფლება ან ვალდებულება.</div>
+                    <div class="column-div" style="width: 50%;">7.1. The Buyer shall not be entitled, without the prior written consent of the Seller, to transfer to any other person any right or obligation arising from this Agreement and existing towards the Seller.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">7.2. გამყიდველი უფლებამოსილია, მყიდველის თანხმობის გარეშე სხვა პირს გადასცეს წინამდებარე ხელშეკრულებიდან გამომდინარე რომელიმე მოთხოვნის უფლება და ვალდებულება, როგორც ცალკე, ისე ყველა ერთობლივად.</div>
+                    <div class="column-div" style="width: 50%;">7.2. The Seller shall be entitled, without the consent of the Buyer, to transfer to any other person any right or obligation arising from this Agreement, either separately or all together.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>8. ფორს-მაჟორი</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>8. Force Majeure</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">8.1. გამყიდველი თავისუფლდება ვალდებულებათა შეუსრულებლობის ან/და არაჯეროვანი შესრულების შემთხვევაში, თუ იგი გამოწვეულია ფორსმაჟორული გარემოებებით, რომელიც მოიცავს, მაგრამ არის შეზღუდული:  ომი, სტიქიური უბედურება, მეტეროლოგიური პირობები, ხანძარი, მასობრივი არეულობა, ეპიდემია, პანდემია, საგანგებო ან საომარი მდგომარეობა და სხვა ისეთი გარემოება, რომელიც არ არის დამოკიდებული მხარის ნებაზე და რომელიც ზღუდავს, ან აბრკოლებს გამყიდველის ვალდებულებათა შესრულებას, აგრეთვე ხელისუფლების მიერ გამოცემული სამართლებრივი აქტები, რომლებიც ზღუდავს, ან აბრკოლებს ვალდებულებათა შესრულებას.</div>
+                    <div class="column-div" style="width: 50%;">8.1. The Seller shall be relieved from the responsibility for non-fulfillment or improper fulfillment of their obligations if such failure is caused by a force majeure events, which includes, but is not limited to; war, natural disaster, meteorological conditions, fires, mass disturbances and other circumstances that occur outside the influence of the Seller, which limit or abrogate the fulfillment of the obligations, as well as the legal / normative acts issued by the authorities, which hinder fulfillment of obligations.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">8.2. იმ შემთხვევაში, თუ ფორმსაჟორული გარემოება არის დროებითი, ამ მუხლით გათვალისწინებული პასუხისმგებლობისგან განთავისუფლების პერიოდი არის შეზღუდული მხოლოდ იმ დროით, რა დროითაც ფორსმაჟორული გარემოება გავლენას ახდენს გამყიდველის ვალდებულებების შესრულებაზე.</div>
+                    <div class="column-div" style="width: 50%;">8.2. If the force majeure event is temporary, the relieve of responsibilities specified in this article, are only limited to the period that affects.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">8.3. გამყიდველი ვალდებულია, ფორსმაჟორული გარემოებების წარმოშობიდან 5 (ხუთი) კალენდარული დღის ვადაში აცნობოს მყიდველს.</div>
+                    <div class="column-div" style="width: 50%;">8.3. The Seller shall be obliged to inform the Buyer within 5 (five) calendar days from the occurrence of force majeure circumstances the force majeure event comes into effect.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">8.4. წინამდებარე მუხლის წინა პუნქტებით დადგენილი დებულებები არ გამორიცხავს მხარეთა მიერ ვალდებულებათა შესრულებას. შესასრულებელი ვალდებულებები გადავადდება ფორსმაჟორული გარემოების მოქმედების პერიოდით.</div>
+                    <div class="column-div" style="width: 50%;">8.4. The provisions set forth in the preceding Clauses do not exclude the fulfillment of obligations by the Parties. The fulfillment of obligations will be postponed by the period of the force majeure event.</div>
+                </div>
+            </div>
+            <br/>
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>9. დავის გადაწყვეტის წესი</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>9. Dispute Resolution Procedure</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.1. წინამდებარე ხელშეკრულება რეგულირდება მხოლოდ საქართველოს მოქმედი კანონმდებლობით.</div>
+                    <div class="column-div" style="width: 50%;">9.1. This Agreement shall be governed solely by the applicable legislation of Georgia.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.2. წინამდებარე ხელშეკრულებიდან გამომდინარე, მათ შორის, მის ნამდვილობასთან, სრულ ან ნაწილობრივ შესრულებასთან, განმარტებასთან ან/და აღსრულებასთან დაკავშირებით წარმოშობილი ნებისმიერი უთანხმოების გადაწყვეტას მხარეები უნდა შეეცადონ მოლაპარაკების გზით. იმ შემთხვევაში, თუ ასეთი საკითხის წარმოშობიდან 30 (ოცდაათი) კალენდარული დღის ვადაში ვერ გადაწყდა მოლაპარაკების გზით, მხარე უფლებამოსილია, დავა გააგრძელოს ამ ხელშეკრულების 9.3 პუნქტით განსაზღვრული საარბიტრაჟო განხილვის ფორმით.</div>
+                    <div class="column-div" style="width: 50%;">9.2. Arising from the present Agreement, including with respect to its validity, full or partial performance, interpretation and/or enforcement, the parties shall attempt to resolve any dispute through negotiations. In the event that such issue is not resolved through negotiations within 30 (thirty) calendar days from the date of its occurrence, a party shall be entitled to continue the dispute in the form of arbitration proceedings as defined in Clause 9.3 of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.3. წინამდებარე ხელშეკრულებიდან გამომდინარე, მათ შორის, მის ნამდვილობასთან, სრულ ან ნაწილობრივ შესრულებასთან, განმარტებასთან ან/და აღსრულებასთან  დაკავშირებით ნებისმიერი დავა, რომელიც წარმოიშობა ამ ხელშეკრულებიდან გამომდინარე ან დაკავშირებულია მასთან, მის დარღვევასთან, შეწყვეტასთან ან ბათილად ცნობასთან, განსახილველად უნდა გადაეცეს <strong>ა(ა)იპ საქართველოს საერთაშორისო საარბიტრაჟო ცენტრს (GIAC)</strong> (ს/ნ: 400108281), არბიტრაჟის გზით საბოლოო გადაწყვეტილების გამოტანის მიზნით.</div>
+                    <div class="column-div" style="width: 50%;">9.3. Arising from the present Agreement, including with respect to its validity, full or partial performance, interpretation and/or enforcement shall be submitted for consideration to the <strong>NNLE Georgian International Arbitration Centre (GIAC)</strong> (I/N: 400108281), for the purpose of rendering a final decision by means of arbitration</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.4. საარბიტრაჟო დავა განიხილება ა(ა)იპ საქართველოს საერთაშორისო საარბიტრაჟო ცენტრის (GIAC) საარბიტრაჟო წესების შესაბამისად.</div>
+                    <div class="column-div" style="width: 50%;">9.4. The arbitral dispute shall be considered in accordance with the Arbitration Rules of the NNLE Georgian International Arbitration Centre (GIAC).</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.5. საარბიტრაჟო დავას განიხილავს ა(ა)იპ საქართველოს საერთაშორისო საარბიტრაჟო ცენტრის საარბიტრაჟო წესების მიხედვით დანიშნული 3 (სამი) არბიტრი, რომელთაგან ერთს დანიშნავს საარბიტრაჟო მოსარჩელე, მეორეს - საარბიტრაჟო მოპასუხე, ხოლო მესამეს - მხარეთა მიერ დანიშნული არბიტრები.</div>
+                    <div class="column-div" style="width: 50%;">9.5. The arbitral dispute shall be heard by 3 (three) arbitrators appointed in accordance with the Arbitration Rules of the NNLE Georgian International Arbitration Centre (GIAC), one of whom shall be appointed by the arbitral claimant, the second by the arbitral respondent, and the third by the arbitrators appointed by the Parties.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.6. საარბიტრაჟო განხილვის ადგილად განისაზღვროს თბილისი, საქართველო.</div>
+                    <div class="column-div" style="width: 50%;">9.6. The seat of the arbitration shall be Tbilisi, Georgia.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.7. საარბიტრაჟო განხილვა უნდა წარიმართოს ინგლისურ ენაზე.</div>
+                    <div class="column-div" style="width: 50%;">9.7. The arbitration proceedings shall be conducted in the English language.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.8. მხარის მოთხოვნის საფუძველზე, არბიტრაჟი უფლებამოსილია, გამოიყენოს საარბიტრაჟო სარჩელის უზრუნველყოფის ღონისძიებები. არბიტრაჟის მიერ გამოყენებულ საარბიტრაჟო სარჩელის უზრუნველყოფის ღონისძიებებს აქვთ სავალდებულო ძალა და იგი უნდა აღსრულდეს არბიტრაჟის მიერ გაცემული სააღსრულებო ფურცლის საფუძველზე.</div>
+                    <div class="column-div" style="width: 50%;">9.8. Upon a party’s request, the arbitral tribunal shall be authorized to order interim measures in support of the arbitral claim. Any interim measures granted by the arbitral tribunal shall be binding and enforceable on the basis of a writ of execution issued by the arbitral tribunal.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.9. მხარეებს შეუძლიათ საარბიტრაჟო საქმის განხილვის დაწყებამდე ან დაწყების შემდეგ ნებისმიერ დროს მიმართონ კომპეტენტურ სასამართლო ორგანოს საარბიტრაჟო სარჩელის უზრუნველყოფის ღონისძიების გამოყენების მოთხოვნით. საარბიტრაჟო სარჩელის უზრუნველყოფის ღონისძიების გამოყენების ან არბიტრაჟის მიერ გამოყენებული საარბიტრაჟო სარჩელის უზრუნველყოფის ღონისძიების აღსრულების მოთხოვნით კომპეტენტური სასამართლო ორგანოსადმი მხარეთა ნებისმიერი მიმართვა არ მიიჩნევა საარბიტრაჟო შეთანხმების დარღვევად ან მასზე უარის თქმად.</div>
+                    <div class="column-div" style="width: 50%;">9.9. The parties may, at any time prior to or after the commencement of arbitral proceedings, apply to a competent court for the grant of interim measures in support of the arbitral claim. Any application by a party to a competent court for interim measures, or for the enforcement of interim measures ordered by the arbitral tribunal, shall not be deemed a breach of, or a waiver of rights under, the arbitration agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.10. საარბიტრაჟო გადაწყვეტილების ცნობა და აღსასრულებლად მიექცევა განხორცილდება საქართველოს კანონის „არბიტრაჟის შესახებ“ დადგენილი დებულებების შესაბამისად.</div>
+                    <div class="column-div" style="width: 50%;">9.10. Recognition and enforcement of the arbitral award shall be carried out in accordance with the provisions established by the Law of Georgia on Arbitration.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.11. მხარეები ვალდებულნი არიან, დაიცვან საარბიტრაჟო განხილვისა და გადაწყვეტილების კონფიდენციალურობა. რაც გულისხმობს - განხილვის დროს მიღებული ინფორმაციების, დოკუმენტების, პოზიციების გაუმჟღავნებლობას. საარბიტრაჟო განხილვისას მხარეთა მორიგების შემთხვევაში - აგრეთვე, მორიგების აქტის პირობების მესამე პირებისათვის ხელმიუწვდომლობას.</div>
+                    <div class="column-div" style="width: 50%;">9.11. The Parties are obliged to maintain the confidentiality of the arbitration proceedings and the arbitral award, which includes, without limitation, keeping confidential all information, documents, and positions disclosed during the proceedings. In the event of a settlement between the Parties during the arbitration, the terms of the settlement agreement shall also remain confidential and shall not be disclosed to any third party.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.12. ყოველივე ბუნდოვანების გამოსარიცხად, მხარეები კონფიდენციალურად დაიცავენ საარბიტრაჟო წარმოების პროცესში გამოცემული ნებისმიერი დადგენილებების ან გადაწყვეტილებების არსებობასა და შინაარს შემდეგი გამონაკლისების გარდა:<br/>
+                        ა) იმ ფარგლებში, რომელშიც შეიძლება საჭირო გახდეს მხარის მიერ ინფორმაციის გამჟღავნება ნაკისრი ვალდებულების შესასრულებლად, კანონიერი უფლების დასაცავად ან განსახორციელებლად, ან სასამართლოში ან სხვა საჯარო ორგანოში გადაწყვეტილების აღსრულების ან გაუქმების თუ გასაჩივრებისათვის;<br/>
+                        ბ) როდესაც ინფორმაციის გამჟღავნებაზე არსებობს ყველა მხარის თანხმობა;<br/>
+                        გ) თუ ინფორმაციის გამჟღავნება აუცილებელია აღნიშნული საარბიტრაჟო საქმის წარმოების ფარგლებში სარჩელის ან შესაგებლის მომზადების ან წარდგენისათვის ან მტკიცებულებების მოპოვებისა და წარდგენისთვის;<br/>
+                        დ) თუ ასეთი ინფორმაცია უკვე საჯაროდ ხელმისაწვდომია მოცემული პუნქტის დარღვევის გარეშე, ან<br/>
+                        ე) მხარის/მხარეთა განცხადების საფუძველზე არბიტრაჟმა მიიღო დადგენილება გამჟღავნების უფლების მინიჭების შესახებ.
+                    </div>
+                    <div class="column-div" style="width: 50%;">9.12. For the avoidance of any doubt, the Parties shall maintain the confidentiality of the existence and content of any orders or awards issued in the course of the arbitral proceedings, subject to the following exceptions:<br/>
+                        a) to the extent that disclosure may be required for a Party to perform an obligation, to protect or exercise a legal right, or for the enforcement, setting aside, or appeal of an award before a court or other public authority;<br/>
+                        b) where disclosure is made with the consent of all Parties;<br/>
+                        c) where disclosure is necessary within the framework of the arbitral proceedings for the preparation or submission of a claim or defense, or for the collection and submission of evidence;<br/>
+                        d) where such information is already publicly available without a breach of this clause; or<br/>
+                        e) where, upon the request of a Party or Parties, the arbitral tribunal has issued an order granting permission for disclosure.
+                    </div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">9.13. საარბიტრაჟო სარჩელის სრულად დაკმაყოფილების შემთხვევაში, მოპასუხე მხარეს ეკისრება საარბიტრაჟო წარმოებასთან დაკავშირებული ყველა ხარჯი, მათ შორის: საარბიტრაჟო მოსაკრებელისა და მეორე მხარის იურიდიული წარმომადგენლის ხარჯების ანაზღაურება. ხოლო ნაწილობრივ დაკმაყოფილების შემთხვევაში - არბიტრაჟის მიერ დადგენილი პროპორციული ოდენობით.</div>
+                    <div class="column-div" style="width: 50%;">9.13. In the event the arbitral claim is granted in full, the Respondent shall bear all costs related to the arbitral proceedings, including the arbitration fees and the costs of the other Party’s legal representation. In the event the claim is granted in part, such costs shall be allocated proportionally as determined by the arbitral tribunal.</div>
+                </div>
+            </div>
+            <br/>
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>10. მხარეთა შორის კომუნიკაციის წესი</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>10. Communication Procedure Between the Parties</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">10.1. მხარეებს შორის ყველა შეტყობინება და სხვა სახის კომუნიკაცია უნდა იყოს წერილობითი ფორმით.</div>
+                    <div class="column-div" style="width: 50%;">10.1. All notices and other forms of communication between the Parties shall be in writing.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">10.2. გამყიდველი ყველა შეტყობინებასა და კომუნიკაციას მყიდველს გადასცემს შემდეგი ნებისმიერი გზით:</div>
+                    <div class="column-div" style="width: 50%;">10.2. The Seller shall deliver all notices and communications to the Buyer by any of the following means:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">10.2.1. პირადი გადაცემით - ამ შემთხვევაში შეტყობინება ჩაბარებულად ჩაითვლება ჩაბარების დღესვე;</div>
+                    <div class="column-div" style="width: 50%;">10.2.1. Personal delivery - in this case, the notice shall be deemed delivered on the day of delivery;</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">10.2.2. ეროვნულად აღიარებული საკურიერო/საფოსტო მომსახურებით - ამ შემთხვევაში, შეტყობინება ჩაბარებულად ჩაითვლება საკურიერო/საფოსტო პროვაიდერის მიერ ადრესატისთვის ჩაბარების დღესვე;</div>
+                    <div class="column-div" style="width: 50%;">10.2.2. ეროვნულად აღიარებული საკურიერო/საფოსტო მომსახურებით - ამ შემთხვევაში, შეტყობინება ჩაბარებულად ჩაითვლება საკურიერო/საფოსტო პროვაიდერის მიერ ადრესატისთვის ჩაბარების დღესვე;</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">10.2.3. ელექტრონულ ფოსტაზე შეტყობინების გაგზავნით - ამ შემთხვევაში, შეტყობინება ჩაბარებულად მიიჩნევა გაგზავნის დღესვე.</div>
+                    <div class="column-div" style="width: 50%;">10.2.3. By sending a notice via e-mail – in this case, the notice shall be deemed delivered on the day of sending.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">10.3. მხარეები თანხმდებიან, რომ იმ შემთხვევაში, თუ რომელიმე მხარის ხელშეკრულებაში მითითებული საიდენტიფიკაციო მონაცემები, მათ შორის, მაგრამ არამარტო, სახელწოდება, სახელი ან/და გვარი, ფაქტობრივი ან/და რეგისტრაციის მისამართი, ტელეფონის ნომერი ან ელ. ფოსტის მისამართი შეიცვლება, მხარე ვალდებულია, ასეთი ფაქტის დადგომიდან 7 (შვიდი) კალენდარული დღის ვადაში შეატყობინოს აღნიშნულის თაობაზე მეორე მხარეს. წინააღმდეგ შემთხვევაში, შეტყობინება ჩაბარებულად მიიჩნევა ხელშეკრულებით განსაზღვრულ მისამართზე გაგზავნისას.</div>
+                    <div class="column-div" style="width: 50%;">10.3. The Parties agree that in the event of a change to any of the identification data specified in this Agreement—including, but not limited to, entity name, first and/or last name, actual and/or registered address, telephone number, or email address - the Party shall be obligated to notify the other Party of such change within 7 (seven) calendar days of its occurrence. Otherwise, any notice sent to the address specified in this Agreement shall be deemed duly delivered.</div>
+                </div>
+            </div>
+            <br/>
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>11. პერსონალურ მონაცემთა დაცვა</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>11. Personal Data Protection</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">11.1. მყიდველი ამტკიცებს და თანხმდება, რომ გამყიდველს  შეუძლია მოიპოვოს, შეინახოს, გაანალიზოს, გამოიყენოს და გადაუცეს მესამე პირებს მყიდველის პერსონალური მონაცემები, რომლებიც საჭიროა:<br/>
+                        ა) ხელშეკრულების შესრულებისთვის;<br/>
+                        ბ) მყიდველის იდენტიფიკაციის (KYC) და ფულის გათეთრების (AML) კანონმდებლობის მოთხოვნების დასაკმაყოფილებლად;<br/>
+                        გ) შესაბამისი საჯარო რეგისტრაციების ან სხვა სამართლებრივი მოთხოვნების დასაკმაყოფილებლად;<br/>
+                        დ) სხვა მიზნებისთვის, რაც პირდაპირ გაწერილია ხელშეკრულებაში ან წარმოადგენს კანონმდებლობის მოთხოვნას.
+                    </div>
+                    <div class="column-div" style="width: 50%;">11.1. The Buyer represents and agrees that the Seller may collect, store, analyze, use, and disclose the Buyer’s personal data to third parties as necessary for the following purposes:<br/>
+                        (a) the performance of this Agreement;<br/>
+                        (b) compliance with client identification (KYC) and anti-money laundering (AML) requirements;<br/>
+                        (c) compliance with applicable public registration or other legal obligations;<br/>
+                        (d) any other purposes expressly set out in this Agreement or required by law.
+                    </div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">11.2. გამყიდველი ვალდებულია, უზრუნველყოს მონაცემთა დაცვა კანონით განსაზღვრული პირობებით და გამოიყენოს ისინი მხოლოდ ამ ხელშეკრულებით გათვალისწინებული მიზნებისთვის.</div>
+                    <div class="column-div" style="width: 50%;">11.2. The Seller shall ensure that the data is protected in accordance with the law and shall use it solely for the purposes set forth in this Agreement.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>12. ხელშეკრულების განმარტება</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>12. Interpretation of the Agreement</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">12.1. წინამდებარე ხელშეკრულება შედგენილია, ორი, თანაბარი სამართლებრივი ძალის ეგზემპლარისაგან ქართულ და ინგლისურ ენებზე, რომელთა წინააღმდეგობის შემთხვევაში, ხელშეკრულების შესრულებასა და განმარტების პროცესში უპირატესობა მიენიჭება ინგლისურ ენას.</div>
+                    <div class="column-div" style="width: 50%;">12.1. This Agreement is drawn up in two counterparts of equal legal force in Georgian and English languages, in the event of any discrepancy, the English language shall prevail in the process of performance and interpretation of the Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">12.2. იმ საკითხების მოწესრიგებისას, რომლებიც ამ ხელშეკრულებით არ არის გათვალისწინებული, მხარეები ხელმძღვანელობენ საქართველოს მოქმედი კანონმდებლობით.</div>
+                    <div class="column-div" style="width: 50%;">12.2. In respect of any issues not provided for herein, the Parties shall be governed in accordance with the effective legislation of Georgia.</div>
+                </div>
+            </div>
+            <br/>
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>13. ცვლილებები და დამატებები</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>13. Amendments and Additions</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.1. ამ ხელშეკრულების რომელიმე ნაწილის ბათილობა და/ან მოქმედების შეწყვეტა არ იწვევს მთლიანად ხელშეკრულების ბათილობას ან მოქმედების შეწყვეტას.</div>
+                    <div class="column-div" style="width: 50%;">13.1. The invalidity or termination of any provision of this Agreement shall not affect the validity or enforceability of the remainder of the Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.2. წინამდებარე ხელშეკრულებაში ნებისმიერი სახის ცვლილების (ან დამატების) შეტანა ხდება მხარეთა წერილობითი შეთანხმების საფუძველზე.</div>
+                    <div class="column-div" style="width: 50%;">13.2. Any amendment or addition to this Agreement shall be made only on the basis of a written agreement between the Parties.</div>
+                </div>
+            </div>
+            <br/>
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;"><strong>14. ხელშეკრულების დანართები</strong></div>
+                    <div class="column-div table-title" style="border-left: none;"><strong>14. Annexes to the Agreement</strong></div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">14.1. დანართი №1 - უძრავი ქონების კონცეპტუალური გეგმა</div>
+                    <div class="column-div" style="width: 50%;">14.1. Annex №1 – Conceptual plan of the immovable property</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">14.2. დანართი №2 - განაშენიანების ესკიზური პროექტი</div>
+                    <div class="column-div" style="width: 50%;">14.2. Annex №2 - Sketch development project</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">14.3. დანართი №3 - ნასყიდობის ღირებულების გადახდის გრაფიკი</div>
+                    <div class="column-div" style="width: 50%;">14.3. Annex №3 - Payment schedule of the purchase price</div>
+                </div>
+            </div>
+             <!-- End of Final Terms & Conditions -->
+             
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+             <!-- Start of Parties Information -->
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მხარეთა ხელმოწერები</div>
+                    <div class="column-div table-title ar-lang" style="border-left: none;">Signatures of the Parties</div>
+                </div>
+            </div>
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%; font-weight: bold;">გამყიდველი</div>
+                    <div class="column-div" style="width: 50%; font-weight: bold;">Seller</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">სახელწოდება: შპს მირა დეველოპმენტს</div>
+                    <div class="column-div" style="width: 50%;">Name: MIRA DEVELOPMENTS LLC</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">საიდენტიფიკაციო ნომერი: 41001020881</div>
+                    <div class="column-div" style="width: 50%;">Identification Number: 41001020881</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">დირექტორი: ბექა ქურციკიძე</div>
+                    <div class="column-div" style="width: 50%;">Director: Beka Kurtsikidze</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><br />________________________<br /> <span style="font-style: italic;">ხელმოწერა</span></div>
+                    <div class="column-div" style="width: 50%;"><br />________________________<br /> <span style="font-style: italic;">Signature</span></div>
+                </div>
+            </div><br/>
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%; font-weight: bold;">{!IF(AND(NOT(ISNULL(oppData['jointOwners'])),oppData['jointOwners'] != 'Null'), 'მყიდველი 1', 'მყიდველი')}</div>
+                    <div class="column-div" style="width: 50%; font-weight: bold;">{!IF(AND(NOT(ISNULL(oppData['jointOwners'])),oppData['jointOwners'] != 'Null'), 'Buyer 1', 'Buyer')}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">სახელი, გვარი: {!oppData['Opportunity'].Account.Name}</div>
+                    <div class="column-div" style="width: 50%;">Name, Surname: {!oppData['Opportunity'].Account.Name}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">პასპორტის ნომერი: {!oppData['Opportunity'].Account.Passport_No__c}</div>
+                    <div class="column-div" style="width: 50%;">Passport Number: {!oppData['Opportunity'].Account.Passport_No__c}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><br />________________________<br /> <span style="font-style: italic;">ხელმოწერა</span></div>
+                    <div class="column-div" style="width: 50%;"><br />________________________<br /> <span style="font-style: italic;">Signature</span></div>
+                </div>
+            </div>
+                
+            <apex:variable value="{!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 1, 0)}" var="countpur" />
+            <apex:outputPanel rendered="{!AND(NOT(ISNULL(oppData['jointOwners'])),oppData['jointOwners'] != 'Null', oppData['personAccountRecordType'] == oppData['accountRecordType'])}">
+                <apex:repeat value="{!oppData['jointOwners']}" var="jop">
+                <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right; display: {!IF(countpur == 3, '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+                    <apex:variable value="{!countpur+1}" var="countpur" />
+                    <div class="table-div" style="border-top: 0px;">
+                        <div class="row-div">
+                            <div class="column-div" style="width: 50%; font-weight: bold;">{!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'მყიდველი ' + TEXT(countpur), 'აქციონერი ' + TEXT(countpur))}</div>
+                            <div class="column-div" style="width: 50%; font-weight: bold;">{!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'Buyer ' + TEXT(countpur), 'Shareholder ' + TEXT(countpur))}</div>
+                        </div>
+                        <div class="row-div">
+                            <div class="column-div" style="width: 50%;">სახელი, გვარი: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jop.Name, jop.FirstName + ' ' + jop.MiddleName + ' ' + jop.LastName)}</div>
+                            <div class="column-div" style="width: 50%;">Name, Surname: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jop.Name, jop.FirstName + ' ' + jop.MiddleName + ' ' + jop.LastName)}</div>
+                        </div>
+                        <div class="row-div">
+                            <div class="column-div" style="width: 50%;">პასპორტის ნომერი: {!jop.Passport_No__c}</div>
+                            <div class="column-div" style="width: 50%;">Passport Number: {!jop.Passport_No__c}</div>
+                        </div>
+                        <div class="row-div">
+                            <div class="column-div" style="width: 50%;"><br />________________________<br /> <span style="font-style: italic;">ხელმოწერა</span></div>
+                            <div class="column-div" style="width: 50%;"><br />________________________<br /> <span style="font-style: italic;">Signature</span></div>
+                        </div>
+                    </div>
+                </apex:repeat>
+            </apex:outputPanel>
+            <!-- End of Parties Information -->
+            <br/>
+            <!-- Start of Agent's Information -->
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">AGENT`S INFORMATION</div>
+                </div>
+            </div>
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">Are you being assisted by any of Vendor’s registered agents: {!oppData['agentAssistEng']}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">Agency Name: {!oppData['Opportunity'].Agency__r.Name}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">Agency Representative’s Name: {!oppData['Opportunity'].Agent__r.Name}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">Agency Representative’s Signature:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><br />________________________<br />{!IF(AND(NOT(ISNULL(oppData['jointOwners'])),oppData['jointOwners'] != 'Null'), 'Buyer 1 Signature', 'Buyer Signature')}<br /><br />{!oppData['Opportunity'].Account.Name}</div>
+                </div>
+              </div>
+              
+              <apex:variable value="{!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 1, 0)}" var="countpur" />
+              <apex:outputPanel rendered="{!AND(NOT(ISNULL(oppData['jointOwners'])),oppData['jointOwners'] != 'Null', oppData['personAccountRecordType'] == oppData['accountRecordType'])}">
+              <apex:repeat value="{!oppData['jointOwners']}" var="jop">
+              <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right; display: {!IF(countpur == 3, '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+              <apex:variable value="{!countpur+1}" var="countpur" />
+              <div class="table-div" style="border-top: 0px;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><br />________________________<br />{!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'Buyer ' + TEXT(countpur) + ' Signature', 'Shareholder ' + TEXT(countpur) + ' Signature')}<br /><br />{!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], jop.Name, jop.FirstName + ' ' + jop.MiddleName + ' ' + jop.LastName)}</div>
+                </div>
+              </div>
+              </apex:repeat>
+              </apex:outputPanel>
+              <br/>
+              <div class="table-div" style="border-top: 0px;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><br />________________________<br />Sales Advisor Name &amp; Signature (on Behalf of the Vendor)<br /><br />{!oppData['Opportunity'].Owner.Name}</div>
+                </div>
+            </div>
+           <!-- End of Agent's Information -->
+             
+            <!-- Start of Floor Plan -->
+            <apex:repeat value="{!imageUrlToStyleKeySet}" var="imageUrlToStyleKey">
+                <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br/>
+                <p style="margin: 0;"><strong>FLOOR PLAN</strong></p>
+                <div class='col align-center' style="text-align: center; background-color: #fffcf4;">
+                    <apex:image url="{!imageUrlToStyleKey}" height="980px" />
+                    <div style='color: #9A9EA9'>{!imageUrlToDesc[imageUrlToStyleKey]}</div>
+                </div>
+            </apex:repeat>
+            <!-- End of Floor Plan -->
+
+            <!-- Start of Location -->
+            <apex:outputPanel rendered="{!oppData['Opportunity'].Unit__r.Building__c == 'B'}">
+                <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br/>
+                <p style="margin: 0;"><strong>LOCATION</strong></p>
+                <div class='col align-center' style="text-align: center; background-color: #fffcf4;">
+                    <div style='color: #9A9EA9'><apex:image styleClass="float-right" url="{!$Resource.MIRAVerdeLocation}" height="980px" /></div>
+                </div>
+            </apex:outputPanel>
+            <!-- End of Location -->
+             
+          </div>
+      </body>
+  </html>
+</apex:page>

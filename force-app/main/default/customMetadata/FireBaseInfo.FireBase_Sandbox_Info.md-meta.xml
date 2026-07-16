@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>FireBase Sandbox Info</label>
+    <protected>false</protected>
+    <values>
+        <field>Issuer__c</field>
+        <value xsi:type="xsd:string">mira-dev-app@mira-app-f92f9.iam.gserviceaccount.com</value>
+    </values>
+    <values>
+        <field>Private_Key__c</field>
+        <value xsi:type="xsd:string">MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDIUo3XWvT12kEDZJFvolaiBW/UI+Jc0vE3t20+WXvZelNWLWds+zgD9XXUiarS2xEoPsV9jbfOafnOHNsdahqvPS3vwW+Xhs8pxF74x4uQV1/P8VIk3vL50wB2E9kekp0d9Kh8yDpAWNsrS/TtnLaPu+XSmHPoZ9SgH37ke95GeuE2k0tM4nI82/dJ7CtEqffNR+0BlxVt9xg32AGPnCd2iorqZiNgp2OBFZQGnSvxTS1oEjYxfWA418nKT1+HYHRTHInrgKkDBewDgll8s0rP89+1WlCP0FMg/jm52D684a7Jy03GXVkNIU3QHbZ+y8oSN9P7sXz/0yr1lyFfw2bdAgMBAAECggEAG2/UgJIIf2HeH15XXcW2KD58DhS/d2eRj/LeEg5Ehx7Df51RZJ0Ak5OQ3hmK8uf78MSu3PRGSrhmIA5WDoXOqNYazr3yOvvvr4X3XLX2o2rsMw7CPvg6/u+g87Xij4GU5m+bjMJfLsVczhB7DU5hDM0Mpxb9Ym/82yo6gYXbsFBRdbumqe5F9IYHAu71gyeJet0rngH/8ZWuaNC3LqccFo8MbUOOUuMx33hr0UItrJprarv2lEBmkzZcIyAiKe+gTRDBaAmt3xXzEr/rBgCRDF/6P4JYUV16jIq3RDnGteuEgjeMqzbzZKulaKfz5YOuNCStcflqCZ86WD+30qqaawKBgQD+DGUqLMPZdqk8VwxaFAfS37WcENf6C/QFpslvPRHgzzqskPgVGigY/Ssfgn17s1YeaOr8nMqpnch25yCxk1uWL0NsLc/L2j3bOntYl0P3iBmfi8Z2ikFjVrfG2h0GkXDwP069ykK0HIBjcOASa/AGoeGklpvnl3dv7Fx1iXvpLwKBgQDJ3IC9jOful4Lv2rk1GNFa8CrWNYr4FkTW+WhtthccOHXhnsbV/2HU/7GRkDYscXguop01Ng9WO8bIY9744feUhkdGfg49qc+axMmijyeWLkFQRF6RKB24N+hsgZOAnnvDuZN9simjUgN+Flyo3a9+hUTaGzeDNfwHLia4L0mVswKBgQDCG4JoeQ+jZpDkM7aSVN+tdZRzjEMZIGzwrIEYZ1bzqCKym4mRxgyBG18JklCCZYIVdiClpr8KXi4++1X1mBvQYohnbZFptnSwvrxj8h/ST8EUMF4RUI2pcyaz3w9yZ0odpqFpTdMtfuFyGVp7eNFKoAGiGhlBGG//ql7yx3tPrQKBgQChbCunaN6v9YlHtWkWBNqmFhirY/XVnjk+kAPqeArTDnN2ETqANtFNO4wME36+25537KI6wxhQpUy5QuQzssABjb/Bp1xMA1d5NJTp4gCOID8qqQHWonXhsxOycYw69oGSavx/L9IMQLF6SveeMmj8jCYbJFioHKuGMmnUMDxv8QKBgGH/D4kcJOvo1Gbr/9hhJSqitphbXYDcQXt4cPHyS+IgGQUcmfhjKoXrwyvHlPNd1os8ND8iAEBj92WFEInkd6404ZSq+s8qGeBmNTNORo4zx/zglLfkNG7yenSBMWOA8D9BKHsUUKHkLP2FBDudlLZABKfxpwZj08xgNCmzSpdZ</value>
+    </values>
+</CustomMetadata>

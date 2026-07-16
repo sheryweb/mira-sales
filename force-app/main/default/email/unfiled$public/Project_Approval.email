@@ -1,0 +1,5 @@
+Please approve the project {!Project__c.Name} to be published.
+
+See details and 'Approve' or 'Reject' in Salesforce:
+
+{!Project__c.Link}

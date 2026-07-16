@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Quarter_Booked__c</fullName>
+    <externalId>false</externalId>
+    <formula>&quot;Q&quot; &amp;
+CASE(
+MONTH( Unit_Booked_Date_Only__c ),
+1, &quot;1&quot;,
+2, &quot;1&quot;,
+3, &quot;1&quot;,
+4, &quot;2&quot;,
+5, &quot;2&quot;,
+6, &quot;2&quot;,
+7, &quot;3&quot;,
+8, &quot;3&quot;,
+9, &quot;3&quot;,
+10, &quot;4&quot;,
+11, &quot;4&quot;,
+12, &quot;4&quot;,
+&quot;N/A&quot;
+) &amp; &quot; &quot; &amp; TEXT(YEAR( Unit_Booked_Date_Only__c ))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Quarters</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

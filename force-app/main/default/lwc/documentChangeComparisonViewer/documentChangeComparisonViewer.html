@@ -1,0 +1,68 @@
+<template>
+    <template if:true={showViewer}>
+    <lightning-card title="Document Re-upload — Comparison" icon-name="standard:approval">
+        <div class="slds-p-around_medium">
+
+            <template if:true={error}>
+                <div class="slds-notify slds-notify_alert slds-theme_error" role="alert">
+                    <span>{error}</span>
+                </div>
+            </template>
+
+            <template if:true={hasData}>
+
+                <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Request</p>
+                            <p class="slds-text-heading_small">{comparison.requestName}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Status</p>
+                            <lightning-badge label={comparison.status}></lightning-badge>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Agency</p>
+                            <p>{comparison.agencyName}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-4">
+                            <p class="slds-text-body_small slds-text-color_weak">Submitted</p>
+                            <p>{comparison.submittedDate}</p>
+                        </div>
+                    </div>
+                    <div class="slds-m-top_small">
+                        <p class="slds-text-body_small slds-text-color_weak">Justification</p>
+                        <p class="slds-text-body_regular">{comparison.justification}</p>
+                    </div>
+                </div>
+
+                <p class="slds-text-title_caps slds-m-bottom_x-small">Documents to review ({docCount})</p>
+
+                <template for:each={comparison.docs} for:item="d">
+                    <div key={d.newDocId} class="slds-box slds-m-bottom_small">
+                        <div class="slds-grid slds-gutters slds-wrap">
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="col-header col-header-current">Current document</div>
+                                <div class="slds-box comparison-panel">
+                                    <p class="slds-truncate file-name" title={d.oldFileName}>{d.oldFileName}</p>
+                                    <lightning-button label="Open current" icon-name="utility:preview"
+                                        data-id={d.oldDocId} onclick={openFile} class="slds-m-top_x-small"></lightning-button>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="col-header col-header-proposed">Re-uploaded document</div>
+                                <div class="slds-box comparison-panel proposed-panel">
+                                    <p class="slds-truncate file-name" title={d.newFileName}>{d.newFileName}</p>
+                                    <lightning-button variant="brand" label="Open re-uploaded" icon-name="utility:preview"
+                                        data-id={d.newDocId} onclick={openFile} class="slds-m-top_x-small"></lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+            </template>
+        </div>
+    </lightning-card>
+    </template>
+</template>

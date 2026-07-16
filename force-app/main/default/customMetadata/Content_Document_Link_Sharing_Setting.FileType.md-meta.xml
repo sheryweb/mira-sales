@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>File__c.Type__c</label>
+    <protected>false</protected>
+    <values>
+        <field>Field_Api_Name__c</field>
+        <value xsi:type="xsd:string">Type__c</value>
+    </values>
+    <values>
+        <field>Field_Value__c</field>
+        <value xsi:type="xsd:string">Client Passport Scan;Sales Offer;Unit Layout Preview;News Content Photo;News Preview;Project Preview;Photos;Schemas/PDFs;Project Cover Image;Project Exterior Photos;Project Interior Photos;Project Map Image</value>
+    </values>
+    <values>
+        <field>sObject_Api_Name__c</field>
+        <value xsi:type="xsd:string">File__c</value>
+    </values>
+</CustomMetadata>

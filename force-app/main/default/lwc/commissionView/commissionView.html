@@ -1,0 +1,119 @@
+<template>
+    <lightning-card title="Commission Details" icon-name="standard:opportunity">
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+
+            <template lwc:if={loading}>
+                <div class="slds-p-around_medium slds-align_absolute-center">
+                    <lightning-spinner alternative-text="Loading..." size="small"></lightning-spinner>
+                </div>
+            </template>
+
+            <template lwc:elseif={hasContext}>
+                <div class="slds-grid slds-wrap slds-gutters_small slds-p-bottom_medium">
+                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_x-small">
+                        <div class="field-label">Commission Number</div>
+                        <div class="field-value">
+                            <a href="javascript:void(0)" onclick={handleCommissionClick} class="commission-link">{commissionName}</a>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_x-small">
+                        <div class="field-label">Status</div>
+                        <div class="field-value">
+                            <span class={statusBadgeClass}>{status}</span>
+                        </div>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_x-small">
+                        <div class="field-label">Agency</div>
+                        <div class="field-value">{agencyDisplay}</div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_x-small">
+                        <div class="field-label">Commission Rate</div>
+                        <div class="field-value">{rateDisplay}</div>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_x-small">
+                        <div class="field-label">Commission Amount</div>
+                        <div class="field-value">
+                            <lightning-formatted-number
+                                value={commissionAmount}
+                                format-style="currency"
+                                currency-code={currencyCode}
+                                minimum-fraction-digits="2">
+                            </lightning-formatted-number>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_x-small">
+                        <div class="field-label">VAT Amount</div>
+                        <div class="field-value">
+                            <lightning-formatted-number
+                                value={vatAmount}
+                                format-style="currency"
+                                currency-code={currencyCode}
+                                minimum-fraction-digits="2">
+                            </lightning-formatted-number>
+                        </div>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_x-small">
+                        <div class="field-label">Payment Method</div>
+                        <div class="field-value">{paymentMethodDisplay}</div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_x-small">
+                        <div class="field-label">Total Commission Amount</div>
+                        <div class="field-value amount-emphasis">
+                            <lightning-formatted-number
+                                value={totalCommissionAmount}
+                                format-style="currency"
+                                currency-code={currencyCode}
+                                minimum-fraction-digits="2">
+                            </lightning-formatted-number>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_x-small">
+                        <div class="field-label">Paid Amount</div>
+                        <div class="field-value">
+                            <lightning-formatted-number
+                                value={paidAmount}
+                                format-style="currency"
+                                currency-code={currencyCode}
+                                minimum-fraction-digits="2">
+                            </lightning-formatted-number>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-vertical_x-small">
+                        <div class="field-label">Remaining Amount</div>
+                        <div class="field-value amount-emphasis">
+                            <lightning-formatted-number
+                                value={remainingAmount}
+                                format-style="currency"
+                                currency-code={currencyCode}
+                                minimum-fraction-digits="2">
+                            </lightning-formatted-number>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <template lwc:else>
+                <template lwc:if={hasIneligibilityReasons}>
+                    <div class="empty-state">
+                        <lightning-icon icon-name="utility:warning" size="x-small" class="slds-p-right_x-small" variant="warning"></lightning-icon>
+                        <span class="slds-text-body_small">Unit is not eligible for commission:</span>
+                    </div>
+                    <ul class="reasons-list">
+                        <template for:each={ineligibilityReasons} for:item="reason">
+                            <li key={reason} class="reason-item">{reason}</li>
+                        </template>
+                    </ul>
+                </template>
+                <template lwc:else>
+                    <div class="empty-state">
+                        <lightning-icon icon-name="utility:info" size="x-small" class="slds-p-right_x-small"></lightning-icon>
+                        <span class="slds-text-body_small slds-text-color_weak">No commission found for this record.</span>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>

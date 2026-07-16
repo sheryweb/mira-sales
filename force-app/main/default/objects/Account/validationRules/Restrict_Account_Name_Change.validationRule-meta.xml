@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Restrict_Account_Name_Change</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+ ISCHANGED(Name),
+ Has_Booked_Unit__c &lt;&gt; false,
+ $Profile.Name &lt;&gt; &apos;System Administrator&apos;,
+ $Profile.Name &lt;&gt; &apos;Sales Admin&apos;
+)</errorConditionFormula>
+    <errorDisplayField>Name</errorDisplayField>
+    <errorMessage>Account Name cannot be changed because of the Booking this Account has</errorMessage>
+</ValidationRule>

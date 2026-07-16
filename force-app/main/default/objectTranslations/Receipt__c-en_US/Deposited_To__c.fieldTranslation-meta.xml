@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Deposited To --></label>
+    <name>Deposited_To__c</name>
+    <picklistValues>
+        <masterLabel>Abu Dhabi Islamic - AED</masterLabel>
+        <translation><!-- Abu Dhabi Islamic - AED --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Abu Dhabi Islamic - EURO</masterLabel>
+        <translation><!-- Abu Dhabi Islamic - EURO --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Abu Dhabi Islamic - USD</masterLabel>
+        <translation><!-- Abu Dhabi Islamic - USD --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Abu Dhabi Islamic Escrow - GFF</masterLabel>
+        <translation><!-- Abu Dhabi Islamic Escrow - GFF --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Cash</masterLabel>
+        <translation><!-- Cash --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Emirates Islamic - AED</masterLabel>
+        <translation><!-- Emirates Islamic - AED --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Emirates Islamic - AED - Verde</masterLabel>
+        <translation><!-- Emirates Islamic - AED - Verde --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Emirates Islamic - EUR - Verde</masterLabel>
+        <translation><!-- Emirates Islamic - EUR - Verde --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Emirates Islamic - USD - Verde</masterLabel>
+        <translation><!-- Emirates Islamic - USD - Verde --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Emirates Islamic Escrow - TR1</masterLabel>
+        <translation><!-- Emirates Islamic Escrow - TR1 --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Emirates Islamic Escrow - TR2</masterLabel>
+        <translation><!-- Emirates Islamic Escrow - TR2 --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Emirates NBD - AED</masterLabel>
+        <translation><!-- Emirates NBD - AED --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Emirates NBD - CHF</masterLabel>
+        <translation><!-- Emirates NBD - CHF --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Emirates NBD - EUR</masterLabel>
+        <translation><!-- Emirates NBD - EUR --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Emirates NBD - USD</masterLabel>
+        <translation><!-- Emirates NBD - USD --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Emirates NBD Escrow – Bentley</masterLabel>
+        <translation><!-- Emirates NBD Escrow – Bentley --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

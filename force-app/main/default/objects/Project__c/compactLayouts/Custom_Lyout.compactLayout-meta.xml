@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Custom_Lyout</fullName>
+    <fields>Name</fields>
+    <fields>Project_Code__c</fields>
+    <fields>Publish_Project__c</fields>
+    <fields>Project_Value__c</fields>
+    <fields>Project_Received_Value__c</fields>
+    <fields>Project_Remaining_Value__c</fields>
+    <label>Custom Lyout</label>
+</CompactLayout>

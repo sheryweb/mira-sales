@@ -1,0 +1,5 @@
+Please approve the Unit {!Unit__c.Name}  with title {!Unit__c.Title_Formula__c} to be published.
+
+View details and click 'Approve' or 'Reject' in Salesforce:
+
+{!Unit__c.Link}

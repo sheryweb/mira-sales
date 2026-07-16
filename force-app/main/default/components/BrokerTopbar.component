@@ -1,0 +1,17 @@
+<apex:component >
+    <apex:attribute name="title" type="String" required="false" description="Page title"/>
+    <apex:attribute name="company" type="String" required="false" description="Broker company name"/>
+
+    <header class="bp-top">
+        <h1>{!title}</h1>
+        <div class="bp-user">
+            <div class="bp-meta">
+                <b>{!IF(company == null, 'Broker', company)}</b>
+                <span>Broker Partner</span>
+            </div>
+            <div class="bp-avatar">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V7a2 2 0 0 1 2-2h6v16M11 21h10V11a2 2 0 0 0-2-2h-8"/></svg>
+            </div>
+        </div>
+    </header>
+</apex:component>

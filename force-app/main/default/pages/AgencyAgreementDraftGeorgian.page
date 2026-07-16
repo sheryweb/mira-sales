@@ -1,0 +1,995 @@
+<apex:page renderAs="" showHeader="true" title="Georgia Agency Agreement" sidebar="false" standardStylesheets="false" applyBodyTag="true" applyHtmlTag="true" controller="AgencyAgreementGeorgianController">
+  <html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 12px;
+                /*font-family: "Lucida Console", "Courier New", monospace;*/
+            }
+            .clearfix {
+                clear: both;
+            }
+            table {
+                width: 100%;
+            }
+            .table-div {
+                display: table;
+                width: 100%;
+                border: 1px solid #dddddd;
+            }
+            .row-div {
+                display: table-row;
+            }
+            .column-div {
+                display: table-cell;
+                padding: 5px;
+                border: 1px solid #dddddd;
+            }
+            .table-title {
+                width: 50%;
+                font-size: 14px;
+                font-weight: bold;
+                background: #f1f1f1;
+                border-bottom: none;
+            }
+            @page {
+                size: A4 portait;
+                margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+            }
+            @media print {
+                div#page-footer {
+                    display: block;
+                    padding: 5px;
+                    position: fixed;
+                    /*bottom: 0;*/
+                }
+                #print-btn {
+                    display: none;
+                }
+                div#logo-footer {
+                    display: block;
+                    position: fixed;
+                    bottom: 0;
+                    left: 44%;
+                }
+            }
+            .logo {
+                width: 100%;
+                padding-bottom: 10px;
+                text-align: right;
+            }
+            .ar-lang {
+                direction: rtl;
+            }
+            
+        .page {
+                position: relative;
+                counter-increment: page;
+            }
+           /*page numbers*/
+            div.page:after {
+                display: block;
+                content: " Page - "counter(page);
+                position: absolute;
+                bottom: -1035px;
+                right: 15px;
+                padding: 2px 12px;
+                font-size: 14px;
+            }
+            .floor-plan-title {
+                width: 100%;
+                text-align: center;
+                font-size: 20px;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body class="page-content" onload="">
+        <div class="footer grey-txt" id="page-footer">
+            <p>უძრავი ქონების საბროკერო სააგენტოს მომსახურების ხელშეკრულება</p>
+            <p>Real Estate Brokerage Agency Agreement</p>
+        </div>
+        <div id="logo-footer"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="30" /></div>
+        <br/>
+        <p id="print-btn"><button onclick="window.print()">Download PDF</button></p>
+        <div id="page-content">
+            <div class='col size-1-of-2 page' style="text-align: right; margin-top: 30px;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div>
+            <div class='logo'></div>
+            <div class="table-div">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">უძრავი ქონების საბროკერო სააგენტოს მომსახურების ხელშეკრულება</div>
+                    <div class="column-div table-title" style="border-left: none;">Real Estate Brokerage Agency Agreement</div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>ხელშეკრულების დადების თარიღი:</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>Date of Execution of the Agreement:</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>მხარეთა მონაცემები:</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>Details of the Parties:</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>ა. დეველოპერის მონაცემები:</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>A. Developer’s Details:</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">სახელწოდება: შპს მირა დეველოპმენტს</div>
+                    <div class="column-div" style="width: 50%;">Name: MIRA DEVELOPMENTS LLC</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">საიდენტიფიკაციო ნომერი: 419625052</div>
+                    <div class="column-div" style="width: 50%;">Identification Number: 419625052</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">რეგისტრაციის მისამართი: ქ. ტყიბული, რეზო თაბუკაშვილის ქ. №14, ბინა №9</div>
+                    <div class="column-div" style="width: 50%;">Registered Address: 14 Rezo Tabukashvili Str., Apt 9, Tkibuli, Georgia</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ფაქტობრივი მისამართი: ქ. თბილისი, ი. ჭავჭავაძის გამზ. №37ბ</div>
+                    <div class="column-div" style="width: 50%;">Actual Address: 37b Ilia Chavchavadze Ave., Tbilisi, Georgia</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ელ. ფოსტა: info@miradevelopments.ae</div>
+                    <div class="column-div" style="width: 50%;">Email: info@miradevelopments.ae</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">დირექტორი: ბექა ქურციკიძე</div>
+                    <div class="column-div" style="width: 50%;">Director: Beka Kurtsikidze</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">პირადი ნომერი: 41001020881</div>
+                    <div class="column-div" style="width: 50%;">Personal Number: 41001020881</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>ბ. აგენტის მონაცემები</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>B. Agent’s Details</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">სახელწოდება: {!accData['agencyAccount'].Name}</div>
+                    <div class="column-div" style="width: 50%;">Name: {!accData['agencyAccount'].Name}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">საიდენტიფიკაციო ნომერი: {!accData['agencyAccount'].Trade_License_Number__c}</div>
+                    <div class="column-div" style="width: 50%;">Identification Number: {!accData['agencyAccount'].Trade_License_Number__c}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">რეგისტრაციის მისამართი: {!accData['agencyAccount'].BillingStreet}</div>
+                    <div class="column-div" style="width: 50%;">Registered Address: {!accData['agencyAccount'].BillingStreet}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ფაქტობრივი მისამართი: {!accData['agencyAccount'].BillingStreet}</div>
+                    <div class="column-div" style="width: 50%;">Actual Address: {!accData['agencyAccount'].BillingStreet}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ელ. ფოსტა: {!accData['agencyAccount'].Company_Email__c}</div>
+                    <div class="column-div" style="width: 50%;">Email: {!accData['agencyAccount'].Company_Email__c}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ტელეფონი: {!accData['agencyAccount'].Phone}</div>
+                    <div class="column-div" style="width: 50%;">Telephone: {!accData['agencyAccount'].Phone}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">დირექტორი: {!accData['agencyAccount'].Signatory_Name__c}</div>
+                    <div class="column-div" style="width: 50%;">Director: {!accData['agencyAccount'].Signatory_Name__c}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">პირადი ნომერი: {!accData['agencyAccount'].Identification_Number__c}</div>
+                    <div class="column-div" style="width: 50%;">Personal Number: {!accData['agencyAccount'].Identification_Number__c}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>წინამდებარე უძრავი ქონების საბროკერო სააგენტოს ხელშეკრულება იდება შემდეგ მხარეებს შორის:</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>This Real Estate Brokerage Agency Agreement is entered into between the following parties:</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>დეველოპერი:</strong> შპს მირა დეველოპმენტს (შემდგომში მოხსენიებული, როგორც „დეველოპერი“)</div>
+                    <div class="column-div" style="width: 50%;"><strong>Developer:</strong> MIRA DEVELOPMENTS LLC (hereinafter referred to as the “Developer”)</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>აგენტი:</strong> {!accData['agencyAccount'].Name} (შემდგომში მოხსენიებული, როგორც „აგენტი“)</div>
+                    <div class="column-div" style="width: 50%;"><strong>Agent:</strong> {!accData['agencyAccount'].Name} (hereinafter referred to as the “Agent”)</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">წინამდებარე ხელშეკრულების ფარგლებში დეველოპერი და აგენტი ერთობლივად მოხსენიებულნი იქნებიან, როგორც <strong>„მხარეები“</strong>, ხოლო ცალ-ცალკე, როგორც <strong>„მხარე“</strong>;</div>
+                    <div class="column-div" style="width: 50%;">Within the framework of this Agreement, the Developer and the Agent shall be jointly referred to as the “<strong>Parties</strong>” and individually as a “<strong>Party</strong>”;</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">პრეამბულა</div>
+                    <div class="column-div table-title" style="border-left: none;">Preamble</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>ვინაიდან,</strong> დეველოპერი დაკავებულია უძრავი ქონების პროექტის განვითარებით, გაყიდვებითა და მართვით, მათ შორის, საქართველოში მიმდინარე სხვადასხვა პროექტებით და სურს დანიშნოს აგენტი ამ პროექტის პოტენციური კლიენტებისთვის წარდგენისა და რეკლამირებისთვის;</div>
+                    <div class="column-div" style="width: 50%;"><strong>WHEREAS,</strong> the Developer is engaged in the development, sales, and management of an ongoing real estate project located in Georgia, and desires to appoint an Agent to market and advertise this project to potential Clients;</div>
+                </div>
+            </div><br/>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>ვინაიდან,</strong> აგენტი არის სათანადო კვალიფიკაციისა და გამოცდილების უძრავი ქონების აგენტი, რომელსაც აქვს გამოცდილება უძრავი ქონების მარკეტინგსა და პოპულარიზაციაში;</div>
+                    <div class="column-div" style="width: 50%;"><strong>WHEREAS,</strong> the Agent is a duly qualified and experienced real estate agent with expertise in the marketing and promotion of real estate;</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>ვინაიდან,</strong> აგენტი დაეთანხმა დეველოპერის ქონების მარკეტინგისა და გაყიდვების ხელშეწყობის მიზნით დეველოპერის პროექტზე მუშაობას, მხარეთა შორის ურთიერთშეთანხმების, აქ მოცემული პირობებისა და წესების შესაბამისად;</div>
+                    <div class="column-div" style="width: 50%;"><strong>WHEREAS,</strong> the Agent accepted the appointment to market and promote the sale of property within the Developer's Project, as mutually agreed upon by the Parties, in accordance with the terms and conditions set forth herein;</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>ვინაიდან,</strong> მხარეებს სურთ, შექმნან მკაფიო ჩარჩო მათი თანამშრომლობისთვის, რომელიც განსაზღვრავს აგენტის პასუხისმგებლობებს, საკომისიოს სტრუქტურას და სხვა შესაბამის პირობებს;</div>
+                    <div class="column-div" style="width: 50%;"><strong>WHEREAS,</strong> the Parties wish to establish a clear framework for their collaboration, outlining the responsibilities of the Agent, the commission structure, and other relevant terms;</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>ამგვარად,</strong> მოცემულ ხელშეკრულებაზე ორმხრივი აღქმებისა და შეთანხმებების გათვალისწინებით, მხარეები თანხმდებიან შემდეგზე:</div>
+                    <div class="column-div" style="width: 50%;"><strong>NOW, THEREFORE,</strong> in consideration of the mutual covenants and Agreements contained herein, the Parties agree as follows:</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 1. ტერმინთა განმარტებები</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 1. Definitions</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ამ შეთანხმების მიზნებისათვის, შემდეგ ტერმინებს აქვთ ქვემოთ მინიჭებული მნიშვნელობა:</div>
+                    <div class="column-div" style="width: 50%;">For the purposes of this Agreement, the following terms shall have the meanings ascribed to them below:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.1. ხელშეკრულება - უძრავი ქონების გაყიდვების უფლება, მათ შორის ყველა დანართი, ნიმუში და დამატებები, რომელიც მასზეა დართული, დროდადრო შესწორებული სახით.</div>
+                    <div class="column-div" style="width: 50%;">1.1. Agreement - this Real Estate Sales Mandate, including all schedules, exhibits, and appendices attached hereto, as amended from time to time.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.2. აფილირებული კომპანია - აგენტთან მიმართებაში ნიშნავს შემდეგს: (i) თანამდებობის პირს, დირექტორს, მენეჯერს, აქციონერს, თანამშრომელს, აგენტს ან კონტრაქტორს; (ii) ნათესავს ან ზემოთ მოცემულ (i) პუნქტში მითითებული მხარის ნათესავს; ან (iii) შვილობილი ან ჰოლდინგური კომპანია, ან კომპანია, რომელიც ამ ჰოლდინგური კომპანიის შვილობილი კომპანიაა.</div>
+                    <div class="column-div" style="width: 50%;">1.2. Affiliate - in respect of the Agent, the following: (i) an officer, director, manager, shareholder, employee, Agent or contractor; (ii) a relative or a relative of a Party named in paragraph (i) above; or (iii) a subsidiary or holding company, or a company which is a subsidiary of that holding company.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.3. აგენტი - ნებისმიერი სათანადოდ ლიცენზირებული იურიდიული ან ფიზიკური პირი, რომელიც წარმოადგენს უძრავი ქონების სააგენტოს ამ შეთანხმების განსაზღვრული მომსახურების განსახორციელებლად.</div>
+                    <div class="column-div" style="width: 50%;">1.3. Agent - Means any duly licensed entity or individual, as applicable, engaged to perform real estate agency services under this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.4. კლიენტი - ნებისმიერი ფიზიკური ან იურიდიული პირი, რომელიც აგენტმა წარუდგინა დეველოპერს და რომელიც დებს ან პოტენციურად შეუძლია დადოს ქონების ნასყიდობის ხელშეკრულება.</div>
+                    <div class="column-div" style="width: 50%;">1.4. Client - any person or entity introduced by the Agent to the Developer who enters into, or may potentially enter into a SPA for a Property.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.5. საკომისიო - დეველოპერის მიერ აგენტისთვის გადასახდელი თანხა წარმატებული გაყიდვისთვის. საკომისიოს განაკვეთი განისაზღვრება პროექტის შესაბამისი შეტყობინებით და მისი გადახდა განხორციელდება ამ შეთანხმების პირობების შესაბამისად.</div>
+                    <div class="column-div" style="width: 50%;">1.5. Commission - the fee payable by the Developer to the Agent for a Successful Sale. The commission rate shall be as specified in the relevant Project Notification, and payment shall be subject to the terms and conditions of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.6. დეველოპერი - შპს მირა დეველოპმენტს</div>
+                    <div class="column-div" style="width: 50%;">1.6. Developer - MIRA DEVELOPMENTS LLC</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.7. დეველოპერის პოლიტიკა - დეველოპერის მიერ დროდადრო დადგენილი პოლიტიკა და პროცედურები, რომელიც დაკავშირებულია ქონების გაყიდვასა და მარკეტინგთან და მოიცავს, მათ შორის, მაგრამ არა მხოლოდ, საკომისიოს განაკვეთებს, გადახდის პირობებსა და კლიენტის რეგისტრაციას.</div>
+                    <div class="column-div" style="width: 50%;">1.7. Developer's Policies - the policies and procedures established by the Developer from time to time relating to the sale and marketing of the Property, including but not limited to commission rates, payment terms, and Client registration.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.8. დეპოზიტი - კლიენტის მიერ ქონების დაჯავშნის უზრუნველსაყოფად დეველოპერისთვის გადახდილი პირველადი ფულადი თანხა, როგორც ეს განსაზღვრულია ინტერესის გამოხატვის განაცხადით.</div>
+                    <div class="column-div" style="width: 50%;">1.8. Deposit - refers to the initial monetary payment made by the Client to the Developer, as specified in the EOI, to secure the reservation of the Property.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.9. ინტერესის გამოხატვის განაცხადი - დოკუმენტი, რომლითაც პოტენციური მყიდველი გამოხატავს უძრავი ქონების შეძენის ინტერესს.</div>
+                    <div class="column-div" style="width: 50%;">1.9. Expression of Interest (EOI) - a document by which a prospective buyer indicates its preliminary interest in acquiring the Property.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.10. პროექტის შესახებ შეტყობინება - დეველოპერის ოფიციალური კომუნიკაცია აგენტთან, რომელსაც მიეწოდება ელექტრონული ფოსტით ან სხვა საშუალებით და რომელიც ოფიციალურად აცნობებს და უფლებამოსილებას აძლევს აგენტს, განახორციელოს კონკრეტული პროექტის მარკეტინგული აქტივობა. აღნიშნული შეიძლება მოიცავდეს, მაგრამ არ შემოიფარგლოს შემდეგით: i. მარკეტინგის დეტალები და შესაბამისი საკომისიოს სტრუქტურა ii. საკომისიოს განაკვეთები iii. და ასევე შეიძლება მიუთითებდეს ამ პროექტთან დაკავშირებულ ნებისმიერ სპეციალურ პირობებსა და წესებს.</div>
+                    <div class="column-div" style="width: 50%;">1.10. Project Notification - refers to the Developer's formal communication to the Agent, delivered by email or other designated means, which formally notifies and authorizes the Agent to market a specified Project. It may include, without limitation: i. marketing details and the applicable commission structure ii. Encompassing commission rate(s), iii. and may also specify any special terms and conditions relevant to that Project.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.11. პოტენციური კლიენტი - ნებისმიერი ფიზიკური ან იურიდიული პირი, რომელიც დეველოპერის მიერ იდენტიფიცირებულია ქონების პოტენციურ მყიდველად და რეგისტრირებულია დეველოპერის მონაცემთა ბაზაში აგენტის მიერ მის წარდგენამდე.</div>
+                    <div class="column-div" style="width: 50%;">1.11. Lead - Any individual or entity identified by the Developer as a potential purchaser of the Property, registered in the Developer's database prior to any introduction by the Agent.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.12. ინტელექტუალური საკუთრება - დეველოპერის საკუთრებაში არსებულ ყველა სავაჭრო ნიშანი, მომსახურების ნიშანი, სავაჭრო სახელწოდება, ლოგო, საავტორო უფლებები, პატენტები და სხვა ინტელექტუალური საკუთრების უფლებები.</div>
+                    <div class="column-div" style="width: 50%;">1.12. Intellectual Property - all trademarks, service marks, trade names, logos, copyrights, patents, and other intellectual property rights owned by the Developer.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.13. პროექტი - უძრავი ქონება, მათ შორის, საცხოვრებელი, კომერციული ან შერეული დანიშნულების ობიექტი, როგორც ეს დეტალურად არის აღწერილი პროექტის დოკუმენტაციაში და რომლის რეალიზაციის უფლებამოსილებაც აგენტს გააჩნია.</div>
+                    <div class="column-div" style="width: 50%;">1.13. Project - the real estate, including residential, commercial, or mixed-use property, as detailed in the relevant project documentation, and for which the Agent is authorized to market its Property.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.14. ქონება - პროექტის ფარგლებში არსებული საცხოვრებელი და/ან კომერციული უძრავ ქონება, რომელიც დეველოპერის მიერ არის სარეალიზაციოდ შეთავაზებული.</div>
+                    <div class="column-div" style="width: 50%;">1.14. Property - mean the residential and/or commercial real estate unit within the Project that are being offered for sale by the Developer.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.15. წარმატებული გაყიდვა - ქონების გაყიდვა კლიენტზე, რომელიც აგენტის მიერ იქნა წარმოდგენილი, როდესაც ნასყიდობის ხელშეკრულება სრულად არის ხელმოწერილი და დეველოპერმა მიიღო ხელშეკრულებით და/ან პროექტის შეტყობინებით განსაზღვრული აუცილებელი თანხები.</div>
+                    <div class="column-div" style="width: 50%;">1.15. Successful Sale - a sale of a Property to a Client introduced by the Agent, where the SPA has been fully executed, and the Developer has received the required payments as specified in the Agreement and/or the Project notification.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.16. ნასყიდობის ხელშეკრულება - ნიშნავს მყიდველსა და გამყიდველს (დეველოპერს) შორის დადებულ სამართლებრივად სავალდებულო ხელშეკრულებას, რომელიც განსაზღვრავს უძრავი ქონების გაყიდვის ყველა პირობასა და პირობებს.</div>
+                    <div class="column-div" style="width: 50%;">1.16. SPA - shall refer to the legally binding contract between the buyer and the seller (Developer) that details all terms and conditions of the property sale.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.17. ვადა - ამ ხელშეკრულების საწყისი ვადა, როგორც ეს განსაზღვრულია მუხლში 7.1., და მის ნებისმიერ განახლებას.</div>
+                    <div class="column-div" style="width: 50%;">1.17. Term - the initial term of this Agreement, as set out in Article 7.1., and any renewals thereof.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">1.18. დღგ - ნიშნავს დამატებული ღირებულების გადასახადს.</div>
+                    <div class="column-div" style="width: 50%;">1.18. VAT - Value Added Tax</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 2. დანიშვნა</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 2. APPOINTMENTS</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">2.1. წინამდებარე ხელშეკრულებით დეველოპერი ნიშნავს აგენტს არაექსკლუზიურ წარმომადგენლად, დეველოპერის პროექტის ფარგლებში არსებული უძრავი ქონების ობიექტების რეალიზაციის ხელშეწყობის მიზნით, ამ ხელშეკრულებით განსაზღვრული პირობების შესაბამისად.</div>
+                    <div class="column-div" style="width: 50%;">2.1. The Developer hereby appoints the Agent as a non-exclusive Agent to market and promote the sales of the Property within the Developer's Project, subject to the terms and conditions of this Agreement.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">2.2. აგენტი ეთანხმება აღნიშნულ დანიშვნას და თანხმდება იმოქმედოს დეველოპერის არაექსკლუზიურ წარმომადგენლად დეველოპერის პროექტის ფარგლებში არსებული უძრავი ქონების ობიექტების რეალიზაციის ხელშეწყობის მიზნით.</div>
+                    <div class="column-div" style="width: 50%;">2.2. The Agent hereby accepts such appointment and agrees to act as a non-exclusive Agent for the Developer for the purpose of marketing and promoting the sales of the Property within the Developer's Project.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">2.3. თითოეულ ობიექტთან მიმართებით მოქმედი კონკრეტული საკომისიო განაკვეთი განისაზღვრება შესაბამის „პროექტის შეტყობინებაში“ მითითებული ოდენობისა და პირობების შესაბამისად.</div>
+                    <div class="column-div" style="width: 50%;">2.3. The specific commission rate applicable to each Property shall be as notified to the Agent in the relevant Project Notification.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">2.4. დეველოპერი უფლებამოსილია, სხვადასხვა პროექტისთვის დაადგინოს განსხვავებული საკომისიო განაკვეთები. აღნიშნული საკომისიო წარმოადგენს აგენტისათვის ამ ხელშეკრულების საფუძველზე გაწეული მომსახურების სანაცვლოდ მისაღებ ერთადერთ და სრულ ანაზღაურებას.</div>
+                    <div class="column-div" style="width: 50%;">2.4. The Developer reserves the right to set different commission rates for different Projects. This Commission shall constitute the sole and exclusive compensation due to the Agent for the services rendered under this Agreement.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 3. აგენტის ვალდებულებები</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 3. AGENT'S OBLIGATIONS</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.1. აგენტი იღებს ვალდებულებას და ეთანხმება დეველოპერს, რომ ხელშეკრულების მოქმედების მთელი პერიოდის განმავლობაში (როგორც ეს განსაზღვრულია მუხლ 7.1.-ში და მისი ნებისმიერი განახლების შემთხვევაში) შეასრულოს შემდეგი ვალდებულებები:</div>
+                    <div class="column-div" style="width: 50%;">3.1. The Agent undertakes and agrees with the Developer at all times during the Term (as defined in Article 7.1. and any renewals thereof:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.1.1. განაცხადოს და დაადასტუროს, რომ გააჩნია მომსახურების გასაწევად საჭირო ყველა აუცილებელი და მოქმედი ლიცენზია პროექტის მიმდინარეობის ტერიტორიაზე და მოქმედებს ყველა შესაბამისი კანონისა და რეგულაციის დაცვით.</div>
+                    <div class="column-div" style="width: 50%;">3.1.1. To declare and warrant that it holds all necessary and valid licenses to provide real estate Agency services in the Project location, and in compliance with all applicable laws and regulations.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.1.2. ნებისმიერ დროს დაიცვას ხელშეკრულების პირობები, დეველოპერის პოლიტიკა და დეველოპერის მიერ პროექტთან დაკავშირებით უძრავი ქონების მარკეტინგისა და გაყიდვის თაობაზე გაცემული ყველა მითითება ან ინსტრუქცია (წერილობითი თუ ზეპირი).</div>
+                    <div class="column-div" style="width: 50%;">3.1.2. To comply with the terms and conditions of the Agreement, the Developer's Policies, and all instructions or directions (whether written or oral) of the Developer concerning the marketing and sale of the Property concerning the Project, at all times.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.1.3. ნებისმიერ დროს არ წარმოაჩინოს თავი სხვა სტატუსით, გარდა დეველოპერის დამოუკიდებელი გაყიდვების აგენტისა, და არ იკისროს რაიმე ვალდებულება დეველოპერის, მისი აფილირებული პირების, შვილობილი კომპანიების და/ან იმ ერთობლივი საწარმოების სახელით, რომელშიც დეველოპერი მონაწილეობს.</div>
+                    <div class="column-div" style="width: 50%;">3.1.3. At all times, not to misrepresent itself as being anything but an independent sales Agent of the Developer and not incur any liabilities on behalf of the Developer, their affiliates, subsidiaries, and/or any joint venture companies in which the Developer is part.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.1.4. იყოს პასუხისმგებელი ყველა იმ ლიცენზიის, რეგისტრაციის, ნებართვისა და თანხმობის მოპოვებაზე, რომელიც აუცილებელი ან მიზანშეწონილია პროექტის მდებარეობის მიხედვით უძრავი ქონების რეკლამირებისა და მარკეტინგისთვის, აგრეთვე ამ ხელშეკრულებით გათვალისწინებული სხვა ვალდებულებების შესრულებისთვის, მათ შორის, მაგრამ არა მხოლოდ, პროექტის მდებარეობის მიხედვით უძრავი ქონების აგენტის საქმიანობისათვის საჭირო ლიცენზიებისა და ნებართვების მოპოვებაზე.</div>
+                    <div class="column-div" style="width: 50%;">3.1.4. To be responsible for obtaining all licenses, registrations, permits, and approvals necessary or advisable for the promotion and marketing of the Property in the Project location, and the performance of its other obligations under this Agreement, including but not limited to any required Project location real estate Agent licenses or permits.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.1.5. ნებისმიერ დროს იმოქმედოს პროფესიულად და ღირსეულად და ყველა შესაბამისი კანონის, ეთიკის კოდექსისა და დამკვიდრებული პრაქტიკის შესაბამისად კლიენტებთან და უძრავი ქონების პოტენციურ მყიდველებთან ურთიერთობისას და არ განახორციელოს რაიმე ქმედება, რომელიც შეიძლება ზიანის მომტანი იყოს დეველოპერის ბრენდული იმიჯის, საქმიანი რეპუტაციის და/ან კომერციული ინტერესებისთვის.</div>
+                    <div class="column-div" style="width: 50%;">3.1.5. To act at all times professionally and decently and in accordance with all applicable laws, codes of ethics, and practices in its relations with the Clients and potential purchasers of the Property, and to do nothing that could be prejudicial to the Developer's brand image, goodwill, and/or commercial interests.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.1.6. დაიცვას პროექტის მდებარეობის მიხედვით უძრავი ქონების მარკეტინგსა და გაყიდვასთან დაკავშირებული ყველა მოქმედი კანონი და რეგულაცია, მათ შორის, მაგრამ არა მხოლოდ, რეკლამასთან, კლიენტებთან ურთიერთობასთან და გარიგებების განხორციელების პროცედურებთან დაკავშირებული მოთხოვნები.</div>
+                    <div class="column-div" style="width: 50%;">3.1.6. To comply with all applicable laws and regulations based on the project location relevant to the marketing and sale of real estate, including but not limited to any requirements related to advertising, Client interactions, and transaction procedures.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.1.7. აგენტი არ იმოქმედებს და არ ჩაითვლება მყიდველად ან გამყიდველად უძრავ ქონებასთან დაკავშირებულ არცერთ გარიგებაში წინამდებარე ხელშეკრულების ფარგლებში. აგენტს არ ექნება უფლება, მოითხოვოს ან მიიღოს საკომისიო ან სხვა სახის ანაზღაურება იმ გარიგებასთან დაკავშირებით, სადაც აგენტი ან აგენტთან დაკავშირებული პირი წარმოადგენს მყიდველს ან გამყიდველს. ნებისმიერი ასეთი გარიგება იქნება ამ ხელშეკრულების მოქმედების ფარგლებს მიღმა.</div>
+                    <div class="column-div" style="width: 50%;">3.1.7. The Agent shall not act as, nor be considered, a buyer or seller in any transaction related to the Property under this Agreement. The Agent shall have no right to claim or receive any commission or other compensation for any transaction where the Agent, or any related party to the Agent, is a buyer or seller. Any such transaction shall be outside the scope of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">3.1.8. დაიცავს პროექტთან მიმართებით მოქმედი ფულის გათეთრების წინააღმდეგ ბრძოლის ყველა შესაბამისი რეგულაციას, მათ შორის, მაგრამ არა მხოლოდ, განახორციელებს კლიენტის სათანადო გადამოწმებას და საჭიროების შემთხვევაში, საეჭვო გარიგებების შესახებ ანგარიშის მომზადებას.</div>
+                    <div class="column-div" style="width: 50%;">3.1.8. To comply with all applicable Anti-Money Laundering (AML) regulations of the Project, including but not limited to conducting necessary Client due diligence and reporting suspicious transactions if required.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 4. უძრავი ქონების გაყიდვა</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 4. SALES OF THE PROPERTY</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">4.1. კლიენტების მიერ უძრავი ქონების შეძენასთან დაკავშირებული ყველა გადახდა უნდა განხორციელდეს დეველოპერის მიერ დადგენილი გადახდის ინსტრუქციების შესაბამისად.</div>
+                    <div class="column-div" style="width: 50%;">4.1. All payments by Clients for the purchase of the Property shall be made in accordance with the payment instructions provided by the Developer.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">4.2. დეველოპერს აქვს ექსკლუზიური უფლება, განსაზღვროს აღნიშნული თანხის მიღების ფორმა, რომელიც შეიძლება მოიცავდეს, თუმცა არ შემოიფარგლებოდეს, ნოტარიუსით ან „ესქროუ ანგარიშით“, რომელსაც დეველოპერი განსაზღვრავს წერილობითი ფორმით.</div>
+                    <div class="column-div" style="width: 50%;">4.2. The Developer shall have the sole right to determine method of payment , It may include, without limitation a notary or an escrow account as specified in writing by the Developer.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">4.3. აგენტს არ აქვს უფლება, მიიღოს კლიენტებისგან უძრავი ქონების შეძენისთვის განკუთვნილი თანხა ან განიზრახოს ასეთი თანხის მიღება.</div>
+                    <div class="column-div" style="width: 50%;">4.3. The Agent shall not receive or intend to receive any payment from the Clients for the purchase of the Property.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">4.4. დეველოპერს უფლება აქვს, შეწყვიტოს წინამდებარე ხელშეკრულება და მოითხოვოს ნებისმიერი წინასწარ გადახდილი საკომისიოს დაბრუნება ხელშეკრულების პირობების ან/და დეველოპერის პოლიტიკის დარღვევის შემთხვევაში.</div>
+                    <div class="column-div" style="width: 50%;">4.4. The Developer reserves the right to terminate this Agreement and recover any commission previously paid due to non-compliance and/or breach of this Agreement and/or the Developer's Policies.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">4.5. კლიენტის პირველად წარდგენასთან დაკავშირებული დავის ან გაურკვევლობის წარმოშობის შემთხვევაში, როდესაც კლიენტი უკვე წარმოდგენილია სხვა მესამე პირი აგენტის მიერ, აგენტი შეუქცევადად თანხმდება, რომ დეველოპერის შიდა მონაცემთა ბაზა და კლიენტის წარდგენის ჩანაწერები წარმოადგენს ერთადერთ და საბოლოო მონაცემს აღნიშნული კლიენტის პირველადი წარდგენის ფაქტის დასადგენად.</div>
+                    <div class="column-div" style="width: 50%;">4.5. In the event of a dispute or conflict arising from the introduction of a Client who has also been presented by another third-party agent, the Agent irrevocably agrees that the Developer's internal database and records of Client introductions shall be the sole and decisive authority in determining the effective introduction of said Client.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 5. საკომისიო და გადახდები</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 5. COMMISSION AND PAYMENTS</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>5.1. საკომისიოს გამოთვლა და მისი პირობები:</strong> საკომისიოს განაკვეთი, გამოთვლის მეთოდი, გადახდის პირობები და სხვა პირობები განისაზღვრება წინამდებარე ხელშეკრულებითა და „პროექტის შეტყობინებით“, რომელიც შეიძლება პერიოდულად შეიცვალოს დეველოპერის მიერ. დეველოპერი იტოვებს უფლებას, განსაზღვროს განსხვავებული საკომისიო განაკვეთები სპეციალური შემთხვევებისთვის ან პროექტებისათვის, რომელიც შეეხება კონკრეტული უძრავი ქონების გაყიდვას.</div>
+                    <div class="column-div" style="width: 50%;"><strong>5.1. Commission Calculation and Terms:</strong> The commission rate, method of calculation, payment terms, and other conditions shall be determined and paid according to the Articles of the Agreement and the Project Notification, as may be amended by the Developer from time to time. The Developer reserves the right to issue different commission rates for special events or Projects, which shall govern the sales of those specific Propery.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>5.2. აგენტის საგადასახადო ვალდებულებები:</strong> აგენტი არის სრულად პასუხისმგებელი ყველა შესაბამისი გადასახადის გადახდაზე, მათ შორის, მაგრამ არა მხოლოდ, დღგ, რომელიც წარმოშობილია ამ ხელშეკრულებიდან ან დაკავშირებულია ამ ხელშეკრულებასთან, ასევე საკომისიოებსა და დეველოპერის მიერ აგენტისთვის გადახდილ ნებისმიერ სხვა თანხებზე.</div>
+                    <div class="column-div" style="width: 50%;"><strong>5.2. Agent's Tax Obligations:</strong> The Agent shall be solely responsible for all applicable taxes, including but not limited to VAT, arising from or in connection with this Agreement, as well as taxes on commissions and any other amounts paid by the Developer to the Agent.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>5.3. საკომისიოს ჩამორთმევა:</strong> აგენტის მიერ წინამდებარე ხელშეკრულების და/ან დეველოპერის პოლიტიკის მკაცრად დაუცველობა გამოიწვევს მასთან დაკავშირებული გარიგებებიდან გამომდინარე საკომისიოს მოთხოვნის უფლების დაუყოვნებლივ და სრულ შეწყვეტას.</div>
+                    <div class="column-div" style="width: 50%;"><strong>5.3. Commission Forfeiture:</strong> Failure by the Agent to strictly observe and adhere to this Agreement and/or the Developer's Policies shall result in the immediate and complete forfeiture of the Agent's right to claim any commissions on related transactions.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>5.4. საკომისიოს გადახდა და გადასახადები:</strong> აგენტის საკომისიო გადაიხდება იმ შემთხვევაში, თუ დეველოპერმა მიიღო კლიენტების მიერ შეთანხმებული ნასყიდობის თანხები. დეველოპერის მიერ გადახდილი საკომისიო ითვლება, რომ მოიცავს ყველა შესაბამის გადასახადს, მათ შორის, დღგ-სა და გარიგებასთან დაკავშირებულ სხვა ხარჯებს.</div>
+                    <div class="column-div" style="width: 50%;"><strong>5.4. Commission Payment and Taxes:</strong> The Agent's commission will be paid subject to the Developer receiving the agreed purchase payments. The commission amount paid by the Developer shall be deemed to include all applicable taxes, VAT, and other transaction-related expenses.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>5.5. საკომისიოს ზედმეტად გადახდა:</strong> იმ შემთხვევაში, თუ დეველოპერმა გადაუხადა აგენტს საკომისიო და მისი ოდენობა არასწორად იქნა დაანგარიშებული ან გადახდა განხორციელდა არასწორად, დეველოპერს აქვს უფლება, დაუყოვნებლივ მოითხოვოს ზედმეტად გადახდილი თანხის დაბრუნება. აგენტი ვალდებულია, თანხის უკან დაბრუნება განახორციელოს დაუყოვნებლივ.</div>
+                    <div class="column-div" style="width: 50%;"><strong>5.5. Commission Overpayment:</strong> In the event that the Developer pays a commission to the Agent and the amount has been incorrectly calculated or processed, the Developer shall have the right to demand an immediate refund of the excess commission amount, which the Agent shall promptly reimburse.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>5.6. საკომისიოს გადახდაზე უარის თქმის უფლება:</strong> აგენტს არ ექნება უფლება, მიიღოს საკომისიო უძრავი ქონების გაყიდვისთვის შემდეგ შემთხვევებში:</div>
+                    <div class="column-div" style="width: 50%;"><strong>5.6. Commission Non-Entitlement:</strong> The Agent shall not be entitled to any Commission for a Sale of a Property in any of the following circumstances:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">i. აგენტი ან მისი დაკავშირებული პირი წარმოადგენს უძრავი ქონების მყიდველს ან მხარეს გარიგებაში.</div>
+                    <div class="column-div" style="width: 50%;">i. The Agent, or any affiliate of the Agent, is the buyer or a party to the purchase of the Property.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ii. კლიენტი იყო წარსულში დეველოპერის მიერ რეგისტრირებული, როგორც პოტენციური კლიენტი, რომელიც უკვე იმყოფებოდა გადაწყვეტილების მიღების ფაზაში აგენტის ჩართვამდე, ან წარდგენილი იყო დეველოპერისათვის პირდაპირ ან სხვა მესამე პირი აგენტის მიერ.</div>
+                    <div class="column-div" style="width: 50%;">ii. The Client was either previously registered as a Lead by the Developer, already in the decision-making phase at the time of the Agent's involvement, or introduced to the Developer directly or through a third-party Agent to the Developer.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">iii. დეველოპერმა ვერ მიიღო დეპოზიტი კლიენტისგან, როგორც მითითებულია ინტერესის გამოხატვის განაცხადში, გარდა იმ შემთხვევისა, როდესაც ასეთი გარემოება გამოწვეულია დეველოპერის ბრალით.</div>
+                    <div class="column-div" style="width: 50%;">iii. The Developer does not receive the Deposit from the Client as specified in the EOI, unless such non-receipt is directly attributable to the Developer's fault.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">iv. ნასყიდობის ხელშეკრულების გაფორმება პოტენციურ კლიენტთან არ მოხდა ინტერესის გამოხატვის განაცხადში მითითებულ ვადებში ან დეველოპერის ერთპიროვნული გადაწყვეტილებით დამატებით მიცემულ ვადაში.</div>
+                    <div class="column-div" style="width: 50%;">iv. The execution of the SPA with the potential Client does not occur within the period specified in the EOI or any agreed-upon extension granted by the Developer at its sole discretion.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">v. კლიენტი წყვეტს ტრანზაქციას დაჯავშნის ფორმაში ან ნასყიდობის ხელშეკრულებაში მითითებული გაუქმების პერიოდის შემდეგ, დეველოპერის მიერ აღიარებული საფუძვლიანი მიზეზის გარეშე.</div>
+                    <div class="column-div" style="width: 50%;">v. The Client withdraws from the transaction after the cancellation period outlined in the EOI or SPA, without a valid reason accepted by the Developer.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">vi. გაყიდვა ვერ დასრულდა დეველოპერის კონტროლის ფარგლებს გარეთ არსებული მიზეზების გამო.</div>
+                    <div class="column-div" style="width: 50%;">vi. The sale is not completed due to reasons outside the Developer's control.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">vii. კლიენტმა ვერ შეასრულა ნასყიდობის ხელშეკრულებით ან ინტერესის გამოხატვის განაცხადით განსაზღვრული ვალდებულებები, რის შედეგადაც გარიგება შეწყდა.</div>
+                    <div class="column-div" style="width: 50%;">vii. The Client fails to fulfill their obligations as outlined in the SPA or the EOI, leading to termination.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">viii. ნასყიდობის ტრანზაქცია გაუქმდა კლიენტის მიერ, მოქმედი კანონმდებლობის ან რეგულაციის დარღვევის გამო.</div>
+                    <div class="column-div" style="width: 50%;">viii. The sales transaction is canceled due to the Client's breach of any applicable laws or regulations.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ix. კანონმდებლობის ან რეგულაციების ცვლილება, რაც შეუძლებელს ხდის უძრავი ქონების გაყიდვას.</div>
+                    <div class="column-div" style="width: 50%;">ix. Changes in legislation or regulations that make the sale of the Property impossible.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">x. აგენტმა დარღვია ხელშეკრულების რომელიმე პირობა.</div>
+                    <div class="column-div" style="width: 50%;">x. The Agent breaches any term of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">xi. აგენტმა არ დაიცვა დეველოპერის მითითებები გაყიდვების პროცესთან დაკავშირებით.</div>
+                    <div class="column-div" style="width: 50%;">xi. The Agent does not follow the Developer's instructions regarding the sales process.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">xii. აგენტმა ვერ მიაწოდა დეველოპერს ყველა საჭირო დოკუმენტაცია და ინფორმაცია გაყიდვისთვის განსაზღვრულ ვადებში.</div>
+                    <div class="column-div" style="width: 50%;">xii. The Agent fails to provide the Developer with all necessary documentation and information required for the sale within the specified timeframe.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">xiii. აგენტმა განახორციელა არეთიკური ან შეცდომაში შემყვანი საქმიანობა უძრავი ქონების გაყიდვასთან დაკავშირებით.</div>
+                    <div class="column-div" style="width: 50%;">xiii. The Agent engages in any unethical or fraudulent activity related to the sale of the Property.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">xiv. აგენტმა კლიენტს მიაწოდა არასწორი, მცდარი ან შეცდომაში შემყვანი ინფორმაცია უძრავი ქონების, მისი მახასიათებლების, მდგომარეობის, სამართლებრივი სტატუსის ან გაყიდვის/გაქირავების პირობების შესახებ.</div>
+                    <div class="column-div" style="width: 50%;">xiv. The Agent makes any false, misleading, or inaccurate representation or statement to the Client regarding the Property, its features, specifications, condition, legal status, or the terms and conditions of its sale or lease.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">xv. აგენტმა არ დაიცვა დეველოპერის მარკეტინგისა და რეკლამირების წესები.</div>
+                    <div class="column-div" style="width: 50%;">xv. The Agent fails to adhere to the Developer's marketing or promotional guidelines.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">xvi. აგენტმა არ უზრუნველყო ფულის გათეთრების აღკვეთისათვის აუცილებელი დოკუმენტაციის წარმოდგენა, ასეთი მოთხოვნის შემთხვევაში.</div>
+                    <div class="column-div" style="width: 50%;">xvi. The Agent did not provide the required Anti-Money Laundering (AML) documentation if required.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>5.7. საკომისიოს დაბრუნება</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>5.7. Commission Recovery</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">5.7.1. მიუხედავად ნებისმიერი წინასწარი საკომისიოს გადახდისა, დეველოპერს უფლება აქვს, მოითხოვოს აგენტისთვის გადახდილი საკომისიოების სრული დაბრუნება ან/და დააკორექტიროს აღნიშნული თანხა ნებისმიერი დამომავლო საკომისიოდან და/ან აგენტისთვის გადახდიდან, თუ შემდგომ გამოვლინდა 5.6. პუნქტით („საკომისიოს გადახდაზე უარის თქმის უფლება“) ჩამოთვლილი რომელიმე გარემოება.</div>
+                    <div class="column-div" style="width: 50%;">5.7.1. Notwithstanding any prior commission payments, the Developer reserves the right to claim a full refund of any commission paid to the Agent, or to deduct such amount from any future commission and/or payments due to the Agent, if it is subsequently determined that any of the circumstances outlined in Article 5.6. (Commission Non-Entitlement) have occurred.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 6. რეკლამირება და პოპულარიზაცია</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 6. ADVERTISING AND PROMOTION</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>6.1. აგენტის პასუხისმგებლობა და ინტელექტუალური საკუთრება:</strong> აგენტი იქნება ერთპიროვნულად პასუხისმგებელი ქონების ყველა რეკლამასა და პოპულარიზაციაზე და დაფარავს მასთან დაკავშირებულ ყველა მარკეტინგულ ხარჯს. აგენტს მკაცრად ეკრძალება დეველოპერის ნებისმიერი ინტელექტუალური საკუთრებისა და/ან უფლებების გამოყენება, მათ შორის, მაგრამ არა მხოლოდ, საავტორო უფლებების, ლოგოების, სავაჭრო ნიშნებისა და სავაჭრო სახელების, დეველოპერის წინასწარი წერილობითი თანხმობის გარეშე. დეველოპერის ინტელექტუალური საკუთრების ნებისმიერი არაუფლებამოსილი გამოყენება ჩაითვლება წინამდებარე ხელშეკრულების არსებით დარღვევად.</div>
+                    <div class="column-div" style="width: 50%;"><strong>6.1. Agent's Responsibility and Intellectual Property:</strong> The Agent shall be solely responsible for all advertising and promotion of the Property, bearing all associated marketing costs. The Agent is strictly prohibited from using any intellectual property and/or rights belonging to the Developer, including but not limited to copyrights, logos, trademarks, and trade names, without the Developer's explicit prior written approval. Any unauthorized use of the Developer's Intellectual Property shall be considered a material breach of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>6.2. დეველოპერის მითითებები, თანხმობები და ტრენინგი:</strong> დეველოპერი უფლებამოსილია, თავისი შეხედულებისამებრ, ჩაუტაროს აგენტს ტრენინგი ან გადასცეს ინსტრუქციები პროექტისა და მისი მახასიათებლების შესახებ. აგენტი ვალდებულია, ზედმიწევნით დაიცვას და შეასრულოს დეველოპერის მიერ მიცემული ყველა მითითება, ინსტრუქცია და ტრენინგი, რომელიც დაკავშირებული იქნება უძრავი ქონების ობიექტების პოპულარიზაციასა და რეკლამირებასთან.</div>
+                    <div class="column-div" style="width: 50%;"><strong>6.2. Developer's Directives, Approvals, and Training:</strong> The Developer may, at its discretion, provide the Agent with training or briefings on the Project and its details. The Agent shall meticulously observe and comply with all directions, instructions, and training provided by the Developer regarding the promotion and advertisement of the Property.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>6.3. აკრძალვები:</strong> აგენტს ეკრძალება ნებისმიერი უკანონო გადახდის შეთავაზება, გადახდის განხორციელება ან შუამავლობა, ნებისმიერი საფასურის, ღირებულების, შეღავათის ან სხვა არასათანადო სარგებლის გადაცემაში კლიენტისთვის. ამ ხელშეკრულების მიზნებისთვის, აღნიშნული აკრძალვა ვრცელდება ნებისმიერი სახის გადახდაზე, საფასურზე, საკომისიოზე, კრედიტზე, საჩუქარზე, ფასიან ნივთზე ან სხვა ნებისმიერი კომპენსაციის ფორმაზე, რომელიც აგენტის ან მისი თანამშრომლების მიერ მიეწოდება კლიენტისთვის იმ მიზნით, რომ გავლენა იქონიოს კლიენტის გადაწყვეტილებაზე, გამოიყენოს აგენტის მომსახურება ან შეაჩეროს უძრავი ქონების შეძენა პირდაპირ დეველოპერისგან.</div>
+                    <div class="column-div" style="width: 50%;"><strong>6.3. Prohibitions:</strong> The Agent shall refrain from offering, paying, or facilitating any illegal exchange of payments, payment of a fee, or any value between various professionals involved, inducement, or other form of improper benefit to any Client. For the purposes of this Agreement, the prohibition shall apply on any payments, fee, commission, credit, gift, gratuity, thing of value, or any other compensation of any kind offered or provided by the Agent or its employees to a Client, with the intent to influence the Client's decision to utilize the Agent's services or to dissuade the Client from purchasing a property directly from the Developer.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>6.4. პროექტის ზუსტი წარმოდგენა და კლიენტისთვის მიცემული დაპირებები:</strong> აგენტი ვალდებულია, ზუსტად წარმოადგინოს პროექტი და მისი დეტალები, როგორც ეს განსაზღვრულია დეველოპერის მიერ და არ უნდა განახორციელოს პროექტის რეკლამირება ან პოპულარიზაცია ისე, რომ ეწინააღმდეგებოდეს დეველოპერის ინსტრუქციებს ან ტრენინგს. აგენტმა არ უნდა მისცეს კლიენტებს რაიმე დაპირება, შეთავაზება ან გარანტია ქონებასთან დაკავშირებით, თუ ეს დეველოპერის მიერ წერილობით არ არის ნებადართული. ნებისმიერი ნებადაურთველი დაპირება ან განცხადება ჩაითვლება ამ შეთანხმების არსებით დარღვევად.</div>
+                    <div class="column-div" style="width: 50%;"><strong>6.4. Accurate Project Representation and Client Promises:</strong> The Agent shall accurately represent the Project and its details as provided by the Developer and shall not market or promote the Project in a manner that contradicts the Developer's instructions or training. The Agent shall not make any promises, offers, or guarantees to Clients regarding the Property unless expressly authorized in writing by the Developer. Any unauthorized promises or representations shall be considered a material breach of this Agreement.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 7. მოქმედების ვადა და შეწყვეტა</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 7. DURATION AND TERMINATION</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>7.1. საწყისი ვადა და განახლება</strong> წინამდებარე ხელშეკრულება დაიწყება მისი ძალაში შესვლის დღიდან და იმოქმედებს 1 (ერთი) წლის ვადით. საწყისი ვადის დასრულების შემდეგ, ხელშეკრულება ავტომატურად გახანგრძლივდება იმავე საწყის ვადით ან/და იმავე პირობებით, თუ რომელიმე მხარე არ მიაწვდის მეორე მხარეს წერილობითი ფორმით ხელშეკრულების შეწყვეტის შესახებ შეტყობინებას ვადის ამოწურვამდე არანაკლებ 30 (ოცდაათი) კალენდარული დღით ადრე, ან თუ ხელშეკრულება იქამდე შეწყდება 7.2 ან 7.3 პუნქტებით განსაზღვრული წესით.</div>
+                    <div class="column-div" style="width: 50%;"><strong>7.1. Initial Term and Renewal:</strong> This Agreement shall commence on the date of the Effective Date and shall remain in effect for an initial term of 1 (one) year. Upon expiration of the initial term, this Agreement shall automatically renew for the same Initial term and/or terms under the same terms and conditions, unless either Party provides a written notice of non-renewal to the other Party at least 30 (thirty) calendar days prior to the expiration of the term, or unless it is earlier terminated in accordance with Articles 7.2 or 7.3.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>7.2. შეწყვეტა დეველოპერის მიზეზით:</strong> დეველოპერი უფლებამოსილია, დაუყოვნებლივ შეწყვიტოს წინამდებარე ხელშეკრულება, ნებისმიერი წინასწარი შეტყობინების, სამართლებრივი პროცედურების ან სასამართლოს გადაწყვეტილების გარეშე, შემდეგი გარემოებების წარმოშობის შემთხვევაში:</div>
+                    <div class="column-div" style="width: 50%;"><strong>7.2. Termination for Cause by Developer:</strong> The Developer shall have the right to terminate this Agreement with immediate effect, without any requirement for prior notice, legal proceedings, or court judgment, upon the occurrence of any of the following events:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">7.2.1. აგენტმა მოახდინა ხელშეკრულების ან ნებისმიერი შესაბამისი კანონმდებლობის/რეგულაციის არსებითი დარღვევა და აგენტმა აღნიშნული დარღვევა არ აღმოფხვრა 10 (ათ) კალენდარულ დღეში დეველოპერის მიერ გაგზავნილი წერილობითი შეტყობინების მიღების შემდეგ, რომელშიც დეტალურად იქნება აღწერილი დარღვევა და მოთხოვნილი იქნება მისი გამოსწორება იმ პირობის გათვალისწინებით, რომ ასეთი დარღვევა გამოსწორებადი იქნება.</div>
+                    <div class="column-div" style="width: 50%;">7.2.1. The Agent commits a material breach of any term or provision of this Agreement or any applicable laws or regulations, and such breach is not cured by the Agent within 10 (ten) calendar days after receiving written notice from the Developer specifying the breach and demanding its cure, provided that such breach is capable of being cured.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">7.2.2. აგენტი მიმართავს გაკოტრების პროცედურებს, შედის ლიკვიდაციის პროცესში, შეწყვეტს ან მოსალოდნელია სამეწარმეო საქმიანობის შეწყვეტა, ან განიცდის ნებისმიერ სხვა მოვლენას, რაც მიუთითებს გადახდისუუნარობაზე ან ფინანსურ არასტაბილურობაზე.</div>
+                    <div class="column-div" style="width: 50%;">7.2.2. The Agent files for bankruptcy, enters into liquidation proceedings, ceases or threatens to cease conducting its business operations, or experiences any other event indicative of insolvency or financial instability.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>7.3. შეწყვეტა დეველოპერის ერთპიროვნული გადაწყვეტილებით:</strong> დეველოპერი უფლებამოსილია, ნებისმიერ დროს, თავისი ერთპიროვნული გადაწყვეტილებით, შეწყვიტოს ეს ხელშეკრულება აგენტისათვის 15 (თხუთმეტი) კალენდარული დღის წინასწარი წერილობითი შეტყობინების გაგზავნის საფუძველზე. ასეთი შეწყვეტა შესაძლებელია იყოს რაიმე განსაკუთრებული მიზეზის გარეშეც და დეველოპერი არ იქნება პასუხისმგებელი აგენტისთვის რაიმე კომპენსაციის ან ზიანის ანაზღაურების გადახდაზე, გარდა საკომისიოებისა, რომელიც უკვე ხელშეკრულების შეწყვეტამდე განხორციელებული გაყიდვებისათვის იქნება გადასახდელი.</div>
+                    <div class="column-div" style="width: 50%;"><strong>7.3. Termination for Convenience by Developer:</strong> The Developer may terminate this Agreement for its convenience at any time by providing 15 (fifteen) calendar days' prior written notice to the Agent. Such termination shall be without cause, and the Developer shall not be liable to the Agent for any compensation or damages arising from such termination, except for any commissions due and payable for Successful Sales completed prior to the effective date of termination.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 8. შეწყვეტის შედეგები</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 8. EFFECTS OF TERMINATION</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>8.1. შეწყვეტა და შედეგები</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>8.1. TERMINATION AND CONSEQUENCES</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>8.1.1. მიღებული უფლებებისა და ვალდებულებების შენარჩუნება:</strong> ამ შეთანხმების შეწყვეტა, საფუძვლის მიუხედავად, არ ზღუდავს ნებისმიერ უფლებას, სამართლებრივ საშუალებას ან ვალდებულებას, რომელიც წარმოიშვა რომელიმე მხარისთვის შეწყვეტის თარიღის მდგომარეობით.</div>
+                    <div class="column-div" style="width: 50%;"><strong>8.1.1. Preservation of Accrued Rights and Liabilities:</strong> Termination of this Agreement, regardless of the cause, shall be without prejudice to any rights, remedies, or liabilities that have accrued to either party as of the date of termination.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>8.2. შეწყვეტის შედეგები:</strong> ხელშეკრულების შეწყვეტის შემდეგ ნებისმიერი მიზეზით:</div>
+                    <div class="column-div" style="width: 50%;"><strong>8.2. Consequences of Termination:</strong> Upon termination of this Agreement for any reason:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">8.2.1. აგენტს არ აქვს უფლება, მოითხოვოს რაიმე სახის ანაზღაურება ან კომპენსაცია, რომელიც დაკავშირებულია ამ შეთანხმების შეწყვეტასთან, გარდა 7.3 პუნქტით პირდაპირ გათვალისწინებული შემთხვევებისა.</div>
+                    <div class="column-div" style="width: 50%;">8.2.1. The Agent shall not be entitled to any indemnification or compensation related to the termination of this Agreement, except as expressly provided in Article 7.3.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">8.2.2. აგენტმა დაუყოვნებლივ უნდა შეწყვიტოს ყველა მარკეტინგული და სარეკლამო საქმიანობა დეველოპერის უძრავი ქონების ობიექტებთან დაკავშირებით.</div>
+                    <div class="column-div" style="width: 50%;">8.2.2. The Agent shall immediately cease all marketing and advertising activities related to the Developer's Property.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">8.2.3. აგენტმა დაუყოვნებლივ უნდა შეწყვიტოს საკუთარი თავის წარმოჩენა დეველოპერის აგენტად. დეველოპერის ინტელექტუალური საკუთრების გამოყენებისათვის მიცემული ყველა ნებართვა ითვლება შეწყვეტილად და აგენტმა დაუყოვნებლივ უნდა შეწყვიტოს ასეთი გამოყენება.</div>
+                    <div class="column-div" style="width: 50%;">8.2.3. The Agent shall immediately cease representing itself as an Agent of the Developer. All approvals granted for the use of the Developer's Intellectual Property shall be deemed revoked, and the Agent shall immediately discontinue any such use.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>8.2.4. საკომისიოზე უფლება:</strong> აგენტს ექნება უფლება, მიიღოს ნებისმიერი დარჩენილი საკომისიო წარმატებული გაყიდვის გარიგებისთვის, რომელიც დასრულდა ხელშეკრულების შეწყვეტამდე იმ პირობით, რომ აგენტმა მკაცრად დაიცვა წინამდებარე ხელშეკრულების ყველა ვადა და პირობები. ასევე, მიუხედავად მუხლი 7-ის დებულებებისა, აგენტს ექნება უფლება, მიიღოს საკომისიო წარმატებული გაყიდვისთვის იმ შემთხვევაში, როდესაც კლიენტი წარდგენილი იყო დეველოპერთან აგენტის მიერ ხელშეკრულების მოქმედების განმავლობაში, თუნდაც წარმატებული გაყიდვა განხორციელდეს ხელშეკრულების შეწყვეტის შემდეგ.</div>
+                    <div class="column-div" style="width: 50%;"><strong>8.2.4. Commission Entitlement:</strong> Subject to the Agent's strict adherence to all terms and conditions of this Agreement, the Agent shall be entitled to receive any outstanding commissions for Successful Sale transactions that were fully completed and finalized prior to the termination of this Agreement. Furthermore, notwithstanding Article (7), the Agent shall also be entitled to receive commission for a Successful Sale, as defined herein, where a Client was directly introduced to the Developer by the Agent during the term of this Agreement, even if the Successful Sale occurs post-termination.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 9. კონფიდენციალურობა</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 9. CONFIDENTIALITY</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>9.1. კონფიდენციალურობის ვალდებულება:</strong> აგენტი ეთანხმება პირობას, რომ ხელშეკრულების მოქმედების პერიოდში და მისი შეწყვეტის შემდეგაც შეინარჩუნებს ყველა კონფიდენციალური ინფორმაციის მკაცრ საიდუმლობას, არ გამოიყენებს მას (გარდა წინამდებარე ხელშეკრულებით გათვალისწინებული ვალდებულებების შესრულებისთვის) და დეველოპერის წინასწარი წერილობითი თანხმობის გარეშე არ გაასაჯაროებს მესამე პირებისთვის. კონფიდენციალური ინფორმაცია მოიცავს, მაგრამ არ არის შეზღუდული, ამ ხელშეკრულებით, დეველოპერის პოლიტიკებით, დეველოპერის მხრიდან მიღებული ნებისმიერ კომუნიკაციით, კლიენტის ინფორმაციით, მარკეტინგული მონაცემებით, ბიზნესსტრატეგიებით და სხვა ნებისმიერი ინფორმაციით, რომელიც არ არის განკუთვნილი საჯარო გამჟღავნებისთვის.</div>
+                    <div class="column-div" style="width: 50%;"><strong>9.1. Confidentiality Obligation:</strong> The Agent agrees that it shall, at all times during and after the termination of this Agreement, maintain the strict confidentiality of, and shall not use (other than strictly for the purposes of performing its obligations under this Agreement), and shall not, without the Developer's explicit prior written consent, disclose to any third party, any information communicated to the Agent that is identified as confidential or that, by its nature, should reasonably be understood to be confidential. This includes, but is not limited to, this Agreement, the Developer's Policies, and any communication from the Developer, Client information, marketing data, business strategies, and any other information not intended for public dissemination.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>9.2. მონაცემთა უსაფრთხოების ზომები:</strong> აგენტი ვალდებულია, განახორციელოს და შეინარჩუნოს უმაღლესი სტანდარტების უსაფრთხოების ზომები, რათა დაიცვას დეველოპერისგან მიღებული ან მის სახელით წარმოქმნილი ყველა კონფიდენციალური ინფორმაციისა და მონაცემის კონფიდენციალურობა, მთლიანობა და ხელმისაწვდომობა. ეს მოიცავს, მაგრამ არ შემოიფარგლება მხოლოდ, წვდომის კონტროლის, დაშიფვრის, ფაიერვოლების და სხვა შესაბამისი ტექნიკური და ორგანიზაციული ზომების დანერგვით, რათა თავიდან აიცილოს ასეთი ინფორმაციის არანებადართული წვდომა, გამოყენება, გამჟღავნება, შეცვლა ან განადგურება. აგენტი ვალდებულია, დაუყოვნებლივ აცნობოს დეველოპერს ნებისმიერი უკვე მომხდარი ან მოსალოდნელი მონაცემთა დარღვევის ან უსაფრთხოების ინციდენტის შესახებ.</div>
+                    <div class="column-div" style="width: 50%;"><strong>9.2. Data Security Measures:</strong> The Agent shall implement and maintain the highest industry-standard security measures to protect the confidentiality, integrity, and availability of all confidential information and data received from or generated on behalf of the Developer. This includes, but is not limited to, implementing robust access controls, encryption, firewalls, and other appropriate technical and organizational measures to prevent unauthorized access, use, disclosure, alteration, or destruction of such information. The Agent shall promptly notify the Developer of any actual or suspected data breach or security incident.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 10. პერსონალურ მონაცემთა დაცვა</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 10. PERSONAL DATA PROTECTION</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>10.1. შესაბამისობა მოქმედ კანონმდებლობასთან:</strong> აგენტმა უნდა დაიცვას პერსონალურ მონაცემთა დაცვასთან დაკავშირებული ყველა საკანონმდებლო დანაწესი, რომელიც დაკავშირებული იქნება წინამდებარე ხელშეკრულების ფარგლებში პერსონალური მონაცემების დამუშავებასთან.</div>
+                    <div class="column-div" style="width: 50%;"><strong>10.1. Compliance with Applicable Laws:</strong> The Agent shall comply with all legal provisions related to the protection of personal data that will be related to the processing of personal data within the framework of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>10.2. მონაცემთა დამუშავების მიზნები:</strong> აგენტი დაამუშავებს დეველოპერის მიერ მოწოდებულ ან აგენტის მიერ ამ შეთანხმებასთან დაკავშირებით შეგროვებულ პერსონალურ მონაცემებს მხოლოდ ქონების მარკეტინგისა და პოპულარიზაციის კონკრეტული მიზნებისთვის და არ გამოიყენებს ასეთ მონაცემებს სხვა მიზნებისთვის დეველოპერის წინასწარი წერილობითი თანხმობის გარეშე.</div>
+                    <div class="column-div" style="width: 50%;"><strong>10.2. Data Processing Purposes:</strong> The Agent shall only process personal data either provided by the Developer or collected by the Agent in connection with this Agreement for the specific purposes of marketing and promoting the Property as outlined herein, and shall not use such data for any other purpose without the Developer's explicit prior written consent.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>10.3. მონაცემთა მინიმიზაცია და სიზუსტე:</strong> აგენტმა უნდა უზრუნველყოს, რომ წინამდებარე ხელშეკრულების ფარგლებში დამუშავებული პერსონალური მონაცემები არის შესაბამისი, საჭირო და შეზღუდული იმ ინფორმაციის ფარგლებში, რომელიც აუცილებელია დამუშავების მიზნებისთვის. აგენტმა უნდა მიიღოს ყველა საჭირო ზომა მონაცემთა სიზუსტის უზრუნველსაყოფად და დაუყოვნებლივ გამოასწოროს ან წაშალოს არასწორი მონაცემები.</div>
+                    <div class="column-div" style="width: 50%;"><strong>10.3. Data Minimization and Accuracy:</strong> The Agent shall ensure that personal data processed under this Agreement is adequate, relevant, and limited to what is necessary for the purposes for which it is processed. The Agent shall take all reasonable steps to ensure the accuracy of personal data and to promptly rectify or erase inaccurate data.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>10.4. მონაცემთა უსაფრთხოება:</strong> აგენტმა უნდა დანერგოს და შეინარჩუნოს შესაბამისი ტექნიკური და ორგანიზაციული ღონისძიებები, რათა დაიცვას პერსონალური მონაცემები არაუფლებამოსილი ან უკანონო დამუშავებისგან, შემთხვევითი დაკარგვის, განადგურების ან დაზიანებისგან, უმაღლესი სტანდარტების დაცვით, მათ შორის, მაგრამ არა მხოლოდ, ძლიერი წვდომის კონტროლი, დაშიფვრა და ფაიერვოლი.</div>
+                    <div class="column-div" style="width: 50%;"><strong>10.4. Data Security:</strong> The Agent shall implement and maintain appropriate technical and organizational measures to protect personal data against unauthorized or unlawful processing and against accidental loss, destruction, or damage, using the highest industry-standard security measures, including but not limited to robust access controls, encryption, and firewalls.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>10.5. მონაცემთა სუბიექტების უფლებები:</strong> აგენტი ვალდებულია, ითანამშრომლოს დეველოპერთან მონაცემთა სუბიექტის უფლებების განხორციელების ხელშეწყობის მიზნით, მათ შორის, წვდომის, გასწორების, წაშლის, დამუშავების შეზღუდვის, მონაცემთა გადაადგილებისა და წინააღმდეგობის უფლებების ჩათვლით, მონაცემთა დაცვის მოქმედი კანონმდებლობის შესაბამისად.</div>
+                    <div class="column-div" style="width: 50%;"><strong>10.5. Data Subject Rights:</strong> The Agent shall cooperate with the Developer in facilitating the exercise of data subject rights, including the rights of access, rectification, erasure, restriction of processing, data portability, and objection, in accordance with applicable data protection laws.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>10.6. მონაცემთა დარღვევის შეტყობინება:</strong> აგენტი ვალდებულია, დაუყოვნებლივ გააფრთხილოს დეველოპერი ნებისმიერი რეალური ან სავარაუდო პერსონალური მონაცემების დარღვევის ან უსაფრთხოების შემთხვევის შესახებ, შეზღუდვების გარეშე, და უზრუნველყოს დეველოპერისათვის ყველა საჭირო დახმარება დარღვევის ან შემთხვევის გამოკვლევისა და ზემოქმედების შემცირებაში.</div>
+                    <div class="column-div" style="width: 50%;"><strong>10.6. Data Breach Notification:</strong> The Agent shall promptly notify the Developer of any actual or suspected personal data breach or security incident without undue delay, and shall provide all necessary assistance to the Developer in investigating and mitigating the impact of such breach or incident.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 11. უფლებებისა და ვალდებულებების გადაცემა</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 11. ASSIGNMENT</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>11.1. აგენტის უფლებების გადაცემის აკრძალვა:</strong> აგენტს ეკრძალება ამ ხელშეკრულების ან მისი ნებისმიერი უფლებისა ან ვალდებულების სრული ან ნაწილობრივი გადაცემა ან სხვა ფორმით განკარგვა, დეველოპერის წინასწარი წერილობითი თანხმობის გარეშე. აგენტის ნებისმიერი ასეთი მცდელობა, დეველოპერის თანხმობის გარეშე, იქნება ბათილი და ჩაითვლება წინამდებარე ხელშეკრულების არსებით დარღვევად.</div>
+                    <div class="column-div" style="width: 50%;"><strong>11.1. Agent's Prohibition of Assignment:</strong> The Agent shall not assign, transfer, or otherwise dispose of this Agreement or any of its rights or obligations hereunder, whether in whole or in part, without the Developer's explicit prior written consent. Any attempted assignment by the Agent without such consent shall be null and void and shall constitute a material breach of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>11.2. დეველოპერის უფლება უფლებების გადაცემაზე:</strong> დეველოპერს აქვს უფლება, თავის ერთპიროვნული გადაწყვეტილებით, ნებისმიერ პირს გადასცეს ან სხვა ფორმით განკარგოს ეს ხელშეკრულება, ან მისი ნებისმიერი ნაწილი, აგენტის თანხმობის გარეშე. აგენტი ამ უფლებას აღიარებს და ეთანხმება და სრული დახმარება უნდა გაუწიოს სახელშეკრულებო ვალდებულებების მიმღებ მხარეს.</div>
+                    <div class="column-div" style="width: 50%;"><strong>11.2. Developer's Right of Assignment:</strong> The Developer may, at its sole discretion, assign, transfer, or otherwise dispose of this Agreement, or any or all of its rights and/or obligations hereunder, to any person or entity of the Developer's choosing, without requiring the Agent's consent. The Agent hereby acknowledges and agrees to such assignment and shall fully cooperate with the assignee in the performance of its obligations under this Agreement.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 12. პასუხისმგებლობისგან გათავისუფლება</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 12. INDEMNITY</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>12.1. აგენტის პასუხისმგებლობა და ზიანის ანაზღაურება</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>12.1. Agent's Liability and Indemnification</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">12.1.1. დეველოპერს არ ექნება რაიმე სახის პასუხისმგებლობა აგენტის ნებისმიერი ქმედების ან დარღვევის გამო, რომელიც დაკავშირებულია წინამდებარე ხელშეკრულებასთან ან შეძენილი უძრავი ქონების გადაცემაში არსებულ ნებისმიერ დეფექტთან ან შეფერხებასთან.</div>
+                    <div class="column-div" style="width: 50%;">12.1.1. The Developer shall have no liability for any acts or defaults of the Agent in connection with this Agreement or in connection with any defects or delays in the handover of the purchased Property.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">12.1.2. აგენტმა უნდა დაზღვიოს და დააკარგულებისგან დაიცვას დეველოპერი, მათ შორის მისი დირექტორები, აქციონერები, კონსულტანტები, მომსახურე პირები, აგენტები და თანამშრომლები, ნებისმიერი ზარალის, ვალდებულების, ხარჯის, მოთხოვნის, სარჩელის ან მოთხოვნიდან გამომდინარე, რომელიც წარმოიშვა ან დაკავშირებულია წინამდებარე ხელშეკრულებასთან.</div>
+                    <div class="column-div" style="width: 50%;">12.1.2. The Agent shall indemnify and hold harmless the Developer, including its directors, shareholders, consultants, representatives, Agents, and employees, against any and all losses, liabilities, costs, claims, actions, and/or demands arising out of or in connection with this Agreement.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">12.1.3. აგენტმა უნდა დაზღვიოს და დაიცვას დეველოპერი ნებისმიერი ზარალის, ჯარიმის ან ვალდებულებისგან, რომელიც დეველოპერზე დაკისრებულია აგენტის მიერ ნებისმიერი მოქმედების, ვალდებულების შეუსრულებლობის ან მოქმედი კანონმდებლობის, ხელშეკრულების მუხლის ან რეგულატორული მოთხოვნის დარღვევის გამო.</div>
+                    <div class="column-div" style="width: 50%;">12.1.3. The Agent shall indemnify and hold harmless the Developer from any and all damages, fines, or liabilities imposed upon the Developer due to any default or non-compliance by the Agent with any applicable law, article of this Agreement, or regulatory requirement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">12.1.4. წინამდებარე 12.1 პუნქტი ძალაში დარჩება ამ ხელშეკრულების ვადის ამოწურვის ან შეწყვეტის შემდეგაც.</div>
+                    <div class="column-div" style="width: 50%;">12.1.4. This Article 12.1 shall survive the expiry or termination of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>12.2. დეველოპერის შეზღუდული პასუხისმგებლობა</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>12.2. Developer's Limited Indemnification</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">12.2.1. დეველოპერი თანახმაა, აუნაზღაუროს და დაიცვას აგენტი ნებისმიერი დანაკარგისგან, რომელიც პირდაპირ გამომდინარეობს დეველოპერის მიერ ამ ხელშეკრულებით გათვალისწინებული არსებითი უმოქმედობის ან ვალდებულებების დაუდევრობისგან. ეს ანაზღაურება მკაცრად შემოიფარგლება პირდაპირი დანაკარგებით და გამორიცხავს ნებისმიერ არაპირდაპირ, თანმდევ ან საჯარიმო ზიანს.</div>
+                    <div class="column-div" style="width: 50%;">12.2.1. The Developer agrees to indemnify and hold the Agent harmless from any losses directly resulting from the Developer's material omissions or negligent failures to perform its obligations as outlined in this Agreement. This indemnification is strictly limited to direct losses and excludes any indirect, consequential, or punitive damages.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 13. დავის გადაწყვეტის წესი</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 13. DISPUTE RESOLUTION PROCEDURE</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.1. წინამდებარე ხელშეკრულება რეგულირდება მხოლოდ საქართველოს მოქმედი კანონმდებლობით.</div>
+                    <div class="column-div" style="width: 50%;">13.1. This Agreement shall be governed solely by the applicable legislation of Georgia.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.2. წინამდებარე ხელშეკრულებიდან გამომდინარე, მათ შორის, მის ნამდვილობასთან, სრულ ან ნაწილობრივ შესრულებასთან, განმარტებასთან ან/და აღსრულებასთან დაკავშირებით წარმოშობილი ნებისმიერი უთანხმოების გადაწყვეტას მხარეები უნდა შეეცადონ მოლაპარაკების გზით. იმ შემთხვევაში, თუ ასეთი საკითხის წარმოშობიდან 30 (ოცდაათი) კალენდარული დღის ვადაში ვერ გადაწყდა მოლაპარაკების გზით, მხარე უფლებამოსილია, დავა გააგრძელოს ამ ხელშეკრულების 13.3 პუნქტით განსაზღვრული საარბიტრაჟო განხილვის ფორმით.</div>
+                    <div class="column-div" style="width: 50%;">13.2. Arising from the present Agreement, including with respect to its validity, full or partial performance, interpretation, and/or enforcement, the parties shall attempt to resolve any dispute through negotiations. In the event that such an issue is not resolved through negotiations within 30 (thirty) calendar days from the date of its occurrence, a party shall be entitled to continue the dispute in the form of arbitration proceedings as defined in Clause 13.3 of this Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.3. წინამდებარე ხელშეკრულებიდან გამომდინარე, მათ შორის, მის ნამდვილობასთან, სრულ ან ნაწილობრივ შესრულებასთან, განმარტებასთან ან/და აღსრულებასთან დაკავშირებით ნებისმიერი დავა, რომელიც წარმოიშობა ამ ხელშეკრულებიდან გამომდინარე ან დაკავშირებულია მასთან, მის დარღვევასთან, შეწყვეტასთან ან ბათილად ცნობასთან, განსახილველად უნდა გადაეცეს <strong>ა(ა)იპ საქართველოს საერთაშორისო საარბიტრაჟო ცენტრს</strong> (GIAC) (ს/ნ: 400108281), არბიტრაჟის გზით საბოლოო გადაწყვეტილების გამოტანის მიზნით.</div>
+                    <div class="column-div" style="width: 50%;">13.3. Arising from the present Agreement, including with respect to its validity, full or partial performance, interpretation and/or enforcement shall be submitted for consideration to the <strong>NNLE Georgian International Arbitration Centre (GIAC)</strong> (I/N: 400108281), for the purpose of rendering a final decision by means of arbitration</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.4. საარბიტრაჟო დავა განიხილება ა(ა)იპ საქართველოს საერთაშორისო საარბიტრაჟო ცენტრის (GIAC) საარბიტრაჟო წესების შესაბამისად.</div>
+                    <div class="column-div" style="width: 50%;">13.4. The arbitral dispute shall be considered in accordance with the Arbitration Rules of the NNLE Georgian International Arbitration Centre (GIAC).</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.5. საარბიტრაჟო დავას განიხილავს ა(ა)იპ საქართველოს საერთაშორისო საარბიტრაჟო ცენტრის საარბიტრაჟო წესების მიხედვით დანიშნული 3 (სამი) არბიტრი, რომელთაგან ერთს დანიშნავს საარბიტრაჟო მოსარჩელე, მეორეს - საარბიტრაჟო მოპასუხე, ხოლო მესამეს - მხარეთა მიერ დანიშნული არბიტრები.</div>
+                    <div class="column-div" style="width: 50%;">13.5. The arbitral dispute shall be heard by 3 (three) arbitrators appointed in accordance with the Arbitration Rules of the NNLE Georgian International Arbitration Centre (GIAC), one of whom shall be appointed by the arbitral claimant, the second by the arbitral respondent, and the third by the arbitrators appointed by the Parties.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.6. საარბიტრაჟო განხილვის ადგილად განისაზღვროს თბილისი, საქართველო.</div>
+                    <div class="column-div" style="width: 50%;">13.6. The seat of the arbitration shall be Tbilisi, Georgia.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.7. საარბიტრაჟო განხილვა უნდა წარიმართოს ინგლისურ ენაზე.</div>
+                    <div class="column-div" style="width: 50%;">13.7. The arbitration proceedings shall be conducted in the English language.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.8. მხარის მოთხოვნის საფუძველზე, არბიტრაჟი უფლებამოსილია, გამოიყენოს საარბიტრაჟო სარჩელის უზრუნველყოფის ღონისძიებები. არბიტრაჟის მიერ გამოყენებულ საარბიტრაჟო სარჩელის უზრუნველყოფის ღონისძიებებს აქვთ სავალდებულო ძალა და იგი უნდა აღსრულდეს არბიტრაჟის მიერ გაცემული სააღსრულებო ფურცლის საფუძველზე.</div>
+                    <div class="column-div" style="width: 50%;">13.8. Upon a party's request, the arbitral tribunal shall be authorized to order interim measures in support of the arbitral claim. Any interim measures granted by the arbitral tribunal shall be binding and enforceable upon issuance of a writ of execution.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.9. მხარეებს შეუძლიათ საარბიტრაჟო საქმის განხილვის დაწყებამდე ან დაწყების შემდეგ ნებისმიერ დროს მიმართონ კომპეტენტურ სასამართლო ორგანოს საარბიტრაჟო სარჩელის უზრუნველყოფის ღონისძიების გამოყენების მოთხოვნით. საარბიტრაჟო სარჩელის უზრუნველყოფის ღონისძიების გამოყენების ან არბიტრაჟის მიერ გამოყენებული საარბიტრაჟო სარჩელის უზრუნველყოფის ღონისძიების აღსრულების მოთხოვნით კომპეტენტური სასამართლო ორგანოსადმი მხარეთა ნებისმიერი მიმართვა არ მიიჩნევა საარბიტრაჟო შეთანხმების დარღვევად ან მასზე უარის თქმად.</div>
+                    <div class="column-div" style="width: 50%;">13.9. The Parties may, at any time prior to or after the commencement of arbitral proceedings, apply to a competent court for the grant of interim measures in support of the arbitral claim. Any application by a party to a competent court for interim measures, or for the enforcement of interim measures ordered by the arbitral tribunal, shall not be deemed a breach of, or a waiver of rights under, the arbitration agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.10. საარბიტრაჟო გადაწყვეტილების ცნობა და აღსასრულებლად მიექცევა განხორციელდება საქართველოს კანონის „არბიტრაჟის შესახებ“ დადგენილი დებულებების შესაბამისად.</div>
+                    <div class="column-div" style="width: 50%;">13.10. Recognition and enforcement of the arbitral award shall be carried out in accordance with the provisions established by the Law of Georgia on Arbitration.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.11. მხარეები ვალდებულნი არიან, დაიცვან საარბიტრაჟო განხილვისა და გადაწყვეტილების კონფიდენციალურობა. რაც გულისხმობს - განხილვის დროს მიღებული ინფორმაციების, დოკუმენტების, პოზიციების გაუმჟღავნებლობას. საარბიტრაჟო განხილვისას მხარეთა მორიგების შემთხვევაში - აგრეთვე, მორიგების აქტის პირობების მესამე პირებისათვის ხელმიუწვდომლობას.</div>
+                    <div class="column-div" style="width: 50%;">13.11. The Parties are obliged to maintain the confidentiality of the arbitration proceedings and the arbitral award, which includes, without limitation, keeping confidential all information, documents, and positions disclosed during the proceedings. In the event of a settlement between the Parties during the arbitration, the terms of the settlement agreement shall also remain confidential and shall not be disclosed to any third party.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.12. ყოველივე ბუნდოვანების გამოსარიცხად, მხარეები კონფიდენციალურად დაიცავენ საარბიტრაჟო წარმოების პროცესში გამოცემული ნებისმიერი დადგენილებების ან გადაწყვეტილებების არსებობასა და შინაარს შემდეგი გამონაკლისების გარდა:</div>
+                    <div class="column-div" style="width: 50%;">13.12. For the avoidance of any doubt, the Parties shall maintain the confidentiality of the existence and content of any orders or awards issued in the course of the arbitral proceedings, subject to the following exceptions:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ა) იმ ფარგლებში, რომელშიც შეიძლება საჭირო გახდეს მხარის მიერ ინფორმაციის გამჟღავნება ნაკისრი ვალდებულების შესასრულებლად, კანონიერი უფლების დასაცავად ან განსახორციელებლად, ან სასამართლოში ან სხვა საჯარო ორგანოში გადაწყვეტილების აღსრულების ან გაუქმების თუ გასაჩივრებისათვის;</div>
+                    <div class="column-div" style="width: 50%;">a) to the extent that disclosure may be required for a Party to perform an obligation, to protect or exercise a legal right, or for the enforcement, setting aside, or appeal of an award before a court or other public authority;</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ბ) როდესაც ინფორმაციის გამჟღავნებაზე არსებობს ყველა მხარის თანხმობა;</div>
+                    <div class="column-div" style="width: 50%;">b) where disclosure is made with the consent of all Parties;</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">გ) თუ ინფორმაციის გამჟღავნება აუცილებელია აღნიშნული საარბიტრაჟო საქმის წარმოების ფარგლებში სარჩელის ან შესაგებლის მომზადების ან წარდგენისათვის ან მტკიცებულებების მოპოვებისა და წარდგენისთვის;</div>
+                    <div class="column-div" style="width: 50%;">c) where disclosure is necessary within the framework of the arbitral proceedings for the preparation or submission of a claim or defense, or for the collection and submission of evidence;</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">დ) თუ ასეთი ინფორმაცია უკვე საჯაროდ ხელმისაწვდომია მოცემული პუნქტის დარღვევის გარეშე, ან</div>
+                    <div class="column-div" style="width: 50%;">d) where such information is already publicly available without a breach of this clause; or</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ე) მხარის/მხარეთა განცხადების საფუძველზე არბიტრაჟმა მიიღო დადგენილება გამჟღავნების უფლების მინიჭების შესახებ.</div>
+                    <div class="column-div" style="width: 50%;">e) where, upon the request of a Party or Parties, the arbitral tribunal has issued an order granting permission for disclosure.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">13.13. საარბიტრაჟო სარჩელის სრულად დაკმაყოფილების შემთხვევაში, მოპასუხე მხარეს ეკისრება საარბიტრაჟო წარმოებასთან დაკავშირებული ყველა ხარჯი, მათ შორის: საარბიტრაჟო მოსაკრებელისა და მეორე მხარის იურიდიული წარმომადგენლის ხარჯების ანაზღაურება. ხოლო ნაწილობრივ დაკმაყოფილების შემთხვევაში - არბიტრაჟის მიერ დადგენილი პროპორციული ოდენობით.</div>
+                    <div class="column-div" style="width: 50%;">13.13. In the event the arbitral claim is granted in full, the Respondent shall bear all costs related to the arbitral proceedings, including the arbitration fees and the costs of the other Party's legal representation. In the event the claim is granted in part, such costs shall be allocated proportionally as determined by the arbitral tribunal.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 14. საკომისიოს სტრუქტურა და გადახდა</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 14. COMMISSION STRUCTURE &amp; DISBURSEMENT</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>14.1. საკომისიოს სტრუქტურა:</strong> უძრავი ქონების გაყიდვაზე მოქმედი საკომისიოს სტრუქტურა მშენებარე პროექტების ფარგლებში და/ან გაყიდვების დაწყებისა და ღონისძიებების დროს, მათ შორის, ტარიფები და პირობები, განისაზღვრება ხელშეკრულებით და/ან „პროექტის შეტყობინებით“.</div>
+                    <div class="column-div" style="width: 50%;"><strong>14.1. Commission Structure:</strong> The commission structure applicable to the sale of Property, within Off-plan Projects and/or during sales launches and events, including rates and conditions, as detailed in the Agreement and/or notified by "Project Notification".</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>14.2. საკომისიოს სტრუქტურის ცვლილებები:</strong> დეველოპერი იტოვებს ერთპიროვნულ უფლებას, შეცვალოს საკომისიოს სტრუქტურა და გადახდის პირობები, რომელიც განსაზღვრულია ხელშეკრულებაში და/ან პროექტის შეტყობინებაში. ნებისმიერი ცვლილება წერილობით ეცნობება აგენტს და გავრცელდება იმ გარიგებებზე, რომლებიც აგენტმა წარადგინა ცვლილების წერილში განსაზღვრული ცვლილების ძალაში შესვლის თარიღის შემდეგ. თუ გარიგების ბუნება ან მოქმედი რეგულაციები სხვაგვარად არ მოითხოვს, ცვლილებები არ გავრცელდება იმ გარიგებებზე, რომელიც აგენტმა წარადგინა ცვლილების ძალაში შესვლამდე.</div>
+                    <div class="column-div" style="width: 50%;"><strong>14.2. Amendments to Commission Structure:</strong> The Developer reserves the sole right to amend the commission structure and disbursement, as detailed either in the Agreement and/or the Project Notification. Any amendments shall be communicated in writing to the Agent and shall apply to deals presented by the Agent after the effective date of the amendment, which will be defined in the Amendment letter. Unless the nature of the deal or applicable regulations requires otherwise, amendments shall not apply retroactively to deals already presented by the Agent prior to the amendment's effective date.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>14.3. მენეჯმენტის დისკრეცია:</strong> საკომისიოს გადახდა, როგორც აღწერილია მუხლში 5 და/ან პროექტის შეტყობინებაში, შეიძლება შეიცვალოს დეველოპერის გადაწყვეტილებით და ნებისმიერი ცვლილება აგენტს წერილობით ეცნობება. დამატებით, ცვლილებები არ გავრცელდება ადრე განხორციელებულ ჯავშნებზე.</div>
+                    <div class="column-div" style="width: 50%;"><strong>14.3. Management Discretion:</strong> The commission payout, as described in Article 5 and/or in the Project Notification is subject to change as per Developer decision, and any changes shall be communicated separately in writing. Additionally, any changes will not be applied to prior bookings.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>14.4. საკომისიოს გადახდა</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>14.4. Commission Disbursement</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">14.4.1. მშენებარე პროექტებში ან გაყიდვების დაწყებისა და ღონისძიებების დროს უძრავი ქონების გაყიდვებიდან აგენტის მიერ მიღებული საკომისიოს გადახდა.</div>
+                    <div class="column-div" style="width: 50%;">14.4.1. The disbursement of the commission earned by the Agent for sales of Property within off-plan projects, or during sales launches and events.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>14.4.2. გადახდის ამოქმედების პირობა:</strong> წარმატებული გაყიდვის შემთხვევაში საკომისიო დეველოპერის მიერ აგენტს გადაერიცხება კლიენტის მიერ უძრავი ქონების ფასის 20% (ოცი პროცენტის) გადახდიდან 60 (სამოცი) კალენდარული დღის განმავლობაში. 60-დღიანი პერიოდი არის სავარაუდო ვადა და არ წარმოადგენს არსებით პირობას. 60 (სამოც) დღეზე მეტი დაგვიანება თავისთავად არ ჩაითვლება ამ ხელშეკრულების დარღვევად, იმ პირობით, რომ დეველოპერი აგრძელებს გონივრული ძალისხმევის გამოყენებას საკომისიოს გადასახდელად.</div>
+                    <div class="column-div" style="width: 50%;"><strong>14.4.2. Disbursement Trigger:</strong> The Commission for Successful Sales shall be disbursed by the Developer to the Agent within sixty (60) days following the successful clearance of a payment equivalent to twenty percent (20%) of the Net Property Price by the Client. The sixty (60) day period for commission disbursement is an estimated timeframe and is not of the essence. Any delay beyond sixty (60) days shall not, by itself, constitute a breach of this Agreement, provided the Developer continues to use reasonable efforts to disburse the commission.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>14.4.3. გადახდის წინაპირობები:</strong> გარდა 14.4.2. მუხლში განსაზღვრული პირობისა, საკომისიოს გადახდა მკაცრად დამოკიდებულია შემდეგი პირობების სრულ შესრულებაზე:</div>
+                    <div class="column-div" style="width: 50%;"><strong>14.4.3. Pre-Conditions for Disbursement:</strong> In addition to the condition set out in Article 14.4.2 Commission disbursement is strictly contingent upon the fulfillment of all the following conditions:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ა) ყველა შესაბამისი რეგისტრაციის საფასურის, დამოწმების მოსაკრებლისა და სხვა დაკავშირებული სახელმწიფო ან ადმინისტრაციული გადასახადების სრულად გადახდაზე;</div>
+                    <div class="column-div" style="width: 50%;">A) Completion of payment for all applicable registration fees, stamp duties, and any other related governmental or administrative charges, including;</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ბ) დეველოპერის მიერ მიღებულ უნდა იქნას ნასყიდობის ხელშეკრულება, რომელიც სათანადოდ იქნება ხელმოწერილი, როგორც კლიენტის, ისე დეველოპერის მიერ და რომელსაც თან ექნება დართული ყველა საჭირო დამადასტურებელი დოკუმენტი, რომელიც აუცილებელია ტრანზაქციის რეგისტრაციისა და საბოლოო დასრულებისთვის.</div>
+                    <div class="column-div" style="width: 50%;">B) Receipt by the Developer of the SPA duly executed by both the Client and the Developer, accompanied by all other necessary supporting documents required for the registration and finalization of the transaction.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>14.4.4. ცვლილებას ექვემდებარება:</strong> აგენტი ადასტურებს და ეთანხმება, რომ ამ მუხლში 14.1 აღწერილი საკომისიოს გადახდის პირობები შეიძლება შეიცვალოს ან მოდიფიცირდეს დეველოპერის მენეჯმენტის მიერ საკუთარი შეხედულებისამებრ. ნებისმიერი ასეთი ცვლილება ძალაში შევა აგენტისთვის წერილობითი შეტყობინების გადაცემისთანავე და გავრცელდება მხოლოდ იმ დაჯავშნებზე, რომლებიც განხორციელდება წერილობით შეტყობინებაში მითითებული ძალაში შესვლის თარიღის შემდეგ.</div>
+                    <div class="column-div" style="width: 50%;"><strong>14.4.4. Subject to Amendment:</strong> The Agent acknowledges and agrees that the Commission Disbursement outlined in this Article 14.1 is subject to amendment or modification by the Developer's Management at its sole discretion. Any such amendments or modifications shall become effective upon written notice being provided to the Agent and shall apply only to bookings made on or after the effective date specified in such written notice.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 15. დოკუმენტაციის მოთხოვნები</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 15. DOCUMENTATION REQUIREMENTS</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">15.1. თუ აგენტი ან მესამე პირი კლიენტის სახელით მოქმედებს სამართლებრივი წარმომადგენლის სტატუსით, უნდა იყოს წარმოდგენილი მოქმედი, ნოტარიულად დამოწმებული და სათანადოდ ლეგალიზებული მინდობილობა, რომელიც ანიჭებს უფლებამოსილებას უძრავი ქონების ყიდვის განხორციელებაზე. თუ მინდობილობა გაცემულია იმ იურისდიქციის ფარგლებს გარეთ, სადაც უძრავი ქონების გაყიდვა სრულდება, ის უნდა იყოს ნოტარიულად დამოწმებული გაცემის ქვეყანაში და დამოწმებული შესაბამისი საელჩოს/საკონსულო დაწესებულების მიერ, საჭიროების შესაბამისად.</div>
+                    <div class="column-div" style="width: 50%;">15.1. If the Agent or third-party acts on behalf of a Client in a legal capacity, a valid, notarized, and duly legalized Power of Attorney (POA) Agreement, granting the authority to execute the property sale, must be provided. If the POA is issued outside the jurisdiction where the property sale is finalized, it must be notarized in the country of issuance and attested by the relevant embassy/consular office and foreign affairs authority, as applicable.</div>
+                </div>
+            </div>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">15.2. დეველოპერს აქვს უფლება მოითხოვოს აგენტისგან/მესამე პირისგან, რომ კლიენტთან ერთად გამოცხადდეს დეველოპერის მიერ განსაზღვრულ გაყიდვების ოფისში ან სხვა მითითებულ ადგილზე და დაადასტუროს უძრავი ქონების ნასყიდობის ტრანზაქცია ინტერესის გამოხატვის განაცხადზე, ნასყიდობის ხელშეკრულების ან ექვივალენტურ დოკუმენტაციაზე ხელმოწერით.</div>
+                    <div class="column-div" style="width: 50%;">15.2. The Developer has the right to request the Agent/third party to accompany the Client to the Developer's designated sales center or location and witness the property sales transaction by signing the EOI and/or the SPA or equivalent documentation.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>15.3. დოკუმენტაციის ზოგადი მოთხოვნები:</strong> კლიენტმა და აგენტმა/მესამე პირმა უნდა წარმოადგინონ ყველა დოკუმენტი, რომელიც მოთხოვნილია პროექტის იურისდიქციაში მოქმედი კანონებისა და რეგულაციების შესაბამისად. დეველოპერი ასევე იტოვებს უფლებას, მოითხოვოს კლიენტისგან ან აგენტისგან/მესამე პირისგან ნებისმიერი დამატებითი დოკუმენტაცია, რომელსაც საჭიროდ მიიჩნევს.</div>
+                    <div class="column-div" style="width: 50%;"><strong>15.3. General Documentation Requirements:</strong> The Client and Agent/third party shall provide all documents required by applicable laws and regulations in the project's jurisdiction. The Developer also reserves the right to request any additional documentation from the Client or the Agent/third party, as deemed necessary.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 16. კლიენტის რეგისტრაცია</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 16. CLIENT REGISTRATION</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">16.1. ყველა პროექტის რეგისტრაციისა და კლიენტის ზოგადი რეგისტრაციის შემთხვევაში, აგენტი ვალდებულია დარეგისტრირდეს და სწორად მოახდინოს საკუთარი იდენტიფიკაცია დეველოპერის მიერ გაცემული ინსტრუქციების შესაბამისად. აგენტი ასევე ვალდებულია, მკაცრად დაიცვას დეველოპერის მიერ კლიენტის რეგისტრაციისა და იდენტიფიკაციის პროცესთან დაკავშირებით გაცემული ნებისმიერი ინსტრუქცია, იქნება ეს წერილობითი თუ ზეპირი.</div>
+                    <div class="column-div" style="width: 50%;">16.1. For all Project registrations and general Client registrations, the Agent is required to register and accurately identify themselves in accordance with the directives issued by the Developer. Furthermore, the Agent shall strictly adhere to any instructions, whether written or verbal, provided by the Developer concerning the client registration and identification process</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">16.2. აგენტები პასუხისმგებელნი არიან თავიანთი კლიენტების ინფორმირებაზე აღნიშნული რეგისტრაციის მოთხოვნის შესახებ, რათა დაცული იყოს აგენტის საკომისიოს მიღების უფლება და კლიენტის საუკეთესო ინტერესები. რეგისტრაციის დროს დეველოპერის ინსტრუქციების შესაბამისად სათანადო რეგისტრაციისა და იდენტიფიკაციის შეუსრულებლობის შემთხვევაში, აგენტი დაკარგავს უფლებას მიიღოს ნებისმიერი საკომისიო, რომელიც დაკავშირებულია აღნიშნული კლიენტის მიერ განხორციელებულ ნასყიდობასთან.</div>
+                    <div class="column-div" style="width: 50%;">16.2. Agents are responsible for informing their Clients of this registration requirement to protect the Agent's commission entitlement and the Client's best interests. Failure to properly register and identify themselves in accordance with the Developer's instructions at the time of registration will result in the Agent's ineligibility for any commission related to that Client's purchase.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 17. მხარეთა ურთიერთობა</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 17. RELATIONSHIP BETWEEN THE PARTIES</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">17.1. ცალსახად არის აღქმული და შეთანხმებული, რომ დეველოპერსა და აგენტს შორის ურთიერთობა წარმოადგენს დამოუკიდებელი მხარეების ურთიერთობას. ამ ხელშეკრულებაში არსებული არცერთი დებულება არ უნდა იქნას განმარტებული ისე, როგორც პარტნიორობის, ერთობლივი საწარმოს ან სააგენტოს ერთობლივი დაფუძნება ან შრომითი ურთიერთობა მხარეებს შორის.</div>
+                    <div class="column-div" style="width: 50%;">17.1. It is expressly understood and agreed that the relationship between the Developer and the Agent is that of independent Parties. Nothing in this Agreement shall be construed to create a partnership, joint venture, agency or employment relationship between the Parties.</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 18. შეტყობინებები</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 18. NOTICES</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">18.1. ამ ხელშეკრულების ფარგლებში მოთხოვნილი ან ნებადართული ყველა შეტყობინება, მოთხოვნა, განცხადება და სხვა კომუნიკაცია უნდა იყოს წერილობითი და ჩაითვლება სათანადოდ მიწოდებულად, როდესაც:<br/>(ა) გადაეცემა პირადად;<br/>(ბ) გაიგზავნება რეგისტრირებული ან სერტიფიცირებული ფოსტით, მიღების დადასტურების მოთხოვნით; ან<br/>(c) გაიგზავნება ელექტრონული ფოსტით, როგორც ეს განსაზღვრულია მუხლში 18.2.</div>
+                    <div class="column-div" style="width: 50%;">18.1. All notices, requests, demands, and other communications required or permitted to be given under this Agreement shall be in writing and shall be deemed to have been duly given when:<br/>(a) delivered personally;<br/>(b) sent by registered or certified mail, return receipt requested, or<br/>(c) sent by email, as provided in Article 18.2.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>18.2. ელფოსტით გაგზავნილი შეტყობინებები</strong> ჩაითვლება სათანადოდ მიღებულად მიმღების ელფოსტის სერვერის მიერ გენერირებული ელექტრონული ქვითრის ან მიწოდების დადასტურების მიღებისთანავე. თუ ასეთი ელექტრონული ქვითარი ან მიწოდების დადასტურება არ გენერირდება, შეტყობინება ჩაითვლება სათანადოდ მიღებულად მიმღების ელფოსტის სერვერზე წარმატებით გაგზავნისთანავე, იმ პირობით, რომ გამგზავნს აქვს აღნიშნული გაგზავნის დამადასტურებელი ჩანაწერი.</div>
+                    <div class="column-div" style="width: 50%;"><strong>18.2. Email Notices:</strong> Notices sent by email shall be deemed to have been duly received upon the generation of an electronic receipt or delivery confirmation from the recipient's email server. If no such electronic receipt or delivery confirmation is generated, the notice shall be deemed to have been duly received upon successful transmission to the recipient's email server, provided that the sender retains a record of such transmission.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>18.3. შეტყობინებები</strong> უნდა გაიგზავნოს შესაბამისი მხარეების მისამართებზე, რომლებიც მითითებულია ამ ხელშეკრულებაში, ან სხვა მისამართზე, რომელსაც მხარე განსაზღვრავს მეორე მხარისთვის ამ მუხლის მე-18 მუხლის შესაბამისად არანაკლებ 15 (თხუთმეტი) დღით ადრე წერილობითი შეტყობინების მიწოდებით.</div>
+                    <div class="column-div" style="width: 50%;"><strong>18.3. Address for Notices:</strong> Notices shall be addressed to the respective Parties at the addresses set forth at the beginning of this Agreement, or to such other address as a party may designate by giving fifteen (15) days' prior written notice to the other Party in accordance with this Article 18.</div>
+                </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 40px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 19. ძალაში დარჩენა</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 19. SURVIVAL</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">19.1. საპირისპირო დებულების მიუხედავად, ამ ხელშეკრულების შემდეგი მუხლები ძალაში დარჩება ხელშეკრულების ვადის ამოწურვის ან ნებისმიერი მიზეზით შეწყვეტის შემდეგაც და შეინარჩუნებს სრულ იურიდიულ ძალას:<br/>მუხლი 8: შეწყვეტის შედეგები<br/>მუხლი 9: კონფიდენციალურობა<br/>მუხლი 10: პერსონალურ მონაცემთა დაცვა<br/>მუხლი 12: პასუხისმგებლობისგან გათავისუფლება<br/>მუხლი 13: დავის გადაწყვეტის წესი</div>
+                    <div class="column-div" style="width: 50%;">19.1. Notwithstanding any provision to the contrary, the following Articles of this Agreement shall survive the expiration or termination of this Agreement for any reason and shall continue in full force and effect:<br/>Article 8: EFFECTS OF TERMINATION<br/>Article 9: CONFIDENTIALITY<br/>Article 10: PERSONAL DATA PROTECTION<br/>Article 12: INDEMNITY<br/>Article 13: DISPUTE RESOLUTION PROCEDURE</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">მუხლი 20. ეგზემპლარები</div>
+                    <div class="column-div table-title" style="border-left: none;">ARTICLE 20. COUNTERPARTS</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">20.1. წინამდებარე ხელშეკრულება შედგენილია, ორი, თანაბარი სამართლებრივი ძალის ეგზემპლარისაგან ქართულ და ინგლისურ ენებზე, რომელთა წინააღმდეგობის შემთხვევაში, ხელშეკრულების შესრულებასა და განმარტების პროცესში უპირატესობა მიენიჭება ინგლისურ ენას.</div>
+                    <div class="column-div" style="width: 50%;">20.1. This Agreement is executed in two counterparts of equal legal force in the Georgian and English languages. In the event of any discrepancy between the texts, the English version shall prevail for the purposes of interpretation and performance of the Agreement.</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">20.2. მხარეები თანხმდებიან ამ ხელშეკრულებაში განსაზღვრულ პირობებსა და დებულებებს. ხელშეკრულება დასტურდება ქვემოთ მხარეების ხელმოწერებით.</div>
+                    <div class="column-div" style="width: 50%;">20.2. The Parties hereby agree to the terms and conditions set forth in this Agreement. This Agreement is executed by the signatures of the Parties below:</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div table-title" style="border-right: none;">ხელმოწერები:</div>
+                    <div class="column-div table-title" style="border-left: none;">Signatures:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>დეველოპერის წარმომადგენელი</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>Developer's Representative</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">სახელი, გვარი: ბექა ქურციკიძე</div>
+                    <div class="column-div" style="width: 50%;">Name, Surname: Beka Kurtsikidze</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ხელმოწერა:</div>
+                    <div class="column-div" style="width: 50%;">Signature:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">თარიღი:</div>
+                    <div class="column-div" style="width: 50%;">Date:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>აგენტი: {!accData['agencyAccount'].Name}</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>Agent: {!accData['agencyAccount'].Name}</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">სახელი, გვარი: {!accData['agencyAccount'].Signatory_Name__c}</div>
+                    <div class="column-div" style="width: 50%;">Name, Surname: {!accData['agencyAccount'].Signatory_Name__c}</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ხელმოწერა:</div>
+                    <div class="column-div" style="width: 50%;">Signature:</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">თარიღი:</div>
+                    <div class="column-div" style="width: 50%;">Date:</div>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>
+<script>
+   window.addEventListener('load', async function() {
+        // Wait for fonts (critical for Arabic/Georgian)
+        await document.fonts.ready;
+        
+        // Wait for images
+        const images = Array.from(document.images);
+        await Promise.all(images.map(img =>
+            img.complete ? Promise.resolve() 
+                        : new Promise(r => { img.onload = img.onerror = r; })
+        ));
+        
+        // Small buffer for any remaining layout
+        await new Promise(r => setTimeout(r, 300));
+        
+        // Set up the redirect BEFORE calling print
+        window.addEventListener('afterprint', function() {
+            window.location.href = 'https://miradevelopments.lightning.force.com/lightning/r/Account/{!accData["agencyAccount"].Id}/view';  
+            // or: window.location.href = '/' + recordId;  to go back to the record
+            // or: window.close();  if the page opened in a new tab
+        });
+        
+        // Now trigger the dialog
+        window.print();
+    });
+    </script>
+</apex:page>

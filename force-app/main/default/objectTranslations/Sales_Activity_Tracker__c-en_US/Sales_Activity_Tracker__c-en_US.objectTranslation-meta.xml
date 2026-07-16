@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Sales Activity Tracker</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Sales Activity Trackers</value>
+    </caseValues>
+    <layouts>
+        <layout>Sales Activity Tracker Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- You can only change the Activity on this record. Please contact your Line Manager for any other changes required. --></errorMessage>
+        <name>RMs_Can_Only_Change_Activity_Field</name>
+    </validationRules>
+</CustomObjectTranslation>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <flowDefinition>Delete_And_Insert_Cash_Flow_Sum_And_Cash_Flow_On_Payment_Plan_Update</flowDefinition>
+    <label>Refresh Cash Flow</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <type>Flow</type>
+</QuickAction>

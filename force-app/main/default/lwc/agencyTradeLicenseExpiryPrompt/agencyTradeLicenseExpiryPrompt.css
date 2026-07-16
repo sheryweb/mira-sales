@@ -1,0 +1,109 @@
+.slds-notify_alert {
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.slds-theme_alert-texture {
+    background-color: #f3f3f3;
+    border: 1px solid #dddbda;
+}
+
+.slds-text-color_success {
+    color: #04844b !important;
+    font-weight: bold !important;
+    font-size: 16px !important;
+}
+
+.slds-text-color_warning {
+    color: #fe9339 !important;
+    font-weight: bold !important;
+    font-size: 16px !important;
+}
+
+.slds-text-color_error {
+    color: #c23934 !important;
+    font-weight: bold !important;
+    font-size: 16px !important;
+}
+
+.slds-text-color_weak {
+    color: #706e6b !important;
+    font-weight: bold !important;
+    font-size: 16px !important;
+}
+
+/* Notification Count Styling */
+.notification-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.notification-count-text {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+}
+
+.notification-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #3e3e3c;
+    letter-spacing: 0.025rem;
+}
+
+.notification-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0176d3;
+    background: #f3f3f3;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 2px solid #e5e5e5;
+    min-width: 2.5rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.notification-value:hover {
+    background: #e8f4fd;
+    border-color: #0176d3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(1, 118, 211, 0.2);
+}
+
+.notification-button {
+    margin-top: 0 !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .notification-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .notification-count-text {
+        gap: 0.4rem;
+    }
+    
+    .notification-label {
+        font-size: 0.85rem;
+    }
+    
+    .notification-value {
+        font-size: 1rem;
+        padding: 0.2rem 0.6rem;
+        min-width: 2rem;
+    }
+}

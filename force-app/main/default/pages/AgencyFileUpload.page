@@ -1,0 +1,727 @@
+<apex:page controller="AgencyFileUploadController" showHeader="false" sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" lightningStylesheets="true">
+    <apex:slds />
+    <apex:pageMessages />
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Agency File Upload</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+        <style>
+            .bg-dark {
+                background: #f8f9fa !important;
+            }
+            .step-indicator {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 20px;
+            }
+            .step-indicator div {
+                width: 45%;
+                height: 10px;
+                background-color: lightgray;
+                border-radius: 5px;
+                position: relative;
+            }
+            .step-indicator div:last-child::before {
+                content: 'Documents Upload';
+                position: absolute;
+                top: -25px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-weight: bold;
+                color: #80808052;
+            }
+            .step-indicator div.active {
+                background-color: #007bff;
+            }
+
+            .step-indicator div.active::before {
+                content: 'Agency Information';
+                position: absolute;
+                top: -25px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-weight: bold;
+            }
+
+            #loader {
+                display: none;
+                width: 20px;
+                height: 20px;
+                border: 3px solid #f3f3f3;
+                border-radius: 50%;
+                border-top: 3px solid #3498db;
+                animation: spin 1s linear infinite;
+                margin-left: 10px;
+            }
+            #completeLoader {
+                display: none;
+                width: 20px;
+                height: 20px;
+                border: 3px solid #f3f3f3;
+                border-radius: 50%;
+                border-top: 3px solid #3498db;
+                animation: spin 1s linear infinite;
+                margin-left: 10px;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            .error-message {
+                color: red;
+                display: none;
+                margin-top: 10px;
+                font-size: 25px;
+            }
+
+            footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background-color: #333; /* Optional: footer background color */
+                color: white;           /* Optional: footer text color */
+                text-align: center;
+                padding: 10px 0;
+                z-index: 1000;          /* Optional: keeps footer on top of other elements */
+            }
+
+            .logo {
+                width: 200px;
+                height: 70px;
+                padding: 10px;
+            }
+            .required-elements::after {
+                content: '*';
+                color: red;
+            }
+            .error-message-percentage {
+                color: red;
+                font-size: 0.9em;
+                display: none;
+            }
+            .btn {
+                background-image: none !important;  /* Remove any background images applied by Salesforce */
+                border: none !important;  /* Remove any borders if they exist */
+            }
+            .btn-primary {
+                background-color: #0d6efd !important;
+                color: white !important;
+                padding: 10px 15px 10px 15px !important;
+                border-radius: 5px !important;
+                font-weight: normal !important;
+                font-size: 16px !important;
+            }
+            .btn-secondary {
+                background-color: #6c757d !important;  /* Secondary color */
+                color: white !important;
+            }
+            .btn-success {
+                background-color: var(--bs-green) !important;
+                color: white !important;
+                padding: 5px !important;
+                border-radius: 5px !important;
+                font-weight: normal !important;
+                font-size: 16px !important;
+                width: 60px;
+            }
+            .btn-success:hover {
+                background-color: #146c43 !important;
+                color: white !important;
+                padding: 5px !important;
+                border-radius: 5px !important;
+                font-weight: normal !important;
+                font-size: 16px !important;
+                width: 60px;
+            }
+            .btn-danger {
+                background-color: #dc3545 !important;  /* Danger color */
+                color: white !important;
+            }
+            .modal .btn-close {
+                color: #000 !important;
+            }
+            .mandatory-category {
+                background-color: red;
+                color: white;
+                padding: 2px 5px;
+                border-radius: 3px;
+                margin-right: 5px;
+                margin-bottom: 5px;
+            }
+            .badge {
+                font-size: 15px;
+                margin-right: 5px;
+                margin-bottom: 5px;
+            }
+            .badge-success {
+                background-color: green !important;
+            }
+            .form-label {
+                margin-bottom: 10px;
+            }
+            .highlight {
+                background-color: yellow;
+                transition: background-color 0.5s ease;
+            }
+            .table-striped tbody tr:nth-of-type(odd) {
+                background-color: #f9f9f9;
+            }
+            .table-striped tbody tr:nth-of-type(even) {
+                background-color: #f1f1f1;
+            }
+            #category {
+                height: 38px !important;
+            }
+            /* Custom styling for category dropdown */
+            select#category {
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 0.7rem center;
+                background-size: 1em;
+                padding-right: 2.5rem;
+                cursor: pointer;
+            }
+            /* Remove default arrow in IE */
+            select#category::-ms-expand {
+                display: none;
+            }
+            /* Hover effect */
+            select#category:hover {
+                border-color: #80bdff;
+            }
+            /* Focus effect */
+            select#category:focus {
+                border-color: #80bdff;
+                box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+                outline: 0;
+            }
+            .delete-icon {
+                color: red;
+                cursor: pointer;
+                font-size: 20px;
+            }
+            .delete-icon:hover {
+                color: darkred;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Header -->
+        <a href="/agency"><img src="{!URLFOR($Resource.MiraDocLogo)}" alt="Logo" class="logo" /></a> <!-- Replace with your logo -->
+        <header class="bg-dark text-center py-4">
+            <h1>File Upload</h1>
+        </header>
+
+        <!-- Main Content -->
+        <div class="container my-5">
+            <div id="mandatoryCategories" class="mb-3"></div>
+
+            <!-- Add Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Delete</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Do you want to delete '<span id="fileNameToDelete"></span>' File?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form id="fileUploadForm" enctype="multipart/form-data">
+                <div class="form-group row">
+                    <div class="col-md-4">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-control" id="category" name="category">
+                            <option value="Select Category">--Select Category--</option>
+                            <option value="Trade License">Trade License</option>
+                            <option value="Passport (Owner)">Passport (Owner)</option>
+                            <option value="Passport (Authorized Signatory)">Passport (Authorized Signatory)</option>
+                            <option value="ORN-RERA Certificate">ORN-RERA Certificate</option>
+                            <option value="Emirates ID (Owner)">Emirates ID (Owner)</option>
+                            <option value="Emirates ID (Authorized Signatory)">Emirates ID (Authorized Signatory)</option>
+                            <option value="Broker Card (BRN)">Broker Card (BRN)</option>
+                            <option value="Bank Account Details (on letterhead with stamp)">Bank Account Details (on letterhead with stamp)</option>
+                            <option id="vatCertOption" value="VAT Certificate">VAT Certificate</option>
+                            <option id="nonVatOption" value="Non-VAT Undertaking">Non-VAT Undertaking</option>
+                            <option value="POA / MOA">POA / MOA</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="file" class="form-label">File</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".pdf,.jpg,.jpeg" />
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="button" class="btn btn-primary" id="uploadButton">Upload</button>
+                        <div id="loader" class="ms-2"></div>
+                    </div>
+                </div>
+            </form>
+            <br />
+            <h3>Uploaded Files</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr id="tableHeader">
+                        <th>File Name</th>
+                        <th>Category</th>
+                        <th>File Type</th>
+                        <th id="actionColumnHeader" style="display: none;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="uploadedFilesTable"></tbody>
+            </table>
+            <!--<button type="button" class="btn btn-danger mt-3" onclick="clearLocalStorage()">Clear Storage</button>-->
+            <div class="text-center mt-3">
+                <button type="button" class="btn btn-primary" id="completeRegistrationButton" style="display: none;" onclick="completeRegistration()">Complete Registration Request</button>
+                <div id="completeLoader" class="ms-2"></div>
+            </div>
+        </div><br /><br />
+        <!-- Footer with Copyright and Power Info -->
+        <footer>
+            <p>&copy; 2024 M I R A Developments LLC. Powered by MIRA Developments</p>
+        </footer>
+        <script>
+            function decodeBase64(input) {
+                try {
+                    return decodeURIComponent(atob(input).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                } catch (e) {
+                    console.error('Error decoding base64:', e);
+                    return null;
+                }
+            }
+
+            window.onload = function() {
+                var urlParams = new URLSearchParams(window.location.search);
+                var accountId = urlParams.get('accountId');
+                var encodedInternationalAgency = urlParams.get('internationalAgency');
+                var encodedTrnSwitch = urlParams.get('trnSwitch');
+                var encodedEmirateValue = urlParams.get('emirate');
+
+                var internationalAgency = decodeBase64(encodedInternationalAgency);
+                var trnSwitch = decodeBase64(encodedTrnSwitch);
+                var emirateValue = decodeBase64(encodedEmirateValue);
+
+                if (internationalAgency) {
+                    updateMandatoryCategories(internationalAgency, trnSwitch, emirateValue);
+                    updateCategoryDropdown(internationalAgency, emirateValue);
+                } else {
+                    alert('Invalid international agency parameter.');
+                }
+
+                // Update dropdown options based on trnSwitch
+                updateVatOptions(trnSwitch);
+
+                window.accountId = accountId;
+                loadUploadedFiles();
+                checkAccountStatus();
+            };
+
+            function checkAccountStatus() {
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.AgencyFileUploadController.getAccountStatus}',
+                    window.accountId,
+                    function(result, event) {
+                        if (event.status) {
+                            var completeRegistrationButton = document.getElementById('completeRegistrationButton');
+                            if (result !== 'Incomplete Registration') {
+                                completeRegistrationButton.style.display = 'none';
+                            }
+                        } else {
+                            console.error('Error checking account status:', event.message);
+                        }
+                    }
+                );
+            }
+
+            function updateMandatoryCategories(internationalAgency, trnSwitch, emirateValue) {
+                var mandatoryCategories = [];
+                var nonMandatoryCategories = [];
+                if (internationalAgency === 'Yes') {
+                    mandatoryCategories = ['Trade License', 'Passport (Owner)', 'Bank Account Details (on letterhead with stamp)'];
+                } else {
+                    // Base mandatory categories for UAE registration
+                    mandatoryCategories = [
+                        'Trade License',
+                        'Passport (Owner)',
+                        'Passport (Authorized Signatory)',
+                        'Emirates ID (Owner)',
+                        'Emirates ID (Authorized Signatory)',
+                        'Bank Account Details (on letterhead with stamp)'
+                    ];
+
+                    // Add ORN-RERA Certificate only if emirate is Dubai
+                    if (emirateValue === 'Dubai') {
+                        mandatoryCategories.push('ORN-RERA Certificate');
+                        mandatoryCategories.push('Broker Card (BRN)');
+                    }
+                }
+                
+                if (internationalAgency === 'No') {
+                    nonMandatoryCategories.push('POA / MOA');
+                    if (trnSwitch === 'Yes') {
+                        mandatoryCategories.push('VAT Certificate');
+                    } else {
+                        mandatoryCategories.push('Non-VAT Undertaking');
+                    }
+                }
+
+                var mandatoryCategoriesDiv = document.getElementById('mandatoryCategories');
+                mandatoryCategoriesDiv.innerHTML = '';
+                mandatoryCategories.forEach(function(category) {
+                    var span = document.createElement('span');
+                    span.className = 'badge rounded-pill bg-danger text-white';
+                    span.innerText = category + ' *';
+                    mandatoryCategoriesDiv.appendChild(span);
+                });
+
+                nonMandatoryCategories.forEach(function(category) {
+                    var span = document.createElement('span');
+                    span.className = 'badge rounded-pill bg-secondary text-white';
+                    span.innerText = category;
+                    mandatoryCategoriesDiv.appendChild(span);
+                });
+
+                console.log('Mandatory categories updated:', mandatoryCategories);
+                console.log('Non-mandatory categories added:', nonMandatoryCategories);
+            }
+
+            function updateVatOptions(trnSwitch) {
+                var vatCertOption = document.getElementById('vatCertOption');
+                var nonVatOption = document.getElementById('nonVatOption');
+                
+                if (trnSwitch === 'Yes') {
+                    // Show VAT Certificate, hide Non-VAT Undertaking
+                    vatCertOption.style.display = '';
+                    nonVatOption.style.display = 'none';
+                } else {
+                    // Hide VAT Certificate, show Non-VAT Undertaking
+                    vatCertOption.style.display = 'none';
+                    nonVatOption.style.display = '';
+                }
+            }
+
+            function updateCategoryDropdown(internationalAgency, emirateValue) {
+                var categorySelect = document.getElementById('category');
+                var ornReraOption = Array.from(categorySelect.options).find(option => option.value === 'ORN-RERA Certificate');
+                
+                if (ornReraOption) {
+                    if (internationalAgency === 'Yes' || (internationalAgency === 'No' && emirateValue !== 'Dubai')) {
+                        ornReraOption.style.display = 'none';
+                        // If the hidden option was selected, reset to default
+                        if (categorySelect.value === 'ORN-RERA Certificate') {
+                            categorySelect.value = 'Select Category';
+                        }
+                    } else {
+                        ornReraOption.style.display = '';
+                    }
+                }
+            }
+
+            document.getElementById('uploadButton').addEventListener('click', function() {
+                var fileInput = document.getElementById('file');
+                var category = document.getElementById('category').value;
+                var file = fileInput.files[0];
+
+                if (!category || category === 'Select Category') {
+                    alert('Please select a valid category.');
+                    return;
+                }
+                if (!file) {
+                    alert('Please select a file to upload.');
+                    return;
+                }
+
+                // Show loader
+                var uploadButton = document.getElementById('uploadButton');
+                var loader = document.getElementById('loader');
+                uploadButton.disabled = true;
+                loader.style.display = 'block';
+
+                // Check if category exists
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.AgencyFileUploadController.checkCategoryExists}',
+                    window.accountId,
+                    category,
+                    function(result, event) {
+                        if (event.status) {
+                            try {
+                                var response = JSON.parse(result);
+                                console.log('Category check response:', response);
+                                
+                                if (response.success && response.exists) {
+                                    loader.style.display = 'none';
+                                    uploadButton.disabled = false;
+                                    alert('Please chose another category! Same category cannot be uploaded twice.');
+                                    return;
+                                }
+                                
+                                // Proceed with file upload if category doesn't exist
+                                uploadFile(file, category);
+                            } catch (e) {
+                                console.error('Error checking category:', e);
+                                loader.style.display = 'none';
+                                uploadButton.disabled = false;
+                                alert('Error checking category. Please try again.');
+                            }
+                        } else {
+                            loader.style.display = 'none';
+                            uploadButton.disabled = false;
+                            alert('Error checking category: ' + event.message);
+                        }
+                    },
+                    { escape: false }
+                );
+            });
+
+            function uploadFile(file, category) {
+                var reader = new FileReader();
+                reader.onloadend = function() {
+                    var base64Data = reader.result.split(',')[1];
+                    var fileName = file.name;
+
+                    // Show loader
+                    var uploadButton = document.getElementById('uploadButton');
+                    var loader = document.getElementById('loader');
+                    uploadButton.disabled = true;
+                    loader.style.display = 'block';
+
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.AgencyFileUploadController.uploadFile}',
+                        window.accountId,
+                        category,
+                        fileName,
+                        base64Data,
+                        function(result, event) {
+                            // Hide loader
+                            loader.style.display = 'none';
+                            uploadButton.disabled = false;
+
+                            if (event.status) {
+                                var response = JSON.parse(result);
+                                if (response.success) {
+                                    updateCategoryLabel(category);
+                                    saveUploadedFile(fileName, category, file.type);
+                                    loadUploadedFiles(true);
+                                } else {
+                                    alert(response.message || 'Error uploading file');
+                                }
+                            } else {
+                                alert('Error uploading file: ' + event.message);
+                            }
+                        },
+                        { escape: false }
+                    );
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function updateCategoryLabel(category) {
+                var badges = document.querySelectorAll('.badge');
+                badges.forEach(function(badge) {
+                    if (badge.innerText.includes(category)) {
+                        badge.classList.remove('bg-danger');
+                        badge.classList.add('badge-success');
+                    }
+                });
+            }
+
+            function saveUploadedFile(fileName, category, fileType) {
+                // After successful upload, refresh the files list from Salesforce
+                loadUploadedFiles(true);
+            }
+
+            function loadUploadedFiles(highlightRecent = false) {
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.AgencyFileUploadController.getUploadedFiles}',
+                    window.accountId,
+                    function(result, event) {
+                        if (event.status) {
+                            try {
+                                var response = JSON.parse(result);
+                                if (response.success) {
+                                    var tableBody = document.getElementById('uploadedFilesTable');
+                                    tableBody.innerHTML = '';
+
+                                    // Check if Action column should be shown based on account status
+                                    var showActionColumn = response.accountStatus !== 'Half Executed' && 
+                                                         response.accountStatus !== 'Completed' && 
+                                                         response.accountStatus !== 'Cancelled' &&
+                                                         response.accountStatus !== 'Agreement Issued';
+                                    
+                                    // Show/hide Action column header
+                                    var actionColumnHeader = document.getElementById('actionColumnHeader');
+                                    if (actionColumnHeader) {
+                                        actionColumnHeader.style.display = showActionColumn ? 'table-cell' : 'none';
+                                    }
+
+                                    response.files.forEach(function(file, index) {
+                                        var row = document.createElement('tr');
+                                        
+                                        var actionColumnHtml = showActionColumn ? 
+                                            `<td>
+                                                <i class="fas fa-times-circle delete-icon" 
+                                                   onclick="showDeleteConfirm('${file.fileName}', '${file.contentDocumentId}', '${file.category}')">
+                                                </i>
+                                            </td>` : '';
+                                        
+                                        row.innerHTML = `
+                                            <td>${file.fileName}</td>
+                                            <td>${file.category}</td>
+                                            <td>${file.fileType}</td>
+                                            ${actionColumnHtml}
+                                        `;
+                                        tableBody.appendChild(row);
+
+                                        // Update category label
+                                        updateCategoryLabel(file.category);
+
+                                        // Highlight the most recently uploaded file
+                                        if (highlightRecent && index === 0) {
+                                            row.classList.add('highlight');
+                                            setTimeout(function() {
+                                                row.classList.remove('highlight');
+                                            }, 10000);
+                                        }
+                                    });
+
+                                    // Check if all mandatory files are uploaded
+                                    checkMandatoryFiles();
+
+                                    // Hide the button if account status is not "Incomplete Registration"
+                                    if (response.accountStatus !== 'Incomplete Registration') {
+                                        document.getElementById('completeRegistrationButton').style.display = 'none';
+                                    }
+                                } else {
+                                    console.error('Error loading files:', response.message);
+                                }
+                            } catch (e) {
+                                console.error('Error parsing response:', e);
+                            }
+                        } else {
+                            console.error('Error loading files:', event.message);
+                        }
+                    },
+                    { escape: false }
+                );
+            }
+
+            function checkMandatoryFiles() {
+                var mandatoryCategories = document.querySelectorAll('.badge.bg-danger');
+                var allUploaded = true;
+                mandatoryCategories.forEach(function(badge) {
+                    if (!badge.classList.contains('badge-success')) {
+                        allUploaded = false;
+                    }
+                });
+
+                var completeRegistrationButton = document.getElementById('completeRegistrationButton');
+                if (allUploaded) {
+                    completeRegistrationButton.style.display = 'block';
+                } else {
+                    completeRegistrationButton.style.display = 'none';
+                }
+            }
+
+            function completeRegistration() {
+                var completeRegistrationButton = document.getElementById('completeRegistrationButton');
+                var completeLoader = document.getElementById('completeLoader');
+                completeRegistrationButton.disabled = true;
+                completeLoader.style.display = 'block';
+
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.AgencyFileUploadController.updateAccountStatus}',
+                    window.accountId,
+                    function(result, event) {
+                        completeLoader.style.display = 'none';
+                        completeRegistrationButton.disabled = false;
+
+                        if (event.status) {
+                            alert('Your registration request has been completed successfully!');
+                            window.location.href = '/agency';
+                        } else {
+                            alert('Error updating account status: ' + event.message);
+                        }
+                    }
+                );
+            }
+
+            function clearLocalStorage() {
+                loadUploadedFiles();
+                alert('Files list refreshed.');
+            }
+
+            // Add these new functions for delete functionality
+            let currentFileToDelete = null;
+
+            function showDeleteConfirm(fileName, contentDocumentId, category) {
+                currentFileToDelete = {
+                    fileName: fileName,
+                    contentDocumentId: contentDocumentId,
+                    category: category
+                };
+                document.getElementById('fileNameToDelete').textContent = fileName;
+                var modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+                modal.show();
+            }
+
+            function confirmDelete() {
+                if (!currentFileToDelete) return;
+                
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.AgencyFileUploadController.deleteFile}',
+                    window.accountId,
+                    currentFileToDelete.contentDocumentId,
+                    currentFileToDelete.category,
+                    function(result, event) {
+                        var modal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+                        modal.hide();
+                        
+                        if (event.status) {
+                            var response = JSON.parse(result);
+                            if (response.success) {
+                                // Revert the category badge back to red
+                                var badges = document.querySelectorAll('.badge');
+                                badges.forEach(function(badge) {
+                                    if (badge.innerText.includes(response.category)) {
+                                        badge.classList.remove('badge-success');
+                                        badge.classList.add('bg-danger');
+                                    }
+                                });
+                                
+                                // Refresh the files list
+                                loadUploadedFiles();
+                                
+                                // Clear the current file
+                                currentFileToDelete = null;
+                            } else {
+                                alert('Error deleting file: ' + response.message);
+                            }
+                        } else {
+                            alert('Error deleting file: ' + event.message);
+                        }
+                    },
+                    { escape: false }
+                );
+            }
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    </body>
+    </html>
+</apex:page>

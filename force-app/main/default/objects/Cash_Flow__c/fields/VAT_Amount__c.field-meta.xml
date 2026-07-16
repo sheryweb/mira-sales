@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>VAT_Amount__c</fullName>
+    <formula>IF(
+    AND(
+        NOT(ISBLANK(Price_Formula__c)),
+        Unit__r.Project__r.Is_VAT_Applicable__c,
+        NOT(
+            OR(
+                Name = &quot;Oqood&quot;,
+                Name = &quot;DLD Fee&quot;,
+                Name = &quot;Registration Fee&quot;
+            )
+        )
+    ),
+    Price_Formula__c * 0.05,
+    0
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>VAT Amount</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

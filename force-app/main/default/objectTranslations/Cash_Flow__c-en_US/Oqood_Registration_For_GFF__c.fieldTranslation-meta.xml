@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Oqood &amp; Registration For GFF --></label>
+    <name>Oqood_Registration_For_GFF__c</name>
+</CustomFieldTranslation>

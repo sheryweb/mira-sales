@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Unit</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Units</value>
+    </caseValues>
+    <layouts>
+        <layout>Unit Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <quickActions>
+        <label><!-- Change Status --></label>
+        <name>Change_Status</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Create Invoice --></label>
+        <name>Create_Invoice</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Generate Receipt --></label>
+        <name>Generate_Receipt</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- OneTime DLD Fee Setup --></label>
+        <name>OneTime_DLD_Fee_Setup</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Refresh Cash Flow --></label>
+        <name>Refresh_Cash_Flow</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Related Unit --></label>
+        <name>Related_Unit</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Start Booking --></label>
+        <name>Start_Booking</name>
+    </quickActions>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- To move Unit to the next stage, use &apos;Send for Approval&apos; first. --></errorMessage>
+        <name>Dont_change_status_without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- New Units must be created in the Blocked status, then you can change it. --></errorMessage>
+        <name>New_Unit_must_be_BLocked_first</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Block_Multiple_Units --></label>
+        <name>Block_Multiple_Units</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Generate_Multiple_Offers --></label>
+        <name>Generate_Multiple_Offers</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Generated_PDF --></label>
+        <name>Generated_PDF</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Populate_Payment_Plan_Temp --></label>
+        <name>Populate_Payment_Plan_Temp</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Release_Multiple_Units --></label>
+        <name>Release_Multiple_Units</name>
+    </webLinks>
+</CustomObjectTranslation>

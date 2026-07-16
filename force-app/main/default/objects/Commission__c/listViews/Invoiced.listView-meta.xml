@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Invoiced</fullName>
+    <columns>NAME</columns>
+    <columns>Agency__c</columns>
+    <columns>Unit__c</columns>
+    <columns>Unit_Number__c</columns>
+    <columns>Project_Name__c</columns>
+    <columns>Commission_Amount__c</columns>
+    <columns>Commission_Rate__c</columns>
+    <columns>Payment_Date__c</columns>
+    <columns>Status__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Invoiced</value>
+    </filters>
+    <label>Invoiced</label>
+    <sharedTo>
+        <role>Finance</role>
+    </sharedTo>
+</ListView>

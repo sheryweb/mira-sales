@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Unit Attribute Name --></label>
+    <name>Unit_Attribute_Name__c</name>
+    <picklistValues>
+        <masterLabel>Maids Room</masterLabel>
+        <translation><!-- Maids Room --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Pool</masterLabel>
+        <translation><!-- Pool --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

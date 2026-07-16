@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingCriteriaRules>
+        <fullName>FileGeneralSharing</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>FileGeneralSharing</label>
+        <sharedTo>
+            <roleAndSubordinates>Admin</roleAndSubordinates>
+        </sharedTo>
+        <criteriaItems>
+            <field>Type__c</field>
+            <operation>notEqual</operation>
+            <value>Client Passport Scan</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingCriteriaRules>
+        <fullName>Sharing_for_Agents</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>Sharing for Agents</label>
+        <sharedTo>
+            <allCustomerPortalUsers></allCustomerPortalUsers>
+        </sharedTo>
+        <criteriaItems>
+            <field>Type__c</field>
+            <operation>notEqual</operation>
+            <value>Client Passport Scan</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
+    </sharingCriteriaRules>
+    <sharingGuestRules>
+        <fullName>FileGeneralSharingPortal</fullName>
+        <accessLevel>Read</accessLevel>
+        <label>FileGeneralSharingPortal</label>
+        <sharedTo>
+            <guestUser>MiraPortal</guestUser>
+        </sharedTo>
+        <criteriaItems>
+            <field>Type__c</field>
+            <operation>notEqual</operation>
+            <value>Client Passport Scan</value>
+        </criteriaItems>
+        <includeHVUOwnedRecords>false</includeHVUOwnedRecords>
+    </sharingGuestRules>
+</SharingRules>

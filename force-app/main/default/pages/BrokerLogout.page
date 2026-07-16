@@ -1,0 +1,2 @@
+<apex:page controller="BrokerLoginController" action="{!logout}" showHeader="false"
+           sidebar="false" standardStylesheets="false" cache="false" title="Logging out…"/>

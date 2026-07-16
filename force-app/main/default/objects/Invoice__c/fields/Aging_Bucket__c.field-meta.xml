@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Aging_Bucket__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(Number_of_days_Overdue__c &lt;= 30, &quot;1. (00 - 30 Days)&quot;,
+IF(Number_of_days_Overdue__c &lt;= 60, &quot;2. (31 - 60 Days)&quot;,
+IF(Number_of_days_Overdue__c &lt;= 90, &quot;3. (61 - 90 Days)&quot;,
+IF(Number_of_days_Overdue__c &lt;= 180, &quot;4. (91 - 180 Days)&quot;,
+IF(Number_of_days_Overdue__c &lt;= 360, &quot;5. (181 - 360 Days)&quot;,
+&quot;6. (&gt; 360 Days)&quot;)))))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Aging Bucket</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

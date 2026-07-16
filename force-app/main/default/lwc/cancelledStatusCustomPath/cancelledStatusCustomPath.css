@@ -1,0 +1,50 @@
+/* customPath.css */
+.path-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 3px;
+}
+
+.path-step {
+    padding: 10px 20px;
+    color: white;
+    border-radius: 50px;
+    text-align: center;
+    width: 100%;
+    margin: 0 5px;
+    font-weight: bold;
+}
+
+.status-completed {
+    background-color: green;
+    color: white;
+}
+
+.status-cancelled {
+    background-color: red;
+    color: white;
+}
+
+.status-highlight {
+    background-color: #4caf50; /* Highlight color (green) */
+    color: white;
+}
+
+.status-disabled {
+    background-color: lightgray; /* Light gray background for non-current statuses */
+    color: #919191;
+}
+
+.status-previous {
+    background-color: #4caf50; /* Green for previous statuses */
+    color: white;
+    font-weight: bold;
+}
+
+.status-current {
+    background-color: #001694; /* Blue for current status */
+    color: white;
+    font-weight: bold;
+}

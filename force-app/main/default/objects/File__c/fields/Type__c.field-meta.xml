@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <label>Type</label>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Project Preview</fullName>
+                <default>false</default>
+                <label>Project Preview</label>
+            </value>
+            <value>
+                <fullName>Project USP Image</fullName>
+                <default>false</default>
+                <label>Project USP Image</label>
+            </value>
+            <value>
+                <fullName>Client Passport Scan</fullName>
+                <default>false</default>
+                <label>Client Passport Scan</label>
+            </value>
+            <value>
+                <fullName>Photos</fullName>
+                <default>false</default>
+                <label>Photos</label>
+            </value>
+            <value>
+                <fullName>Schemas/PDFs</fullName>
+                <default>false</default>
+                <label>Schemas/PDFs</label>
+            </value>
+            <value>
+                <fullName>News Preview</fullName>
+                <default>false</default>
+                <label>News Preview</label>
+            </value>
+            <value>
+                <fullName>News Content Photo</fullName>
+                <default>false</default>
+                <label>News Content Photo</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+            <value>
+                <fullName>Project Cover Image</fullName>
+                <default>false</default>
+                <label>Project Cover Image</label>
+            </value>
+            <value>
+                <fullName>Project Map Image</fullName>
+                <default>false</default>
+                <label>Project Map Image</label>
+            </value>
+            <value>
+                <fullName>Unit Layout Preview</fullName>
+                <default>false</default>
+                <label>Unit Layout Preview</label>
+            </value>
+            <value>
+                <fullName>Project Interior Photos</fullName>
+                <default>false</default>
+                <label>Project Interior Photos</label>
+            </value>
+            <value>
+                <fullName>Project Exterior Photos</fullName>
+                <default>false</default>
+                <label>Project Exterior Photos</label>
+            </value>
+            <value>
+                <fullName>Sales Offer</fullName>
+                <default>false</default>
+                <label>Sales Offer</label>
+            </value>
+            <value>
+                <fullName>Trade License Scan</fullName>
+                <default>false</default>
+                <label>Trade License Scan</label>
+            </value>
+            <value>
+                <fullName>Floor Plan</fullName>
+                <default>false</default>
+                <label>Floor Plan</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

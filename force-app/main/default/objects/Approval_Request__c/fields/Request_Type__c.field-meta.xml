@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Request_Type__c</fullName>
+    <label>Request Type</label>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Fee Change</fullName>
+                <default>false</default>
+                <label>Fee Change</label>
+            </value>
+            <value>
+                <fullName>Discount Approval</fullName>
+                <default>false</default>
+                <label>Discount Approval</label>
+            </value>
+            <value>
+                <fullName>Credit Limit Change</fullName>
+                <default>false</default>
+                <label>Credit Limit Change</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+            <value>
+                <fullName>Payment Plan Change</fullName>
+                <default>false</default>
+                <label>Payment Plan Change</label>
+            </value>
+            <value>
+                <fullName>Unit Price Change</fullName>
+                <default>false</default>
+                <label>Unit Price Change</label>
+            </value>
+            <value>
+                <fullName>Agency Profile Update</fullName>
+                <default>false</default>
+                <label>Agency Profile Update</label>
+            </value>
+            <value>
+                <fullName>Bank Detail Update</fullName>
+                <default>false</default>
+                <label>Bank Detail Update</label>
+            </value>
+            <value>
+                <fullName>Document Re-upload</fullName>
+                <default>false</default>
+                <label>Document Re-upload</label>
+            </value>
+            <value>
+                <fullName>DLD Waver Request</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>DLD Waver Request</label>
+            </value>
+            <value>
+                <fullName>Payment Plan Update Request</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Payment Plan Update Request</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

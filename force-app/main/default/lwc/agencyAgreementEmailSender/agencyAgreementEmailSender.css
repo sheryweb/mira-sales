@@ -1,0 +1,5 @@
+.slds-file-selector__dropzone.drag-over {
+    border-color: #0070d2 !important;
+    background-color: rgba(0, 112, 210, 0.05) !important;
+    box-shadow: 0 0 3px #0070d2 !important;
+}

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Agency_Accounts_Trade_License_Expired</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>Company_Email__c</columns>
+    <columns>ACCOUNT.PHONE1</columns>
+    <columns>Admin_Number__c</columns>
+    <columns>ACCOUNT.RECORDTYPE</columns>
+    <columns>ACCOUNT.TYPE</columns>
+    <columns>TRN_Number__c</columns>
+    <columns>Trade_License_Expiry_Date__c</columns>
+    <columns>Assigned_RM__c</columns>
+    <columns>Account_Owner_Full_Name__c</columns>
+    <columns>ACCOUNT.CREATED_DATE</columns>
+    <columns>Status__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Account.Agency</value>
+    </filters>
+    <filters>
+        <field>Trade_License_Expiry_Date__c</field>
+        <operation>lessThan</operation>
+        <value>TODAY</value>
+    </filters>
+    <label>Agency Accounts Trade License Expired</label>
+    <sharedTo>
+        <role>Agency_Relationship_Manager</role>
+    </sharedTo>
+</ListView>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BlacklistedConsumer xmlns="http://soap.sforce.com/2006/04/metadata">
+    <blockedByApiWhitelisting>false</blockedByApiWhitelisting>
+    <consumerKey>3MVG9A2kN3Bn17htAXjTQesZA9CU0v5kaaJTalhdX1RyEWWBqT4_uXJ5vJFIUEKoRqtctawVpxOmC3DNLFk.V</consumerKey>
+    <consumerName>Fivetran Data Loader</consumerName>
+    <masterLabel>BlacklistedConsumer31006454326765</masterLabel>
+</BlacklistedConsumer>

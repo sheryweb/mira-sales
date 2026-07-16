@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Cannot_go_back_to_New_Stage</fullName>
+    <active>true</active>
+    <description>Cannot_go_back_to_New</description>
+    <errorConditionFormula>ISCHANGED(StageName )
+&amp;&amp;
+Text(StageName)=&apos;New&apos;</errorConditionFormula>
+    <errorDisplayField>StageName</errorDisplayField>
+    <errorMessage>You can not go back to previous stage. You may set Closed-Cancelled for this Opportunity and create a new one.</errorMessage>
+</ValidationRule>

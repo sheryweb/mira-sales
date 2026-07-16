@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Default</label>
+    <protected>false</protected>
+    <values>
+        <field>Subscription_Key__c</field>
+        <value xsi:type="xsd:string">68efd45e89d14d7fb4153c3a690dd917</value>
+    </values>
+    <values>
+        <field>Subscription_Region__c</field>
+        <value xsi:type="xsd:string">uaenorth</value>
+    </values>
+    <values>
+        <field>Translate_Endpoint__c</field>
+        <value xsi:type="xsd:string">https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&amp;to=ar</value>
+    </values>
+    <values>
+        <field>Transliterate_Endpoint__c</field>
+        <value xsi:type="xsd:string">https://api.cognitive.microsofttranslator.com/transliterate?api-version=3.0&amp;language=ar&amp;fromScript=Latn&amp;toScript=Arab</value>
+    </values>
+</CustomMetadata>

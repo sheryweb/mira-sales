@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Production</label>
+    <protected>false</protected>
+    <values>
+        <field>API_Key__c</field>
+        <value xsi:type="xsd:string">MTgyZWNmNDktMzllYS00NjQyLWJkYzUtMjljYWJkNTFkZGZlOmFhZDEyNjVlLWI1YTUtNDQyYi1iNGYxLTBkMTQwMjNkODI1ZA==</value>
+    </values>
+    <values>
+        <field>Reference_Number__c</field>
+        <value xsi:type="xsd:string">3e16700e-7f63-43a5-bbd5-b0a7860fa8fb</value>
+    </values>
+    <values>
+        <field>URL__c</field>
+        <value xsi:type="xsd:string">https://api-gateway.ngenius-payments.com</value>
+    </values>
+    <values>
+        <field>aedValue__c</field>
+        <value xsi:type="xsd:double">3700000.0</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Dont_set_Booked_while_creation</fullName>
+    <active>true</active>
+    <description>&apos;Booked Stage will be set automatically after you select Unit</description>
+    <errorConditionFormula>TEXT(StageName)=&apos;Booked&apos; &amp;&amp;  ISBLANK(Unit__c)</errorConditionFormula>
+    <errorDisplayField>StageName</errorDisplayField>
+    <errorMessage>&apos;Booked&apos; stage will be set automatically after you select a Unit on the next step. Please select &apos;New&apos; stage</errorMessage>
+</ValidationRule>

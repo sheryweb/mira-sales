@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Any_Date_In_Monday_Week_Reserved__c</fullName>
+    <formula>DATEVALUE(Reserved_Date_Time__c) &gt;= (DATEVALUE(NOW()) - MOD(DATEVALUE(NOW()) - DATE(1900, 1, 8), 7) - 7) &amp;&amp;
+DATEVALUE(Reserved_Date_Time__c) &lt; (DATEVALUE(NOW()) - MOD(DATEVALUE(NOW()) - DATE(1900, 1, 8), 7))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Is Any Date In Monday Week Reserved</label>
+    <type>Checkbox</type>
+</CustomField>

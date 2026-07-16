@@ -1,0 +1,24 @@
+.row-added td    { background-color: #d4edda !important; }
+.row-updated td  { background-color: #fff3cd !important; }
+.row-deleted td  { background-color: #f8d7da !important; text-decoration: line-through; color: #888; }
+
+.comparison-header {
+    padding: 6px 8px;
+    border-radius: 4px 4px 0 0;
+    font-weight: 600;
+}
+.current-header  { background: #f3f3f3; border-left: 4px solid #706e6b; }
+.proposed-header { background: #e8f4fd; border-left: 4px solid #0176d3; }
+.comparison-table { font-size: 0.8rem; }
+
+.legend-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+.dot-added   { background: #28a745; }
+.dot-updated { background: #ffc107; }
+.dot-deleted { background: #dc3545; }

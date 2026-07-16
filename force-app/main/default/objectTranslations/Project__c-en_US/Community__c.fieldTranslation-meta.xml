@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Community --></label>
+    <name>Community__c</name>
+    <picklistValues>
+        <masterLabel>MIRA Verde</masterLabel>
+        <translation><!-- MIRA Verde --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Richmond District</masterLabel>
+        <translation><!-- Richmond District --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

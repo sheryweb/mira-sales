@@ -1,0 +1,31 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="unitRecord" type="Object"/>
+    <aura:attribute name="showGenerateSalesOffer" type="Boolean" default="false"/>
+    <aura:attribute name="showBookThisUnit" type="Boolean" default="false"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <force:recordData aura:id="unitRecord"
+        recordId="{!v.recordId}"
+        fields="Status__c"
+        targetFields="{!v.unitRecord}"
+        recordUpdated="{!c.onRecordUpdated}"
+        mode="VIEW"/>
+
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:flex-end; background:#ffffff; border:1px solid #dddbda; border-radius:8px; padding:6px 12px; box-shadow:0 2px 6px rgba(0,0,0,0.1); width:100%; gap:4px;">
+
+        <aura:if isTrue="{!v.showBookThisUnit}">
+            <div style="display:flex; align-items:center;"><c:bookThisUnit recordId="{!v.recordId}"/></div>
+        </aura:if>
+
+        <aura:if isTrue="{!and(v.showBookThisUnit, v.showGenerateSalesOffer)}">
+            <div style="width:1px; height:22px; background:#dddbda; flex-shrink:0;"></div>
+        </aura:if>
+
+        <aura:if isTrue="{!v.showGenerateSalesOffer}">
+            <div style="display:flex; align-items:center;"><c:generateSalesOfferPDFWrapper recordId="{!v.recordId}"/></div>
+        </aura:if>
+
+    </div>
+</aura:component>

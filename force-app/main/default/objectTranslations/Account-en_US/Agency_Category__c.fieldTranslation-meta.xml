@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label><!-- Agency Agreement Category --></label>
+    <name>Agency_Category__c</name>
+    <picklistValues>
+        <masterLabel>Georgian</masterLabel>
+        <translation><!-- Georgian --></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>United Arab Emirates</masterLabel>
+        <translation><!-- United Arab Emirates --></translation>
+    </picklistValues>
+</CustomFieldTranslation>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>SPA_Signed_Email_Notification</name>
+        <label>SPA Signed Email Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>SpaSignedNotification</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Check_if_Return_Output_is_True_or_False</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>opportunityId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>SpaSignedNotification</nameSegment>
+        <offset>0</offset>
+        <outputParameters>
+            <assignToReference>ReturnOutput</assignToReference>
+            <name>isSuccess</name>
+        </outputParameters>
+    </actionCalls>
+    <apiVersion>64.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <customErrors>
+        <name>Error_Sending_Notification_Email</name>
+        <label>Error Sending Notification Email</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <customErrorMessages>
+            <errorMessage>Email notification cannot be sent!!!</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <decisions>
+        <name>Check_if_Project_is_not_POST</name>
+        <label>Check if Project is not POST</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>SPA_Signed_Email_Notification</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>If Not POST</defaultConnectorLabel>
+        <rules>
+            <name>If_POST</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Unit__r.Project_Name_F__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>POST HOTEL &amp; RESIDENCES By ELIE SAAB</stringValue>
+                </rightValue>
+            </conditions>
+            <label>If POST</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_if_Return_Output_is_True_or_False</name>
+        <label>Check if Return Output is True or False</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Error_Sending_Notification_Email</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>If False</defaultConnectorLabel>
+        <rules>
+            <name>If_True</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>ReturnOutput</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_SPA_Signed_Notification_Sent_Value</targetReference>
+            </connector>
+            <label>If True</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <interviewLabel>SPA Signed Notification to Client {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>SPA Signed Notification to Client</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_SPA_Signed_Notification_Sent_Value</name>
+        <label>Update SPA Signed Notification Sent Value</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>SPA_Signed_Notification_Sent__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_if_Project_is_not_POST</targetReference>
+        </connector>
+        <filterFormula>AND(
+    ISBLANK(PRIORVALUE({!$Record.SPA_Signed_Customer_Date__c})),
+    NOT(ISBLANK({!$Record.SPA_Signed_Customer_Date__c})),
+    {!$Record.SPA_Signed_Notification_Sent__c} &lt;&gt; true
+)</filterFormula>
+        <object>Opportunity</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+    <variables>
+        <name>ReturnOutput</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

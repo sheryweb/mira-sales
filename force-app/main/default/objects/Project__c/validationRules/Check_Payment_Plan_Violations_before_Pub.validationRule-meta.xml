@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Check_Payment_Plan_Violations_before_Pub</fullName>
+    <active>false</active>
+    <description>Check Payment Plan Violations before Publish</description>
+    <errorConditionFormula>((TEXT(Publish_Project__c )=&apos;Published&apos; ) ||
+
+(TEXT(Publish_Project__c )=&apos;On Approval&apos;))
+
+&amp;&amp;  (Payments_Sum_Not_100__c =TRUE ||  No_Handover_Payment__c =TRUE)</errorConditionFormula>
+    <errorDisplayField>No_Handover_Payment__c</errorDisplayField>
+    <errorMessage>You can not publish this Project while not selected Handover Payment or Sum of all payments not equal to 100%. Please adjust Payment Plan</errorMessage>
+</ValidationRule>

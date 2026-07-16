@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Grants access to the Opportunity Approval History component (Unit Price Change and Payment Plan Change approval timeline). Assign to System Administrators (and any other roles allowed to view it).</description>
+    <isLicensed>false</isLicensed>
+    <label>View Approval History</label>
+</CustomPermission>

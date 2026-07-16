@@ -1,0 +1,875 @@
+<apex:page controller="AgencyController">
+  <html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company Information</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+    <style>
+        .bg-dark {
+            background: #f8f9fa !important;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .step-indicator div {
+            width: 45%;
+            height: 10px;
+            background-color: lightgray;
+            border-radius: 5px;
+            position: relative;
+        }
+        .step-indicator div:last-child::before {
+            content: 'Documents Upload';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            color: #80808052;
+        }
+        .step-indicator div.active {
+            background-color: #007bff;
+        }
+
+        .step-indicator div.active::before {
+            content: 'Agency Information';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+        }
+
+        #loader {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 8px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 8px solid #3498db;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-message {
+            color: red;
+            display: none;
+            margin-top: 10px;
+            font-size: 25px;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333; /* Optional: footer background color */
+            color: white;           /* Optional: footer text color */
+            text-align: center;
+            padding: 10px 0;
+            z-index: 1000;          /* Optional: keeps footer on top of other elements */
+        }
+
+        .logo {
+            width: 200px;
+            height: 70px;
+            padding: 10px;
+        }
+        .required-elements::after {
+            content: '*';
+            color: red;
+        }
+        .error-message-percentage {
+            color: red;
+            font-size: 0.9em;
+            display: none;
+        }
+        .btn {
+            background-image: none !important;  /* Remove any background images applied by Salesforce */
+            border: none !important;  /* Remove any borders if they exist */
+        }
+        .btn-primary {
+            background-color: #0d6efd !important;
+            color: white !important;
+            padding: 10px 15px 10px 15px !important;
+            border-radius: 5px !important;
+            font-weight: normal !important;
+            font-size: 16px !important;
+        }
+        .btn-secondary {
+            background-color: #6c757d !important;  /* Secondary color */
+            color: white !important;
+        }
+        .btn-success {
+            background-color: var(--bs-green) !important;
+            color: white !important;
+            padding: 5px !important;
+            border-radius: 5px !important;
+            font-weight: normal !important;
+            font-size: 16px !important;
+            width: 60px;
+        }
+        .btn-success:hover {
+            background-color: #146c43 !important;
+            color: white !important;
+            padding: 5px !important;
+            border-radius: 5px !important;
+            font-weight: normal !important;
+            font-size: 16px !important;
+            width: 60px;
+        }
+        .btn-danger {
+            background-color: #dc3545 !important;  /* Danger color */
+            color: white !important;
+        }
+        .modal .btn-close {
+            color: #000 !important;
+        }
+        .form-switch .form-check-input {
+            width: 50px;
+            height: 25px;
+            margin-left: -2.5em;
+            background: #ddd;
+            border-radius: 25px;
+            position: relative;
+            transition: background-color 0.3s;
+        }
+
+        .form-switch .form-check-input:checked {
+            background: #0d6efd;
+        }
+
+        .form-switch .form-check-input::before {
+            content: '';
+            position: absolute;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .form-switch .form-check-input:checked::before {
+            transform: translateX(25px);
+        }
+        .iti {
+            width: 100%;
+        }
+        .phone-error, .landline-error, .admin-mobile-error, .signatory-mobile-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        /* Add custom styling for the emirate dropdown */
+        select#emirateSelect {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 1em;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+        /* Remove default arrow in IE */
+        select#emirateSelect::-ms-expand {
+            display: none;
+        }
+        /* Hover effect */
+        select#emirateSelect:hover {
+            border-color: #80bdff;
+        }
+        /* Focus effect */
+        select#emirateSelect:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+            outline: 0;
+        }
+        .emirate-container {
+            margin-left: 25px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .emirate-container > div {
+            display: block;
+            width: 100%;
+        }
+        .emirate-container label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        .emirate-container select {
+            display: block;
+            width: 20%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <a href="/agency"><img src="{!URLFOR($Resource.MiraDocLogo)}" alt="Logo" class="logo" /></a> <!-- Replace with your logo -->
+    <header class="bg-dark text-center py-4">
+        <h1>Agency Registration</h1>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <form id="registrationForm" action="submit.php" method="post" onsubmit="validateForm(event);">
+            <!-- Company Information -->
+            <h3 class="mb-4">Company Information</h3>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="registrationType" value="UAE" id="registeredInUAE" checked="checked" />
+                <label class="form-check-label" for="registeredInUAE">Registered in UAE</label>
+                
+                <!-- Add Emirate Dropdown as child -->
+                <div id="emirateDropdownContainer" class="emirate-container">
+                    <div>
+                        <label for="emirateSelect" class="form-label required-elements">Emirate</label>
+                    </div>
+                    <div>
+                        <select class="form-control" id="emirateSelect" name="emirateSelect" required="required" style="width: 20%;">
+                            <option value="">---Select Emirate---</option>
+                            <option value="Abu Dhabi">Abu Dhabi</option>
+                            <option value="Dubai">Dubai</option>
+                            <option value="Sharjah">Sharjah</option>
+                            <option value="Ajman">Ajman</option>
+                            <option value="Ras Al Khaimah">Ras Al Khaimah</option>
+                            <option value="Fujairah">Fujairah</option>
+                            <option value="Umm Al Quwain">Umm Al Quwain</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="registrationType" value="International" id="registeredInternationally" />
+                <label class="form-check-label" for="registeredInternationally">Registered Internationally</label>
+            </div>
+            <br /> 
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="companyName" class="form-label required-elements">Company Name</label>
+                    <input type="text" class="form-control" id="companyName" name="companyName" required="true" />
+                </div>
+                <div class="col-md-6">
+                    <label for="tradeLicenseNumber" class="form-label required-elements">Trade License Number</label>
+                    <input type="text" class="form-control" id="tradeLicenseNumber" name="tradeLicenseNumber" required="true" onblur="checkTradeLicense();" />
+                    <div id="tradeLicenseMessage" style="color: red;"></div>
+                </div>
+            </div>
+            <div id="ornTrnRow" class="row mb-3">
+                <div class="col-md-6">
+                    <label for="ornNumber" class="form-label" id="ornLabel">ORN-RERA Number</label>
+                    <input type="text" class="form-control" id="ornNumber" name="ornNumber" disabled="disabled" />
+                </div>
+                <div class="col-md-6">
+                    <label for="trnNumber" class="form-label">TRN Number</label>
+                    <div class="d-flex align-items-center">
+                        <input type="text" class="form-control me-2" id="trnNumber" name="trnNumber" />
+                        <label class="form-check-label me-2" for="trnSwitch">No</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="trnSwitch" checked='checked' onchange="toggleTRNField()" />
+                        </div>&nbsp;
+                        <label class="form-check-label me-2" for="trnSwitch">Yes</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="issueDate" class="form-label required-elements">Trade License Issue Date</label>
+                    <input type="date" class="form-control" id="issueDate" name="issueDate" required="true" />
+                </div>
+                <div class="col-md-6">
+                    <label for="expiryDate" class="form-label required-elements">Trade License Expiry Date</label>
+                    <input type="date" class="form-control" id="expiryDate" name="expiryDate" required="true" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="companyAddress" class="form-label required-elements">Company Address</label>
+                    <input type="text" class="form-control" id="companyAddress" name="companyAddress" required="true" />
+                </div>
+                <div class="col-md-6">
+                    <label for="poBox" class="form-label required-elements">P.O Box</label>
+                    <input type="text" class="form-control" id="poBox" name="poBox" required="true" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="email" class="form-label required-elements">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required="true" />
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label required-elements">Phone</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" required="true" />
+                    <span id="phone-error" class="phone-error"></span>
+                    <input type="hidden" id="full_phone" name="full_phone" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="landline" class="form-label required-elements">Landline</label>
+                    <input type="tel" class="form-control" id="landline" name="landline" />
+                    <span id="landline-error" class="landline-error"></span>
+                    <input type="hidden" id="full_landline" name="full_landline" />
+                </div>
+                <div class="col-md-6">
+                    <label for="adminEmail" class="form-label required-elements">Admin Email</label>
+                    <input type="email" class="form-control" id="adminEmail" name="adminEmail" required="true" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="adminMobile" class="form-label required-elements">Admin Mobile</label>
+                    <input type="tel" class="form-control" id="adminMobile" name="adminMobile" required="true" />
+                    <span id="admin-mobile-error" class="admin-mobile-error"></span>
+                    <input type="hidden" id="full_admin_mobile" name="full_admin_mobile" />
+                </div>
+                <div class="col-md-6">
+                    <label for="relationManager" class="form-label required-elements">MIRA Relationship Manager</label>
+                    <input type="text" class="form-control" id="relationManager" name="relationManager" required="true" />
+                </div>
+            </div><br />
+
+            <!-- Signatory Information -->
+            <h3 class="mb-4">Signatory Information</h3><br /><br />
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="signatoryName" class="form-label required-elements">Name</label>
+                    <input type="text" class="form-control" id="signatoryName" name="signatoryName" required="true" />
+                </div>
+                <div class="col-md-4">
+                    <label for="signatoryEmail" class="form-label required-elements">Email</label>
+                    <input type="email" class="form-control" id="signatoryEmail" name="signatoryEmail" required="true" />
+                </div>
+                <div class="col-md-4">
+                    <label for="signatoryMobile" class="form-label required-elements">Mobile</label>
+                    <input type="tel" class="form-control" id="signatoryMobile" name="signatoryMobile" required="true" />
+                    <span id="signatory-mobile-error" class="signatory-mobile-error"></span>
+                    <input type="hidden" id="full_signatory_mobile" name="full_signatory_mobile" />
+                </div>
+            </div>
+            <!--<div class="row mb-3">
+                
+            </div>-->
+
+            <!-- Shareholders Information -->
+            <div class="row" style="padding: 30px 0 30px 0;">
+                <div class="col-md-6"><h3>Shareholders Details</h3></div>
+                <div class="col-md-6" style="text-align: right;">
+                    <button type="button" class="btn btn-success" onclick="addShareholder()">+Add</button>
+                </div>
+            </div>
+            <div id="shareholdersContainer">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="shareholderName" class="form-label required-elements">Name</label>
+                        <input type="text" class="form-control" name="shareholderName[]" required="true" />
+                    </div>
+                    <div class="col-md-1">
+                        <label for="shareholderPercentage" class="form-label required-elements">Percentage</label>
+                        <input type="number" class="form-control percentage" name="shareholderPercentage[]" required="true" />
+                    </div>
+                </div>
+            </div>
+            <div id="error-message-percentage" class="error-message-percentage"><strong>Percentage in total must be equal to 100.</strong></div>
+
+            <!-- Bank Information -->
+            <div class="row" style="padding: 30px 0 30px 0;">
+                <div class="col-md-6"><h3>Company Bank Account Details</h3></div>
+                <div class="col-md-6" style="text-align: right;">
+                    <button type="button" class="btn btn-success" onclick="addBankAccount()">+Add</button>
+                </div>
+            </div>
+            <div id="bankAccountsContainer">
+                <div class="row mb-3">
+                    <div class="col-md-2">
+                        <label for="bankName" class="form-label required-elements">Bank Name</label>
+                        <input type="text" class="form-control" name="bankName[]" required="true" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="accountName" class="form-label required-elements">Account Name</label>
+                        <input type="text" class="form-control" name="accountName[]" required="true" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="accountNumber" class="form-label required-elements">Account Number</label>
+                        <input type="number" class="form-control" name="accountNumber[]" required="true" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="accountIBAN" class="form-label required-elements">IBAN</label>
+                        <input type="text" class="form-control" name="accountIBAN[]" required="true" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="accountSwift" class="form-label required-elements">Swift Code</label>
+                        <input type="text" class="form-control" name="accountSwift[]" required="true" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="branchName" class="form-label required-elements">Branch Name</label>
+                        <input type="text" class="form-control" name="branchName[]" required="true" />
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <!-- Google reCAPTCHA widget -->
+            <div class="g-recaptcha" data-sitekey="6LcN6JEqAAAAAJdQHLOnPO0CxW83LxxhwQY9dLss"></div>
+
+            <!-- Next Button -->
+            <div class="text-center mt-5">
+                <div id="loader"></div>
+                <div class="error-message" id="errorMessage"></div>
+                <button type="submit" class="btn btn-primary">Next &gt;&gt;</button>
+            </div>
+        </form>
+    </div><br /><br />
+    <!-- Footer with Copyright and Power Info -->
+    <footer>
+        <p>&copy; 2024 M I R A Developments LLC. Powered by MIRA Developments</p>
+    </footer>
+    <script src="https://www.google.com/recaptcha/api.js" async="true" defer="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script>
+        function checkTradeLicense(callback) {
+            var tradeLicenseNumber = document.getElementById('tradeLicenseNumber').value;
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.AgencyController.getAccountExist}',
+                tradeLicenseNumber,
+                function(result, event) {
+                    var messagePanel = document.getElementById('tradeLicenseMessage');
+                    console.log(result);
+                    if (event.status) {
+                        if (result === 'Account Exist') {
+                            messagePanel.innerHTML = 'Agency already exist!';
+                            messagePanel.style.color = 'red';
+                            document.getElementById('registrationForm').dataset.accountExist = 'true';
+                        } else if (result === 'Account Not Found') {
+                            messagePanel.innerHTML = 'You are good to go!';
+                            messagePanel.style.color = 'green';
+                            document.getElementById('registrationForm').dataset.accountExist = 'false';
+                        } else {
+                            messagePanel.innerHTML = result;
+                            messagePanel.style.color = 'red';
+                        }
+                    } else {
+                        messagePanel.innerHTML = 'Error checking account';
+                        messagePanel.style.color = 'red';
+                    }
+                    if (callback) callback();
+                }
+            );
+        }
+
+        function toggleTRNField() {
+            var trnSwitch = document.getElementById('trnSwitch');
+            var trnNumberField = document.getElementById('trnNumber');
+
+            if (trnSwitch.checked) {
+                trnNumberField.disabled = false;
+                trnNumberField.required = true;
+                trnNumberField.classList.add('required-elements');
+            } else {
+                trnNumberField.disabled = true;
+                trnNumberField.required = false;
+                trnNumberField.classList.remove('required-elements');
+            }
+        }
+
+        function radioFunction() {
+            console.log('radioFunction called');
+            var registeredInUAE = document.getElementById("registeredInUAE");
+            var registeredInternationally = document.getElementById("registeredInternationally");
+            var ornTrnRow = document.getElementById("ornTrnRow");
+            var trnNumField = document.getElementById('trnNumber');
+            var emirateDropdownContainer = document.getElementById('emirateDropdownContainer');
+            var emirateSelect = document.getElementById('emirateSelect');
+
+            // Log the current state
+            console.log('UAE checked:', registeredInUAE.checked);
+            console.log('International checked:', registeredInternationally.checked);
+
+            if (registeredInternationally.checked) {
+                console.log('Setting International view');
+                ornTrnRow.style.display = 'none';
+                emirateDropdownContainer.style.display = 'none';
+                trnNumField.disabled = true;
+                trnNumField.required = false;
+                emirateSelect.required = false;
+                emirateSelect.value = '';
+                trnNumField.classList.remove('required-elements');
+            } else {
+                console.log('Setting UAE view');
+                ornTrnRow.style.display = 'flex';
+                emirateDropdownContainer.style.display = 'block';
+                trnNumField.disabled = false;
+                trnNumField.required = true;
+                emirateSelect.required = true;
+                emirateSelect.value = '---Select Emirate---';
+                trnNumField.classList.add('required-elements');
+            }
+        }
+
+        function handleEmirateChange() {
+            var emirateSelect = document.getElementById('emirateSelect');
+            var ornField = document.getElementById('ornNumber');
+            var ornLabel = document.getElementById('ornLabel');
+
+            if (emirateSelect.value === 'Dubai') {
+                ornField.disabled = false;
+                ornField.required = true;
+                ornLabel.classList.add('required-elements');
+            } else {
+                ornField.disabled = true;
+                ornField.required = false;
+                ornField.value = ''; // Clear the value when disabled
+                ornLabel.classList.remove('required-elements');
+            }
+        }
+
+        // Ensure the fields are correctly set on page load and add event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners to radio buttons
+            document.getElementById("registeredInUAE").addEventListener('change', radioFunction);
+            document.getElementById("registeredInternationally").addEventListener('change', radioFunction);
+            
+            // Add event listener to emirate dropdown
+            document.getElementById("emirateSelect").addEventListener('change', handleEmirateChange);
+            
+            // Initial setup
+            toggleTRNField();
+            radioFunction();
+            handleEmirateChange(); // Initial state of ORN field
+        });
+
+        // Initialize phone inputs
+        var phoneInput = document.querySelector("#phone");
+        var phoneError = document.querySelector("#phone-error");
+        var fullPhone = document.querySelector("#full_phone");
+        
+        var landlineInput = document.querySelector("#landline");
+        var landlineError = document.querySelector("#landline-error");
+        var fullLandline = document.querySelector("#full_landline");
+
+        var adminMobileInput = document.querySelector("#adminMobile");
+        var adminMobileError = document.querySelector("#admin-mobile-error");
+        var fullAdminMobile = document.querySelector("#full_admin_mobile");
+
+        var signatoryMobileInput = document.querySelector("#signatoryMobile");
+        var signatoryMobileError = document.querySelector("#signatory-mobile-error");
+        var fullSignatoryMobile = document.querySelector("#full_signatory_mobile");
+        
+        // Initialize intl-tel-input for all phone fields
+        var phoneIti = window.intlTelInput(phoneInput, {
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            preferredCountries: ['ae', 'sa', 'qa', 'bh', 'kw', 'om'],
+            separateDialCode: true,
+            initialCountry: "ae"
+        });
+
+        var landlineIti = window.intlTelInput(landlineInput, {
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            preferredCountries: ['ae', 'sa', 'qa', 'bh', 'kw', 'om'],
+            separateDialCode: true,
+            initialCountry: "ae"
+        });
+
+        var adminMobileIti = window.intlTelInput(adminMobileInput, {
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            preferredCountries: ['ae', 'sa', 'qa', 'bh', 'kw', 'om'],
+            separateDialCode: true,
+            initialCountry: "ae"
+        });
+
+        var signatoryMobileIti = window.intlTelInput(signatoryMobileInput, {
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            preferredCountries: ['ae', 'sa', 'qa', 'bh', 'kw', 'om'],
+            separateDialCode: true,
+            initialCountry: "ae"
+        });
+
+        // Phone validation function
+        function validatePhone() {
+            if (phoneInput.value.trim()) {
+                if (phoneIti.isValidNumber()) {
+                    phoneError.style.display = "none";
+                    fullPhone.value = phoneIti.getNumber(); // Store the full number with country code
+                    return true;
+                } else {
+                    phoneError.style.display = "block";
+                    phoneError.innerHTML = "Invalid phone number";
+                    return false;
+                }
+            }
+            return true; // Return true if empty as it will be caught by HTML5 required validation
+        }
+
+        // Landline validation function
+        function validateLandline() {
+            if (landlineInput.value.trim()) {
+                if (landlineIti.isValidNumber()) {
+                    landlineError.style.display = "none";
+                    fullLandline.value = landlineIti.getNumber(); // Store the full number with country code
+                    return true;
+                } else {
+                    landlineError.style.display = "block";
+                    landlineError.innerHTML = "Invalid landline number";
+                    return false;
+                }
+            }
+            return true; // Return true if empty as landline might be optional
+        }
+
+        // Admin Mobile validation function
+        function validateAdminMobile() {
+            if (adminMobileInput.value.trim()) {
+                if (adminMobileIti.isValidNumber()) {
+                    adminMobileError.style.display = "none";
+                    fullAdminMobile.value = adminMobileIti.getNumber(); // Store the full number with country code
+                    return true;
+                } else {
+                    adminMobileError.style.display = "block";
+                    adminMobileError.innerHTML = "Invalid mobile number";
+                    return false;
+                }
+            }
+            return false; // Return false if empty as admin mobile is required
+        }
+
+        // Signatory Mobile validation function
+        function validateSignatoryMobile() {
+            if (signatoryMobileInput.value.trim()) {
+                if (signatoryMobileIti.isValidNumber()) {
+                    signatoryMobileError.style.display = "none";
+                    fullSignatoryMobile.value = signatoryMobileIti.getNumber(); // Store the full number with country code
+                    return true;
+                } else {
+                    signatoryMobileError.style.display = "block";
+                    signatoryMobileError.innerHTML = "Invalid mobile number";
+                    return false;
+                }
+            }
+            return false; // Return false if empty as signatory mobile is required
+        }
+
+        // Add validation listeners
+        phoneInput.addEventListener("change", validatePhone);
+        phoneInput.addEventListener("keyup", validatePhone);
+        landlineInput.addEventListener("change", validateLandline);
+        landlineInput.addEventListener("keyup", validateLandline);
+        adminMobileInput.addEventListener("change", validateAdminMobile);
+        adminMobileInput.addEventListener("keyup", validateAdminMobile);
+        signatoryMobileInput.addEventListener("change", validateSignatoryMobile);
+        signatoryMobileInput.addEventListener("keyup", validateSignatoryMobile);
+
+        function validateForm(event) {
+            event.preventDefault(); // Prevent form submission
+            
+            // Validate all phone numbers
+            if (!validatePhone() || !validateLandline() || !validateAdminMobile() || !validateSignatoryMobile()) {
+                return false;
+            }
+
+            showLoader(true);
+            checkTradeLicense(function() {
+                if (document.getElementById('registrationForm').dataset.accountExist === 'true') {
+                    alert('Account already exists. Please use a different Trade License Number.');
+                    showLoader(false);
+                } else {
+                    if (validatePercentages()) {
+                        submitForm(); // Submit the form if no account exists and percentages are valid
+                    } else {
+                        showLoader(false);
+                    }
+                }
+            });
+        }
+
+        //Form Submission
+        function submitForm() {
+            var form = document.getElementById('registrationForm');
+            var formData = new FormData(form);
+
+            var registrationType = formData.get('registrationType'); // Get the value of the selected radio button
+            var internationalAgency = registrationType === 'International' ? 'Yes' : 'No'; // Set the value based on the selected radio button
+            var emirateValue = document.getElementById('emirateSelect').value; // Get the selected emirate value
+            var companyName = formData.get('companyName');
+            var tradeLicenseNumber = formData.get('tradeLicenseNumber');
+            var issueDate = formData.get('issueDate');
+            var expiryDate = formData.get('expiryDate');
+            var ornNumber = formData.get('ornNumber');
+            var trnNumber = formData.get('trnNumber');
+            var companyAddress = formData.get('companyAddress');
+            var poBox = formData.get('poBox');
+            var email = formData.get('email');
+            // Use the full phone numbers with country codes from hidden fields
+            var phone = document.getElementById('full_phone').value || document.getElementById('phone').value;
+            var landline = document.getElementById('full_landline').value || document.getElementById('landline').value;
+            var adminEmail = formData.get('adminEmail');
+            var adminMobile = document.getElementById('full_admin_mobile').value || document.getElementById('adminMobile').value;
+            var relationManager = formData.get('relationManager');
+            var signatoryName = formData.get('signatoryName');
+            var signatoryEmail = formData.get('signatoryEmail');
+            var signatoryNumber = document.getElementById('full_signatory_mobile').value || document.getElementById('signatoryMobile').value;
+            var shareholderNames = formData.getAll('shareholderName[]');
+            var shareholderPercentages = formData.getAll('shareholderPercentage[]');
+            var bankNames = formData.getAll('bankName[]');
+            var accountNames = formData.getAll('accountName[]');
+            var accountNumbers = formData.getAll('accountNumber[]');
+            var accountIBANs = formData.getAll('accountIBAN[]');
+            var accountSwifts = formData.getAll('accountSwift[]');
+            var branchNames = formData.getAll('branchName[]');
+            var trnSwitchValue = document.getElementById('trnSwitch').checked ? 'Yes' : 'No';
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.AgencyController.handleCompanyRegistration}',
+                internationalAgency,
+                companyName,
+                tradeLicenseNumber,
+                issueDate,
+                expiryDate,
+                ornNumber,
+                trnNumber,
+                companyAddress,
+                poBox,
+                email,
+                phone,
+                landline,
+                adminEmail,
+                adminMobile,
+                relationManager,
+                signatoryName,
+                signatoryEmail,
+                signatoryNumber,
+                shareholderNames,
+                shareholderPercentages,
+                bankNames,
+                accountNames,
+                accountNumbers,
+                accountIBANs,
+                accountSwifts,
+                branchNames,
+                trnSwitchValue,
+                emirateValue,
+                function(result, event) {
+                    showLoader(false);
+                    if (event.status) {
+                        if (result[0] === 'Account Added Successfully') {
+                            var accountId = result[1];
+                            var encodedinternationalAgency = btoa(internationalAgency); // Base64 encode the registrationType value
+                            var encodedTrnSwitchValue = btoa(trnSwitchValue); // Base64 encode the trnSwitch value
+                            var encodedEmirateValue = btoa(emirateValue); // Base64 encode the emirate value
+                            window.location.href = '/agency/AgencyFileUpload?accountId=' + accountId + '&internationalAgency=' + encodedinternationalAgency + '&trnSwitch=' + encodedTrnSwitchValue + '&emirate=' + encodedEmirateValue;
+                        } else {
+                            console.log('Apex response:', result);
+                            alert(result[0]);
+                        }
+                    } else {
+                        console.log('Apex error:', event.message);
+                        alert('Error submitting form: ' + event.message);
+                    }
+                }
+            );
+        }
+
+        function showLoader(show) {
+            var loader = document.getElementById('loader');
+            var submitButton = document.querySelector('button[type="submit"]');
+            if (show) {
+                loader.style.display = 'block';
+                submitButton.disabled = true;
+            } else {
+                loader.style.display = 'none';
+                submitButton.disabled = false;
+            }
+        }
+
+        function addShareholder() {
+            var html = `
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="shareholderName[]" required>
+                    </div>
+                    <div class="col-md-1">
+                        <input type="number" class="form-control percentage" name="shareholderPercentage[]" required>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger" onclick="removeShareholder(this)">-Remove</button>
+                    </div>
+                </div>`;
+            document.getElementById('shareholdersContainer').insertAdjacentHTML('beforeend', html);
+        }
+
+        function removeShareholder(button) {
+            button.closest('.row').remove();
+        }
+
+        function addBankAccount() {
+            var html = `
+                <div class="row mb-3">
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="bankName[]" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="accountName[]" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" class="form-control" name="accountNumber[]" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="accountIBAN[]" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="accountSwift[]" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="branchName[]" required>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end" style="padding-top: 5px;">
+                        <button type="button" class="btn btn-danger" onclick="removeBankAccount(this)">-Remove</button>
+                    </div>
+                </div>`;
+            document.getElementById('bankAccountsContainer').insertAdjacentHTML('beforeend', html);
+        }
+
+        function removeBankAccount(button) {
+            button.closest('.row').remove();
+        }
+
+        function validatePercentages() {
+            // Select all elements with class 'percentage'
+            const percentageFields = document.querySelectorAll('.percentage');
+            let total = 0;
+            const errorMessage = document.getElementById("error-message-percentage");
+
+            // Sum up the values of all percentage fields
+            percentageFields.forEach(field => {
+                total += parseFloat(field.value) || 0;
+            });
+
+            // Check if the sum equals 100
+            if (total !== 100) {
+                errorMessage.style.display = "block";
+                return false; // Prevent form submission
+            } else {
+                errorMessage.style.display = "none"; // Hide error if sum is 100
+                return true; // Allow form submission
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>
+</apex:page>

@@ -1,0 +1,157 @@
+<apex:page controller="BrokerInventoryController" action="{!checkLogin}" showHeader="false"
+           sidebar="false" standardStylesheets="false" cache="false" title="Broker Portal — Available Units">
+<head><meta name="viewport" content="width=device-width, initial-scale=1"/></head>
+<body>
+    <c:BrokerStyles />
+    <style>
+        .bp-offer-btn{ margin-top:12px; }
+        .bp-modal-overlay{ position:fixed; inset:0; background:rgba(15,23,42,0.55); display:flex; align-items:center; justify-content:center; z-index:1000; }
+        .bp-modal{ background:#fff; border-radius:14px; padding:18px 22px; width:min(1100px,96vw); box-shadow:0 24px 70px rgba(0,0,0,0.35); }
+        .bp-modal-head{ display:flex; align-items:center; justify-content:space-between; }
+        .bp-modal-x{ font-size:26px; line-height:1; color:#6b7280; text-decoration:none; }
+        .bp-modal-x:hover{ color:#111827; }
+        .bp-offer-frame{ margin-top:12px; }
+        .bp-offer-frame iframe{ width:100%; height:80vh; border:0; border-radius:8px; }
+        .bp-spin{ display:inline-block; width:12px; height:12px; margin-right:6px; border:2px solid rgba(99,102,114,0.35); border-top-color:#0176d3; border-radius:50%; vertical-align:-2px; animation:bpspin .6s linear infinite; }
+        @keyframes bpspin{ to{ transform:rotate(360deg); } }
+    </style>
+    <div class="bp-shell">
+        <c:BrokerSidebar active="inventory" />
+        <div class="bp-main">
+            <c:BrokerTopbar title="Available Units" company="{!brokerCompanyName}" />
+            <div class="bp-content">
+                <div class="bp-h">
+                    <h2>Available Inventory</h2>
+                    <p>Browse units currently available to offer your clients.</p>
+                </div>
+                <apex:form >
+                    <div class="bp-filterbar">
+                        <label for="projFilter">Project</label>
+                        <apex:selectList id="projFilter" value="{!selectedProjectId}" size="1" styleClass="bp-select">
+                            <apex:selectOptions value="{!projectOptions}"/>
+                            <apex:actionSupport event="onchange" reRender="unitsPanel" status="filterStatus"/>
+                        </apex:selectList>
+                        <apex:outputPanel styleClass="bp-muted-note" layout="inline">
+                            <apex:actionStatus id="filterStatus" startText=" Loading…"/>
+                        </apex:outputPanel>
+                    </div>
+
+                    <apex:outputPanel id="unitsPanel" layout="block">
+                        <div class="bp-grid bp-units">
+                            <apex:repeat value="{!units}" var="u">
+                                <div class="bp-card bp-unit">
+                                    <div class="bp-unit-top"><span class="bp-badge b-sold">Available</span></div>
+                                    <div class="bp-unit-body">
+                                        <h4>{!u.title}</h4>
+                                        <div class="bp-lbl">{!u.location}</div>
+                                        <div class="bp-price">{!u.price}</div>
+                                        <div class="bp-specs">{!u.specs}</div>
+                                        <div class="bp-offer-btn">
+                                            <a class="bp-btn bp-btn-primary bp-btn-sm" href="javascript:void(0)" onclick="bpOpenCur(this,'{!u.unitId}');">Sales Offer</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </apex:repeat>
+                        </div>
+                        <apex:outputPanel layout="block" rendered="{!NOT hasUnits}">
+                            <div class="bp-card" style="text-align:center; color:#6b7280;">No units are available for this selection.</div>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                </apex:form>
+
+                <!-- Sales Offer: server mints a token (offerDataPanel); the browser fetches the PDF endpoint -->
+                <apex:form >
+                    <apex:actionFunction name="bpPrepareOffer" action="{!prepareOffer}" reRender="offerDataPanel" oncomplete="bpFetchOffer();">
+                        <apex:param name="ou"  value="" assignTo="{!offerUnitId}"/>
+                        <apex:param name="cur" value="" assignTo="{!offerCurrency}"/>
+                    </apex:actionFunction>
+                    <apex:outputPanel id="offerDataPanel" layout="block" style="display:none;">
+                        <span id="bpOfferToken">{!offerToken}</span>
+                        <span id="bpOfferUrl">{!offerApiUrl}</span>
+                        <span id="bpOfferErr">{!offerError}</span>
+                    </apex:outputPanel>
+                </apex:form>
+
+                <!-- Step 0: choose an optional secondary currency before generating -->
+                <div id="bpCurModal" class="bp-modal-overlay" style="display:none;">
+                    <div class="bp-modal" style="width:min(420px,92vw);">
+                        <div class="bp-modal-head">
+                            <h3 style="margin:0;">Sales Offer</h3>
+                            <a href="javascript:void(0)" class="bp-modal-x" onclick="bpCancelCur();">&#215;</a>
+                        </div>
+                        <p class="bp-sub" style="margin:6px 0 14px;">Show a secondary currency alongside AED, or continue without one.</p>
+                        <label for="bpCurSelect" class="bp-lbl">Secondary currency</label>
+                        <select id="bpCurSelect" class="bp-select" style="width:100%; margin-top:6px;">
+                            <option value="NONE">No secondary currency</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                            <option value="RUB">RUB</option>
+                        </select>
+                        <div class="bp-mt" style="display:flex; gap:8px; margin-top:18px;">
+                            <a class="bp-btn bp-btn-primary bp-btn-sm" href="javascript:void(0)" onclick="bpConfirmCur();">Generate Offer</a>
+                            <a class="bp-btn bp-btn-ghost bp-btn-sm" href="javascript:void(0)" onclick="bpCancelCur();">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="bpOfferModal" class="bp-modal-overlay" style="display:none;">
+                    <div class="bp-modal">
+                        <div class="bp-modal-head">
+                            <h3 style="margin:0;">Sales Offer</h3>
+                            <a href="javascript:void(0)" class="bp-modal-x" onclick="bpCloseOffer();">&#215;</a>
+                        </div>
+                        <div class="bp-offer-frame"><iframe id="bpOfferFrame"></iframe></div>
+                        <div class="bp-mt"><a id="bpOfferDl" class="bp-btn bp-btn-primary bp-btn-sm" href="#" download="Sales Offer.pdf">Download</a></div>
+                    </div>
+                </div>
+
+                <script>
+                //<![CDATA[
+                    var bpOfferBtn = null, bpOfferUnit = null;
+                    function bpLoader(btn, txt){
+                        if (btn){ btn.setAttribute('data-label', btn.innerHTML);
+                            btn.innerHTML = '<span class="bp-spin"></span>' + txt;
+                            btn.style.pointerEvents = 'none'; btn.style.opacity = '0.75'; }
+                    }
+                    function bpUnload(btn){
+                        if (btn){ var l = btn.getAttribute('data-label'); if (l !== null) btn.innerHTML = l;
+                            btn.style.pointerEvents = ''; btn.style.opacity = ''; }
+                    }
+                    // Step 0: open the secondary-currency chooser.
+                    function bpOpenCur(btn, unitId){ bpOfferBtn = btn; bpOfferUnit = unitId; var m = document.getElementById('bpCurModal'); if (m) m.style.display = 'flex'; }
+                    function bpCancelCur(){ var m = document.getElementById('bpCurModal'); if (m) m.style.display = 'none'; }
+                    // Step 1: server mints a token (with the chosen currency in the URL); oncomplete runs bpFetchOffer.
+                    function bpConfirmCur(){
+                        var sel = document.getElementById('bpCurSelect');
+                        var cur = sel ? sel.value : '';
+                        bpCancelCur();
+                        bpLoader(bpOfferBtn, 'Preparing');
+                        bpPrepareOffer(bpOfferUnit, cur);
+                    }
+                    function bpTxt(id){ var e = document.getElementById(id); return e ? e.textContent.replace(/^\s+|\s+$/g,'') : ''; }
+                    // Step 2: the BROWSER calls the Sales Offer endpoint with the token (no Apex callout loop).
+                    function bpFetchOffer(){
+                        var err = bpTxt('bpOfferErr');
+                        if (err){ bpUnload(bpOfferBtn); alert(err); return; }
+                        var token = bpTxt('bpOfferToken'), url = bpTxt('bpOfferUrl');
+                        if (!token || !url){ bpUnload(bpOfferBtn); alert('Could not prepare the Sales Offer. Please try again.'); return; }
+                        fetch(url, { method: 'GET', headers: { 'Authorization': 'Bearer ' + token } })
+                            .then(function(r){ if (!r.ok) throw new Error('status ' + r.status); return r.blob(); })
+                            .then(function(blob){
+                                var obj = URL.createObjectURL(blob);
+                                var fr = document.getElementById('bpOfferFrame'); if (fr) fr.src = obj;
+                                var dl = document.getElementById('bpOfferDl'); if (dl) dl.href = obj;
+                                bpUnload(bpOfferBtn);
+                                var m = document.getElementById('bpOfferModal'); if (m) m.style.display = 'flex';
+                            })
+                            .catch(function(e){ bpUnload(bpOfferBtn); alert('The Sales Offer could not be generated (' + e.message + '). Please try again or contact MIRA.'); });
+                    }
+                    function bpCloseOffer(){ var m = document.getElementById('bpOfferModal'); if (m) m.style.display = 'none'; }
+                //]]>
+                </script>
+            </div>
+        </div>
+    </div>
+</body>
+</apex:page>
