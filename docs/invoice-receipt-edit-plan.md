@@ -238,7 +238,15 @@ Still open:
 - Placed on `Invoice_Record_Page` sidebar with Finance / System Administrator visibility.
 - **RE-PARENT (scenario 5) intentionally deferred** — changing an invoice's unit invalidates its cash-flow links and re-does allocation; needs its own guarded step.
 
-**NEXT options:** re-parent step; design polish pass; Phase-3 permission set + FLS (`Milestone_Receipt__c.Invoice__c`) + validation rules; Phase-4 production read-only reconciliation review + flag cutover.
+**STEP 6/7 FOLLOW-UPS DONE 2026-07-17:** confirm-dialog on both remove actions; invoice sub-total auto-recomputes from covered installments; percent display fix; **mode-conditional payment fields on the receipt panel** (Reference always; Cheque→cheque#/date/bank; POS Machine→POS receipt#) via expandable per-row editor + Add form; **other-currency conditional fields on the invoice panel** (toggle → Secondary Currency + Conversion Rate, sets Secondary_Currency_Amount = grand×rate). Both mirror the create flows exactly.
+
+--- END OF DAY 2026-07-17 — all work committed + pushed to origin/docs/invoice-receipt-edit-plan (HEAD 76cc164). Working sandbox has demo data: Unit "TEST-Manage Panel Demo", Receipt a0VU900000CCmBnMAL, Invoices a0xU9000001hwUnIAI (100k) + a0xU9000001hwmXIAQ (200k). Engine flag ON in working. ---
+
+**NEXT (resume Monday), options in priority order:**
+1. **Re-parent an invoice** to a different unit (scenario 5) — deferred; needs care (invalidates cash-flow links, re-does allocation).
+2. **Design polish pass** on both panels (user wants them more beautiful; layout is functional but not final).
+3. **Phase 3 — permissions + validation:** Finance permission set granting edit only via the panels; FLS incl. `Milestone_Receipt__c.Invoice__c`; validation rules (no negatives, no overpay, locked numbering). Panels currently gated only by profile name (Finance / System Administrator) in the flexipages.
+4. **Phase 4 — production cutover:** read-only `FinancialReconciliation` dry-run against PROD for user approval, then flip `Engine_Owns_Totals__c` ON in prod.
 
 --- (Original Step 4 note preserved below.) ---
 Sub-step 4a = pure, idempotent, no-DML derivation core (Invoice.Paid_Amount/Status, Receipt.Received_Amount, Receipt_Amount.Cumulative, Cash_Flow.Received_Amount from Milestone_Receipt ledger) + the dry-run reconciliation report built on it. Behavioral micro-decisions (§7.3 ordering within an invoice / overpay handling; §7.4 delete-vs-cancel) settle here.
