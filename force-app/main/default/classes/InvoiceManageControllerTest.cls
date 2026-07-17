@@ -57,7 +57,7 @@ private class InvoiceManageControllerTest {
     static void updateAmountsRederivesStatus() {
         Ctx c = build(); // starts Fully Paid at 1000
         Test.startTest();
-        InvoiceManageController.updateAmounts(c.inv.Id, 1500, 0); // raise the invoice; now only partly paid
+        InvoiceManageController.updateAmounts(c.inv.Id, 1500, 0, false, null, null); // raise; now only partly paid
         Test.stopTest();
 
         Invoice__c inv = [SELECT Sub_Total_Amount__c, Status__c, Pending_Amount__c FROM Invoice__c WHERE Id = :c.inv.Id];
@@ -119,11 +119,45 @@ private class InvoiceManageControllerTest {
         Ctx c = build();
         Test.startTest();
         try {
-            InvoiceManageController.updateAmounts(c.inv.Id, -1, 0);
+            InvoiceManageController.updateAmounts(c.inv.Id, -1, 0, false, null, null);
             System.assert(false, 'Negative sub-total should throw');
         } catch (AuraHandledException e) {
             System.assert(true);
         }
         Test.stopTest();
+    }
+
+    @IsTest
+    static void otherCurrencySetAndCleared() {
+        Ctx c = build();
+        Test.startTest();
+        // turn on other currency
+        InvoiceManageController.updateAmounts(c.inv.Id, 1000, 0, true, 'USD', 3.67);
+        Test.stopTest();
+
+        Invoice__c withCur = [SELECT Secondary_Currency__c, Conversion_Rate__c, Secondary_Currency_Amount__c FROM Invoice__c WHERE Id = :c.inv.Id];
+        System.assertEquals('USD', withCur.Secondary_Currency__c, 'Secondary currency saved');
+        System.assertEquals(3.67, withCur.Conversion_Rate__c, 'Conversion rate saved');
+        System.assertEquals(3670, withCur.Secondary_Currency_Amount__c, 'Secondary amount = grand total x rate');
+
+        // turn it off — fields clear
+        InvoiceManageController.updateAmounts(c.inv.Id, 1000, 0, false, null, null);
+        Invoice__c off = [SELECT Secondary_Currency__c, Conversion_Rate__c, Secondary_Currency_Amount__c FROM Invoice__c WHERE Id = :c.inv.Id];
+        System.assertEquals(null, off.Secondary_Currency__c, 'Secondary currency cleared');
+        System.assertEquals(null, off.Conversion_Rate__c, 'Conversion rate cleared');
+    }
+
+    @IsTest
+    static void otherCurrencyRequiresFields() {
+        Ctx c = build();
+        Test.startTest();
+        Boolean threw = false;
+        try {
+            InvoiceManageController.updateAmounts(c.inv.Id, 1000, 0, true, null, null);
+        } catch (AuraHandledException e) {
+            threw = true;
+        }
+        Test.stopTest();
+        System.assert(threw, 'Other currency on without a currency/rate should throw');
     }
 }

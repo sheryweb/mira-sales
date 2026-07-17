@@ -67,6 +67,25 @@
                         </div>
                     </div>
                     <div class="slds-m-top_x-small">
+                        <lightning-input type="toggle" label="Other currency"
+                            message-toggle-active="On" message-toggle-inactive="Off"
+                            checked={otherCurrency} onchange={handleOtherCurrencyChange}></lightning-input>
+                    </div>
+                    <template if:true={otherCurrency}>
+                        <div class="slds-grid slds-gutters_x-small slds-m-top_x-small">
+                            <div class="slds-col">
+                                <lightning-combobox label="Secondary Currency" variant="label-stacked"
+                                    value={secondaryCurrency} options={secondaryCurrencyOptions}
+                                    placeholder="Select…" onchange={handleSecondaryCurrencyChange}></lightning-combobox>
+                            </div>
+                            <div class="slds-col">
+                                <lightning-input type="number" label="Conversion Rate" variant="label-stacked"
+                                    step="0.01" min="0" value={conversionRate}
+                                    onchange={handleConversionRateChange}></lightning-input>
+                            </div>
+                        </div>
+                    </template>
+                    <div class="slds-m-top_x-small">
                         <lightning-button label="Save amount" variant="brand" stretch
                             onclick={handleSaveAmounts}></lightning-button>
                     </div>

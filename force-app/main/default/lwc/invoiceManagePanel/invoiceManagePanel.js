@@ -16,6 +16,9 @@ export default class InvoiceManagePanel extends LightningElement {
     // edited amount fields
     editSubTotal;
     editVat;
+    @track otherCurrency = false;
+    secondaryCurrency;
+    conversionRate;
 
     // add-installment form
     newCashFlowId;
@@ -32,6 +35,9 @@ export default class InvoiceManagePanel extends LightningElement {
                 this.view = data;
                 this.editSubTotal = data.subTotal;
                 this.editVat = data.vat;
+                this.otherCurrency = data.otherCurrency;
+                this.secondaryCurrency = data.secondaryCurrency;
+                this.conversionRate = data.conversionRate;
                 this.newCashFlowId = undefined;
             })
             .catch((e) => {
@@ -50,6 +56,10 @@ export default class InvoiceManagePanel extends LightningElement {
         return (this.view && this.view.cashFlowOptions) ? this.view.cashFlowOptions : [];
     }
 
+    get secondaryCurrencyOptions() {
+        return (this.view && this.view.secondaryCurrencyOptions) ? this.view.secondaryCurrencyOptions : [];
+    }
+
     // Read-only preview of the cash flow chosen in the Add form.
     get selectedPreview() {
         if (!this.newCashFlowId) return undefined;
@@ -64,6 +74,18 @@ export default class InvoiceManagePanel extends LightningElement {
         this.editVat = e.target.value;
     }
 
+    handleOtherCurrencyChange(e) {
+        this.otherCurrency = e.target.checked;
+    }
+
+    handleSecondaryCurrencyChange(e) {
+        this.secondaryCurrency = e.detail.value;
+    }
+
+    handleConversionRateChange(e) {
+        this.conversionRate = e.target.value;
+    }
+
     handleSaveAmounts() {
         const sub = parseFloat(this.editSubTotal);
         const vat = parseFloat(this.editVat);
@@ -71,7 +93,28 @@ export default class InvoiceManagePanel extends LightningElement {
             this.toast('Invalid amount', 'Sub-total and VAT must be zero or greater.', 'error');
             return;
         }
-        this.run(updateAmounts({ invoiceId: this.recordId, subTotal: sub, vat }), 'Invoice amount updated.');
+        if (this.otherCurrency) {
+            if (!this.secondaryCurrency) {
+                this.toast('Pick a currency', 'Select a secondary currency.', 'error');
+                return;
+            }
+            const rate = parseFloat(this.conversionRate);
+            if (isNaN(rate) || rate <= 0) {
+                this.toast('Invalid rate', 'Conversion rate must be greater than zero.', 'error');
+                return;
+            }
+        }
+        this.run(
+            updateAmounts({
+                invoiceId: this.recordId,
+                subTotal: sub,
+                vat,
+                otherCurrency: this.otherCurrency,
+                secondaryCurrency: this.otherCurrency ? this.secondaryCurrency : null,
+                conversionRate: this.otherCurrency ? parseFloat(this.conversionRate) : null
+            }),
+            'Invoice amount updated.'
+        );
     }
 
     async handleRemoveInstallment(e) {

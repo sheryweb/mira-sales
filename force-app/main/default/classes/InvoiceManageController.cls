@@ -21,8 +21,21 @@ public with sharing class InvoiceManageController {
         @AuraEnabled public Decimal paid;
         @AuraEnabled public Decimal pending;
         @AuraEnabled public String status;
+        @AuraEnabled public Boolean otherCurrency;
+        @AuraEnabled public String secondaryCurrency;
+        @AuraEnabled public Decimal conversionRate;
         @AuraEnabled public List<InstallmentView> installments;
-        @AuraEnabled public List<CashFlowOption> cashFlowOptions; // cash flows on the invoice's unit
+        @AuraEnabled public List<CashFlowOption> cashFlowOptions;      // cash flows on the invoice's unit
+        @AuraEnabled public List<ComboOption> secondaryCurrencyOptions;
+    }
+
+    public class ComboOption {
+        @AuraEnabled public String label;
+        @AuraEnabled public String value;
+        public ComboOption(String label, String value) {
+            this.label = label;
+            this.value = value;
+        }
     }
 
     public class InstallmentView {
@@ -56,7 +69,8 @@ public with sharing class InvoiceManageController {
         if (invoiceId == null) throw new AuraHandledException('No invoice specified.');
         List<Invoice__c> invs = [
             SELECT Id, Name, Invoice_Number__c, Unit__c, Unit__r.Name,
-                   Sub_Total_Amount__c, VAT_Amount__c, Paid_Amount__c, Pending_Amount__c, Status__c
+                   Sub_Total_Amount__c, VAT_Amount__c, Paid_Amount__c, Pending_Amount__c, Status__c,
+                   Secondary_Currency__c, Conversion_Rate__c
             FROM Invoice__c WHERE Id = :invoiceId LIMIT 1
         ];
         if (invs.isEmpty()) throw new AuraHandledException('Invoice not found.');
@@ -72,6 +86,10 @@ public with sharing class InvoiceManageController {
         v.paid = nz(inv.Paid_Amount__c);
         v.pending = nz(inv.Pending_Amount__c);
         v.status = inv.Status__c;
+        v.secondaryCurrency = inv.Secondary_Currency__c;
+        v.conversionRate = inv.Conversion_Rate__c;
+        v.otherCurrency = String.isNotBlank(inv.Secondary_Currency__c);
+        v.secondaryCurrencyOptions = picklistOptions(Invoice__c.Secondary_Currency__c);
 
         v.installments = new List<InstallmentView>();
         for (Milestone_Invoice__c mi : [
@@ -107,17 +125,38 @@ public with sharing class InvoiceManageController {
         return v;
     }
 
-    /** Correct the invoice's Sub-Total and VAT. Pending + status re-derive via the engine. */
+    /**
+     * Correct the invoice's Sub-Total / VAT and (optionally) its secondary-currency detail.
+     * Pending + status re-derive via the engine. When otherCurrency is off, the secondary-currency
+     * fields are cleared; when on, Secondary_Currency_Amount__c is set to Grand Total x rate.
+     */
     @AuraEnabled
-    public static void updateAmounts(Id invoiceId, Decimal subTotal, Decimal vat) {
+    public static void updateAmounts(Id invoiceId, Decimal subTotal, Decimal vat,
+            Boolean otherCurrency, String secondaryCurrency, Decimal conversionRate) {
         if (invoiceId == null) throw new AuraHandledException('No invoice specified.');
         if (subTotal == null || subTotal < 0) throw new AuraHandledException('Sub-total must be zero or greater.');
         if (vat == null || vat < 0) throw new AuraHandledException('VAT must be zero or greater.');
+
+        Boolean useOther = (otherCurrency == true);
+        if (useOther) {
+            if (String.isBlank(secondaryCurrency)) throw new AuraHandledException('Select a secondary currency.');
+            if (conversionRate == null || conversionRate <= 0) throw new AuraHandledException('Conversion rate must be greater than zero.');
+        }
         try {
-            update new Invoice__c(
-                Id = invoiceId, Sub_Total_Amount__c = subTotal, VAT_Amount__c = vat,
-                Grand_Total_Amount__c = subTotal + vat
+            Decimal grand = subTotal + vat;
+            Invoice__c u = new Invoice__c(
+                Id = invoiceId, Sub_Total_Amount__c = subTotal, VAT_Amount__c = vat, Grand_Total_Amount__c = grand
             );
+            if (useOther) {
+                u.Secondary_Currency__c = secondaryCurrency;
+                u.Conversion_Rate__c = conversionRate;
+                u.Secondary_Currency_Amount__c = grand * conversionRate;
+            } else {
+                u.Secondary_Currency__c = null;
+                u.Conversion_Rate__c = null;
+                u.Secondary_Currency_Amount__c = null;
+            }
+            update u;
         } catch (Exception e) {
             throw new AuraHandledException('Could not update the amounts: ' + e.getMessage());
         }
@@ -187,6 +226,14 @@ public with sharing class InvoiceManageController {
         if (inv.Unit__c == null || cf.Unit__c != inv.Unit__c) {
             throw new AuraHandledException('The installment must belong to the same unit as the invoice.');
         }
+    }
+
+    private static List<ComboOption> picklistOptions(Schema.SObjectField field) {
+        List<ComboOption> opts = new List<ComboOption>();
+        for (Schema.PicklistEntry e : field.getDescribe().getPicklistValues()) {
+            if (e.isActive()) opts.add(new ComboOption(e.getLabel(), e.getValue()));
+        }
+        return opts;
     }
 
     private static Decimal nz(Decimal d) {
