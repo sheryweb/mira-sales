@@ -24,7 +24,8 @@ This supersedes the "refactor the create flows to call the engine" framing in §
 ## 0.2 Architecture facts confirmed by user (2026-07-17)
 
 1. **An invoice is a *collection of Cash Flow items*.** One invoice can cover multiple installments (`Milestone_Invoice__c` = Invoice↔Cash_Flow, many rows per invoice).
-2. **Receipts never touch Cash Flow / milestones directly. A receipt contains *invoices*.** Money path is **Receipt → Invoice → (that invoice's) Cash Flow items** — never Receipt → arbitrary installment. This resolves the allocation rule (§7.3): a receipt's money stays *within the invoices it pays*, and inside each invoice maps to that invoice's own Cash Flow items. **No spilling onto unrelated unit installments.** (The old engine's "spill onto the unit's other installments / dump on the last one" behavior is a bug to drop, not preserve.)
+2. **A receipt contains *invoices*; money is applied per invoice.** Path: Receipt → Invoice → Cash Flow items. Within an invoice, money fills that invoice's own Cash Flow items **oldest-installment-first**.
+   **CORRECTION 2026-07-17 (reverses an earlier wrong note):** when the amount allocated to an invoice **exceeds** what that invoice's Cash Flow items can absorb, the **excess is INTENDED to cascade to the unit's NEXT Cash Flow installment chronologically — even installments not yet linked to any invoice — and keeps cascading** down the chain (old `ReceiptRecordInsert` phases B & C). **This spill is a FEATURE, not a bug.** The engine PRESERVES it. The only change: make it **idempotent and reversible** — re-derive `Cash_Flow.Received_Amount__c` by replaying a unit's receipts in date order, and record every landing in the `Milestone_Receipt__c` ledger so edits/deletes reverse cleanly. Overpay is never blocked; it cascades. (True whole-plan overpayment — nothing left with capacity — follows old behavior: leftover lands on the last installment with remaining>0; confirm exact handling at build.)
 3. **UI selection model:**
    - Invoice screen → shows the **Cash Flow items of the Unit** for selection (invoice = chosen installments).
    - Receipt screen → shows the **list of Invoices on the Unit** for selection (receipt = chosen invoices + amounts).
@@ -188,16 +189,26 @@ Still open:
 
 2. **`Milestone_Receipt__c` as the allocation ledger** — OK to make it the durable receipt→installment record (currently unused in code)? Any existing reason it's populated the way it is that must be preserved?
 
-3. **The allocation rule** — **RESOLVED 2026-07-17 (§0.2.2):** money stays within the invoices a receipt pays; inside each invoice it maps to that invoice's own Cash Flow items (via `Milestone_Invoice__c`), no spilling onto unrelated unit installments. *Still to confirm: ordering within an invoice's own items (oldest-installment-first) and behavior when a receipt over-pays an invoice.*
+3. **The allocation rule** — **RESOLVED 2026-07-17 (see corrected §0.2.2):** the full waterfall IS the intended rule. Fill the invoice's own Cash Flow items oldest-first; excess cascades to the unit's next chronological installment(s) even if unlinked to any invoice; overpay is never blocked, it spills. Engine preserves this, made idempotent + reversible via the `Milestone_Receipt__c` ledger.
 
-4. **Delete vs. Cancel** — Recommend soft-**cancel** (keep record + number, set `Cancelled`, which the DLRS filter already respects) as the default, with hard-delete reserved for genuine mistakes. *(Commission invoices: RESOLVED — out of scope, §0.2.5.)*
+4. **Delete vs. Cancel** — **RESOLVED 2026-07-17:** soft-**cancel** is the default (keep record + number, set `Cancelled`, which the DLRS filter already respects); hard-delete reserved for genuine mistakes behind a separate guarded action. *(Commission invoices: RESOLVED — out of scope, §0.2.5.)*
+
+5. **`Milestone_Receipt__c` ledger** — **RESOLVED 2026-07-17:** yes, repurpose it as the reversible Receipt→Invoice→Cash_Flow ledger; **add a new `Invoice__c` lookup** so each row records receipt + source invoice + cash-flow landing + amount.
+
+6. **Reconciliation report before backfill** — accepted in principle (tiered data-safety, §4); dry-run harness built at the front of Step 4.
 
 ---
 
 ## 8. Where we left off / next step
 **STEP 1 (metadata ground-truth) DONE 2026-07-17** — field map in Appendix A.
 **STEP 2 (feature flag) DONE 2026-07-17** — created `Financial_Engine_Settings__c` (Hierarchy Custom Setting) with checkbox `Engine_Owns_Totals__c` (default `false`). Deployed to `working`; org-default set to `true` there (verified). Prod defaults `false`. Nothing reads it yet — inert until the engine references it. The engine/triggers must gate all total-writes on `Financial_Engine_Settings__c.getOrgDefaults().Engine_Owns_Totals__c`.
-**Next: Step 3 — Phase 0 safety net** (characterization tests of current create behavior + dry-run reconciliation harness). Remaining behavioral micro-decisions (§7.1, §7.3 ordering/overpay, §7.4 delete-vs-cancel) settle at their build step. No product code written yet.
+**STEP 3 (Phase 0 safety net) DONE 2026-07-17.** Findings:
+- Read the full create-path Apex: `InvoiceRecordInsert` (just inserts invoice + Milestone_Invoice children, no totaling) and `ReceiptRecordInsert` (the real engine — cumulative chain, invoice Paid_Amount/Status increment, and the 3-phase cash-flow waterfall: (A) linked milestones in date order, (B) spill to unit's other cash flows chronologically, (C) dump leftover on last cash flow with remaining>0; increments everywhere; errors swallowed at catch line ~568).
+- **Characterization tests already exist and are comprehensive** — `ReceiptRecordInsertTest` (11) + `InvoiceRecordInsertTest` (5). No new characterization tests needed. Baseline RUN GREEN in `working`: 18/18 pass, Test Run `707U900001gihil`, 2026-07-17.
+- **These legacy tests ENCODE the old spill/dump behavior** we intend to drop (e.g. `testMultipleInvoicesSameUnitCashFlowDistribution` asserts excess lands on an unlinked cash flow). CONSEQUENCE for Step 5: with the engine flag ON in the sandbox, self-healing triggers will produce new no-spill behavior and break these assertions. Plan: legacy tests must set `Engine_Owns_Totals__c` OFF (isolate the old path); engine gets its own tests with the flag ON.
+- **Dry-run reconciliation harness moved into the front of Step 4** — it must share the engine's exact derivation math, so build the engine's pure no-DML derivation core first, then run it in dry-run for the reconciliation report. Avoids duplicating the math.
+
+**Next: Step 4 — the FinancialEngine.** Sub-step 4a = pure, idempotent, no-DML derivation core (Invoice.Paid_Amount/Status, Receipt.Received_Amount, Receipt_Amount.Cumulative, Cash_Flow.Received_Amount from Milestone_Receipt ledger) + the dry-run reconciliation report built on it. Behavioral micro-decisions (§7.3 ordering within an invoice / overpay handling; §7.4 delete-vs-cancel) settle here.
 
 ---
 
