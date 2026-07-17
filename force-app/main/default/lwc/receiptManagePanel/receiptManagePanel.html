@@ -1,0 +1,114 @@
+<template>
+    <lightning-card title="Manage Receipt" icon-name="standard:receipt">
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Working" size="small"></lightning-spinner>
+            </template>
+
+            <template if:true={error}>
+                <div class="slds-text-color_error slds-p-vertical_x-small">{error}</div>
+            </template>
+
+            <template if:true={view}>
+
+                <template if:true={isCancelled}>
+                    <div class="slds-box slds-theme_warning slds-m-bottom_small">
+                        This receipt is <strong>Cancelled</strong> and is excluded from all totals.
+                    </div>
+                </template>
+
+                <div class="slds-grid slds-gutters slds-m-bottom_small">
+                    <div class="slds-col">
+                        <span class="slds-text-title">Receipt</span>
+                        <div>{view.name}</div>
+                    </div>
+                    <div class="slds-col">
+                        <span class="slds-text-title">Received</span>
+                        <div>
+                            <lightning-formatted-number value={view.receivedAmount}
+                                format-style="currency" currency-code="AED">
+                            </lightning-formatted-number>
+                        </div>
+                    </div>
+                    <div class="slds-col">
+                        <span class="slds-text-title">Payment status</span>
+                        <div>{view.paymentStatus}</div>
+                    </div>
+                </div>
+
+                <template if:true={hasAllocations}>
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th scope="col"><div class="slds-truncate">Invoice</div></th>
+                                <th scope="col"><div class="slds-truncate">Mode</div></th>
+                                <th scope="col"><div class="slds-truncate">Amount</div></th>
+                                <th scope="col"><div class="slds-truncate">Actions</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={view.allocations} for:item="a">
+                                <tr key={a.lineId}>
+                                    <td><div class="slds-truncate">{a.invoiceNumber}</div></td>
+                                    <td><div class="slds-truncate">{a.modeOfPayment}</div></td>
+                                    <td>
+                                        <lightning-input type="number" variant="label-hidden"
+                                            step="0.01" min="0" value={a.amount}
+                                            data-id={a.lineId} disabled={isCancelled}
+                                            onchange={handleAmountChange}>
+                                        </lightning-input>
+                                    </td>
+                                    <td>
+                                        <lightning-button label="Save" data-id={a.lineId}
+                                            disabled={isCancelled} onclick={handleSave}
+                                            class="slds-m-right_x-small">
+                                        </lightning-button>
+                                        <lightning-button label="Remove" variant="destructive-text"
+                                            data-id={a.lineId} disabled={isCancelled}
+                                            onclick={handleRemove}>
+                                        </lightning-button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </template>
+
+                <template if:false={hasAllocations}>
+                    <p class="slds-text-body_regular slds-p-vertical_x-small">
+                        This receipt has no invoice allocations.
+                    </p>
+                </template>
+
+                <div class="slds-m-top_medium">
+                    <lightning-button label="Cancel Receipt" variant="destructive"
+                        disabled={isCancelled} onclick={handleCancelClick}>
+                    </lightning-button>
+                </div>
+            </template>
+        </div>
+
+        <template if:true={showCancelConfirm}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-modal__title">Cancel this receipt?</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        The receipt and its number are kept, but it will be excluded from all
+                        invoice, cash-flow and unit totals. You can reverse this later by
+                        changing its payment status.
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Keep it" onclick={handleCancelDismiss}
+                            class="slds-m-right_x-small"></lightning-button>
+                        <lightning-button label="Cancel Receipt" variant="destructive"
+                            onclick={handleCancelConfirm}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </lightning-card>
+</template>

@@ -224,7 +224,13 @@ Still open:
 - **KEY INSIGHT — no 5c edits needed:** Apex tests don't see org custom-setting data, so `Engine_Owns_Totals__c` defaults to FALSE inside the legacy `ReceiptRecordInsertTest`/`InvoiceRecordInsertTest` — they exercise the old path untouched and the engine triggers short-circuit. Engine tests explicitly insert the setting = true. So 5c is just "run the full suite green", no test rewrites.
 - **5c DONE / STEP 5 COMPLETE** — full financial regression GREEN in `working`: **49/49 pass, 0 fail** (ReceiptRecordInsertTest, InvoiceRecordInsertTest, FinancialEngineTest, FinancialEngineApplyTest, FinancialEngineTriggerTest, FinancialReconciliationTest, ReceiptPDFControllerTest). Legacy create-path tests pass untouched (flag defaults off in Apex tests); engine self-heal verified with flag on.
 
-**NEXT: Step 6 — guided edit / remove / delete UI** on the Invoice & Receipt record pages (LWC + flows) with `...RecordUpdate` invocables, reusing `invoicePreviewLWC`/`receiptPreviewLWC`. Soft-cancel default. Then Step 3/Phase-3 permissions + validation rules, and Step 4/Phase-4 production reconciliation + cutover.
+**STEP 6 — guided edit UI (Receipt side) DONE 2026-07-17.** Delivery = custom LWC manage panel (user's choice), not flows.
+- `ReceiptManageController` (with sharing): `getReceipt` (cacheable) + `updateAllocationAmount`, `removeAllocation`, `cancelReceipt` (soft-cancel = set Payment_Status Cancelled). Mutates only FACTS; totals self-heal via the engine triggers. Keeps `Receipt_Invoice__c.Amount__c` (read by the receipt PDF) in sync with remaining lines, deleting the link when a pair has no lines left. `ReceiptManageControllerTest` 5/5 (Run `707U900001gjOWd`).
+- `receiptManagePanel` LWC: allocation table with editable amount + Save/Remove per row, and a Cancel-Receipt action with confirm modal; toasts + `getRecordNotifyChange` to refresh the page. Deployed.
+- Placed on `Receipt_Record_Page` flexipage sidebar with the existing Finance / System Administrator visibility rule.
+- **DEFERRED (noted):** `Receipt_Invoice__c` sync lives in the controller (the sanctioned edit path); promoting it into the engine for full path-independence is a later enhancement. Covers scenarios 2 (remove invoice), 3 (reduce/remove amount), 4 (soft-cancel).
+
+**NEXT options:** Invoice-side manage panel (scenarios 1 correct amount, 5 re-parent); then Phase-3 permissions + validation rules (incl. FLS for `Milestone_Receipt__c.Invoice__c`); then Phase-4 production read-only reconciliation review + flag cutover.
 
 --- (Original Step 4 note preserved below.) ---
 Sub-step 4a = pure, idempotent, no-DML derivation core (Invoice.Paid_Amount/Status, Receipt.Received_Amount, Receipt_Amount.Cumulative, Cash_Flow.Received_Amount from Milestone_Receipt ledger) + the dry-run reconciliation report built on it. Behavioral micro-decisions (§7.3 ordering within an invoice / overpay handling; §7.4 delete-vs-cancel) settle here.
