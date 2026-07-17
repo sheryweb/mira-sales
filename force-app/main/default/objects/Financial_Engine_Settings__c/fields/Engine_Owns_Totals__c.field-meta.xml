@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Engine_Owns_Totals__c</fullName>
+    <description>Master switch for the centralized Financial Engine. When TRUE, the engine + self-healing triggers own the four stored totals (Invoice.Paid_Amount__c/Status__c, Receipt.Received_Amount__c, Receipt_Amount__c.Cumulative_Paid_Amount__c, Cash_Flow.Received_Amount__c) and re-derive them idempotently. When FALSE (the default), the engine's trigger writes are suppressed and the existing create flows author the totals exactly as before. Value is data, not deployed metadata: set TRUE in the working sandbox, leave FALSE in production until cutover.</description>
+    <externalId>false</externalId>
+    <label>Engine Owns Totals</label>
+    <defaultValue>false</defaultValue>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

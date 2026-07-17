@@ -1,9 +1,37 @@
 # Invoice & Receipt System — Edit Functionality & Centralized Calculation Engine
 
-**Status:** Planning / analysis complete. No code written yet. Awaiting business decisions (see §7).
-**Last updated:** 2026-07-16
+**Status:** Planning / analysis complete. No code written yet. Direction chosen (see §0.1). Some business decisions still open (§7).
+**Last updated:** 2026-07-17
 **Org:** `working` sandbox (`sheraz.h@miradevelopments.ae.working`, Org Id `00DU9000009K7jJMAS`)
 **Repo:** `sheryweb/mira-sales` (branch `main`)
+
+---
+
+## 0.1 Chosen approach — parallel system, shared objects, flag-gated authority (decided 2026-07-17)
+
+Do **not** refactor the live create flows. Build a **parallel system in code** on the **same objects / same records** (no new objects, no cloned/shadow records — that guarantees reports & SOA never mismatch):
+
+- **New, additive code:** a single `FinancialEngine` Apex service (idempotent — re-derives every total from facts, never `current + new`); self-healing triggers on `Receipt__c`, `Receipt_Amount__c`, `Receipt_Invoice__c`, `Milestone_Invoice__c`, `Invoice__c` (insert/update/delete/undelete); new guided edit/remove/delete UI (LWC + flows) with `...RecordUpdate` invocables. The existing create flows and `ReceiptRecordInsert` stay in place, untouched.
+- **Authority over the four stored totals is gated by a feature flag** (custom setting / custom metadata, evaluated per-org):
+  - **`working` sandbox → flag ON from day one.** The engine + triggers own the four totals immediately so we develop and test real behavior. The old create flow's incremental total-writes are harmlessly re-derived on top (correct value wins).
+  - **Production → flag OFF.** Existing processes keep authoring the four totals exactly as today; the engine's trigger writes are suppressed. Zero production risk.
+- **Cutover = a single deliberate flip** of the flag per-org, only after sandbox proof + an approved reconciliation report (§4). This transfers authority from the old processes to the new engine with instant rollback (flip back off).
+
+This supersedes the "refactor the create flows to call the engine" framing in §3.5 — that becomes an *optional later* step, not part of the initial parallel build.
+
+---
+
+## 0.2 Architecture facts confirmed by user (2026-07-17)
+
+1. **An invoice is a *collection of Cash Flow items*.** One invoice can cover multiple installments (`Milestone_Invoice__c` = Invoice↔Cash_Flow, many rows per invoice).
+2. **Receipts never touch Cash Flow / milestones directly. A receipt contains *invoices*.** Money path is **Receipt → Invoice → (that invoice's) Cash Flow items** — never Receipt → arbitrary installment. This resolves the allocation rule (§7.3): a receipt's money stays *within the invoices it pays*, and inside each invoice maps to that invoice's own Cash Flow items. **No spilling onto unrelated unit installments.** (The old engine's "spill onto the unit's other installments / dump on the last one" behavior is a bug to drop, not preserve.)
+3. **UI selection model:**
+   - Invoice screen → shows the **Cash Flow items of the Unit** for selection (invoice = chosen installments).
+   - Receipt screen → shows the **list of Invoices on the Unit** for selection (receipt = chosen invoices + amounts).
+4. **Entry point:** invoice & receipt creation launch from the **Unit record page** (as today). Open to a better surface if one emerges, but Unit is the default.
+5. **Commission invoices are OUT OF SCOPE** — separate system (`CommissionInvoiceService` etc.), not part of the invoice/receipt engine.
+
+**Working style (hard requirement):** build **step by step**; every step is announced ("this is the step I'm doing") and done in isolation — never everything in one go. See [[working-style-step-by-step]].
 
 ---
 
@@ -150,17 +178,48 @@ Two tiers:
 
 ---
 
-## 7. OPEN DECISIONS — needed before build (answer these to proceed)
+## 7. OPEN DECISIONS
+
+> **RESOLVED 2026-07-17 — coexistence model:** parallel code on shared objects, four totals' authority flag-gated (sandbox ON, production OFF until cutover). See §0.1.
+
+Still open:
 
 1. **Reconciliation report before backfill** — confirm the tiered data-safety approach in §4 is acceptable (facts preserved; drifted totals corrected only after you approve a diff report).
 
 2. **`Milestone_Receipt__c` as the allocation ledger** — OK to make it the durable receipt→installment record (currently unused in code)? Any existing reason it's populated the way it is that must be preserved?
 
-3. **The allocation rule (most important).** Formalize the current waterfall as the rule: *oldest installment first; prefer installments the invoice actually covers (via `Milestone_Invoice__c`); then the unit's remaining installments chronologically.* Is that correct — or should a payment only ever touch the installments its invoice explicitly covers, never spilling onto others?
+3. **The allocation rule** — **RESOLVED 2026-07-17 (§0.2.2):** money stays within the invoices a receipt pays; inside each invoice it maps to that invoice's own Cash Flow items (via `Milestone_Invoice__c`), no spilling onto unrelated unit installments. *Still to confirm: ordering within an invoice's own items (oldest-installment-first) and behavior when a receipt over-pays an invoice.*
 
-4. **Delete vs. Cancel**, and **Commission invoices in scope?** — Recommend soft-**cancel** (keep record + number, set `Cancelled`, which the DLRS filter already respects) as the default, with hard-delete reserved for genuine mistakes. And decide whether the separate commission-invoice path is included now or later.
+4. **Delete vs. Cancel** — Recommend soft-**cancel** (keep record + number, set `Cancelled`, which the DLRS filter already respects) as the default, with hard-delete reserved for genuine mistakes. *(Commission invoices: RESOLVED — out of scope, §0.2.5.)*
 
 ---
 
 ## 8. Where we left off / next step
-Analysis is complete; the design above is proposed but **not yet approved**. **Next action:** user reviews this document and answers §7. Then Claude writes the detailed build spec (file-by-file, tests, sequence) starting with Phase 0 in the `working` sandbox. No code has been written and no data touched.
+**STEP 1 (metadata ground-truth) DONE 2026-07-17** — field map in Appendix A.
+**STEP 2 (feature flag) DONE 2026-07-17** — created `Financial_Engine_Settings__c` (Hierarchy Custom Setting) with checkbox `Engine_Owns_Totals__c` (default `false`). Deployed to `working`; org-default set to `true` there (verified). Prod defaults `false`. Nothing reads it yet — inert until the engine references it. The engine/triggers must gate all total-writes on `Financial_Engine_Settings__c.getOrgDefaults().Engine_Owns_Totals__c`.
+**Next: Step 3 — Phase 0 safety net** (characterization tests of current create behavior + dry-run reconciliation harness). Remaining behavioral micro-decisions (§7.1, §7.3 ordering/overpay, §7.4 delete-vs-cancel) settle at their build step. No product code written yet.
+
+---
+
+## Appendix A — Metadata field map (Step 1, 2026-07-17)
+
+**Engine WRITE surface (plain stored fields — must be maintained by the engine):**
+- `Invoice__c.Paid_Amount__c` (Currency) + `Invoice__c.Status__c` (**picklist, restricted global valueset `Payment_Status` — NOT a formula, engine must set it**)
+- `Receipt__c.Received_Amount__c` (Currency)
+- `Receipt_Amount__c.Amount__c` + `Receipt_Amount__c.Cumulative_Paid_Amount__c` (both Currency, plain stored)
+- `Cash_Flow__c.Received_Amount__c` (Currency) — **the only stored field on Cash Flow the engine touches**
+
+**Auto-correcting (formula — engine never writes):**
+- `Invoice__c.Pending_Amount__c` = `(VAT_Amount__c + Sub_Total_Amount__c) - Paid_Amount__c`; `Grand_Total_Formula__c` identical.
+- `Receipt__c.Balance__c` = `IF(Payable_Amount__c - Received_Amount__c < 0, 0, Payable_Amount__c - Received_Amount__c)`
+- `Cash_Flow__c.Balance__c` = `Price_Formula__c - Received_Amount__c`; `Remaining_Amount__c`, `Status__c`, `Payment_Status_Formula__c`, `Installment_Status__c` all derive Pending/Partially/Fully Paid from `Received_Amount__c` vs `Price_Formula__c`.
+
+**Relationships (all Lookup/SetNull unless noted):**
+- `Receipt_Amount__c`: `Receipt__c`→Receipt__c, `Invoice__c`→Invoice__c. Money source of truth (`Amount__c`, `Cumulative_Paid_Amount__c`).
+- `Receipt_Invoice__c`: `Receipt__c`→Receipt__c, `Invoice__c`→Invoice__c. Also carries `Amount__c` + `Status__c` picklist — engine keeps in sync with Receipt_Amount__c.
+- `Milestone_Invoice__c`: `Invoice__c`→Invoice__c, `Cash_Flow__c`→Cash_Flow__c. `Amount__c`, `Installment_Date__c`. (Invoice = collection of cash-flow items lives here.)
+- `Milestone_Receipt__c`: `Receipt__c`→Receipt__c, `Cash_Flow__c`→Cash_Flow__c. `Amount__c`, `Status__c`, `Installment_Date__c`. **No Invoice lookup today → likely ADD `Invoice__c` lookup to use it as the reversible allocation ledger (Receipt→Invoice→Cash Flow).**
+- `Cash_Flow__c`: `Unit__c` **MasterDetail** (cascade) + `Cash_Flow_Sum__c` MasterDetail. Only master-detail in the set.
+- `Invoice__c`: Lookups Account, Opportunity, Unit__c, Financial_Detail__c (all SetNull). `Receipt__c`: Lookups Account, Opportunity, Unit__c.
+
+**Feature-flag home:** none exists. Two Hierarchy custom settings present (`Broker_Portal_Settings__c`, `In_App_Checklist_Settings__c`). **Decision: create a NEW Hierarchy Custom Setting for the engine flag** — its value is data (not deployed metadata), so sandbox=ON / prod=OFF is set per-org with no deploy leaking the value. (A CMDT record would deploy its value across orgs — wrong for a per-org switch.)
