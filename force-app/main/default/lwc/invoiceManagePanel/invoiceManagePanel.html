@@ -1,0 +1,151 @@
+<template>
+    <lightning-card icon-name="standard:invoice">
+        <span slot="title">Manage Invoice</span>
+
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Working" size="small"></lightning-spinner>
+            </template>
+
+            <template if:true={error}>
+                <div class="slds-text-color_error slds-p-vertical_x-small">{error}</div>
+            </template>
+
+            <template if:true={view}>
+
+                <!-- Summary tiles -->
+                <div class="slds-grid slds-gutters_x-small slds-m-bottom_medium">
+                    <div class="slds-col">
+                        <div class="tile slds-box slds-box_x-small">
+                            <p class="tile__label">Grand Total</p>
+                            <p class="tile__value">
+                                <lightning-formatted-number value={view.grandTotal}
+                                    format-style="currency" currency-code="AED"></lightning-formatted-number>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="slds-col">
+                        <div class="tile slds-box slds-box_x-small">
+                            <p class="tile__label">Paid</p>
+                            <p class="tile__value">
+                                <lightning-formatted-number value={view.paid}
+                                    format-style="currency" currency-code="AED"></lightning-formatted-number>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="slds-col">
+                        <div class="tile slds-box slds-box_x-small">
+                            <p class="tile__label">Pending</p>
+                            <p class="tile__value">
+                                <lightning-formatted-number value={view.pending}
+                                    format-style="currency" currency-code="AED"></lightning-formatted-number>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="slds-text-body_small slds-m-bottom_medium">
+                    <lightning-icon icon-name="utility:info" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                    Status: <strong>{view.status}</strong>
+                    <template if:true={view.unitName}>&nbsp;·&nbsp;Unit: {view.unitName}</template>
+                </p>
+
+                <!-- Correct amount -->
+                <p class="section-title">Correct amount</p>
+                <div class="slds-box slds-box_x-small slds-m-bottom_medium">
+                    <div class="slds-grid slds-gutters_x-small">
+                        <div class="slds-col">
+                            <lightning-input type="number" label="Sub-Total" variant="label-stacked"
+                                step="0.01" min="0" formatter="currency"
+                                value={editSubTotal} onchange={handleSubTotalChange}></lightning-input>
+                        </div>
+                        <div class="slds-col">
+                            <lightning-input type="number" label="VAT" variant="label-stacked"
+                                step="0.01" min="0" formatter="currency"
+                                value={editVat} onchange={handleVatChange}></lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-m-top_x-small">
+                        <lightning-button label="Save amount" variant="brand" stretch
+                            onclick={handleSaveAmounts}></lightning-button>
+                    </div>
+                </div>
+
+                <!-- Covered installments (read-only; amount comes from the cash flow) -->
+                <p class="section-title">Covered installments</p>
+
+                <template if:false={hasInstallments}>
+                    <div class="slds-box slds-box_x-small slds-text-align_center slds-text-color_weak slds-m-bottom_small">
+                        This invoice does not cover any cash-flow installments yet.
+                    </div>
+                </template>
+
+                <template if:true={hasInstallments}>
+                    <table class="slds-table slds-table_bordered slds-table_fixed-layout inst-table slds-m-bottom_small">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="col-cf" scope="col"><div class="slds-truncate" title="Installment">Installment</div></th>
+                                <th class="col-pct" scope="col"><div class="slds-truncate slds-text-align_right" title="%">%</div></th>
+                                <th class="col-date" scope="col"><div class="slds-truncate" title="Date">Date</div></th>
+                                <th class="col-amt" scope="col"><div class="slds-truncate slds-text-align_right" title="Amount">Amount</div></th>
+                                <th class="col-act" scope="col"><div class="slds-assistive-text">Actions</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={view.installments} for:item="i">
+                                <tr key={i.milestoneId}>
+                                    <td class="col-cf"><div class="slds-truncate" title={i.cashFlowLabel}>{i.cashFlowLabel}</div></td>
+                                    <td class="col-pct slds-text-align_right">
+                                        <lightning-formatted-number value={i.percent} format-style="percent"></lightning-formatted-number>
+                                    </td>
+                                    <td class="col-date">
+                                        <lightning-formatted-date-time value={i.installmentDate} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                    </td>
+                                    <td class="col-amt slds-text-align_right">
+                                        <lightning-formatted-number value={i.amount} format-style="currency" currency-code="AED"></lightning-formatted-number>
+                                    </td>
+                                    <td class="col-act slds-text-align_center">
+                                        <lightning-button-icon icon-name="utility:delete" variant="border-filled"
+                                            alternative-text="Remove" title="Remove"
+                                            data-id={i.milestoneId} onclick={handleRemoveInstallment}></lightning-button-icon>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </template>
+
+                <!-- Add installment -->
+                <p class="section-title slds-m-top_medium">Add installment</p>
+                <div class="slds-box slds-box_x-small">
+                    <lightning-combobox label="Installment" variant="label-stacked"
+                        value={newCashFlowId} options={cashFlowOptions}
+                        placeholder="Select installment" onchange={handleNewCashFlowChange}></lightning-combobox>
+
+                    <template if:true={selectedPreview}>
+                        <div class="slds-grid slds-gutters_x-small slds-m-top_x-small preview">
+                            <div class="slds-col">
+                                <p class="tile__label">Percentage</p>
+                                <p><lightning-formatted-number value={selectedPreview.percent} format-style="percent"></lightning-formatted-number></p>
+                            </div>
+                            <div class="slds-col">
+                                <p class="tile__label">Date</p>
+                                <p><lightning-formatted-date-time value={selectedPreview.installmentDate} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time></p>
+                            </div>
+                            <div class="slds-col">
+                                <p class="tile__label">Amount</p>
+                                <p><lightning-formatted-number value={selectedPreview.amount} format-style="currency" currency-code="AED"></lightning-formatted-number></p>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div class="slds-m-top_x-small">
+                        <lightning-button label="Add installment" variant="brand" stretch
+                            onclick={handleAddInstallment}></lightning-button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

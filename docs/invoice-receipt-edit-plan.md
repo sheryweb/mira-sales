@@ -230,7 +230,15 @@ Still open:
 - Placed on `Receipt_Record_Page` flexipage sidebar with the existing Finance / System Administrator visibility rule.
 - **DEFERRED (noted):** `Receipt_Invoice__c` sync lives in the controller (the sanctioned edit path); promoting it into the engine for full path-independence is a later enhancement. Covers scenarios 2 (remove invoice), 3 (reduce/remove amount), 4 (soft-cancel).
 
-**NEXT options:** Invoice-side manage panel (scenarios 1 correct amount, 5 re-parent); then Phase-3 permissions + validation rules (incl. FLS for `Milestone_Receipt__c.Invoice__c`); then Phase-4 production read-only reconciliation review + flag cutover.
+**STEP 6 FOLLOW-UP DONE 2026-07-17** — Manage Receipt panel gained reassign + add-allocation + unapplied balance + Mode-of-Payment picklist; redesigned to summary tiles + compact row-wise table. Controller 10/10.
+
+**STEP 7 — Manage Invoice panel (correct amount + installments) DONE 2026-07-17.**
+- `InvoiceManageController` (with sharing): `getInvoice` + `updateAmounts` (Sub-Total/VAT; also sets Grand_Total_Amount; status/pending re-derive via engine), `addInstallment`/`saveInstallment`/`removeInstallment` for the invoice's `Milestone_Invoice__c` cash-flow coverage. Installments constrained to the invoice's unit. `InvoiceManageControllerTest` 6/6.
+- `invoiceManagePanel` LWC: summary tiles (Grand Total / Paid / Pending) + status line, Correct-amount box (Sub-Total + VAT + Save), row-wise covered-installments table (cash-flow dropdown + amount + Save/Remove), Add-installment form. Same design language as the receipt panel.
+- Placed on `Invoice_Record_Page` sidebar with Finance / System Administrator visibility.
+- **RE-PARENT (scenario 5) intentionally deferred** — changing an invoice's unit invalidates its cash-flow links and re-does allocation; needs its own guarded step.
+
+**NEXT options:** re-parent step; design polish pass; Phase-3 permission set + FLS (`Milestone_Receipt__c.Invoice__c`) + validation rules; Phase-4 production read-only reconciliation review + flag cutover.
 
 --- (Original Step 4 note preserved below.) ---
 Sub-step 4a = pure, idempotent, no-DML derivation core (Invoice.Paid_Amount/Status, Receipt.Received_Amount, Receipt_Amount.Cumulative, Cash_Flow.Received_Amount from Milestone_Receipt ledger) + the dry-run reconciliation report built on it. Behavioral micro-decisions (§7.3 ordering within an invoice / overpay handling; §7.4 delete-vs-cancel) settle here.

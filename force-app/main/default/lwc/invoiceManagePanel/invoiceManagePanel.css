@@ -1,0 +1,51 @@
+.section-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #444;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+}
+
+.tile {
+    text-align: center;
+    background: #f7f9fb;
+}
+
+.tile__label {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+    color: #706e6b;
+}
+
+.tile__value {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #16325c;
+}
+
+/* Read-only installments table — no dropdowns, so no overflow container needed */
+.inst-table th {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+    color: #706e6b;
+}
+
+.inst-table td {
+    vertical-align: middle;
+    font-size: 0.8125rem;
+}
+
+.inst-table .col-cf { width: 34%; }
+.inst-table .col-pct { width: 14%; }
+.inst-table .col-date { width: 24%; }
+.inst-table .col-amt { width: 20%; }
+.inst-table .col-act { width: 8%; }
+
+.preview p {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #16325c;
+}

@@ -664,6 +664,25 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
+                <componentName>invoiceManagePanel</componentName>
+                <identifier>c_invoiceManagePanel</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Finance</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!$User.Profile.Name}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>System Administrator</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
                 <componentName>invoiceEmailSender</componentName>
                 <identifier>c_invoiceEmailSender</identifier>
                 <visibilityRule>
