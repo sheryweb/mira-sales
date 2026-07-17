@@ -43,7 +43,9 @@ public with sharing class InvoiceManageController {
         public CashFlowOption(Cash_Flow__c cf) {
             this.label = cf.Name;
             this.value = cf.Id;
-            this.percent = cf.Percent__c;
+            // Percent__c holds the display number (10 for 10%); the LWC percent formatter
+            // expects a fraction, so send it as 0.10.
+            this.percent = asFraction(cf.Percent__c);
             this.installmentDate = cf.Date__c;
             this.amount = cf.Amount_on_Invoice__c;
         }
@@ -84,7 +86,7 @@ public with sharing class InvoiceManageController {
             iv.cashFlowId = mi.Cash_Flow__c;
             if (mi.Cash_Flow__r != null) {
                 iv.cashFlowLabel = mi.Cash_Flow__r.Name;
-                iv.percent = mi.Cash_Flow__r.Percent__c;
+                iv.percent = asFraction(mi.Cash_Flow__r.Percent__c);
                 iv.installmentDate = mi.Cash_Flow__r.Date__c;
                 iv.amount = mi.Cash_Flow__r.Amount_on_Invoice__c;
             } else {
@@ -161,5 +163,10 @@ public with sharing class InvoiceManageController {
 
     private static Decimal nz(Decimal d) {
         return d == null ? 0 : d;
+    }
+
+    /** Convert a Salesforce Percent value (10 for 10%) to the fraction the UI formatter expects. */
+    private static Decimal asFraction(Decimal percentValue) {
+        return percentValue == null ? null : percentValue / 100;
     }
 }
