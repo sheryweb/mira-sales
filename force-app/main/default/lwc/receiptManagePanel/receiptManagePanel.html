@@ -21,7 +21,7 @@
                     </div>
                 </template>
 
-                <!-- Summary tiles -->
+                <!-- Summary tiles (unchanged) -->
                 <div class="slds-grid slds-gutters_x-small slds-m-bottom_medium">
                     <div class="slds-col">
                         <div class="tile slds-box slds-box_x-small">
@@ -59,7 +59,7 @@
                     </p>
                 </template>
 
-                <!-- Allocations -->
+                <!-- Allocations (row-wise) -->
                 <p class="section-title">Allocations</p>
 
                 <template if:false={hasAllocations}>
@@ -68,32 +68,54 @@
                     </div>
                 </template>
 
-                <template for:each={rows} for:item="row">
-                    <div key={row.lineId} class="alloc slds-box slds-box_x-small slds-m-bottom_x-small">
-                        <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
-                            <span class="alloc__title">{row.invoiceLabel}</span>
-                            <lightning-button-icon icon-name="utility:delete" variant="border-filled"
-                                alternative-text="Remove" title="Remove allocation"
-                                data-id={row.lineId} disabled={isCancelled} onclick={handleRemove}>
-                            </lightning-button-icon>
-                        </div>
-                        <lightning-combobox label="Invoice" variant="label-stacked"
-                            value={row.invoiceId} options={invoiceOptions}
-                            data-id={row.lineId} disabled={isCancelled} onchange={handleRowInvoice}>
-                        </lightning-combobox>
-                        <lightning-combobox label="Mode of payment" variant="label-stacked"
-                            value={row.mode} options={modeOptions} placeholder="Select…"
-                            data-id={row.lineId} disabled={isCancelled} onchange={handleRowMode}>
-                        </lightning-combobox>
-                        <lightning-input type="number" label="Amount" variant="label-stacked"
-                            step="0.01" min="0" formatter="currency" value={row.amount}
-                            data-id={row.lineId} disabled={isCancelled} onchange={handleRowAmount}>
-                        </lightning-input>
-                        <div class="slds-m-top_x-small">
-                            <lightning-button label="Save" variant="brand" stretch
-                                data-id={row.lineId} disabled={isCancelled} onclick={handleSave}>
-                            </lightning-button>
-                        </div>
+                <template if:true={hasAllocations}>
+                    <div class="alloc-scroll slds-m-bottom_small">
+                        <table class="slds-table slds-table_bordered slds-table_fixed-layout alloc-table">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="col-invoice" scope="col"><div class="slds-truncate" title="Invoice">Invoice</div></th>
+                                    <th class="col-mode" scope="col"><div class="slds-truncate" title="Mode">Mode</div></th>
+                                    <th class="col-amount" scope="col"><div class="slds-truncate slds-text-align_right" title="Amount">Amount</div></th>
+                                    <th class="col-actions" scope="col"><div class="slds-truncate slds-text-align_center" title="Actions">Actions</div></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={rows} for:item="row">
+                                    <tr key={row.lineId}>
+                                        <td class="col-invoice" data-label="Invoice">
+                                            <lightning-combobox variant="label-hidden" name="invoice"
+                                                value={row.invoiceId} options={invoiceOptions}
+                                                data-id={row.lineId} disabled={isCancelled}
+                                                onchange={handleRowInvoice}></lightning-combobox>
+                                        </td>
+                                        <td class="col-mode" data-label="Mode">
+                                            <lightning-combobox variant="label-hidden" name="mode"
+                                                value={row.mode} options={modeOptions} placeholder="—"
+                                                data-id={row.lineId} disabled={isCancelled}
+                                                onchange={handleRowMode}></lightning-combobox>
+                                        </td>
+                                        <td class="col-amount" data-label="Amount">
+                                            <lightning-input type="number" variant="label-hidden"
+                                                step="0.01" min="0" formatter="currency" value={row.amount}
+                                                data-id={row.lineId} disabled={isCancelled}
+                                                onchange={handleRowAmount}></lightning-input>
+                                        </td>
+                                        <td class="col-actions">
+                                            <div class="slds-grid slds-grid_align-center">
+                                                <lightning-button-icon icon-name="utility:save" variant="brand"
+                                                    alternative-text="Save" title="Save" class="slds-m-right_xxx-small"
+                                                    data-id={row.lineId} disabled={isCancelled}
+                                                    onclick={handleSave}></lightning-button-icon>
+                                                <lightning-button-icon icon-name="utility:delete" variant="border-filled"
+                                                    alternative-text="Remove" title="Remove"
+                                                    data-id={row.lineId} disabled={isCancelled}
+                                                    onclick={handleRemove}></lightning-button-icon>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
                     </div>
                 </template>
 
@@ -103,16 +125,13 @@
                     <div class="slds-box slds-box_x-small">
                         <lightning-combobox label="Invoice" variant="label-stacked"
                             value={newInvoiceId} options={invoiceOptions}
-                            placeholder="Select invoice" onchange={handleNewInvoiceChange}>
-                        </lightning-combobox>
+                            placeholder="Select invoice" onchange={handleNewInvoiceChange}></lightning-combobox>
                         <lightning-combobox label="Mode of payment" variant="label-stacked"
                             value={newMode} options={modeOptions}
-                            placeholder="Select…" onchange={handleNewModeChange}>
-                        </lightning-combobox>
+                            placeholder="Select…" onchange={handleNewModeChange}></lightning-combobox>
                         <lightning-input type="number" label="Amount" variant="label-stacked"
                             step="0.01" min="0" formatter="currency"
-                            value={newAmount} onchange={handleNewAmountChange}>
-                        </lightning-input>
+                            value={newAmount} onchange={handleNewAmountChange}></lightning-input>
                         <div class="slds-m-top_x-small">
                             <lightning-button label="Add allocation" variant="neutral" stretch
                                 onclick={handleAdd}></lightning-button>

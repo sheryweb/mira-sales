@@ -7,6 +7,7 @@
     letter-spacing: 0.03125rem;
 }
 
+/* Summary tiles */
 .tile {
     text-align: center;
     background: #f7f9fb;
@@ -33,12 +34,33 @@
     color: #ba0517;
 }
 
-.alloc {
-    background: #fdfdfd;
+/* Row-wise allocations table — horizontally scrollable so it never blows out a narrow column */
+.alloc-scroll {
+    overflow-x: auto;
 }
 
-.alloc__title {
-    font-weight: 700;
-    color: #16325c;
-    align-self: center;
+.alloc-table {
+    min-width: 34rem;
+}
+
+.alloc-table th {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+    color: #706e6b;
+}
+
+.alloc-table td {
+    vertical-align: middle;
+}
+
+.alloc-table .col-invoice { width: 38%; }
+.alloc-table .col-mode { width: 26%; }
+.alloc-table .col-amount { width: 22%; }
+.alloc-table .col-actions { width: 14%; }
+
+/* tighten the inline form controls inside table cells */
+.alloc-table lightning-input,
+.alloc-table lightning-combobox {
+    --slds-c-input-spacing-vertical: 0;
 }
