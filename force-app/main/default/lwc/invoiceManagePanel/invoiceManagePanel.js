@@ -1,6 +1,7 @@
 import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { getRecordNotifyChange } from 'lightning/uiRecordApi';
+import LightningConfirm from 'lightning/confirm';
 import getInvoice from '@salesforce/apex/InvoiceManageController.getInvoice';
 import updateAmounts from '@salesforce/apex/InvoiceManageController.updateAmounts';
 import addInstallment from '@salesforce/apex/InvoiceManageController.addInstallment';
@@ -73,8 +74,16 @@ export default class InvoiceManagePanel extends LightningElement {
         this.run(updateAmounts({ invoiceId: this.recordId, subTotal: sub, vat }), 'Invoice amount updated.');
     }
 
-    handleRemoveInstallment(e) {
-        this.run(removeInstallment({ milestoneId: e.target.dataset.id }), 'Installment removed.');
+    async handleRemoveInstallment(e) {
+        const milestoneId = e.target.dataset.id;
+        const ok = await LightningConfirm.open({
+            message: 'Remove this installment from the invoice? The invoice sub-total will be recalculated from the remaining installments.',
+            variant: 'header',
+            label: 'Remove installment',
+            theme: 'warning'
+        });
+        if (!ok) return;
+        this.run(removeInstallment({ milestoneId }), 'Installment removed.');
     }
 
     handleNewCashFlowChange(e) {

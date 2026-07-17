@@ -1,6 +1,7 @@
 import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { getRecordNotifyChange } from 'lightning/uiRecordApi';
+import LightningConfirm from 'lightning/confirm';
 import getReceipt from '@salesforce/apex/ReceiptManageController.getReceipt';
 import saveAllocation from '@salesforce/apex/ReceiptManageController.saveAllocation';
 import addAllocation from '@salesforce/apex/ReceiptManageController.addAllocation';
@@ -104,9 +105,17 @@ export default class ReceiptManagePanel extends LightningElement {
         );
     }
 
-    handleRemove(event) {
+    async handleRemove(event) {
+        const lineId = event.target.dataset.id;
+        const ok = await LightningConfirm.open({
+            message: 'Remove this allocation? The money will return to the receipt as unapplied — you can reassign or re-add it afterwards.',
+            variant: 'header',
+            label: 'Remove allocation',
+            theme: 'warning'
+        });
+        if (!ok) return;
         this.run(
-            removeAllocation({ lineId: event.target.dataset.id }),
+            removeAllocation({ lineId }),
             'Allocation removed. The money is now unapplied on the receipt.'
         );
     }
