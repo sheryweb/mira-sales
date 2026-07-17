@@ -119,4 +119,98 @@ private class ReceiptManageControllerTest {
         }
         Test.stopTest();
     }
+
+    private static Invoice__c invoiceOnUnit(Id unitId, String num) {
+        Invoice__c inv = new Invoice__c(
+            Status__c = 'Pending', Invoice_Date__c = System.today(), Sub_Total_Amount__c = 1000,
+            Paid_Amount__c = 0, Unit__c = unitId, Invoice_Number__c = num
+        );
+        insert inv;
+        return inv;
+    }
+
+    @IsTest
+    static void reportsBalancesAndInvoiceOptions() {
+        Ctx c = build();
+        Test.startTest();
+        ReceiptManageController.ReceiptView v = ReceiptManageController.getReceipt(c.r.Id);
+        Test.stopTest();
+
+        System.assertEquals(1000, v.receivedAmount, 'Received');
+        System.assertEquals(1000, v.allocatedAmount, 'Allocated');
+        System.assertEquals(0, v.unappliedAmount, 'Nothing unapplied');
+        System.assert(v.invoiceOptions != null && v.invoiceOptions.size() >= 1, 'Unit invoices offered for picker');
+        System.assert(v.modeOptions != null && v.modeOptions.size() >= 1, 'Mode of payment options provided');
+    }
+
+    @IsTest
+    static void saveAllocationUpdatesInvoiceModeAmount() {
+        Ctx c = build();
+        Invoice__c inv2 = invoiceOnUnit(c.u.Id, 'INV-SAVE2');
+
+        Test.startTest();
+        ReceiptManageController.saveAllocation(c.ra.Id, inv2.Id, 'Cheque', 700);
+        Test.stopTest();
+
+        Receipt_Amount__c ra = [SELECT Invoice__c, Mode_of_Payment__c, Amount__c FROM Receipt_Amount__c WHERE Id = :c.ra.Id];
+        System.assertEquals(inv2.Id, ra.Invoice__c, 'Reassigned to new invoice');
+        System.assertEquals('Cheque', ra.Mode_of_Payment__c, 'Mode saved');
+        System.assertEquals(700, ra.Amount__c, 'Amount saved');
+        Invoice__c i2 = [SELECT Paid_Amount__c FROM Invoice__c WHERE Id = :inv2.Id];
+        System.assertEquals(700, i2.Paid_Amount__c, 'New invoice paid re-derived');
+    }
+
+    @IsTest
+    static void reassignMovesMoneyToAnotherInvoice() {
+        Ctx c = build();
+        Invoice__c inv2 = invoiceOnUnit(c.u.Id, 'INV-MNG2');
+
+        Test.startTest();
+        ReceiptManageController.reassignAllocation(c.ra.Id, inv2.Id);
+        Test.stopTest();
+
+        Invoice__c i1 = [SELECT Paid_Amount__c FROM Invoice__c WHERE Id = :c.inv.Id];
+        Invoice__c i2 = [SELECT Paid_Amount__c, Status__c FROM Invoice__c WHERE Id = :inv2.Id];
+        System.assertEquals(0, i1.Paid_Amount__c, 'Old invoice reverts to 0');
+        System.assertEquals(1000, i2.Paid_Amount__c, 'New invoice now paid');
+        System.assertEquals(0, [SELECT COUNT() FROM Receipt_Invoice__c WHERE Receipt__c = :c.r.Id AND Invoice__c = :c.inv.Id],
+            'Old Receipt_Invoice link removed');
+        System.assertEquals(1, [SELECT COUNT() FROM Receipt_Invoice__c WHERE Receipt__c = :c.r.Id AND Invoice__c = :inv2.Id],
+            'New Receipt_Invoice link created');
+    }
+
+    @IsTest
+    static void addAllocationAppliesToAnotherInvoice() {
+        Ctx c = build();
+        Invoice__c inv2 = invoiceOnUnit(c.u.Id, 'INV-MNG3');
+
+        Test.startTest();
+        ReceiptManageController.addAllocation(c.r.Id, inv2.Id, 500, 'Cash');
+        Test.stopTest();
+
+        Receipt_Amount__c line = [SELECT Amount__c FROM Receipt_Amount__c WHERE Receipt__c = :c.r.Id AND Invoice__c = :inv2.Id LIMIT 1];
+        System.assertEquals(500, line.Amount__c, 'New allocation line created');
+        Invoice__c i2 = [SELECT Paid_Amount__c FROM Invoice__c WHERE Id = :inv2.Id];
+        System.assertEquals(500, i2.Paid_Amount__c, 'Second invoice now partly paid');
+        System.assertEquals(1, [SELECT COUNT() FROM Receipt_Invoice__c WHERE Receipt__c = :c.r.Id AND Invoice__c = :inv2.Id],
+            'Receipt_Invoice link created for the added allocation');
+    }
+
+    @IsTest
+    static void reassignToOtherUnitIsRejected() {
+        Ctx c = build();
+        Unit__c u2 = new Unit__c(Title__c = 'other-unit');
+        insert u2;
+        Invoice__c invOther = invoiceOnUnit(u2.Id, 'INV-OTHER');
+
+        Test.startTest();
+        Boolean threw = false;
+        try {
+            ReceiptManageController.reassignAllocation(c.ra.Id, invOther.Id);
+        } catch (AuraHandledException e) {
+            threw = true;
+        }
+        Test.stopTest();
+        System.assert(threw, 'Reassigning to a different unit should be rejected');
+    }
 }
