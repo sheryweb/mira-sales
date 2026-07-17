@@ -133,6 +133,7 @@ public with sharing class InvoiceManageController {
             insert new Milestone_Invoice__c(
                 Invoice__c = invoiceId, Cash_Flow__c = cashFlowId, Amount__c = cf.Amount_on_Invoice__c
             );
+            recomputeInvoiceAmounts(invoiceId);
         } catch (AuraHandledException e) {
             throw e;
         } catch (Exception e) {
@@ -145,13 +146,40 @@ public with sharing class InvoiceManageController {
     public static void removeInstallment(Id milestoneId) {
         if (milestoneId == null) throw new AuraHandledException('No installment specified.');
         try {
-            delete [SELECT Id FROM Milestone_Invoice__c WHERE Id = :milestoneId];
+            List<Milestone_Invoice__c> rows = [SELECT Id, Invoice__c FROM Milestone_Invoice__c WHERE Id = :milestoneId];
+            if (rows.isEmpty()) return;
+            Id invoiceId = rows[0].Invoice__c;
+            delete rows;
+            recomputeInvoiceAmounts(invoiceId);
         } catch (Exception e) {
             throw new AuraHandledException('Could not remove the installment: ' + e.getMessage());
         }
     }
 
     // ---- helpers ----
+
+    /**
+     * Recompute the invoice's Sub-Total / VAT / Grand-Total as the sum of the cash-flow items it
+     * covers, so the invoice amount always reflects its installments. Firing the update also lets
+     * the engine re-derive paid/pending/status.
+     */
+    private static void recomputeInvoiceAmounts(Id invoiceId) {
+        if (invoiceId == null) return;
+        Decimal subTotal = 0;
+        Decimal vat = 0;
+        for (Milestone_Invoice__c mi : [
+            SELECT Cash_Flow__r.Amount_on_Invoice__c, Cash_Flow__r.VAT_Amount__c
+            FROM Milestone_Invoice__c
+            WHERE Invoice__c = :invoiceId AND Cash_Flow__c != null
+        ]) {
+            subTotal += nz(mi.Cash_Flow__r.Amount_on_Invoice__c);
+            vat += nz(mi.Cash_Flow__r.VAT_Amount__c);
+        }
+        update new Invoice__c(
+            Id = invoiceId, Sub_Total_Amount__c = subTotal, VAT_Amount__c = vat,
+            Grand_Total_Amount__c = subTotal + vat
+        );
+    }
 
     private static void assertSameUnit(Id invoiceId, Id cashFlowId) {
         Invoice__c inv = [SELECT Unit__c FROM Invoice__c WHERE Id = :invoiceId LIMIT 1];

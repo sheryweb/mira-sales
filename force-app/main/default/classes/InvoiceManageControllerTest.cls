@@ -67,8 +67,8 @@ private class InvoiceManageControllerTest {
     }
 
     @IsTest
-    static void addInstallmentDerivesAmountFromCashFlow() {
-        Ctx c = build();
+    static void addInstallmentDerivesAmountAndUpdatesInvoiceSubTotal() {
+        Ctx c = build(); // starts with one installment (cf1 = 1000); invoice sub-total 1000
         Test.startTest();
         InvoiceManageController.addInstallment(c.inv.Id, c.cf2.Id); // amount NOT passed — derived
         Test.stopTest();
@@ -81,9 +81,15 @@ private class InvoiceManageControllerTest {
         // cf2 has Constant 2000, no project -> Amount_on_Invoice = Price_Formula = 2000
         System.assertEquals(2000, mi2.Amount__c, 'Amount derived from the cash flow, not entered');
 
+        // Invoice sub-total now reflects both installments (1000 + 2000).
+        Invoice__c invAfterAdd = [SELECT Sub_Total_Amount__c FROM Invoice__c WHERE Id = :c.inv.Id];
+        System.assertEquals(3000, invAfterAdd.Sub_Total_Amount__c, 'Sub-total recomputed to sum of installments');
+
         InvoiceManageController.removeInstallment(mi2.Id);
         System.assertEquals(1, [SELECT COUNT() FROM Milestone_Invoice__c WHERE Invoice__c = :c.inv.Id],
             'Installment removed');
+        Invoice__c invAfterRemove = [SELECT Sub_Total_Amount__c FROM Invoice__c WHERE Id = :c.inv.Id];
+        System.assertEquals(1000, invAfterRemove.Sub_Total_Amount__c, 'Sub-total recomputed back down after removal');
     }
 
     @IsTest
