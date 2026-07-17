@@ -21,14 +21,13 @@
                     </div>
                 </template>
 
-                <!-- Summary tiles (unchanged) -->
+                <!-- Summary tiles -->
                 <div class="slds-grid slds-gutters_x-small slds-m-bottom_medium">
                     <div class="slds-col">
                         <div class="tile slds-box slds-box_x-small">
                             <p class="tile__label">Received</p>
                             <p class="tile__value">
-                                <lightning-formatted-number value={view.receivedAmount}
-                                    format-style="currency" currency-code="AED"></lightning-formatted-number>
+                                <lightning-formatted-number value={view.receivedAmount} format-style="currency" currency-code="AED"></lightning-formatted-number>
                             </p>
                         </div>
                     </div>
@@ -36,8 +35,7 @@
                         <div class="tile slds-box slds-box_x-small">
                             <p class="tile__label">Allocated</p>
                             <p class="tile__value">
-                                <lightning-formatted-number value={view.allocatedAmount}
-                                    format-style="currency" currency-code="AED"></lightning-formatted-number>
+                                <lightning-formatted-number value={view.allocatedAmount} format-style="currency" currency-code="AED"></lightning-formatted-number>
                             </p>
                         </div>
                     </div>
@@ -45,8 +43,7 @@
                         <div class={unappliedClass}>
                             <p class="tile__label">Unapplied</p>
                             <p class="tile__value">
-                                <lightning-formatted-number value={view.unappliedAmount}
-                                    format-style="currency" currency-code="AED"></lightning-formatted-number>
+                                <lightning-formatted-number value={view.unappliedAmount} format-style="currency" currency-code="AED"></lightning-formatted-number>
                             </p>
                         </div>
                     </div>
@@ -54,12 +51,11 @@
 
                 <template if:true={hasUnapplied}>
                     <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
-                        This receipt has unapplied money. Reassign a line or add an allocation to
-                        apply it to another invoice on this unit.
+                        This receipt has unapplied money. Reassign a line or add an allocation to apply it.
                     </p>
                 </template>
 
-                <!-- Allocations (row-wise) -->
+                <!-- Allocations -->
                 <p class="section-title">Allocations</p>
 
                 <template if:false={hasAllocations}>
@@ -70,49 +66,79 @@
 
                 <template if:true={hasAllocations}>
                     <div class="alloc-scroll slds-m-bottom_small">
-                        <table class="slds-table slds-table_bordered slds-table_fixed-layout alloc-table">
+                        <table class="slds-table slds-table_bordered alloc-table">
                             <thead>
                                 <tr class="slds-line-height_reset">
-                                    <th class="col-invoice" scope="col"><div class="slds-truncate" title="Invoice">Invoice</div></th>
-                                    <th class="col-mode" scope="col"><div class="slds-truncate" title="Mode">Mode</div></th>
-                                    <th class="col-amount" scope="col"><div class="slds-truncate slds-text-align_right" title="Amount">Amount</div></th>
-                                    <th class="col-actions" scope="col"><div class="slds-truncate slds-text-align_center" title="Actions">Actions</div></th>
+                                    <th class="col-x"></th>
+                                    <th class="col-invoice"><div class="slds-truncate" title="Invoice">Invoice</div></th>
+                                    <th class="col-mode"><div class="slds-truncate" title="Mode">Mode</div></th>
+                                    <th class="col-amount"><div class="slds-truncate slds-text-align_right" title="Amount">Amount</div></th>
+                                    <th class="col-actions"><div class="slds-truncate slds-text-align_center" title="Actions">Actions</div></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <template for:each={rows} for:item="row">
                                     <tr key={row.lineId}>
-                                        <td class="col-invoice" data-label="Invoice">
-                                            <lightning-combobox variant="label-hidden" name="invoice"
-                                                value={row.invoiceId} options={invoiceOptions}
-                                                data-id={row.lineId} disabled={isCancelled}
-                                                onchange={handleRowInvoice}></lightning-combobox>
+                                        <td class="col-x">
+                                            <lightning-button-icon icon-name={row.chevron} variant="bare"
+                                                alternative-text="Edit details" title="Edit details"
+                                                data-id={row.lineId} onclick={handleToggle}></lightning-button-icon>
                                         </td>
-                                        <td class="col-mode" data-label="Mode">
-                                            <lightning-combobox variant="label-hidden" name="mode"
-                                                value={row.mode} options={modeOptions} placeholder="—"
-                                                data-id={row.lineId} disabled={isCancelled}
-                                                onchange={handleRowMode}></lightning-combobox>
+                                        <td class="col-invoice">
+                                            <lightning-combobox variant="label-hidden" value={row.invoiceId}
+                                                options={invoiceOptions} data-id={row.lineId} data-field="invoiceId"
+                                                disabled={isCancelled} onchange={handleRowField}></lightning-combobox>
                                         </td>
-                                        <td class="col-amount" data-label="Amount">
-                                            <lightning-input type="number" variant="label-hidden"
-                                                step="0.01" min="0" formatter="currency" value={row.amount}
-                                                data-id={row.lineId} disabled={isCancelled}
-                                                onchange={handleRowAmount}></lightning-input>
+                                        <td class="col-mode">
+                                            <lightning-combobox variant="label-hidden" value={row.mode}
+                                                options={modeOptions} placeholder="—" data-id={row.lineId} data-field="mode"
+                                                disabled={isCancelled} onchange={handleRowField}></lightning-combobox>
+                                        </td>
+                                        <td class="col-amount">
+                                            <lightning-input type="number" variant="label-hidden" step="0.01" min="0"
+                                                formatter="currency" value={row.amount} data-id={row.lineId} data-field="amount"
+                                                disabled={isCancelled} onchange={handleRowField}></lightning-input>
                                         </td>
                                         <td class="col-actions">
                                             <div class="slds-grid slds-grid_align-center">
                                                 <lightning-button-icon icon-name="utility:save" variant="brand"
                                                     alternative-text="Save" title="Save" class="slds-m-right_xxx-small"
-                                                    data-id={row.lineId} disabled={isCancelled}
-                                                    onclick={handleSave}></lightning-button-icon>
+                                                    data-id={row.lineId} disabled={isCancelled} onclick={handleSave}></lightning-button-icon>
                                                 <lightning-button-icon icon-name="utility:delete" variant="border-filled"
                                                     alternative-text="Remove" title="Remove"
-                                                    data-id={row.lineId} disabled={isCancelled}
-                                                    onclick={handleRemove}></lightning-button-icon>
+                                                    data-id={row.lineId} disabled={isCancelled} onclick={handleRemove}></lightning-button-icon>
                                             </div>
                                         </td>
                                     </tr>
+                                    <template if:true={row.expanded}>
+                                        <tr key={row.lineId} class="detail-row">
+                                            <td></td>
+                                            <td colspan="4">
+                                                <lightning-input type="text" label="Payment Reference" value={row.referenceNumber}
+                                                    data-id={row.lineId} data-field="referenceNumber" disabled={isCancelled}
+                                                    onchange={handleRowField}></lightning-input>
+                                                <template if:true={row.showCheque}>
+                                                    <lightning-input type="text" label="Cheque #" value={row.chequeNumber}
+                                                        data-id={row.lineId} data-field="chequeNumber" disabled={isCancelled}
+                                                        onchange={handleRowField}></lightning-input>
+                                                    <lightning-input type="date" label="Cheque Date" value={row.chequeDate}
+                                                        data-id={row.lineId} data-field="chequeDate" disabled={isCancelled}
+                                                        onchange={handleRowField}></lightning-input>
+                                                    <lightning-combobox label="Bank Name" value={row.bankName} options={bankNameOptions}
+                                                        placeholder="Select bank" data-id={row.lineId} data-field="bankName"
+                                                        disabled={isCancelled} onchange={handleRowField}></lightning-combobox>
+                                                </template>
+                                                <template if:true={row.showPos}>
+                                                    <lightning-input type="text" label="POS Receipt #" value={row.posReceiptNumber}
+                                                        data-id={row.lineId} data-field="posReceiptNumber" disabled={isCancelled}
+                                                        onchange={handleRowField}></lightning-input>
+                                                </template>
+                                                <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                                                    Click <strong>Save</strong> on the row above to apply these details.
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </template>
                                 </template>
                             </tbody>
                         </table>
@@ -123,18 +149,31 @@
                 <template if:false={isCancelled}>
                     <p class="section-title slds-m-top_medium">Add allocation</p>
                     <div class="slds-box slds-box_x-small">
-                        <lightning-combobox label="Invoice" variant="label-stacked"
-                            value={newInvoiceId} options={invoiceOptions}
-                            placeholder="Select invoice" onchange={handleNewInvoiceChange}></lightning-combobox>
-                        <lightning-combobox label="Mode of payment" variant="label-stacked"
-                            value={newMode} options={modeOptions}
-                            placeholder="Select…" onchange={handleNewModeChange}></lightning-combobox>
-                        <lightning-input type="number" label="Amount" variant="label-stacked"
-                            step="0.01" min="0" formatter="currency"
-                            value={newAmount} onchange={handleNewAmountChange}></lightning-input>
+                        <lightning-combobox label="Invoice" variant="label-stacked" value={newLine.invoiceId}
+                            options={invoiceOptions} placeholder="Select invoice"
+                            data-field="invoiceId" onchange={handleNewField}></lightning-combobox>
+                        <lightning-combobox label="Mode of payment" variant="label-stacked" value={newLine.mode}
+                            options={modeOptions} placeholder="Select…"
+                            data-field="mode" onchange={handleNewField}></lightning-combobox>
+                        <lightning-input type="number" label="Amount" variant="label-stacked" step="0.01" min="0"
+                            formatter="currency" value={newLine.amount}
+                            data-field="amount" onchange={handleNewField}></lightning-input>
+                        <lightning-input type="text" label="Payment Reference" value={newLine.referenceNumber}
+                            data-field="referenceNumber" onchange={handleNewField}></lightning-input>
+                        <template if:true={newShowCheque}>
+                            <lightning-input type="text" label="Cheque #" value={newLine.chequeNumber}
+                                data-field="chequeNumber" onchange={handleNewField}></lightning-input>
+                            <lightning-input type="date" label="Cheque Date" value={newLine.chequeDate}
+                                data-field="chequeDate" onchange={handleNewField}></lightning-input>
+                            <lightning-combobox label="Bank Name" value={newLine.bankName} options={bankNameOptions}
+                                placeholder="Select bank" data-field="bankName" onchange={handleNewField}></lightning-combobox>
+                        </template>
+                        <template if:true={newShowPos}>
+                            <lightning-input type="text" label="POS Receipt #" value={newLine.posReceiptNumber}
+                                data-field="posReceiptNumber" onchange={handleNewField}></lightning-input>
+                        </template>
                         <div class="slds-m-top_x-small">
-                            <lightning-button label="Add allocation" variant="brand" stretch
-                                onclick={handleAdd}></lightning-button>
+                            <lightning-button label="Add allocation" variant="brand" stretch onclick={handleAdd}></lightning-button>
                         </div>
                     </div>
                 </template>

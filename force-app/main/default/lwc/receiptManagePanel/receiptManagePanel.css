@@ -34,13 +34,13 @@
     color: #ba0517;
 }
 
-/* Row-wise allocations table — horizontally scrollable so it never blows out a narrow column */
+/* Allocations table */
 .alloc-scroll {
     overflow-x: auto;
 }
 
 .alloc-table {
-    min-width: 34rem;
+    min-width: 36rem;
 }
 
 .alloc-table th {
@@ -54,13 +54,13 @@
     vertical-align: middle;
 }
 
-.alloc-table .col-invoice { width: 38%; }
-.alloc-table .col-mode { width: 26%; }
-.alloc-table .col-amount { width: 22%; }
-.alloc-table .col-actions { width: 14%; }
+.alloc-table .col-x { width: 6%; }
+.alloc-table .col-invoice { width: 34%; }
+.alloc-table .col-mode { width: 24%; }
+.alloc-table .col-amount { width: 20%; }
+.alloc-table .col-actions { width: 16%; }
 
-/* tighten the inline form controls inside table cells */
-.alloc-table lightning-input,
-.alloc-table lightning-combobox {
-    --slds-c-input-spacing-vertical: 0;
+/* Expanded detail editor under a row */
+.detail-row td {
+    background: #f7f9fb;
 }

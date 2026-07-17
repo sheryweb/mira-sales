@@ -11,15 +11,13 @@ import cancelReceipt from '@salesforce/apex/ReceiptManageController.cancelReceip
 export default class ReceiptManagePanel extends LightningElement {
     @api recordId;
     @track view;
-    @track rows = []; // working copy of allocations, edited in place
+    @track rows = [];
     @track isLoading = false;
     @track showCancelConfirm = false;
     error;
 
     // add-allocation form
-    newInvoiceId;
-    newAmount;
-    newMode;
+    @track newLine = {};
 
     connectedCallback() {
         this.load();
@@ -31,16 +29,20 @@ export default class ReceiptManagePanel extends LightningElement {
         getReceipt({ receiptId: this.recordId })
             .then((data) => {
                 this.view = data;
-                this.rows = (data.allocations || []).map((a) => ({
+                this.rows = (data.allocations || []).map((a) => this.decorate({
                     lineId: a.lineId,
                     invoiceId: a.invoiceId,
                     invoiceLabel: a.invoiceLabel,
                     mode: a.modeOfPayment,
-                    amount: a.amount
+                    amount: a.amount,
+                    referenceNumber: a.referenceNumber,
+                    chequeNumber: a.chequeNumber,
+                    chequeDate: a.chequeDate,
+                    bankName: a.bankName,
+                    posReceiptNumber: a.posReceiptNumber,
+                    expanded: false
                 }));
-                this.newInvoiceId = undefined;
-                this.newAmount = undefined;
-                this.newMode = undefined;
+                this.newLine = { mode: 'Cash' };
             })
             .catch((e) => {
                 this.error = this.messageFrom(e);
@@ -48,6 +50,14 @@ export default class ReceiptManagePanel extends LightningElement {
             .finally(() => {
                 this.isLoading = false;
             });
+    }
+
+    // Attach derived flags used by the template (LWC can't call helpers with args in markup).
+    decorate(row) {
+        row.showCheque = row.mode === 'Cheque';
+        row.showPos = row.mode === 'POS Machine';
+        row.chevron = row.expanded ? 'utility:chevrondown' : 'utility:chevronright';
+        return row;
     }
 
     get hasAllocations() {
@@ -66,6 +76,10 @@ export default class ReceiptManagePanel extends LightningElement {
         return (this.view && this.view.modeOptions) ? this.view.modeOptions : [];
     }
 
+    get bankNameOptions() {
+        return (this.view && this.view.bankNameOptions) ? this.view.bankNameOptions : [];
+    }
+
     get hasUnapplied() {
         return this.view && this.view.unappliedAmount && Math.abs(this.view.unappliedAmount) > 0.005;
     }
@@ -76,20 +90,38 @@ export default class ReceiptManagePanel extends LightningElement {
             : 'tile slds-box slds-box_x-small';
     }
 
-    rowFor(lineId) {
-        return this.rows.find((r) => r.lineId === lineId);
+    get newShowCheque() {
+        return this.newLine.mode === 'Cheque';
     }
 
-    handleRowInvoice(event) {
-        this.rowFor(event.target.dataset.id).invoiceId = event.detail.value;
+    get newShowPos() {
+        return this.newLine.mode === 'POS Machine';
     }
 
-    handleRowMode(event) {
-        this.rowFor(event.target.dataset.id).mode = event.detail.value;
+    rowFor(id) {
+        return this.rows.find((r) => r.lineId === id);
     }
 
-    handleRowAmount(event) {
-        this.rowFor(event.target.dataset.id).amount = event.target.value;
+    // ---- existing rows ----
+
+    handleToggle(event) {
+        const row = this.rowFor(event.target.dataset.id);
+        row.expanded = !row.expanded;
+        this.decorate(row);
+        this.rows = [...this.rows];
+    }
+
+    handleRowField(event) {
+        const row = this.rowFor(event.target.dataset.id);
+        const field = event.target.dataset.field;
+        const value = (field === 'invoiceId' || field === 'mode' || field === 'bankName')
+            ? event.detail.value
+            : event.target.value;
+        row[field] = value;
+        if (field === 'mode') {
+            this.decorate(row);
+            this.rows = [...this.rows];
+        }
     }
 
     handleSave(event) {
@@ -99,10 +131,7 @@ export default class ReceiptManagePanel extends LightningElement {
             this.toast('Invalid amount', 'Enter a number of zero or more.', 'error');
             return;
         }
-        this.run(
-            saveAllocation({ lineId: row.lineId, invoiceId: row.invoiceId, modeOfPayment: row.mode, amount }),
-            'Allocation saved.'
-        );
+        this.run(saveAllocation({ input: this.toInput(row, amount) }), 'Allocation saved.');
     }
 
     async handleRemove(event) {
@@ -114,39 +143,47 @@ export default class ReceiptManagePanel extends LightningElement {
             theme: 'warning'
         });
         if (!ok) return;
-        this.run(
-            removeAllocation({ lineId }),
-            'Allocation removed. The money is now unapplied on the receipt.'
-        );
+        this.run(removeAllocation({ lineId }), 'Allocation removed. The money is now unapplied on the receipt.');
     }
 
-    handleNewInvoiceChange(event) {
-        this.newInvoiceId = event.detail.value;
-    }
+    // ---- add form ----
 
-    handleNewModeChange(event) {
-        this.newMode = event.detail.value;
-    }
-
-    handleNewAmountChange(event) {
-        this.newAmount = event.target.value;
+    handleNewField(event) {
+        const field = event.target.dataset.field;
+        const value = (field === 'invoiceId' || field === 'mode' || field === 'bankName')
+            ? event.detail.value
+            : event.target.value;
+        this.newLine = { ...this.newLine, [field]: value };
     }
 
     handleAdd() {
-        if (!this.newInvoiceId) {
+        if (!this.newLine.invoiceId) {
             this.toast('Pick an invoice', 'Choose which invoice to apply the money to.', 'error');
             return;
         }
-        const amount = parseFloat(this.newAmount);
+        const amount = parseFloat(this.newLine.amount);
         if (isNaN(amount) || amount <= 0) {
             this.toast('Invalid amount', 'Enter an amount greater than zero.', 'error');
             return;
         }
-        this.run(
-            addAllocation({ receiptId: this.recordId, invoiceId: this.newInvoiceId, amount, modeOfPayment: this.newMode }),
-            'Allocation added.'
-        );
+        this.run(addAllocation({ receiptId: this.recordId, input: this.toInput(this.newLine, amount) }), 'Allocation added.');
     }
+
+    toInput(row, amount) {
+        return {
+            lineId: row.lineId,
+            invoiceId: row.invoiceId,
+            modeOfPayment: row.mode,
+            amount,
+            referenceNumber: row.referenceNumber,
+            chequeNumber: row.mode === 'Cheque' ? row.chequeNumber : null,
+            chequeDate: row.mode === 'Cheque' ? row.chequeDate : null,
+            bankName: row.mode === 'Cheque' ? row.bankName : null,
+            posReceiptNumber: row.mode === 'POS Machine' ? row.posReceiptNumber : null
+        };
+    }
+
+    // ---- cancel receipt ----
 
     handleCancelClick() {
         this.showCancelConfirm = true;

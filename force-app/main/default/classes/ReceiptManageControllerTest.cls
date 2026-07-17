@@ -141,6 +141,7 @@ private class ReceiptManageControllerTest {
         System.assertEquals(0, v.unappliedAmount, 'Nothing unapplied');
         System.assert(v.invoiceOptions != null && v.invoiceOptions.size() >= 1, 'Unit invoices offered for picker');
         System.assert(v.modeOptions != null && v.modeOptions.size() >= 1, 'Mode of payment options provided');
+        System.assert(v.bankNameOptions != null, 'Bank name options provided');
     }
 
     @IsTest
@@ -148,14 +149,24 @@ private class ReceiptManageControllerTest {
         Ctx c = build();
         Invoice__c inv2 = invoiceOnUnit(c.u.Id, 'INV-SAVE2');
 
+        ReceiptManageController.AllocationInput input = new ReceiptManageController.AllocationInput();
+        input.lineId = c.ra.Id;
+        input.invoiceId = inv2.Id;
+        input.modeOfPayment = 'Cheque';
+        input.amount = 700;
+        input.chequeNumber = 'CHQ-001';
+        input.chequeDate = System.today();
+        input.referenceNumber = 'REF-9';
         Test.startTest();
-        ReceiptManageController.saveAllocation(c.ra.Id, inv2.Id, 'Cheque', 700);
+        ReceiptManageController.saveAllocation(input);
         Test.stopTest();
 
-        Receipt_Amount__c ra = [SELECT Invoice__c, Mode_of_Payment__c, Amount__c FROM Receipt_Amount__c WHERE Id = :c.ra.Id];
+        Receipt_Amount__c ra = [SELECT Invoice__c, Mode_of_Payment__c, Amount__c, Cheque_Number__c, Reference_Number__c FROM Receipt_Amount__c WHERE Id = :c.ra.Id];
         System.assertEquals(inv2.Id, ra.Invoice__c, 'Reassigned to new invoice');
         System.assertEquals('Cheque', ra.Mode_of_Payment__c, 'Mode saved');
         System.assertEquals(700, ra.Amount__c, 'Amount saved');
+        System.assertEquals('CHQ-001', ra.Cheque_Number__c, 'Cheque number persisted');
+        System.assertEquals('REF-9', ra.Reference_Number__c, 'Reference persisted');
         Invoice__c i2 = [SELECT Paid_Amount__c FROM Invoice__c WHERE Id = :inv2.Id];
         System.assertEquals(700, i2.Paid_Amount__c, 'New invoice paid re-derived');
     }
@@ -184,8 +195,12 @@ private class ReceiptManageControllerTest {
         Ctx c = build();
         Invoice__c inv2 = invoiceOnUnit(c.u.Id, 'INV-MNG3');
 
+        ReceiptManageController.AllocationInput input = new ReceiptManageController.AllocationInput();
+        input.invoiceId = inv2.Id;
+        input.amount = 500;
+        input.modeOfPayment = 'Cash';
         Test.startTest();
-        ReceiptManageController.addAllocation(c.r.Id, inv2.Id, 500, 'Cash');
+        ReceiptManageController.addAllocation(c.r.Id, input);
         Test.stopTest();
 
         Receipt_Amount__c line = [SELECT Amount__c FROM Receipt_Amount__c WHERE Receipt__c = :c.r.Id AND Invoice__c = :inv2.Id LIMIT 1];

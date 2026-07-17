@@ -1,14 +1,11 @@
 /**
  * ReceiptManageController — backend for the "Manage Receipt" LWC panel (Step 6).
  *
- * Guided, sanctioned edit path for finance to reduce, remove, REASSIGN, or add a receipt's
- * allocations, or soft-cancel a whole receipt. The four stored totals + the Milestone_Receipt
- * ledger are maintained automatically by the self-healing engine triggers; this controller only
- * mutates the FACTS (Receipt_Amount__c lines / Receipt.Payment_Status__c) and keeps the parallel
- * Receipt_Invoice__c link (read by the receipt PDF) in sync with the remaining lines.
- *
- * Removing an allocation does NOT destroy money — the receipt's Received_Amount is unchanged, the
- * money simply becomes "unapplied" and can be reassigned or added to another invoice on the unit.
+ * Guided edit path for finance to reduce, remove, reassign, or add a receipt's allocations, or
+ * soft-cancel a receipt. Totals + the Milestone_Receipt ledger self-heal via the engine triggers;
+ * this controller mutates facts and keeps the parallel Receipt_Invoice__c link (read by the PDF)
+ * in sync. Each allocation carries payment-instrument detail (reference / cheque / bank / POS)
+ * mirroring the create flow's mode-conditional fields.
  */
 public with sharing class ReceiptManageController {
 
@@ -22,8 +19,9 @@ public with sharing class ReceiptManageController {
         @AuraEnabled public Decimal unappliedAmount;
         @AuraEnabled public Boolean cancelled;
         @AuraEnabled public List<AllocationView> allocations;
-        @AuraEnabled public List<ComboOption> invoiceOptions; // invoices on the receipt's unit
-        @AuraEnabled public List<ComboOption> modeOptions;    // Mode_of_Payment picklist values
+        @AuraEnabled public List<ComboOption> invoiceOptions;
+        @AuraEnabled public List<ComboOption> modeOptions;
+        @AuraEnabled public List<ComboOption> bankNameOptions;
     }
 
     public class AllocationView {
@@ -32,6 +30,24 @@ public with sharing class ReceiptManageController {
         @AuraEnabled public String invoiceLabel;
         @AuraEnabled public Decimal amount;
         @AuraEnabled public String modeOfPayment;
+        @AuraEnabled public String referenceNumber;
+        @AuraEnabled public String chequeNumber;
+        @AuraEnabled public Date chequeDate;
+        @AuraEnabled public String bankName;
+        @AuraEnabled public String posReceiptNumber;
+    }
+
+    /** Input for add / save of an allocation line, including mode-conditional payment detail. */
+    public class AllocationInput {
+        @AuraEnabled public Id lineId;
+        @AuraEnabled public Id invoiceId;
+        @AuraEnabled public String modeOfPayment;
+        @AuraEnabled public Decimal amount;
+        @AuraEnabled public String referenceNumber;
+        @AuraEnabled public String chequeNumber;
+        @AuraEnabled public Date chequeDate;
+        @AuraEnabled public String bankName;
+        @AuraEnabled public String posReceiptNumber;
     }
 
     public class ComboOption {
@@ -43,19 +59,14 @@ public with sharing class ReceiptManageController {
         }
     }
 
-    /** Load a receipt, its allocation lines, unapplied balance, and the unit's invoice options. */
     @AuraEnabled(cacheable=true)
     public static ReceiptView getReceipt(Id receiptId) {
-        if (receiptId == null) {
-            throw new AuraHandledException('No receipt specified.');
-        }
+        if (receiptId == null) throw new AuraHandledException('No receipt specified.');
         List<Receipt__c> recs = [
             SELECT Id, Name, Status__c, Payment_Status__c, Received_Amount__c, Unit__c
             FROM Receipt__c WHERE Id = :receiptId LIMIT 1
         ];
-        if (recs.isEmpty()) {
-            throw new AuraHandledException('Receipt not found.');
-        }
+        if (recs.isEmpty()) throw new AuraHandledException('Receipt not found.');
         Receipt__c r = recs[0];
 
         ReceiptView v = new ReceiptView();
@@ -69,8 +80,9 @@ public with sharing class ReceiptManageController {
 
         Decimal allocated = 0;
         for (Receipt_Amount__c ra : [
-            SELECT Id, Invoice__c, Invoice__r.Invoice_Number__c, Invoice__r.Name,
-                   Amount__c, Mode_of_Payment__c
+            SELECT Id, Invoice__c, Invoice__r.Invoice_Number__c, Invoice__r.Name, Amount__c,
+                   Mode_of_Payment__c, Reference_Number__c, Cheque_Number__c, Cheque_Date__c,
+                   Bank_Name__c, POS_Receipt_Number__c
             FROM Receipt_Amount__c
             WHERE Receipt__c = :receiptId
             ORDER BY CreatedDate ASC
@@ -81,6 +93,11 @@ public with sharing class ReceiptManageController {
             a.invoiceLabel = invoiceLabel(ra.Invoice__r);
             a.amount = ra.Amount__c;
             a.modeOfPayment = ra.Mode_of_Payment__c;
+            a.referenceNumber = ra.Reference_Number__c;
+            a.chequeNumber = ra.Cheque_Number__c;
+            a.chequeDate = ra.Cheque_Date__c;
+            a.bankName = ra.Bank_Name__c;
+            a.posReceiptNumber = ra.POS_Receipt_Number__c;
             v.allocations.add(a);
             allocated += (ra.Amount__c == null ? 0 : ra.Amount__c);
         }
@@ -96,45 +113,11 @@ public with sharing class ReceiptManageController {
                 v.invoiceOptions.add(new ComboOption(invoiceLabelFor(inv.Invoice_Number__c, inv.Name), inv.Id));
             }
         }
-        v.modeOptions = modeOptions();
+        v.modeOptions = picklistOptions(Receipt_Amount__c.Mode_of_Payment__c);
+        v.bankNameOptions = picklistOptions(Receipt_Amount__c.Bank_Name__c);
         return v;
     }
 
-    /** Active Mode_of_Payment picklist values, fetched from the schema so they match the org. */
-    private static List<ComboOption> modeOptions() {
-        List<ComboOption> opts = new List<ComboOption>();
-        for (Schema.PicklistEntry e : Receipt_Amount__c.Mode_of_Payment__c.getDescribe().getPicklistValues()) {
-            if (e.isActive()) opts.add(new ComboOption(e.getLabel(), e.getValue()));
-        }
-        return opts;
-    }
-
-    /** Save an allocation line's invoice, mode and amount together (single row Save in the panel). */
-    @AuraEnabled
-    public static void saveAllocation(Id lineId, Id invoiceId, String modeOfPayment, Decimal amount) {
-        if (lineId == null || invoiceId == null) throw new AuraHandledException('Line and invoice are required.');
-        if (amount == null || amount < 0) throw new AuraHandledException('Amount must be zero or greater.');
-        try {
-            Receipt_Amount__c line = [
-                SELECT Id, Receipt__c, Receipt__r.Unit__c, Invoice__c FROM Receipt_Amount__c WHERE Id = :lineId LIMIT 1
-            ];
-            Id oldInvoiceId = line.Invoice__c;
-            Boolean invoiceChanged = (invoiceId != oldInvoiceId);
-            if (invoiceChanged) assertSameUnit(line.Receipt__r.Unit__c, invoiceId);
-
-            update new Receipt_Amount__c(
-                Id = lineId, Invoice__c = invoiceId, Mode_of_Payment__c = modeOfPayment, Amount__c = amount
-            );
-            syncReceiptInvoice(line.Receipt__c, oldInvoiceId);
-            if (invoiceChanged) syncReceiptInvoice(line.Receipt__c, invoiceId);
-        } catch (AuraHandledException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new AuraHandledException('Could not save the allocation: ' + e.getMessage());
-        }
-    }
-
-    /** Change the amount a receipt line applies to its invoice. */
     @AuraEnabled
     public static void updateAllocationAmount(Id lineId, Decimal newAmount) {
         if (lineId == null) throw new AuraHandledException('No allocation specified.');
@@ -150,7 +133,6 @@ public with sharing class ReceiptManageController {
         }
     }
 
-    /** Re-point an existing allocation line to a different invoice on the same unit. */
     @AuraEnabled
     public static void reassignAllocation(Id lineId, Id newInvoiceId) {
         if (lineId == null || newInvoiceId == null) throw new AuraHandledException('Line and target invoice are required.');
@@ -161,7 +143,6 @@ public with sharing class ReceiptManageController {
             Id oldInvoiceId = line.Invoice__c;
             if (oldInvoiceId == newInvoiceId) return;
             assertSameUnit(line.Receipt__r.Unit__c, newInvoiceId);
-
             update new Receipt_Amount__c(Id = lineId, Invoice__c = newInvoiceId);
             syncReceiptInvoice(line.Receipt__c, oldInvoiceId);
             syncReceiptInvoice(line.Receipt__c, newInvoiceId);
@@ -172,18 +153,40 @@ public with sharing class ReceiptManageController {
         }
     }
 
-    /** Apply money from this receipt to another invoice on the same unit (splits / uses unapplied cash). */
+    /** Save an allocation line's invoice, mode, amount, and payment-instrument detail together. */
     @AuraEnabled
-    public static void addAllocation(Id receiptId, Id invoiceId, Decimal amount, String modeOfPayment) {
-        if (receiptId == null || invoiceId == null) throw new AuraHandledException('Receipt and invoice are required.');
-        if (amount == null || amount <= 0) throw new AuraHandledException('Amount must be greater than zero.');
+    public static void saveAllocation(AllocationInput input) {
+        if (input == null || input.lineId == null || input.invoiceId == null) throw new AuraHandledException('Line and invoice are required.');
+        if (input.amount == null || input.amount < 0) throw new AuraHandledException('Amount must be zero or greater.');
+        try {
+            Receipt_Amount__c line = [
+                SELECT Id, Receipt__c, Receipt__r.Unit__c, Invoice__c FROM Receipt_Amount__c WHERE Id = :input.lineId LIMIT 1
+            ];
+            Id oldInvoiceId = line.Invoice__c;
+            Boolean invoiceChanged = (input.invoiceId != oldInvoiceId);
+            if (invoiceChanged) assertSameUnit(line.Receipt__r.Unit__c, input.invoiceId);
+            update toReceiptAmount(input.lineId, input);
+            syncReceiptInvoice(line.Receipt__c, oldInvoiceId);
+            if (invoiceChanged) syncReceiptInvoice(line.Receipt__c, input.invoiceId);
+        } catch (AuraHandledException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AuraHandledException('Could not save the allocation: ' + e.getMessage());
+        }
+    }
+
+    /** Apply money from this receipt to another invoice on the same unit. */
+    @AuraEnabled
+    public static void addAllocation(Id receiptId, AllocationInput input) {
+        if (receiptId == null || input == null || input.invoiceId == null) throw new AuraHandledException('Receipt and invoice are required.');
+        if (input.amount == null || input.amount <= 0) throw new AuraHandledException('Amount must be greater than zero.');
         try {
             Receipt__c r = [SELECT Id, Unit__c FROM Receipt__c WHERE Id = :receiptId LIMIT 1];
-            assertSameUnit(r.Unit__c, invoiceId);
-            insert new Receipt_Amount__c(
-                Receipt__c = receiptId, Invoice__c = invoiceId, Amount__c = amount, Mode_of_Payment__c = modeOfPayment
-            );
-            syncReceiptInvoice(receiptId, invoiceId);
+            assertSameUnit(r.Unit__c, input.invoiceId);
+            Receipt_Amount__c ra = toReceiptAmount(null, input);
+            ra.Receipt__c = receiptId;
+            insert ra;
+            syncReceiptInvoice(receiptId, input.invoiceId);
         } catch (AuraHandledException e) {
             throw e;
         } catch (Exception e) {
@@ -191,7 +194,6 @@ public with sharing class ReceiptManageController {
         }
     }
 
-    /** Remove an allocation entirely (money returns to the receipt as unapplied). */
     @AuraEnabled
     public static void removeAllocation(Id lineId) {
         if (lineId == null) throw new AuraHandledException('No allocation specified.');
@@ -208,7 +210,6 @@ public with sharing class ReceiptManageController {
         }
     }
 
-    /** Soft-cancel a whole receipt: it drops out of every total but the record + number are kept. */
     @AuraEnabled
     public static void cancelReceipt(Id receiptId) {
         if (receiptId == null) throw new AuraHandledException('No receipt specified.');
@@ -219,7 +220,29 @@ public with sharing class ReceiptManageController {
         }
     }
 
-    // ---- helpers -------------------------------------------------------------
+    // ---- helpers ----
+
+    private static Receipt_Amount__c toReceiptAmount(Id lineId, AllocationInput input) {
+        return new Receipt_Amount__c(
+            Id = lineId,
+            Invoice__c = input.invoiceId,
+            Amount__c = input.amount,
+            Mode_of_Payment__c = input.modeOfPayment,
+            Reference_Number__c = input.referenceNumber,
+            Cheque_Number__c = input.chequeNumber,
+            Cheque_Date__c = input.chequeDate,
+            Bank_Name__c = input.bankName,
+            POS_Receipt_Number__c = input.posReceiptNumber
+        );
+    }
+
+    private static List<ComboOption> picklistOptions(Schema.SObjectField field) {
+        List<ComboOption> opts = new List<ComboOption>();
+        for (Schema.PicklistEntry e : field.getDescribe().getPicklistValues()) {
+            if (e.isActive()) opts.add(new ComboOption(e.getLabel(), e.getValue()));
+        }
+        return opts;
+    }
 
     private static String invoiceLabel(Invoice__c inv) {
         if (inv == null) return null;
@@ -237,11 +260,6 @@ public with sharing class ReceiptManageController {
         }
     }
 
-    /**
-     * Keep the Receipt_Invoice__c link (read by the receipt PDF) consistent with the remaining
-     * Receipt_Amount__c lines for a given receipt+invoice pair: set its Amount to their sum, or
-     * delete the link when no lines remain.
-     */
     private static void syncReceiptInvoice(Id receiptId, Id invoiceId) {
         if (receiptId == null || invoiceId == null) return;
 
