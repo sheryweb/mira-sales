@@ -582,6 +582,90 @@ private class SOAPDFControllerTest {
     }
     
     /**
+     * Test MIRA VERDE project - currency should be USD and unit cost should come from Cost_USD__c.
+     * Project_Name_F__c is a formula on Project__r.Name, so a real Project record drives the branch.
+     */
+    @isTest
+    static void testMiraVerdeProject() {
+        Project__c miraVerdeProject = new Project__c(
+            Name = 'Trussardi Residences MIRA VERDE',
+            Description__c = 'Test Project MIRA VERDE',
+            District__c = 'Meydan',
+            Coordinates_Latitude__c = 7.0,
+            Coordinates_Longitude__c = 7.0,
+            Handover__c = Date.today(),
+            Minimum_Cost__c = 7000000,
+            Publish_Project__c = 'Published',
+            Project_Code__c = 'TEST-SOA-MV'
+        );
+        insert miraVerdeProject;
+        
+        Unit__c miraUnit = new Unit__c(
+            Project__c = miraVerdeProject.Id,
+            Title__c = 'MiraVerde-Unit',
+            Type__c = 'Apartment',
+            Number_of_Bedrooms__c = 2,
+            Cost_AED__c = 1000000,
+            Cost_USD__c = 275000,
+            Building__c = 'MIRA VERDE Building',
+            Booking_Date_Time__c = Date.today().addMonths(-1)
+        );
+        insert miraUnit;
+        
+        Account acct = new Account(Name = 'MIRA VERDE Test Customer');
+        insert acct;
+        
+        Opportunity opp = new Opportunity(
+            Name = 'MIRA VERDE Test Opp',
+            AccountId = acct.Id,
+            Unit__c = miraUnit.Id,
+            StageName = 'Prospecting',
+            CloseDate = Date.today().addMonths(2)
+        );
+        insert opp;
+        
+        Cash_Flow_Sum__c cashFlowSum = new Cash_Flow_Sum__c(
+            Name = 'MIRA VERDE Cash Flow Sum',
+            Unit__c = miraUnit.Id
+        );
+        insert cashFlowSum;
+        
+        insert new Cash_Flow__c(
+            Name = 'MIRA VERDE Instalment',
+            Date__c = Date.today(),
+            Unit__c = miraUnit.Id,
+            Installment_Milestone__c = 'Booking',
+            Cash_Flow_Sum__c = cashFlowSum.Id
+        );
+        
+        PageReference pageRef = Page.SOAPDF;
+        pageRef.getParameters().put('oppId', opp.Id);
+        Test.setCurrentPage(pageRef);
+        
+        Test.startTest();
+        SOAPDFController controller = new SOAPDFController();
+        Test.stopTest();
+        
+        System.assertEquals(true, controller.getIsMiraVerde(), 'Should detect MIRA VERDE project');
+        System.assertEquals(false, controller.getIsElieSaab(), 'Should not be Elie Saab project');
+        System.assertEquals('USD', controller.getCurrencyCode(), 'Currency should be USD for MIRA VERDE');
+        
+        Unit__c persisted = [
+            SELECT Cost_USD__c, Total_VAT_on_Unit__c FROM Unit__c WHERE Id = :miraUnit.Id
+        ];
+        System.assertEquals(
+            SOAPDFController.sumBaseCostAndUnitVat(persisted.Cost_USD__c, persisted.Total_VAT_on_Unit__c),
+            controller.getUnitCost(),
+            'Unit cost should be Cost_USD__c + Total_VAT_on_Unit__c for MIRA VERDE'
+        );
+        
+        System.assert(controller.getFormattedInstallmentsPaid().startsWith('USD '), 'Installments paid should be in USD');
+        System.assert(controller.getFormattedTotalDueAmount().startsWith('USD '), 'Total due should be in USD');
+        System.assert(controller.getFormattedTotalDueInstalmentsAmount().startsWith('USD '), 'Due instalments should be in USD');
+        System.assert(controller.getFormattedTotalDueRegistrationAmount().startsWith('USD '), 'Due registration should be in USD');
+    }
+    
+    /**
      * Unit cost = base cost + Total_VAT_on_Unit__c. Total_VAT_on_Unit__c is often formula/rollup, so Apex cannot
      * rely on assigning it on insert in tests; arithmetic is covered via sumBaseCostAndUnitVat; controller matches DB.
      */

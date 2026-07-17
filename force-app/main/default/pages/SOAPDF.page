@@ -88,7 +88,7 @@
     <tr><th class="half-columns">Project</th><td>{!propertyDetails.Project_Name_F__c}</td></tr>
     <tr><th class="half-columns">Unit Type</th><td>{!IF(propertyDetails.Number_of_Bedrooms__c == 0, 'Studio', propertyDetails.Number_of_Bedrooms__c)} {!IF(propertyDetails.Number_of_Bedrooms__c == 0, '', 'Bedroom')} - {!propertyDetails.Type__c}</td></tr>
     <tr><th class="half-columns">Purchase Price (Incl. VAT*)</th><td class="amount-cell">
-      <apex:outputText value="{!IF(isElieSaab, 'CHF', 'AED')} {0, number, ###,##0.00}">
+      <apex:outputText value="{!currencyCode} {0, number, ###,##0.00}">
         <apex:param value="{!unitCost}"/>
       </apex:outputText>
     </td></tr>
@@ -168,9 +168,9 @@
   <tr>
     <th>Description</th>
     <th class="date-cell">Due Date</th>
-    <th class="amount-cell">Installment Amount ({!IF(isElieSaab, 'CHF', 'AED')})</th>
-    <th class="amount-cell">Payment Received ({!IF(isElieSaab, 'CHF', 'AED')})</th>
-    <th class="amount-cell">Total Balance ({!IF(isElieSaab, 'CHF', 'AED')})</th>
+    <th class="amount-cell">Installment Amount ({!currencyCode})</th>
+    <th class="amount-cell">Payment Received ({!currencyCode})</th>
+    <th class="amount-cell">Total Balance ({!currencyCode})</th>
   </tr>
   
   <apex:repeat value="{!registrationItems}" var="regItem">
@@ -231,9 +231,9 @@
         <tr>
             <th>Description</th>
             <th class="date-cell">Due Date</th>
-            <th class="amount-cell">Amount ({!IF(isElieSaab, 'CHF', 'AED')})</th>
-            <th class="amount-cell">Received ({!IF(isElieSaab, 'CHF', 'AED')})</th>
-            <th class="amount-cell">Balance ({!IF(isElieSaab, 'CHF', 'AED')})</th>
+            <th class="amount-cell">Amount ({!currencyCode})</th>
+            <th class="amount-cell">Received ({!currencyCode})</th>
+            <th class="amount-cell">Balance ({!currencyCode})</th>
         </tr>
         <apex:repeat value="{!firstTableDisplayRows}" var="row">
             <tr>
@@ -297,9 +297,9 @@
             <tr>
                 <th>Description</th>
                 <th class="date-cell">Due Date</th>
-                            <th class="amount-cell">Amount ({!IF(isElieSaab, 'CHF', 'AED')})</th>
-            <th class="amount-cell">Received ({!IF(isElieSaab, 'CHF', 'AED')})</th>
-            <th class="amount-cell">Balance ({!IF(isElieSaab, 'CHF', 'AED')})</th>
+                            <th class="amount-cell">Amount ({!currencyCode})</th>
+            <th class="amount-cell">Received ({!currencyCode})</th>
+            <th class="amount-cell">Balance ({!currencyCode})</th>
             </tr>
             <apex:repeat value="{!secondTableCashFlowItems}" var="item">
                 <tr>

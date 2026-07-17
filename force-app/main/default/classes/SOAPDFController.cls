@@ -58,7 +58,7 @@ public without sharing class SOAPDFController {
             // Load property details from Unit__c
             List<Unit__c> units = [
                 SELECT Id, Title__c, Project_Name_F__c, Is_VAT_Applicable__c, Building__c, Type__c, Number_of_Bedrooms__c,
-                       Cost_AED__c, Cost_CHF__c, Total_VAT_on_Unit__c, Booking_Date_Time__c, Received_Installments_Amount__c
+                       Cost_AED__c, Cost_CHF__c, Cost_USD__c, Total_VAT_on_Unit__c, Booking_Date_Time__c, Received_Installments_Amount__c
                 FROM Unit__c
                 WHERE Id = :opp.Unit__c
                 LIMIT 1
@@ -107,6 +107,19 @@ public without sharing class SOAPDFController {
                propertyDetails.Project_Name_F__c == 'POST HOTEL & RESIDENCES By ELIE SAAB';
     }
     
+    // Helper method to check if the project is Trussardi Residences MIRA VERDE
+    public Boolean getIsMiraVerde() {
+        return propertyDetails != null && 
+               propertyDetails.Project_Name_F__c == 'Trussardi Residences MIRA VERDE';
+    }
+    
+    // Currency code for display: CHF for Elie Saab, USD for MIRA VERDE, AED otherwise
+    public String getCurrencyCode() {
+        if (getIsElieSaab()) return 'CHF';
+        if (getIsMiraVerde()) return 'USD';
+        return 'AED';
+    }
+    
     /** Base purchase cost + unit-level VAT (null-safe). Exposed for tests because Total_VAT_on_Unit__c is often formula/rollup. */
     @TestVisible
     private static Decimal sumBaseCostAndUnitVat(Decimal baseCost, Decimal totalVatOnUnit) {
@@ -121,6 +134,9 @@ public without sharing class SOAPDFController {
         
         if (getIsElieSaab()) {
             return sumBaseCostAndUnitVat(propertyDetails.Cost_CHF__c, propertyDetails.Total_VAT_on_Unit__c);
+        }
+        if (getIsMiraVerde()) {
+            return sumBaseCostAndUnitVat(propertyDetails.Cost_USD__c, propertyDetails.Total_VAT_on_Unit__c);
         }
         return sumBaseCostAndUnitVat(propertyDetails.Cost_AED__c, propertyDetails.Total_VAT_on_Unit__c);
     }
@@ -370,8 +386,8 @@ public without sharing class SOAPDFController {
     
     // Format currency for display
     public String getFormattedInstallmentsPaid() {
-        if (totalInstallmentsPaid == null) return (getIsElieSaab() ? 'CHF ' : 'AED ') + '0.00';
-        return (getIsElieSaab() ? 'CHF ' : 'AED ') + String.valueOf(totalInstallmentsPaid.setScale(2).format());
+        if (totalInstallmentsPaid == null) return getCurrencyCode() + ' 0.00';
+        return getCurrencyCode() + ' ' + String.valueOf(totalInstallmentsPaid.setScale(2).format());
     }
     
     // Calculate percentage paid based on total cost
@@ -499,8 +515,8 @@ public without sharing class SOAPDFController {
     // Format the total due instalments amount for Current Amounts Due Summary
     public String getFormattedTotalDueInstalmentsAmount() {
         Decimal amount = getTotalDueInstalmentsAmount();
-        if (amount == null) return (getIsElieSaab() ? 'CHF ' : 'AED ') + '0.00';
-        return (getIsElieSaab() ? 'CHF ' : 'AED ') + String.valueOf(amount.setScale(2).format());
+        if (amount == null) return getCurrencyCode() + ' 0.00';
+        return getCurrencyCode() + ' ' + String.valueOf(amount.setScale(2).format());
     }
 
     // Get total remaining registration charges amount for Current Amounts Due Summary
@@ -524,8 +540,8 @@ public without sharing class SOAPDFController {
     // Format the total due registration amount for Current Amounts Due Summary
     public String getFormattedTotalDueRegistrationAmount() {
         Decimal amount = getTotalDueRegistrationAmount();
-        if (amount == null) return (getIsElieSaab() ? 'CHF ' : 'AED ') + '0.00';
-        return (getIsElieSaab() ? 'CHF ' : 'AED ') + String.valueOf(amount.setScale(2).format());
+        if (amount == null) return getCurrencyCode() + ' 0.00';
+        return getCurrencyCode() + ' ' + String.valueOf(amount.setScale(2).format());
     }
 
     // Get total due amount (sum of registration and instalments)
@@ -540,7 +556,7 @@ public without sharing class SOAPDFController {
     // Format the total due amount for Current Amounts Due Summary
     public String getFormattedTotalDueAmount() {
         Decimal amount = getTotalDueAmount();
-        if (amount == null) return (getIsElieSaab() ? 'CHF ' : 'AED ') + '0.00';
-        return (getIsElieSaab() ? 'CHF ' : 'AED ') + String.valueOf(amount.setScale(2).format());
+        if (amount == null) return getCurrencyCode() + ' 0.00';
+        return getCurrencyCode() + ' ' + String.valueOf(amount.setScale(2).format());
     }
 }
