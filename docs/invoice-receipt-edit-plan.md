@@ -208,7 +208,15 @@ Still open:
 - **These legacy tests ENCODE the old spill/dump behavior** we intend to drop (e.g. `testMultipleInvoicesSameUnitCashFlowDistribution` asserts excess lands on an unlinked cash flow). CONSEQUENCE for Step 5: with the engine flag ON in the sandbox, self-healing triggers will produce new no-spill behavior and break these assertions. Plan: legacy tests must set `Engine_Owns_Totals__c` OFF (isolate the old path); engine gets its own tests with the flag ON.
 - **Dry-run reconciliation harness moved into the front of Step 4** — it must share the engine's exact derivation math, so build the engine's pure no-DML derivation core first, then run it in dry-run for the reconciliation report. Avoids duplicating the math.
 
-**Next: Step 4 — the FinancialEngine.** Sub-step 4a = pure, idempotent, no-DML derivation core (Invoice.Paid_Amount/Status, Receipt.Received_Amount, Receipt_Amount.Cumulative, Cash_Flow.Received_Amount from Milestone_Receipt ledger) + the dry-run reconciliation report built on it. Behavioral micro-decisions (§7.3 ordering within an invoice / overpay handling; §7.4 delete-vs-cancel) settle here.
+**STEP 4a DONE 2026-07-17** — added `Milestone_Receipt__c.Invoice__c` (Lookup→Invoice, SetNull, not required); deployed to `working`. FLS still owed to the finance permission set (Step 3/Phase 3).
+
+**STEP 4b DONE 2026-07-17** — `FinancialEngine.cls` + `FinancialEngineTest.cls` created & deployed to `working`; 7/7 engine tests pass (Run `707U900001gjGpx`). Pure `deriveForUnits(Set<Id>)` returns desired state (invoice paid/status, receipt received, line cumulative, cash-flow received, ledger rows) with ZERO DML. Reproduces the spill waterfall, fixes the sibling-line cumulative bug, excludes Cancelled/Unreconciled receipts, idempotent. Status/payment-status values come from global value set `Payment_Status` (Pending / Partially Paid / Fully Paid / Cancelled). Capacity = `Cash_Flow__c.Price_Formula__c`; VAT-exact parity on real data to be validated in 4c.
+- **DESIGN NUANCE:** the engine derives purely from RECEIPT-BACKED facts (every cash flow starts at 0 and is filled only by actual receipt lines). It will therefore NOT reproduce old tests that preset `Cash_Flow.Received_Amount__c` with no backing receipt (e.g. `ReceiptRecordInsertTest.testCashFlowEdgeCases`). That divergence is correct and intended — those are synthetic non-receipt states.
+
+**Next: Step 4c — dry-run reconciliation report** built on `deriveForUnits`: read-only stored-vs-derived diffs (old→new) for existing records, no writes.
+
+--- (Original Step 4 note preserved below.) ---
+Sub-step 4a = pure, idempotent, no-DML derivation core (Invoice.Paid_Amount/Status, Receipt.Received_Amount, Receipt_Amount.Cumulative, Cash_Flow.Received_Amount from Milestone_Receipt ledger) + the dry-run reconciliation report built on it. Behavioral micro-decisions (§7.3 ordering within an invoice / overpay handling; §7.4 delete-vs-cancel) settle here.
 
 ---
 
