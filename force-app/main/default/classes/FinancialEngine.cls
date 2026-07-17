@@ -28,6 +28,9 @@ public without sharing class FinancialEngine {
     @TestVisible static final String STATUS_PARTIAL = 'Partially Paid';
     @TestVisible static final String STATUS_FULL    = 'Fully Paid';
 
+    /** Recursion guard: true while the engine is writing its own DML, so triggers don't re-enter. */
+    @TestVisible public static Boolean bypass = false;
+
     /** One receipt-to-installment allocation landing. Maps 1:1 to a Milestone_Receipt__c row. */
     public class LedgerRow {
         public Id receiptId;
@@ -223,5 +226,103 @@ public without sharing class FinancialEngine {
 
     private static Decimal nz(Decimal d) {
         return d == null ? 0 : d;
+    }
+
+    // ==========================================================================================
+    // Write side (Step 5). deriveForUnits above is pure; everything below performs DML and is
+    // gated by the feature flag + a recursion guard. This is the single entry point the
+    // self-healing triggers call.
+    // ==========================================================================================
+
+    /** True when Financial_Engine_Settings__c grants the engine authority over the four totals. */
+    public static Boolean isEngineEnabled() {
+        Financial_Engine_Settings__c s = Financial_Engine_Settings__c.getOrgDefaults();
+        return s != null && s.Engine_Owns_Totals__c == true;
+    }
+
+    /**
+     * Re-derive and WRITE the corrected totals + rebuild the Milestone_Receipt ledger for the
+     * given units. No-op unless the feature flag is on. Recursion-guarded so the engine's own
+     * DML never re-enters it. Only records whose value actually changed are updated.
+     */
+    public static void applyForUnits(Set<Id> unitIds) {
+        if (unitIds == null || unitIds.isEmpty()) return;
+        if (bypass) return;
+        if (!isEngineEnabled()) return;
+        bypass = true;
+        try {
+            DerivationResult res = new FinancialEngine().deriveForUnits(unitIds);
+            writeResults(unitIds, res);
+        } finally {
+            bypass = false;
+        }
+    }
+
+    private static void writeResults(Set<Id> unitIds, DerivationResult res) {
+        // --- Invoices: Paid_Amount__c + Status__c ---
+        List<Invoice__c> invUpd = new List<Invoice__c>();
+        for (Invoice__c inv : [SELECT Id, Paid_Amount__c, Status__c FROM Invoice__c WHERE Unit__c IN :unitIds]) {
+            Invoice__c u = new Invoice__c(Id = inv.Id);
+            Boolean changed = false;
+            if (res.invoicePaidAmount.containsKey(inv.Id) && !eq(inv.Paid_Amount__c, res.invoicePaidAmount.get(inv.Id))) {
+                u.Paid_Amount__c = res.invoicePaidAmount.get(inv.Id);
+                changed = true;
+            }
+            if (res.invoiceStatus.containsKey(inv.Id) && inv.Status__c != res.invoiceStatus.get(inv.Id)) {
+                u.Status__c = res.invoiceStatus.get(inv.Id);
+                changed = true;
+            }
+            if (changed) invUpd.add(u);
+        }
+        if (!invUpd.isEmpty()) update invUpd;
+
+        // --- Receipts: Received_Amount__c ---
+        List<Receipt__c> recUpd = new List<Receipt__c>();
+        for (Receipt__c r : [SELECT Id, Received_Amount__c FROM Receipt__c WHERE Unit__c IN :unitIds]) {
+            if (res.receiptReceived.containsKey(r.Id) && !eq(r.Received_Amount__c, res.receiptReceived.get(r.Id))) {
+                recUpd.add(new Receipt__c(Id = r.Id, Received_Amount__c = res.receiptReceived.get(r.Id)));
+            }
+        }
+        if (!recUpd.isEmpty()) update recUpd;
+
+        // --- Receipt amount lines: Cumulative_Paid_Amount__c (only non-excluded lines are in the map) ---
+        List<Receipt_Amount__c> lineUpd = new List<Receipt_Amount__c>();
+        for (Receipt_Amount__c ra : [SELECT Id, Cumulative_Paid_Amount__c FROM Receipt_Amount__c WHERE Receipt__r.Unit__c IN :unitIds]) {
+            if (res.lineCumulative.containsKey(ra.Id) && !eq(ra.Cumulative_Paid_Amount__c, res.lineCumulative.get(ra.Id))) {
+                lineUpd.add(new Receipt_Amount__c(Id = ra.Id, Cumulative_Paid_Amount__c = res.lineCumulative.get(ra.Id)));
+            }
+        }
+        if (!lineUpd.isEmpty()) update lineUpd;
+
+        // --- Cash flows: Received_Amount__c ---
+        List<Cash_Flow__c> cfUpd = new List<Cash_Flow__c>();
+        for (Cash_Flow__c cf : [SELECT Id, Received_Amount__c FROM Cash_Flow__c WHERE Unit__c IN :unitIds]) {
+            if (res.cashFlowReceived.containsKey(cf.Id) && !eq(cf.Received_Amount__c, res.cashFlowReceived.get(cf.Id))) {
+                cfUpd.add(new Cash_Flow__c(Id = cf.Id, Received_Amount__c = res.cashFlowReceived.get(cf.Id)));
+            }
+        }
+        if (!cfUpd.isEmpty()) update cfUpd;
+
+        // --- Rebuild the Milestone_Receipt ledger for these units' receipts ---
+        // Delete-and-reinsert keeps it a faithful mirror of the current derivation. Rows for
+        // cancelled/unreconciled receipts are not regenerated, so they correctly drop out.
+        List<Milestone_Receipt__c> oldRows = [SELECT Id FROM Milestone_Receipt__c WHERE Receipt__r.Unit__c IN :unitIds];
+        if (!oldRows.isEmpty()) delete oldRows;
+        List<Milestone_Receipt__c> newRows = new List<Milestone_Receipt__c>();
+        for (LedgerRow row : res.ledger) {
+            newRows.add(new Milestone_Receipt__c(
+                Name = ('Allocation ' + String.valueOf(row.amount)).abbreviate(80),
+                Receipt__c = row.receiptId,
+                Invoice__c = row.invoiceId,
+                Cash_Flow__c = row.cashFlowId,
+                Amount__c = row.amount,
+                Installment_Date__c = row.installmentDate
+            ));
+        }
+        if (!newRows.isEmpty()) insert newRows;
+    }
+
+    private static Boolean eq(Decimal a, Decimal b) {
+        return Math.abs(nz(a) - nz(b)) <= 0.005;
     }
 }

@@ -112,8 +112,12 @@ public class ReceiptRecordInsert {
             insert receiptInvoiceAll;
         }
             
-        // Update invoices with payment amounts and proper status
-        if (!invoicePayments.isEmpty()) {
+        // Update invoices with payment amounts and proper status.
+        // When the centralized engine owns the totals (feature flag ON), skip this legacy
+        // incremental math entirely — the self-healing triggers already re-derived the correct
+        // totals when the Receipt_Amount__c lines were inserted above. Running it here too would
+        // double-count. With the flag OFF (production, pre-cutover) this path is unchanged.
+        if (!invoicePayments.isEmpty() && !FinancialEngine.isEngineEnabled()) {
             // Fetch the current invoice data to check pending amounts
             List<Invoice__c> currentInvoices = [
                 SELECT Id, Pending_Amount__c, Paid_Amount__c 
