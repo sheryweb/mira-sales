@@ -117,11 +117,14 @@ public with sharing class InvoiceManageController {
             v.installments.add(iv);
         }
 
+        // Only offer installments not already invoiced (or waived) — an installment marked
+        // Is_Invoiced__c can't be added again, and reappears here once it's removed from its invoice.
         v.cashFlowOptions = new List<CashFlowOption>();
         if (inv.Unit__c != null) {
             for (Cash_Flow__c cf : [
                 SELECT Id, Name, Percent__c, Date__c, Amount_on_Invoice__c FROM Cash_Flow__c
-                WHERE Unit__c = :inv.Unit__c ORDER BY Date__c ASC NULLS LAST, Name ASC
+                WHERE Unit__c = :inv.Unit__c AND Is_Invoiced__c = false AND Waived_Off__c = false
+                ORDER BY Date__c ASC NULLS LAST, Name ASC
             ]) {
                 v.cashFlowOptions.add(new CashFlowOption(cf));
             }
@@ -173,10 +176,15 @@ public with sharing class InvoiceManageController {
         if (invoiceId == null || cashFlowId == null) throw new AuraHandledException('Invoice and installment are required.');
         try {
             assertSameUnit(invoiceId, cashFlowId);
-            Cash_Flow__c cf = [SELECT Amount_on_Invoice__c FROM Cash_Flow__c WHERE Id = :cashFlowId LIMIT 1];
+            Cash_Flow__c cf = [SELECT Amount_on_Invoice__c, Is_Invoiced__c FROM Cash_Flow__c WHERE Id = :cashFlowId LIMIT 1];
+            if (cf.Is_Invoiced__c == true) {
+                throw new AuraHandledException('That installment is already invoiced.');
+            }
             insert new Milestone_Invoice__c(
                 Invoice__c = invoiceId, Cash_Flow__c = cashFlowId, Amount__c = cf.Amount_on_Invoice__c
             );
+            // Mark the cash flow invoiced so it drops out of the Add-installment list.
+            update new Cash_Flow__c(Id = cashFlowId, Is_Invoiced__c = true);
             recomputeInvoiceAmounts(invoiceId);
         } catch (AuraHandledException e) {
             throw e;
@@ -190,10 +198,15 @@ public with sharing class InvoiceManageController {
     public static void removeInstallment(Id milestoneId) {
         if (milestoneId == null) throw new AuraHandledException('No installment specified.');
         try {
-            List<Milestone_Invoice__c> rows = [SELECT Id, Invoice__c FROM Milestone_Invoice__c WHERE Id = :milestoneId];
+            List<Milestone_Invoice__c> rows = [SELECT Id, Invoice__c, Cash_Flow__c FROM Milestone_Invoice__c WHERE Id = :milestoneId];
             if (rows.isEmpty()) return;
             Id invoiceId = rows[0].Invoice__c;
+            Id cashFlowId = rows[0].Cash_Flow__c;
             delete rows;
+            // Free the installment so it can be selected again.
+            if (cashFlowId != null) {
+                update new Cash_Flow__c(Id = cashFlowId, Is_Invoiced__c = false);
+            }
             recomputeInvoiceAmounts(invoiceId);
         } catch (Exception e) {
             throw new AuraHandledException('Could not remove the installment: ' + e.getMessage());

@@ -93,6 +93,46 @@ private class InvoiceManageControllerTest {
     }
 
     @IsTest
+    static void addInstallmentMarksInvoicedAndHidesIt() {
+        Ctx c = build();
+        // cf2 is available to add initially.
+        System.assert(optionIds(InvoiceManageController.getInvoice(c.inv.Id)).contains(c.cf2.Id),
+            'cf2 offered before it is invoiced');
+
+        Test.startTest();
+        InvoiceManageController.addInstallment(c.inv.Id, c.cf2.Id);
+        Test.stopTest();
+
+        System.assertEquals(true, [SELECT Is_Invoiced__c FROM Cash_Flow__c WHERE Id = :c.cf2.Id].Is_Invoiced__c,
+            'Cash flow marked invoiced on add');
+        System.assert(!optionIds(InvoiceManageController.getInvoice(c.inv.Id)).contains(c.cf2.Id),
+            'cf2 no longer offered once invoiced');
+
+        // Adding it again is rejected.
+        Boolean threw = false;
+        try {
+            InvoiceManageController.addInstallment(c.inv.Id, c.cf2.Id);
+        } catch (AuraHandledException e) {
+            threw = true;
+        }
+        System.assert(threw, 'Re-adding an already-invoiced installment should throw');
+
+        // Remove it — it should free up and reappear.
+        Milestone_Invoice__c mi2 = [SELECT Id FROM Milestone_Invoice__c WHERE Invoice__c = :c.inv.Id AND Cash_Flow__c = :c.cf2.Id LIMIT 1];
+        InvoiceManageController.removeInstallment(mi2.Id);
+        System.assertEquals(false, [SELECT Is_Invoiced__c FROM Cash_Flow__c WHERE Id = :c.cf2.Id].Is_Invoiced__c,
+            'Cash flow freed on remove');
+        System.assert(optionIds(InvoiceManageController.getInvoice(c.inv.Id)).contains(c.cf2.Id),
+            'cf2 offered again after removal');
+    }
+
+    private static Set<Id> optionIds(InvoiceManageController.InvoiceView v) {
+        Set<Id> ids = new Set<Id>();
+        for (InvoiceManageController.CashFlowOption o : v.cashFlowOptions) ids.add((Id) o.value);
+        return ids;
+    }
+
+    @IsTest
     static void installmentFromOtherUnitRejected() {
         Ctx c = build();
         Unit__c u2 = new Unit__c(Title__c = 'other');
