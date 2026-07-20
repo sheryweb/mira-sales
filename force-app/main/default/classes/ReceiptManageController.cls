@@ -153,9 +153,14 @@ public with sharing class ReceiptManageController {
         }
     }
 
-    /** Save an allocation line's invoice, mode, amount, and payment-instrument detail together. */
+    /**
+     * Save an allocation line's invoice, mode, amount, and payment-instrument detail together.
+     * The payload is a JSON string (an Apex-class wrapper parameter does not reliably receive its
+     * field values from an LWC imperative call).
+     */
     @AuraEnabled
-    public static void saveAllocation(AllocationInput input) {
+    public static void saveAllocation(String payload) {
+        AllocationInput input = parseInput(payload);
         if (input == null || input.lineId == null || input.invoiceId == null) throw new AuraHandledException('Line and invoice are required.');
         if (input.amount == null || input.amount < 0) throw new AuraHandledException('Amount must be zero or greater.');
         try {
@@ -175,9 +180,10 @@ public with sharing class ReceiptManageController {
         }
     }
 
-    /** Apply money from this receipt to another invoice on the same unit. */
+    /** Apply money from this receipt to another invoice on the same unit. Payload is a JSON string. */
     @AuraEnabled
-    public static void addAllocation(Id receiptId, AllocationInput input) {
+    public static void addAllocation(Id receiptId, String payload) {
+        AllocationInput input = parseInput(payload);
         if (receiptId == null || input == null || input.invoiceId == null) throw new AuraHandledException('Receipt and invoice are required.');
         if (input.amount == null || input.amount <= 0) throw new AuraHandledException('Amount must be greater than zero.');
         try {
@@ -257,6 +263,15 @@ public with sharing class ReceiptManageController {
         Invoice__c inv = [SELECT Unit__c FROM Invoice__c WHERE Id = :invoiceId LIMIT 1];
         if (receiptUnitId == null || inv.Unit__c != receiptUnitId) {
             throw new AuraHandledException('The invoice must belong to the same unit as the receipt.');
+        }
+    }
+
+    private static AllocationInput parseInput(String payload) {
+        if (String.isBlank(payload)) throw new AuraHandledException('No allocation data supplied.');
+        try {
+            return (AllocationInput) JSON.deserialize(payload, AllocationInput.class);
+        } catch (Exception e) {
+            throw new AuraHandledException('Could not read the allocation data: ' + e.getMessage());
         }
     }
 

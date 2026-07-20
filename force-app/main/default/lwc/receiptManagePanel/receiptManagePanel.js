@@ -131,7 +131,7 @@ export default class ReceiptManagePanel extends LightningElement {
             this.toast('Invalid amount', 'Enter a number of zero or more.', 'error');
             return;
         }
-        this.run(saveAllocation({ input: this.toInput(row, amount) }), 'Allocation saved.');
+        this.run(saveAllocation({ payload: JSON.stringify(this.toInput(row, amount)) }), 'Allocation saved.');
     }
 
     async handleRemove(event) {
@@ -166,7 +166,7 @@ export default class ReceiptManagePanel extends LightningElement {
             this.toast('Invalid amount', 'Enter an amount greater than zero.', 'error');
             return;
         }
-        this.run(addAllocation({ receiptId: this.recordId, input: this.toInput(this.newLine, amount) }), 'Allocation added.');
+        this.run(addAllocation({ receiptId: this.recordId, payload: JSON.stringify(this.toInput(this.newLine, amount)) }), 'Allocation added.');
     }
 
     toInput(row, amount) {

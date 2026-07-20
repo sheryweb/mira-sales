@@ -158,7 +158,7 @@ private class ReceiptManageControllerTest {
         input.chequeDate = System.today();
         input.referenceNumber = 'REF-9';
         Test.startTest();
-        ReceiptManageController.saveAllocation(input);
+        ReceiptManageController.saveAllocation(JSON.serialize(input));
         Test.stopTest();
 
         Receipt_Amount__c ra = [SELECT Invoice__c, Mode_of_Payment__c, Amount__c, Cheque_Number__c, Reference_Number__c FROM Receipt_Amount__c WHERE Id = :c.ra.Id];
@@ -200,7 +200,7 @@ private class ReceiptManageControllerTest {
         input.amount = 500;
         input.modeOfPayment = 'Cash';
         Test.startTest();
-        ReceiptManageController.addAllocation(c.r.Id, input);
+        ReceiptManageController.addAllocation(c.r.Id, JSON.serialize(input));
         Test.stopTest();
 
         Receipt_Amount__c line = [SELECT Amount__c FROM Receipt_Amount__c WHERE Receipt__c = :c.r.Id AND Invoice__c = :inv2.Id LIMIT 1];
