@@ -59,7 +59,9 @@ public with sharing class ReceiptManageController {
         }
     }
 
-    @AuraEnabled(cacheable=true)
+    // Not cacheable: the panel calls this imperatively after every mutation (save/add/remove/reassign
+    // allocation) and must get freshly re-derived amounts/status, not a stale client cache.
+    @AuraEnabled
     public static ReceiptView getReceipt(Id receiptId) {
         if (receiptId == null) throw new AuraHandledException('No receipt specified.');
         List<Receipt__c> recs = [
