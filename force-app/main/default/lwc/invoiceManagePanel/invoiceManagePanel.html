@@ -51,21 +51,24 @@
                     <template if:true={view.unitName}>&nbsp;·&nbsp;Unit: {view.unitName}</template>
                 </p>
 
-                <!-- Correct amount -->
-                <p class="section-title">Correct amount</p>
+                <!-- Amount & currency -->
+                <p class="section-title">Amount &amp; currency</p>
                 <div class="slds-box slds-box_x-small slds-m-bottom_medium">
                     <div class="slds-grid slds-gutters_x-small">
                         <div class="slds-col">
-                            <lightning-input type="number" label="Sub-Total" variant="label-stacked"
-                                step="0.01" min="0" formatter="currency"
-                                value={editSubTotal} onchange={handleSubTotalChange}></lightning-input>
+                            <p class="tile__label">Sub-Total</p>
+                            <p><lightning-formatted-number value={view.subTotal}
+                                format-style="currency" currency-code="AED"></lightning-formatted-number></p>
                         </div>
                         <div class="slds-col">
-                            <lightning-input type="number" label="VAT" variant="label-stacked"
-                                step="0.01" min="0" formatter="currency"
-                                value={editVat} onchange={handleVatChange}></lightning-input>
+                            <p class="tile__label">VAT</p>
+                            <p><lightning-formatted-number value={view.vat}
+                                format-style="currency" currency-code="AED"></lightning-formatted-number></p>
                         </div>
                     </div>
+                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                        Sub-Total and VAT are derived from the covered installments below.
+                    </p>
                     <div class="slds-m-top_x-small">
                         <lightning-input type="toggle" label="Other currency"
                             message-toggle-active="On" message-toggle-inactive="Off"
@@ -86,8 +89,8 @@
                         </div>
                     </template>
                     <div class="slds-m-top_x-small">
-                        <lightning-button label="Save amount" variant="brand" stretch
-                            onclick={handleSaveAmounts}></lightning-button>
+                        <lightning-button label="Save currency" variant="brand" stretch
+                            onclick={handleSaveCurrency}></lightning-button>
                     </div>
                 </div>
 

@@ -1,13 +1,15 @@
 /**
  * InvoiceManageController — backend for the "Manage Invoice" LWC panel (Step 7).
  *
- * Guided edit path for finance to correct an invoice's amount (Sub-Total / VAT) and manage which
- * Cash Flow installments the invoice covers (its Milestone_Invoice__c rows). The four stored totals
- * + status are maintained by the self-healing engine triggers; this controller only mutates facts.
+ * Guided edit path for finance to manage which Cash Flow installments the invoice covers (its
+ * Milestone_Invoice__c rows) and its secondary-currency detail. The four stored totals + status are
+ * maintained by the self-healing engine triggers; this controller only mutates facts.
  *
- * An installment's amount is NOT user-editable: it is derived from the Cash Flow's
- * Amount_on_Invoice__c (which is computed from the installment's percentage). Re-parenting an
- * invoice to a different unit is intentionally NOT handled here (separate step).
+ * The invoice amount is NOT user-editable: Sub-Total / VAT / Grand-Total are derived from the covered
+ * cash-flow installments (recomputeInvoiceAmounts) and re-derive whenever installments change. An
+ * installment's amount is likewise derived from the Cash Flow's Amount_on_Invoice__c (computed from
+ * the installment's percentage). Re-parenting an invoice to a different unit is intentionally NOT
+ * handled here (separate step).
  */
 public with sharing class InvoiceManageController {
 
@@ -64,7 +66,9 @@ public with sharing class InvoiceManageController {
         }
     }
 
-    @AuraEnabled(cacheable=true)
+    // Not cacheable: the panel calls this imperatively after every mutation (add/remove installment,
+    // currency change) and must get freshly re-derived totals/status, not a stale client cache.
+    @AuraEnabled
     public static InvoiceView getInvoice(Id invoiceId) {
         if (invoiceId == null) throw new AuraHandledException('No invoice specified.');
         List<Invoice__c> invs = [
@@ -126,16 +130,16 @@ public with sharing class InvoiceManageController {
     }
 
     /**
-     * Correct the invoice's Sub-Total / VAT and (optionally) its secondary-currency detail.
-     * Pending + status re-derive via the engine. When otherCurrency is off, the secondary-currency
-     * fields are cleared; when on, Secondary_Currency_Amount__c is set to Grand Total x rate.
+     * Set (optionally) the invoice's secondary-currency detail. Sub-Total / VAT / Grand-Total are
+     * NOT editable here: they are derived from the covered cash-flow installments (see
+     * recomputeInvoiceAmounts) and re-derive whenever installments change. When otherCurrency is off,
+     * the secondary-currency fields are cleared; when on, Secondary_Currency_Amount__c is set to the
+     * current (derived) Grand Total x rate.
      */
     @AuraEnabled
-    public static void updateAmounts(Id invoiceId, Decimal subTotal, Decimal vat,
+    public static void updateCurrency(Id invoiceId,
             Boolean otherCurrency, String secondaryCurrency, Decimal conversionRate) {
         if (invoiceId == null) throw new AuraHandledException('No invoice specified.');
-        if (subTotal == null || subTotal < 0) throw new AuraHandledException('Sub-total must be zero or greater.');
-        if (vat == null || vat < 0) throw new AuraHandledException('VAT must be zero or greater.');
 
         Boolean useOther = (otherCurrency == true);
         if (useOther) {
@@ -143,11 +147,12 @@ public with sharing class InvoiceManageController {
             if (conversionRate == null || conversionRate <= 0) throw new AuraHandledException('Conversion rate must be greater than zero.');
         }
         try {
-            Decimal grand = subTotal + vat;
-            Invoice__c u = new Invoice__c(
-                Id = invoiceId, Sub_Total_Amount__c = subTotal, VAT_Amount__c = vat, Grand_Total_Amount__c = grand
-            );
+            Invoice__c u = new Invoice__c(Id = invoiceId);
             if (useOther) {
+                Invoice__c inv = [
+                    SELECT Sub_Total_Amount__c, VAT_Amount__c FROM Invoice__c WHERE Id = :invoiceId LIMIT 1
+                ];
+                Decimal grand = nz(inv.Sub_Total_Amount__c) + nz(inv.VAT_Amount__c);
                 u.Secondary_Currency__c = secondaryCurrency;
                 u.Conversion_Rate__c = conversionRate;
                 u.Secondary_Currency_Amount__c = grand * conversionRate;
@@ -158,7 +163,7 @@ public with sharing class InvoiceManageController {
             }
             update u;
         } catch (Exception e) {
-            throw new AuraHandledException('Could not update the amounts: ' + e.getMessage());
+            throw new AuraHandledException('Could not update the currency: ' + e.getMessage());
         }
     }
 

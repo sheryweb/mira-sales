@@ -233,8 +233,10 @@ Still open:
 **STEP 6 FOLLOW-UP DONE 2026-07-17** — Manage Receipt panel gained reassign + add-allocation + unapplied balance + Mode-of-Payment picklist; redesigned to summary tiles + compact row-wise table. Controller 10/10.
 
 **STEP 7 — Manage Invoice panel (correct amount + installments) DONE 2026-07-17.**
-- `InvoiceManageController` (with sharing): `getInvoice` + `updateAmounts` (Sub-Total/VAT; also sets Grand_Total_Amount; status/pending re-derive via engine), `addInstallment`/`saveInstallment`/`removeInstallment` for the invoice's `Milestone_Invoice__c` cash-flow coverage. Installments constrained to the invoice's unit. `InvoiceManageControllerTest` 6/6.
-- `invoiceManagePanel` LWC: summary tiles (Grand Total / Paid / Pending) + status line, Correct-amount box (Sub-Total + VAT + Save), row-wise covered-installments table (cash-flow dropdown + amount + Save/Remove), Add-installment form. Same design language as the receipt panel.
+- `InvoiceManageController` (with sharing): `getInvoice` + `updateCurrency` (secondary-currency detail only; Sub-Total/VAT/Grand-Total are NOT editable — derived from covered installments via `recomputeInvoiceAmounts`, status/pending re-derive via engine), `addInstallment`/`saveInstallment`/`removeInstallment` for the invoice's `Milestone_Invoice__c` cash-flow coverage. Installments constrained to the invoice's unit. `InvoiceManageControllerTest` 6/6.
+- `invoiceManagePanel` LWC: summary tiles (Grand Total / Paid / Pending) + status line, Amount &amp; currency box (Sub-Total + VAT shown read-only/derived; Other-currency toggle + Save), row-wise covered-installments table (cash-flow dropdown + amount + Save/Remove), Add-installment form. Same design language as the receipt panel.
+
+**STEP 7 FOLLOW-UP DONE 2026-07-20** — Invoice Sub-Total (and VAT) are no longer manually editable: both are derived from the covered cash-flow installments. `updateAmounts` → `updateCurrency` (currency-only); panel shows Sub-Total/VAT read-only.
 - Placed on `Invoice_Record_Page` sidebar with Finance / System Administrator visibility.
 - **RE-PARENT (scenario 5) intentionally deferred** — changing an invoice's unit invalidates its cash-flow links and re-does allocation; needs its own guarded step.
 

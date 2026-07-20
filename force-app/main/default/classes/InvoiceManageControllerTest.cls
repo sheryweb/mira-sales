@@ -54,16 +54,16 @@ private class InvoiceManageControllerTest {
     }
 
     @IsTest
-    static void updateAmountsRederivesStatus() {
-        Ctx c = build(); // starts Fully Paid at 1000
+    static void addInstallmentRederivesStatus() {
+        Ctx c = build(); // starts Fully Paid at 1000 (one 1000 installment, 1000 receipt)
         Test.startTest();
-        InvoiceManageController.updateAmounts(c.inv.Id, 1500, 0, false, null, null); // raise; now only partly paid
+        InvoiceManageController.addInstallment(c.inv.Id, c.cf2.Id); // +2000 -> sub-total 3000, now partly paid
         Test.stopTest();
 
         Invoice__c inv = [SELECT Sub_Total_Amount__c, Status__c, Pending_Amount__c FROM Invoice__c WHERE Id = :c.inv.Id];
-        System.assertEquals(1500, inv.Sub_Total_Amount__c, 'Sub-total corrected');
+        System.assertEquals(3000, inv.Sub_Total_Amount__c, 'Sub-total recomputed from covered installments');
         System.assertEquals('Partially Paid', inv.Status__c, 'Status re-derived to Partially Paid');
-        System.assertEquals(500, inv.Pending_Amount__c, 'Pending re-derived to 500');
+        System.assertEquals(2000, inv.Pending_Amount__c, 'Pending re-derived to 2000');
     }
 
     @IsTest
@@ -115,16 +115,17 @@ private class InvoiceManageControllerTest {
     }
 
     @IsTest
-    static void badInputThrows() {
+    static void badConversionRateThrows() {
         Ctx c = build();
         Test.startTest();
+        Boolean threw = false;
         try {
-            InvoiceManageController.updateAmounts(c.inv.Id, -1, 0, false, null, null);
-            System.assert(false, 'Negative sub-total should throw');
+            InvoiceManageController.updateCurrency(c.inv.Id, true, 'USD', 0);
         } catch (AuraHandledException e) {
-            System.assert(true);
+            threw = true;
         }
         Test.stopTest();
+        System.assert(threw, 'A conversion rate of zero should throw');
     }
 
     @IsTest
@@ -132,7 +133,7 @@ private class InvoiceManageControllerTest {
         Ctx c = build();
         Test.startTest();
         // turn on other currency
-        InvoiceManageController.updateAmounts(c.inv.Id, 1000, 0, true, 'USD', 3.67);
+        InvoiceManageController.updateCurrency(c.inv.Id, true, 'USD', 3.67);
         Test.stopTest();
 
         Invoice__c withCur = [SELECT Secondary_Currency__c, Conversion_Rate__c, Secondary_Currency_Amount__c FROM Invoice__c WHERE Id = :c.inv.Id];
@@ -141,7 +142,7 @@ private class InvoiceManageControllerTest {
         System.assertEquals(3670, withCur.Secondary_Currency_Amount__c, 'Secondary amount = grand total x rate');
 
         // turn it off — fields clear
-        InvoiceManageController.updateAmounts(c.inv.Id, 1000, 0, false, null, null);
+        InvoiceManageController.updateCurrency(c.inv.Id, false, null, null);
         Invoice__c off = [SELECT Secondary_Currency__c, Conversion_Rate__c, Secondary_Currency_Amount__c FROM Invoice__c WHERE Id = :c.inv.Id];
         System.assertEquals(null, off.Secondary_Currency__c, 'Secondary currency cleared');
         System.assertEquals(null, off.Conversion_Rate__c, 'Conversion rate cleared');
@@ -153,7 +154,7 @@ private class InvoiceManageControllerTest {
         Test.startTest();
         Boolean threw = false;
         try {
-            InvoiceManageController.updateAmounts(c.inv.Id, 1000, 0, true, null, null);
+            InvoiceManageController.updateCurrency(c.inv.Id, true, null, null);
         } catch (AuraHandledException e) {
             threw = true;
         }

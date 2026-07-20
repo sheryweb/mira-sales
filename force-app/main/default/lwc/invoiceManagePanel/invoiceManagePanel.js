@@ -3,7 +3,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { getRecordNotifyChange } from 'lightning/uiRecordApi';
 import LightningConfirm from 'lightning/confirm';
 import getInvoice from '@salesforce/apex/InvoiceManageController.getInvoice';
-import updateAmounts from '@salesforce/apex/InvoiceManageController.updateAmounts';
+import updateCurrency from '@salesforce/apex/InvoiceManageController.updateCurrency';
 import addInstallment from '@salesforce/apex/InvoiceManageController.addInstallment';
 import removeInstallment from '@salesforce/apex/InvoiceManageController.removeInstallment';
 
@@ -13,9 +13,7 @@ export default class InvoiceManagePanel extends LightningElement {
     @track isLoading = false;
     error;
 
-    // edited amount fields
-    editSubTotal;
-    editVat;
+    // currency fields (Sub-Total / VAT are derived and shown read-only)
     @track otherCurrency = false;
     secondaryCurrency;
     conversionRate;
@@ -33,8 +31,6 @@ export default class InvoiceManagePanel extends LightningElement {
         getInvoice({ invoiceId: this.recordId })
             .then((data) => {
                 this.view = data;
-                this.editSubTotal = data.subTotal;
-                this.editVat = data.vat;
                 this.otherCurrency = data.otherCurrency;
                 this.secondaryCurrency = data.secondaryCurrency;
                 this.conversionRate = data.conversionRate;
@@ -66,14 +62,6 @@ export default class InvoiceManagePanel extends LightningElement {
         return this.cashFlowOptions.find((o) => o.value === this.newCashFlowId);
     }
 
-    handleSubTotalChange(e) {
-        this.editSubTotal = e.target.value;
-    }
-
-    handleVatChange(e) {
-        this.editVat = e.target.value;
-    }
-
     handleOtherCurrencyChange(e) {
         this.otherCurrency = e.target.checked;
     }
@@ -86,13 +74,7 @@ export default class InvoiceManagePanel extends LightningElement {
         this.conversionRate = e.target.value;
     }
 
-    handleSaveAmounts() {
-        const sub = parseFloat(this.editSubTotal);
-        const vat = parseFloat(this.editVat);
-        if (isNaN(sub) || sub < 0 || isNaN(vat) || vat < 0) {
-            this.toast('Invalid amount', 'Sub-total and VAT must be zero or greater.', 'error');
-            return;
-        }
+    handleSaveCurrency() {
         if (this.otherCurrency) {
             if (!this.secondaryCurrency) {
                 this.toast('Pick a currency', 'Select a secondary currency.', 'error');
@@ -105,15 +87,13 @@ export default class InvoiceManagePanel extends LightningElement {
             }
         }
         this.run(
-            updateAmounts({
+            updateCurrency({
                 invoiceId: this.recordId,
-                subTotal: sub,
-                vat,
                 otherCurrency: this.otherCurrency,
                 secondaryCurrency: this.otherCurrency ? this.secondaryCurrency : null,
                 conversionRate: this.otherCurrency ? parseFloat(this.conversionRate) : null
             }),
-            'Invoice amount updated.'
+            'Currency settings updated.'
         );
     }
 
