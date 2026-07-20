@@ -1,0 +1,163 @@
+<template>
+    <div class="slds-p-around_medium wizard">
+        <template if:true={isLoading}>
+            <div class="slds-align_absolute-center slds-p-around_large">
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:false={isLoading}>
+            <template if:true={error}>
+                <div class="slds-text-color_error slds-p-around_x-small slds-m-bottom_small">{error}</div>
+            </template>
+
+            <!-- Blocked -->
+            <template if:true={isBlocked}>
+                <div class="slds-text-color_error slds-p-around_small">{blockReason}</div>
+            </template>
+
+            <!-- Step 1: payment lines -->
+            <template if:true={isLines}>
+                <p class="slds-text-title_caps slds-m-bottom_x-small">Payable invoices for {unitName}</p>
+                <template if:true={payableInvoices.length}>
+                    <lightning-datatable key-field="invoiceId" data={payableInvoices} columns={invoiceColumns}
+                        hide-checkbox-column show-row-number-column="false" class="slds-m-bottom_small">
+                    </lightning-datatable>
+                </template>
+                <template if:false={payableInvoices.length}>
+                    <div class="slds-box slds-box_x-small slds-text-align_center slds-text-color_weak slds-m-bottom_small">
+                        This unit has no invoices with a pending balance.
+                    </div>
+                </template>
+
+                <p class="slds-text-title_caps slds-m-bottom_x-small">Payment lines</p>
+                <template for:each={lines} for:item="ln" for:index="idx">
+                    <div key={ln.key} class="slds-box slds-box_x-small slds-m-bottom_x-small">
+                        <div class="slds-grid slds-gutters_x-small slds-wrap">
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-combobox label="Invoice" value={ln.invoiceId} options={invoiceOptions}
+                                    data-index={idx} data-field="invoiceId" onchange={handleLineChange}
+                                    placeholder="Select invoice"></lightning-combobox>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4">
+                                <lightning-input type="number" label="Amount" step="0.01" min="0" value={ln.amount}
+                                    data-index={idx} data-field="amount" onchange={handleLineChange}></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4">
+                                <lightning-combobox label="Mode" value={ln.modeOfPayment} options={modeOptions}
+                                    data-index={idx} data-field="modeOfPayment" onchange={handleLineChange}></lightning-combobox>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning-input type="text" label="Reference" value={ln.referenceNumber}
+                                    data-index={idx} data-field="referenceNumber" onchange={handleLineChange}></lightning-input>
+                            </div>
+
+                            <template if:true={ln.isCheque}>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="text" label="Cheque #" value={ln.chequeNumber}
+                                        data-index={idx} data-field="chequeNumber" onchange={handleLineChange}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-4">
+                                    <lightning-input type="date" label="Cheque Date" value={ln.chequeDate}
+                                        data-index={idx} data-field="chequeDate" onchange={handleLineChange}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-combobox label="Bank" value={ln.bankName} options={bankOptions}
+                                        data-index={idx} data-field="bankName" onchange={handleLineChange}
+                                        placeholder="Select bank"></lightning-combobox>
+                                </div>
+                            </template>
+
+                            <template if:true={ln.isPos}>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-input type="text" label="POS Receipt #" value={ln.posReceiptNumber}
+                                        data-index={idx} data-field="posReceiptNumber" onchange={handleLineChange}></lightning-input>
+                                </div>
+                            </template>
+                        </div>
+                        <div class="slds-text-align_right slds-m-top_xx-small">
+                            <lightning-button-icon icon-name="utility:delete" variant="border-filled"
+                                alternative-text="Remove line" title="Remove line"
+                                data-index={idx} onclick={removeLine}></lightning-button-icon>
+                        </div>
+                    </div>
+                </template>
+
+                <lightning-button label="Add payment line" icon-name="utility:add" onclick={addLine}
+                    class="slds-m-top_x-small"></lightning-button>
+
+                <div class="slds-text-align_right slds-m-top_small">
+                    <p>Received: <lightning-formatted-number value={received} format-style="currency" currency-code="AED"></lightning-formatted-number></p>
+                </div>
+            </template>
+
+            <!-- Step 2: details -->
+            <template if:true={isDetails}>
+                <div class="slds-grid slds-gutters_x-small slds-wrap">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input type="date" label="Payment Date" value={paymentDate}
+                            onchange={handlePaymentDate} required></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-combobox label="Deposit To" value={depositedTo} options={depositToOptions}
+                            onchange={handleDepositedTo} placeholder="Select…" required></lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-m-top_x-small">
+                        <lightning-combobox label="Status" value={status} options={statusOptions}
+                            onchange={handleStatus} required></lightning-combobox>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-m-top_x-small">
+                        <lightning-textarea label="Description" value={description}
+                            onchange={handleDescription} required></lightning-textarea>
+                    </div>
+                </div>
+                <div class="slds-text-align_right slds-m-top_small">
+                    <p>Payable: <lightning-formatted-number value={payable} format-style="currency" currency-code="AED"></lightning-formatted-number></p>
+                    <p>Received: <lightning-formatted-number value={received} format-style="currency" currency-code="AED"></lightning-formatted-number></p>
+                    <p><strong>Payment status: {paymentStatusPreview}</strong></p>
+                </div>
+            </template>
+
+            <!-- Step 3: preview -->
+            <template if:true={isPreview}>
+                <c-receipt-preview-l-w-c
+                    receipts-json={receiptsJson}
+                    payments-json={paymentsJson}
+                    invoices-json={invoicesJson}>
+                </c-receipt-preview-l-w-c>
+            </template>
+
+            <!-- Step 4: done -->
+            <template if:true={isDone}>
+                <div class="slds-p-around_small slds-text-align_center">
+                    <lightning-icon icon-name="utility:success" variant="success" size="small"
+                        class="slds-m-bottom_x-small"></lightning-icon>
+                    <p class="slds-text-heading_small slds-m-bottom_x-small">Receipt generated successfully.</p>
+                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer">Open the receipt PDF</a>
+                </div>
+            </template>
+
+            <!-- Footer -->
+            <div class="slds-m-top_medium slds-grid slds-grid_align-end">
+                <template if:true={isBlocked}>
+                    <lightning-button label="Close" onclick={handleCancel}></lightning-button>
+                </template>
+                <template if:true={isLines}>
+                    <lightning-button label="Cancel" onclick={handleCancel} class="slds-m-right_x-small"></lightning-button>
+                    <lightning-button label="Next" variant="brand" onclick={goToDetails}></lightning-button>
+                </template>
+                <template if:true={isDetails}>
+                    <lightning-button label="Back" onclick={backToLines} class="slds-m-right_x-small"></lightning-button>
+                    <lightning-button label="Next" variant="brand" onclick={goToPreview}></lightning-button>
+                </template>
+                <template if:true={isPreview}>
+                    <lightning-button label="Back" onclick={backToDetails} class="slds-m-right_x-small" disabled={working}></lightning-button>
+                    <lightning-button label="Generate Receipt" variant="brand" onclick={handleCreate} disabled={working}></lightning-button>
+                </template>
+                <template if:true={isDone}>
+                    <lightning-button label="Done" variant="brand" onclick={handleFinish}></lightning-button>
+                </template>
+            </div>
+        </template>
+    </div>
+</template>
