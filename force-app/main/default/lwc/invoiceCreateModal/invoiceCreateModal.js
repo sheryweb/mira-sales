@@ -1,5 +1,6 @@
-import { api } from 'lwc';
-import LightningModal from 'lightning/modal';
+import { LightningElement, api } from 'lwc';
+import { CloseActionScreenEvent } from 'lightning/actions';
+import { getRecordNotifyChange } from 'lightning/uiRecordApi';
 import getContext from '@salesforce/apex/InvoiceCreateController.getContext';
 import createInvoice from '@salesforce/apex/InvoiceCreateController.createInvoice';
 
@@ -13,9 +14,24 @@ const COLUMNS = [
     { label: '%', fieldName: 'percent', type: 'percent', cellAttributes: { alignment: 'right' } }
 ];
 
-export default class InvoiceCreateModal extends LightningModal {
-    // Unit Id the invoice is being created for.
-    @api unitId;
+/**
+ * Create Invoice wizard — rendered as a ScreenAction quick action (popup modal) on Unit__c.
+ * The platform provides the modal chrome + header (the action label) and passes recordId (the Unit).
+ */
+export default class InvoiceCreateModal extends LightningElement {
+    // Unit Id — supplied automatically by the quick action framework. It can arrive either before or
+    // after connectedCallback, so kick off the load from whichever sets it first (guarded by _loaded).
+    _recordId;
+    _loaded = false;
+
+    @api
+    get recordId() {
+        return this._recordId;
+    }
+    set recordId(value) {
+        this._recordId = value;
+        this.maybeLoad();
+    }
 
     columns = COLUMNS;
     isLoading = true;
@@ -24,7 +40,6 @@ export default class InvoiceCreateModal extends LightningModal {
     ctx;
     step = 'select'; // blocked | select | details | preview | done
 
-    // selection
     selectedIds = [];
 
     // details form
@@ -39,14 +54,22 @@ export default class InvoiceCreateModal extends LightningModal {
     newInvoiceId;
 
     connectedCallback() {
-        this.load();
+        this.maybeLoad();
+    }
+
+    // Load once, as soon as we have a recordId (from the setter or connectedCallback).
+    maybeLoad() {
+        if (this._recordId && !this._loaded) {
+            this._loaded = true;
+            this.load();
+        }
     }
 
     async load() {
         this.isLoading = true;
         this.error = undefined;
         try {
-            const data = await getContext({ unitId: this.unitId });
+            const data = await getContext({ unitId: this.recordId });
             this.ctx = data;
             if (!data.canProceed) {
                 this.step = 'blocked';
@@ -57,10 +80,20 @@ export default class InvoiceCreateModal extends LightningModal {
             }
         } catch (e) {
             this.error = this.messageFrom(e);
+            this.step = 'blocked'; // render the message safely instead of a ctx-dependent step
         } finally {
             this.isLoading = false;
         }
     }
+
+    // Safe accessors so the template never dereferences an undefined ctx.
+    get unitName() { return this.ctx ? this.ctx.unitName : ''; }
+    get blockReason() { return (this.ctx && this.ctx.blockReason) ? this.ctx.blockReason : this.error; }
+    get projectName() { return this.ctx ? this.ctx.projectName : ''; }
+    get propertyDetails() { return this.ctx ? this.ctx.propertyDetails : ''; }
+    get previewUnitId() { return this.ctx ? this.ctx.unitId : this.recordId; }
+    // Authoritative unit id for saving: prefer the server-loaded context, fall back to recordId.
+    get unitIdForSave() { return (this.ctx && this.ctx.unitId) ? this.ctx.unitId : this._recordId; }
 
     // ---- derived ----
     get installments() {
@@ -86,14 +119,10 @@ export default class InvoiceCreateModal extends LightningModal {
         const rate = parseFloat(this.conversionRate);
         return (this.otherCurrency && rate > 0) ? this.subTotal / rate : 0;
     }
-    get hasSelection() {
-        return this.selectedIds.length > 0;
-    }
     get hasNoSelection() {
         return this.selectedIds.length === 0;
     }
 
-    // step flags for the template
     get isBlocked() { return this.step === 'blocked'; }
     get isSelect() { return this.step === 'select'; }
     get isDetails() { return this.step === 'details'; }
@@ -142,7 +171,7 @@ export default class InvoiceCreateModal extends LightningModal {
     handleConversionRate(e) { this.conversionRate = e.target.value; }
 
     goToDetails() {
-        if (!this.hasSelection) {
+        if (this.hasNoSelection) {
             this.error = 'Select at least one installment to invoice.';
             return;
         }
@@ -173,11 +202,16 @@ export default class InvoiceCreateModal extends LightningModal {
 
     async handleCreate() {
         if (!this.validateDetails()) { this.step = 'details'; return; }
+        const uid = this.unitIdForSave;
+        if (!uid) {
+            this.error = 'Could not resolve the unit for this invoice. Please reopen and try again.';
+            return;
+        }
         this.working = true;
         this.error = undefined;
         try {
             const req = {
-                unitId: this.unitId,
+                unitId: uid,
                 cashFlowIds: this.selectedIds,
                 invoiceDate: this.invoiceDate,
                 dueDate: this.dueDate,
@@ -187,7 +221,7 @@ export default class InvoiceCreateModal extends LightningModal {
                 secondaryCurrency: this.otherCurrency ? this.secondaryCurrency : null,
                 conversionRate: this.otherCurrency ? parseFloat(this.conversionRate) : null
             };
-            this.newInvoiceId = await createInvoice({ req });
+            this.newInvoiceId = await createInvoice({ payload: JSON.stringify(req) });
             this.step = 'done';
         } catch (e) {
             this.error = this.messageFrom(e);
@@ -197,10 +231,13 @@ export default class InvoiceCreateModal extends LightningModal {
     }
 
     handleCancel() {
-        this.close(null);
+        this.dispatchEvent(new CloseActionScreenEvent());
     }
     handleFinish() {
-        this.close(this.newInvoiceId);
+        if (this.newInvoiceId && this.unitIdForSave) {
+            getRecordNotifyChange([{ recordId: this.unitIdForSave }]);
+        }
+        this.dispatchEvent(new CloseActionScreenEvent());
     }
 
     messageFrom(e) {

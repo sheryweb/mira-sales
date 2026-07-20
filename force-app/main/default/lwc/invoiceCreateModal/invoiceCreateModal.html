@@ -1,7 +1,5 @@
 <template>
-    <lightning-modal-header label="Create Invoice"></lightning-modal-header>
-
-    <lightning-modal-body>
+    <div class="slds-p-around_medium wizard">
         <template if:true={isLoading}>
             <div class="slds-align_absolute-center slds-p-around_large">
                 <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
@@ -13,15 +11,15 @@
                 <div class="slds-text-color_error slds-p-around_x-small slds-m-bottom_small">{error}</div>
             </template>
 
-            <!-- Blocked by a guard -->
+            <!-- Blocked by a guard (or a load error) -->
             <template if:true={isBlocked}>
-                <div class="slds-text-color_error slds-p-around_small">{ctx.blockReason}</div>
+                <div class="slds-text-color_error slds-p-around_small">{blockReason}</div>
             </template>
 
             <!-- Step 1: select installments -->
             <template if:true={isSelect}>
                 <p class="slds-text-title_caps slds-m-bottom_x-small">
-                    Installments for {ctx.unitName}
+                    Installments for {unitName}
                 </p>
                 <template if:false={installments.length}>
                     <div class="slds-box slds-box_x-small slds-text-align_center slds-text-color_weak">
@@ -96,11 +94,11 @@
                 <c-invoice-preview-l-w-c
                     invoices-json={invoicesJson}
                     line-items-json={lineItemsJson}
-                    project-name-from-flow={ctx.projectName}
-                    property-details-from-flow={ctx.propertyDetails}
+                    project-name-from-flow={projectName}
+                    property-details-from-flow={propertyDetails}
                     sale-price-from-flow={salePriceString}
-                    unit-name-from-flow={ctx.unitName}
-                    unit-id={ctx.unitId}>
+                    unit-name-from-flow={unitName}
+                    unit-id={previewUnitId}>
                 </c-invoice-preview-l-w-c>
             </template>
 
@@ -113,27 +111,28 @@
                     <a href={pdfUrl} target="_blank" rel="noopener noreferrer">Open the invoice PDF</a>
                 </div>
             </template>
-        </template>
-    </lightning-modal-body>
 
-    <lightning-modal-footer>
-        <template if:true={isBlocked}>
-            <lightning-button label="Close" onclick={handleCancel}></lightning-button>
+            <!-- Footer buttons -->
+            <div class="slds-m-top_medium slds-grid slds-grid_align-end footer-bar">
+                <template if:true={isBlocked}>
+                    <lightning-button label="Close" onclick={handleCancel}></lightning-button>
+                </template>
+                <template if:true={isSelect}>
+                    <lightning-button label="Cancel" onclick={handleCancel} class="slds-m-right_x-small"></lightning-button>
+                    <lightning-button label="Next" variant="brand" onclick={goToDetails} disabled={hasNoSelection}></lightning-button>
+                </template>
+                <template if:true={isDetails}>
+                    <lightning-button label="Back" onclick={backToSelect} class="slds-m-right_x-small"></lightning-button>
+                    <lightning-button label="Next" variant="brand" onclick={goToPreview}></lightning-button>
+                </template>
+                <template if:true={isPreview}>
+                    <lightning-button label="Back" onclick={backToDetails} class="slds-m-right_x-small" disabled={working}></lightning-button>
+                    <lightning-button label="Create Invoice" variant="brand" onclick={handleCreate} disabled={working}></lightning-button>
+                </template>
+                <template if:true={isDone}>
+                    <lightning-button label="Done" variant="brand" onclick={handleFinish}></lightning-button>
+                </template>
+            </div>
         </template>
-        <template if:true={isSelect}>
-            <lightning-button label="Cancel" onclick={handleCancel} class="slds-m-right_x-small"></lightning-button>
-            <lightning-button label="Next" variant="brand" onclick={goToDetails} disabled={hasNoSelection}></lightning-button>
-        </template>
-        <template if:true={isDetails}>
-            <lightning-button label="Back" onclick={backToSelect} class="slds-m-right_x-small"></lightning-button>
-            <lightning-button label="Next" variant="brand" onclick={goToPreview}></lightning-button>
-        </template>
-        <template if:true={isPreview}>
-            <lightning-button label="Back" onclick={backToDetails} class="slds-m-right_x-small" disabled={working}></lightning-button>
-            <lightning-button label="Create Invoice" variant="brand" onclick={handleCreate} disabled={working}></lightning-button>
-        </template>
-        <template if:true={isDone}>
-            <lightning-button label="Done" variant="brand" onclick={handleFinish}></lightning-button>
-        </template>
-    </lightning-modal-footer>
+    </div>
 </template>

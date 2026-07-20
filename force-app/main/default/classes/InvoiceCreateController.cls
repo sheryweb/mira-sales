@@ -54,12 +54,14 @@ public with sharing class InvoiceCreateController {
     }
 
     // ---- request payload for createInvoice -------------------------------------------------------
+    // Id-typed fields are declared as String: Id-typed properties inside a wrapper class do NOT
+    // populate reliably from an LWC imperative call (they arrive null), whereas String fields do.
     public class CreateRequest {
-        @AuraEnabled public Id unitId;
-        @AuraEnabled public List<Id> cashFlowIds;
+        @AuraEnabled public String unitId;
+        @AuraEnabled public List<String> cashFlowIds;
         @AuraEnabled public Date invoiceDate;
         @AuraEnabled public Date dueDate;
-        @AuraEnabled public Id financialDetailId;
+        @AuraEnabled public String financialDetailId;
         @AuraEnabled public String description;
         @AuraEnabled public Boolean otherCurrency;
         @AuraEnabled public String secondaryCurrency;
@@ -141,18 +143,31 @@ public with sharing class InvoiceCreateController {
     /**
      * Create the invoice for the chosen installments. Returns the new Invoice Id.
      * Sub-Total / VAT / Grand-Total are derived from the covered cash flows (not client-supplied).
+     *
+     * The payload is passed as a JSON string (not a wrapper param): an Apex-class parameter does not
+     * reliably receive its field values from an LWC imperative call, so we deserialize here instead.
      */
     @AuraEnabled
-    public static Id createInvoice(CreateRequest req) {
+    public static Id createInvoice(String payload) {
+        if (String.isBlank(payload)) throw new AuraHandledException('No data supplied.');
+        CreateRequest req;
+        try {
+            req = (CreateRequest) JSON.deserialize(payload, CreateRequest.class);
+        } catch (Exception e) {
+            throw new AuraHandledException('Could not read the invoice data: ' + e.getMessage());
+        }
         if (req == null) throw new AuraHandledException('No data supplied.');
-        if (req.unitId == null) throw new AuraHandledException('No unit specified.');
+        if (String.isBlank(req.unitId)) throw new AuraHandledException('No unit specified.');
         if (req.cashFlowIds == null || req.cashFlowIds.isEmpty()) {
             throw new AuraHandledException('Select at least one installment to invoice.');
         }
         if (req.invoiceDate == null) throw new AuraHandledException('Invoice date is required.');
         if (req.dueDate == null) throw new AuraHandledException('Due date is required.');
-        if (req.financialDetailId == null) throw new AuraHandledException('Financial detail is required.');
+        if (String.isBlank(req.financialDetailId)) throw new AuraHandledException('Financial detail is required.');
         if (String.isBlank(req.description)) throw new AuraHandledException('Description is required.');
+
+        Id unitId = (Id) req.unitId;
+        Id financialDetailId = (Id) req.financialDetailId;
 
         Boolean useOther = (req.otherCurrency == true);
         if (useOther) {
@@ -163,18 +178,18 @@ public with sharing class InvoiceCreateController {
         }
 
         // Guards must still hold at save time.
-        Opportunity opp = findBooking(req.unitId);
+        Opportunity opp = findBooking(unitId);
         if (opp == null) throw new AuraHandledException(MSG_NO_BOOKING);
 
         // Re-load the selected installments from the DB (never trust client amounts). They must
         // belong to this unit and still be selectable (not invoiced, not waived).
         Map<Id, Cash_Flow__c> selectable = new Map<Id, Cash_Flow__c>();
-        for (Cash_Flow__c cf : queryInstallments(req.unitId)) {
+        for (Cash_Flow__c cf : queryInstallments(unitId)) {
             selectable.put(cf.Id, cf);
         }
         List<Cash_Flow__c> chosen = new List<Cash_Flow__c>();
-        for (Id cfId : req.cashFlowIds) {
-            Cash_Flow__c cf = selectable.get(cfId);
+        for (String cfIdStr : req.cashFlowIds) {
+            Cash_Flow__c cf = selectable.get((Id) cfIdStr);
             if (cf == null) {
                 throw new AuraHandledException('One of the selected installments is no longer available. Please reopen and try again.');
             }
@@ -191,12 +206,12 @@ public with sharing class InvoiceCreateController {
 
         try {
             Invoice__c inv = new Invoice__c(
-                Unit__c = req.unitId,
+                Unit__c = unitId,
                 Opportunity__c = opp.Id,
                 Account__c = opp.AccountId,
                 Customer_Name__c = opp.Account_Name__c,
                 Customer_Id__c = (opp.Account != null) ? opp.Account.Financial_Number__c : null,
-                Financial_Detail__c = req.financialDetailId,
+                Financial_Detail__c = financialDetailId,
                 Description__c = req.description,
                 Invoice_Date__c = req.invoiceDate,
                 Due_Date__c = req.dueDate,

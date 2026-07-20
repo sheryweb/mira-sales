@@ -65,7 +65,7 @@ private class InvoiceCreateControllerTest {
         update c.opp;
     }
 
-    private static InvoiceCreateController.CreateRequest baseRequest(Ctx c, List<Id> cfIds) {
+    private static InvoiceCreateController.CreateRequest baseRequest(Ctx c, List<String> cfIds) {
         InvoiceCreateController.CreateRequest req = new InvoiceCreateController.CreateRequest();
         req.unitId = c.unit.Id;
         req.cashFlowIds = cfIds;
@@ -109,7 +109,7 @@ private class InvoiceCreateControllerTest {
         Boolean threw = false;
         Test.startTest();
         try {
-            InvoiceCreateController.createInvoice(baseRequest(c, new List<Id>()));
+            InvoiceCreateController.createInvoice(JSON.serialize(baseRequest(c, new List<String>())));
         } catch (AuraHandledException e) {
             threw = true;
         }
@@ -120,14 +120,14 @@ private class InvoiceCreateControllerTest {
     @IsTest
     static void createInvoiceRejectsBadConversionRate() {
         Ctx c = buildBase(true);
-        InvoiceCreateController.CreateRequest req = baseRequest(c, new List<Id>{ c.cf1.Id });
+        InvoiceCreateController.CreateRequest req = baseRequest(c, new List<String>{ c.cf1.Id });
         req.otherCurrency = true;
         req.secondaryCurrency = 'USD';
         req.conversionRate = 0;
         Boolean threw = false;
         Test.startTest();
         try {
-            InvoiceCreateController.createInvoice(req);
+            InvoiceCreateController.createInvoice(JSON.serialize(req));
         } catch (AuraHandledException e) {
             threw = true;
         }
@@ -169,9 +169,9 @@ private class InvoiceCreateControllerTest {
         }
 
         Test.startTest();
-        Id invId = InvoiceCreateController.createInvoice(
-            baseRequest(c, new List<Id>{ c.cf1.Id, c.cf2.Id })
-        );
+        Id invId = InvoiceCreateController.createInvoice(JSON.serialize(
+            baseRequest(c, new List<String>{ c.cf1.Id, c.cf2.Id })
+        ));
         Test.stopTest();
 
         System.assertNotEquals(null, invId, 'Invoice created');
@@ -205,13 +205,13 @@ private class InvoiceCreateControllerTest {
     static void createInvoiceStoresSecondaryCurrency() {
         Ctx c = buildBase(true);
         addBooking(c);
-        InvoiceCreateController.CreateRequest req = baseRequest(c, new List<Id>{ c.cf1.Id });
+        InvoiceCreateController.CreateRequest req = baseRequest(c, new List<String>{ c.cf1.Id });
         req.otherCurrency = true;
         req.secondaryCurrency = 'USD';
         req.conversionRate = 3.67;
 
         Test.startTest();
-        Id invId = InvoiceCreateController.createInvoice(req);
+        Id invId = InvoiceCreateController.createInvoice(JSON.serialize(req));
         Test.stopTest();
 
         Invoice__c inv = [
