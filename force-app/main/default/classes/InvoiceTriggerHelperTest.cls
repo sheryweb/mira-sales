@@ -131,6 +131,7 @@ private class InvoiceTriggerHelperTest {
                 Project__c = projects[5].Id,
                 Building__c = 'Test Building T2 Retail',
                 Title__c = 'Test Property T2 Retail',
+                Type__c = 'Retail',
                 Property_Code_Text__c = 'TEST-T2-RETAIL'
             ),
             new Unit__c(
@@ -154,271 +155,166 @@ private class InvoiceTriggerHelperTest {
         };
         insert units;
 
-        // Skip trigger for initial invoices
+        // Skip trigger for initial invoices so we can seed known sequences.
         InvoiceTriggerHelper.skipTrigger = true;
-        
-        // Create initial invoices with numbers
+
+        // Create initial invoices seeding the per-project sequence (Invoice_Seq__c).
         List<Invoice__c> initialInvoices = new List<Invoice__c>{
-            new Invoice__c(
-                Unit__c = units[0].Id,
-                Invoice_Number_To_Process_Bentley__c = 7,
-                Invoice_Number__c = 'INV-BTL-7'
-            ),
-            new Invoice__c(
-                Unit__c = units[1].Id,
-                Invoice_Number_To_Process_Trussardi__c = 5,
-                Invoice_Number__c = 'INV-TRD-5'
-            ),
-            new Invoice__c(
-                Unit__c = units[2].Id,
-                Invoice_Number_To_Process_Trussardi2__c = 3,
-                Invoice_Number__c = 'INV-TRD2-3'
-            ),
-            new Invoice__c(
-                Unit__c = units[3].Id,
-                Invoice_Number_To_Process_POST__c = 4,
-                Invoice_Number__c = 'INV-POST-4'
-            ),
-            new Invoice__c(
-                Unit__c = units[4].Id,
-                Invoice_Number_To_Process_Gianfranco__c = 2,
-                Invoice_Number__c = 'INV-GFF-2'
-            ),
-            new Invoice__c(
-                Unit__c = units[5].Id,
-                Invoice_Number_To_Process_T2_Offices__c = 10,
-                Invoice_Number__c = 'INV-TR2-Retail-10'
-            ),
-            new Invoice__c(
-                Unit__c = units[7].Id,
-                Invoice_Number_To_Process_MIRA_VERDE__c = 5,
-                Invoice_Number__c = 'INV-MIRA-VERDE-5'
-            )
+            new Invoice__c(Unit__c = units[0].Id, Invoice_Seq__c = 7,  Invoice_Number__c = 'INV-BTL-7'),
+            new Invoice__c(Unit__c = units[1].Id, Invoice_Seq__c = 5,  Invoice_Number__c = 'INV-TRD-5'),
+            new Invoice__c(Unit__c = units[2].Id, Invoice_Seq__c = 3,  Invoice_Number__c = 'INV-TRD2-3'),
+            new Invoice__c(Unit__c = units[3].Id, Invoice_Seq__c = 4,  Invoice_Number__c = 'INV-POST-4'),
+            new Invoice__c(Unit__c = units[4].Id, Invoice_Seq__c = 2,  Invoice_Number__c = 'INV-GFF-2'),
+            new Invoice__c(Unit__c = units[5].Id, Invoice_Seq__c = 10, Invoice_Number__c = 'INV-TR2-Office-10'),
+            new Invoice__c(Unit__c = units[7].Id, Invoice_Seq__c = 5,  Invoice_Number__c = 'INV-MIRA-VERDE-5')
         };
         insert initialInvoices;
-        
+
         // Re-enable trigger for subsequent tests
         InvoiceTriggerHelper.skipTrigger = false;
     }
 
     @IsTest
     static void testBentleyInvoiceNumbering() {
-        // Get the test unit
         Unit__c bentleyUnit = [
-            SELECT Id, Project_Name_F__c 
-            FROM Unit__c 
-            WHERE Project_Name_F__c = 'MIRA Villas Designed by Bentley Home' 
+            SELECT Id FROM Unit__c
+            WHERE Project_Name_F__c = 'MIRA Villas Designed by Bentley Home'
             LIMIT 1
         ];
 
-        // Create new invoice
-        Invoice__c newInvoice = new Invoice__c(
-            Unit__c = bentleyUnit.Id
-        );
-        
+        Invoice__c newInvoice = new Invoice__c(Unit__c = bentleyUnit.Id);
+
         Test.startTest();
         insert newInvoice;
         Test.stopTest();
 
-        // Query for the updated invoice
         Invoice__c updatedInvoice = [
-            SELECT Id, Invoice_Number_To_Process_Bentley__c, Invoice_Number__c
-            FROM Invoice__c 
-            WHERE Id = :newInvoice.Id
+            SELECT Invoice_Seq__c, Invoice_Number__c
+            FROM Invoice__c WHERE Id = :newInvoice.Id
         ];
 
-        // Verify the invoice numbering
-        System.assertNotEquals(null, updatedInvoice.Invoice_Number_To_Process_Bentley__c, 
-            'Bentley invoice number should not be null');
-        System.assertEquals(8, updatedInvoice.Invoice_Number_To_Process_Bentley__c, 
-            'Bentley invoice number should be incremented to 8');
-        System.assertEquals('INV-BTL-8', updatedInvoice.Invoice_Number__c, 
+        System.assertEquals(8, updatedInvoice.Invoice_Seq__c,
+            'Bentley invoice sequence should increment to 8');
+        System.assertEquals('INV-BTL-8', updatedInvoice.Invoice_Number__c,
             'Invoice number format should match Bentley pattern');
     }
 
     @IsTest
     static void testTrussardiInvoiceNumbering() {
-        // Get the test unit
         Unit__c trussardiUnit = [
-            SELECT Id, Project_Name_F__c 
-            FROM Unit__c 
-            WHERE Project_Name_F__c = 'Trussardi Residences' 
+            SELECT Id FROM Unit__c
+            WHERE Project_Name_F__c = 'Trussardi Residences'
             LIMIT 1
         ];
 
-        // Create new invoice
-        Invoice__c newInvoice = new Invoice__c(
-            Unit__c = trussardiUnit.Id
-        );
-        
+        Invoice__c newInvoice = new Invoice__c(Unit__c = trussardiUnit.Id);
+
         Test.startTest();
         insert newInvoice;
         Test.stopTest();
 
-        // Query for the updated invoice
         Invoice__c updatedInvoice = [
-            SELECT Id, Invoice_Number_To_Process_Trussardi__c, Invoice_Number__c
-            FROM Invoice__c 
-            WHERE Id = :newInvoice.Id
+            SELECT Invoice_Seq__c, Invoice_Number__c
+            FROM Invoice__c WHERE Id = :newInvoice.Id
         ];
 
-        // Verify the invoice numbering
-        System.assertNotEquals(null, updatedInvoice.Invoice_Number_To_Process_Trussardi__c, 
-            'Trussardi invoice number should not be null');
-        System.assertEquals(6, updatedInvoice.Invoice_Number_To_Process_Trussardi__c, 
-            'Trussardi invoice number should be incremented to 6');
-        System.assertEquals('INV-TRD-6', updatedInvoice.Invoice_Number__c, 
+        System.assertEquals(6, updatedInvoice.Invoice_Seq__c,
+            'Trussardi invoice sequence should increment to 6');
+        System.assertEquals('INV-TRD-6', updatedInvoice.Invoice_Number__c,
             'Invoice number format should match Trussardi pattern');
     }
 
     @IsTest
     static void testTrussardi2InvoiceNumbering() {
-        // Get the test unit
         Unit__c trussardi2Unit = [
-            SELECT Id, Project_Name_F__c 
-            FROM Unit__c 
-            WHERE Project_Name_F__c = 'Trussardi Residences 2' 
+            SELECT Id FROM Unit__c
+            WHERE Project_Name_F__c = 'Trussardi Residences 2'
             LIMIT 1
         ];
 
-        // Create new invoice
-        Invoice__c newInvoice = new Invoice__c(
-            Unit__c = trussardi2Unit.Id
-        );
-        
+        Invoice__c newInvoice = new Invoice__c(Unit__c = trussardi2Unit.Id);
+
         Test.startTest();
         insert newInvoice;
         Test.stopTest();
 
-        // Query for the updated invoice
         Invoice__c updatedInvoice = [
-            SELECT Id, Invoice_Number_To_Process_Trussardi2__c, Invoice_Number__c
-            FROM Invoice__c 
-            WHERE Id = :newInvoice.Id
+            SELECT Invoice_Seq__c, Invoice_Number__c
+            FROM Invoice__c WHERE Id = :newInvoice.Id
         ];
 
-        // Verify the invoice numbering
-        System.assertNotEquals(null, updatedInvoice.Invoice_Number_To_Process_Trussardi2__c, 
-            'Trussardi 2 invoice number should not be null');
-        System.assertEquals(4, updatedInvoice.Invoice_Number_To_Process_Trussardi2__c, 
-            'Trussardi 2 invoice number should be incremented to 4');
-        System.assertEquals('INV-TRD2-4', updatedInvoice.Invoice_Number__c, 
+        System.assertEquals(4, updatedInvoice.Invoice_Seq__c,
+            'Trussardi 2 invoice sequence should increment to 4');
+        System.assertEquals('INV-TRD2-4', updatedInvoice.Invoice_Number__c,
             'Invoice number format should match Trussardi 2 pattern');
     }
 
     @IsTest
     static void testPOSTInvoiceNumbering() {
-        // Get the test unit
         Unit__c postUnit = [
-            SELECT Id, Project_Name_F__c 
-            FROM Unit__c 
-            WHERE Project_Name_F__c = 'POST HOTEL & RESIDENCES By ELIE SAAB' 
+            SELECT Id FROM Unit__c
+            WHERE Project_Name_F__c = 'POST HOTEL & RESIDENCES By ELIE SAAB'
             LIMIT 1
         ];
 
-        // Create new invoice
-        Invoice__c newInvoice = new Invoice__c(
-            Unit__c = postUnit.Id
-        );
-        
+        Invoice__c newInvoice = new Invoice__c(Unit__c = postUnit.Id);
+
         Test.startTest();
         insert newInvoice;
         Test.stopTest();
 
-        // Query for the updated invoice
         Invoice__c updatedInvoice = [
-            SELECT Id, Invoice_Number_To_Process_POST__c, Invoice_Number__c
-            FROM Invoice__c 
-            WHERE Id = :newInvoice.Id
+            SELECT Invoice_Seq__c, Invoice_Number__c
+            FROM Invoice__c WHERE Id = :newInvoice.Id
         ];
 
-        // Verify the invoice numbering
-        System.assertNotEquals(null, updatedInvoice.Invoice_Number_To_Process_POST__c, 
-            'POST invoice number should not be null');
-        System.assertEquals(5, updatedInvoice.Invoice_Number_To_Process_POST__c, 
-            'POST invoice number should be incremented to 5');
-        System.assertEquals('INV-POST-5', updatedInvoice.Invoice_Number__c, 
+        System.assertEquals(5, updatedInvoice.Invoice_Seq__c,
+            'POST invoice sequence should increment to 5');
+        System.assertEquals('INV-POST-5', updatedInvoice.Invoice_Number__c,
             'Invoice number format should match POST pattern');
     }
 
     @IsTest
     static void testGianfrancoInvoiceNumbering() {
-        // Get the test unit
         Unit__c gianfrancoUnit = [
-            SELECT Id, Project_Name_F__c 
-            FROM Unit__c 
-            WHERE Project_Name_F__c = 'GIANFRANCO FERRE RESIDENCES' 
+            SELECT Id FROM Unit__c
+            WHERE Project_Name_F__c = 'GIANFRANCO FERRE RESIDENCES'
             LIMIT 1
         ];
 
-        // Create new invoice
-        Invoice__c newInvoice = new Invoice__c(
-            Unit__c = gianfrancoUnit.Id
-        );
-        
+        Invoice__c newInvoice = new Invoice__c(Unit__c = gianfrancoUnit.Id);
+
         Test.startTest();
         insert newInvoice;
         Test.stopTest();
 
-        // Query for the updated invoice
         Invoice__c updatedInvoice = [
-            SELECT Id, Invoice_Number_To_Process_Gianfranco__c, Invoice_Number__c
-            FROM Invoice__c 
-            WHERE Id = :newInvoice.Id
+            SELECT Invoice_Seq__c, Invoice_Number__c
+            FROM Invoice__c WHERE Id = :newInvoice.Id
         ];
 
-        // Verify the invoice numbering
-        System.assertNotEquals(null, updatedInvoice.Invoice_Number_To_Process_Gianfranco__c, 
-            'Gianfranco invoice number should not be null');
-        System.assertEquals(3, updatedInvoice.Invoice_Number_To_Process_Gianfranco__c, 
-            'Gianfranco invoice number should be incremented to 3');
-        System.assertEquals('INV-GFF-3', updatedInvoice.Invoice_Number__c, 
+        System.assertEquals(3, updatedInvoice.Invoice_Seq__c,
+            'Gianfranco invoice sequence should increment to 3');
+        System.assertEquals('INV-GFF-3', updatedInvoice.Invoice_Number__c,
             'Invoice number format should match Gianfranco pattern');
     }
 
     @IsTest
     static void testInvalidUnit() {
-        // Create new invoice without a unit
         Invoice__c newInvoice = new Invoice__c();
-        
+
         Test.startTest();
         insert newInvoice;
         Test.stopTest();
 
-        // Query for the updated invoice
         Invoice__c updatedInvoice = [
-            SELECT Id, Invoice_Number_To_Process_Trussardi__c, Invoice_Number_To_Process_Trussardi2__c,
-                   Invoice_Number_To_Process_Bentley__c, Invoice_Number_To_Process_POST__c, Invoice_Number_To_Process_Gianfranco__c, Invoice_Number__c
-            FROM Invoice__c 
-            WHERE Id = :newInvoice.Id
+            SELECT Invoice_Seq__c, Invoice_Number__c
+            FROM Invoice__c WHERE Id = :newInvoice.Id
         ];
 
-        // Debug logging to see what values are actually set
-        System.debug('Updated Invoice Values:');
-        System.debug('Trussardi: ' + updatedInvoice.Invoice_Number_To_Process_Trussardi__c);
-        System.debug('Trussardi2: ' + updatedInvoice.Invoice_Number_To_Process_Trussardi2__c);
-        System.debug('Bentley: ' + updatedInvoice.Invoice_Number_To_Process_Bentley__c);
-        System.debug('POST: ' + updatedInvoice.Invoice_Number_To_Process_POST__c);
-        System.debug('Gianfranco: ' + updatedInvoice.Invoice_Number_To_Process_Gianfranco__c);
-        System.debug('Invoice Number: ' + updatedInvoice.Invoice_Number__c);
-
-        // Verify no numbers were assigned - accept either null or 0 as valid states
-        System.assert(updatedInvoice.Invoice_Number_To_Process_Trussardi__c == null || 
-                     updatedInvoice.Invoice_Number_To_Process_Trussardi__c == 0, 
-            'Trussardi number should be null or zero for invalid unit');
-        System.assert(updatedInvoice.Invoice_Number_To_Process_Trussardi2__c == null || 
-                     updatedInvoice.Invoice_Number_To_Process_Trussardi2__c == 0, 
-            'Trussardi2 number should be null or zero for invalid unit');
-        System.assert(updatedInvoice.Invoice_Number_To_Process_Bentley__c == null || 
-                     updatedInvoice.Invoice_Number_To_Process_Bentley__c == 0, 
-            'Bentley number should be null or zero for invalid unit');
-        System.assert(updatedInvoice.Invoice_Number_To_Process_POST__c == null || 
-                     updatedInvoice.Invoice_Number_To_Process_POST__c == 0, 
-            'POST number should be null or zero for invalid unit');
-        System.assert(updatedInvoice.Invoice_Number_To_Process_Gianfranco__c == null || 
-                     updatedInvoice.Invoice_Number_To_Process_Gianfranco__c == 0, 
-            'Gianfranco number should be null or zero for invalid unit');
-        System.assertEquals(null, updatedInvoice.Invoice_Number__c, 
+        System.assertEquals(null, updatedInvoice.Invoice_Seq__c,
+            'Invoice sequence should be null for invalid unit');
+        System.assertEquals(null, updatedInvoice.Invoice_Number__c,
             'Invoice number should be null for invalid unit');
     }
 
@@ -430,20 +326,23 @@ private class InvoiceTriggerHelperTest {
         insert newInvoice;
         InvoiceTriggerHelper.skipTrigger = false;
 
-        Invoice__c inserted = [SELECT Invoice_Number__c, Invoice_Number_To_Process_Bentley__c FROM Invoice__c WHERE Id = :newInvoice.Id];
+        Invoice__c inserted = [SELECT Invoice_Number__c, Invoice_Seq__c FROM Invoice__c WHERE Id = :newInvoice.Id];
         System.assertEquals(null, inserted.Invoice_Number__c, 'Invoice number should be null when skipTrigger is true');
-        System.assertEquals(null, inserted.Invoice_Number_To_Process_Bentley__c, 'Bentley number should be null when skipTrigger is true');
+        System.assertEquals(null, inserted.Invoice_Seq__c, 'Invoice sequence should be null when skipTrigger is true');
     }
 
     @IsTest
     static void testTrussardi2OfficesRetailInvoiceNumbering() {
+        // Parity check: retail-type T2 units keep the Office prefix, because the
+        // T2 CMDT row has no Invoice_Prefix_Retail__c set (matches legacy behavior).
         Unit__c t2Unit = [SELECT Id FROM Unit__c WHERE Property_Code_Text__c = 'TEST-T2-RETAIL' LIMIT 1];
         Invoice__c newInvoice = new Invoice__c(Unit__c = t2Unit.Id);
         insert newInvoice;
 
-        Invoice__c updated = [SELECT Invoice_Number_To_Process_T2_Offices__c, Invoice_Number__c FROM Invoice__c WHERE Id = :newInvoice.Id];
-        System.assertEquals(11, updated.Invoice_Number_To_Process_T2_Offices__c, 'T2 Offices number should increment to 11');
-        System.assert(updated.Invoice_Number__c != null && updated.Invoice_Number__c.startsWith('INV-TR2-'), 'Invoice should use T2 Offices pattern');
+        Invoice__c updated = [SELECT Invoice_Seq__c, Invoice_Number__c FROM Invoice__c WHERE Id = :newInvoice.Id];
+        System.assertEquals(11, updated.Invoice_Seq__c, 'T2 Offices sequence should increment to 11');
+        System.assertEquals('INV-TR2-Office-11', updated.Invoice_Number__c,
+            'Retail T2 invoices keep the Office prefix under current parity configuration');
     }
 
     @IsTest
@@ -452,8 +351,8 @@ private class InvoiceTriggerHelperTest {
         Invoice__c newInvoice = new Invoice__c(Unit__c = t2Unit.Id);
         insert newInvoice;
 
-        Invoice__c updated = [SELECT Invoice_Number_To_Process_T2_Offices__c, Invoice_Number__c FROM Invoice__c WHERE Id = :newInvoice.Id];
-        System.assertEquals(11, updated.Invoice_Number_To_Process_T2_Offices__c, 'T2 Offices number should increment to 11');
+        Invoice__c updated = [SELECT Invoice_Seq__c, Invoice_Number__c FROM Invoice__c WHERE Id = :newInvoice.Id];
+        System.assertEquals(11, updated.Invoice_Seq__c, 'T2 Offices sequence should increment to 11');
         System.assertEquals('INV-TR2-Office-11', updated.Invoice_Number__c, 'Invoice should use Office pattern when Type is not Retail');
     }
 
@@ -463,8 +362,8 @@ private class InvoiceTriggerHelperTest {
         Invoice__c newInvoice = new Invoice__c(Unit__c = miraUnit.Id);
         insert newInvoice;
 
-        Invoice__c updated = [SELECT Invoice_Number_To_Process_MIRA_VERDE__c, Invoice_Number__c FROM Invoice__c WHERE Id = :newInvoice.Id];
-        System.assertEquals(6, updated.Invoice_Number_To_Process_MIRA_VERDE__c, 'MIRA VERDE number should increment to 6');
+        Invoice__c updated = [SELECT Invoice_Seq__c, Invoice_Number__c FROM Invoice__c WHERE Id = :newInvoice.Id];
+        System.assertEquals(6, updated.Invoice_Seq__c, 'MIRA VERDE sequence should increment to 6');
         System.assertEquals('INV-MIRA-VERDE-6', updated.Invoice_Number__c, 'Invoice number should match MIRA VERDE pattern');
     }
 
@@ -474,7 +373,8 @@ private class InvoiceTriggerHelperTest {
         Invoice__c newInvoice = new Invoice__c(Unit__c = unknownUnit.Id);
         insert newInvoice;
 
-        Invoice__c updated = [SELECT Invoice_Number__c FROM Invoice__c WHERE Id = :newInvoice.Id];
+        Invoice__c updated = [SELECT Invoice_Seq__c, Invoice_Number__c FROM Invoice__c WHERE Id = :newInvoice.Id];
+        System.assertEquals(null, updated.Invoice_Seq__c, 'Invoice sequence should be null for unknown project');
         System.assertEquals(null, updated.Invoice_Number__c, 'Invoice number should be null for unknown project');
     }
 }

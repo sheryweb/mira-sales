@@ -3,7 +3,7 @@
     <fullName>Voucher_Number_Retail__c</fullName>
     <externalId>false</externalId>
     <formula>IF(Unit__r.Project_Name_F__c == &apos;Trussardi Residences 2 Offices&apos; &amp;&amp; TEXT(Unit__r.Type__c) == &apos;Retail&apos;,
-    &apos;RV-TR2-Retail&apos;&amp;&apos;-&apos; &amp; TEXT(Voucher_Number_To_Process_T2_Offices__c),
+    &apos;RV-TR2-Retail&apos; &amp; &apos;-&apos; &amp; TEXT(Voucher_Seq__c),
     Voucher_Number__c
 )</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
