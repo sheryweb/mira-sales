@@ -6,11 +6,13 @@ import getInvoice from '@salesforce/apex/InvoiceManageController.getInvoice';
 import updateCurrency from '@salesforce/apex/InvoiceManageController.updateCurrency';
 import addInstallment from '@salesforce/apex/InvoiceManageController.addInstallment';
 import removeInstallment from '@salesforce/apex/InvoiceManageController.removeInstallment';
+import cancelInvoice from '@salesforce/apex/InvoiceManageController.cancelInvoice';
 
 export default class InvoiceManagePanel extends LightningElement {
     @api recordId;
     @track view;
     @track isLoading = false;
+    @track showCancelConfirm = false;
     error;
 
     // currency fields (Sub-Total / VAT are derived and shown read-only)
@@ -46,6 +48,10 @@ export default class InvoiceManagePanel extends LightningElement {
 
     get hasInstallments() {
         return this.view && this.view.installments && this.view.installments.length > 0;
+    }
+
+    get isCancelled() {
+        return this.view && this.view.cancelled;
     }
 
     get cashFlowOptions() {
@@ -122,6 +128,19 @@ export default class InvoiceManagePanel extends LightningElement {
             addInstallment({ invoiceId: this.recordId, cashFlowId: this.newCashFlowId }),
             'Installment added.'
         );
+    }
+
+    handleCancelClick() {
+        this.showCancelConfirm = true;
+    }
+
+    handleCancelDismiss() {
+        this.showCancelConfirm = false;
+    }
+
+    handleCancelConfirm() {
+        this.showCancelConfirm = false;
+        this.run(cancelInvoice({ invoiceId: this.recordId }), 'Invoice cancelled.');
     }
 
     run(promise, successMessage) {

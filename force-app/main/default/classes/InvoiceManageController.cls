@@ -23,6 +23,7 @@ public with sharing class InvoiceManageController {
         @AuraEnabled public Decimal paid;
         @AuraEnabled public Decimal pending;
         @AuraEnabled public String status;
+        @AuraEnabled public Boolean cancelled;
         @AuraEnabled public Boolean otherCurrency;
         @AuraEnabled public String secondaryCurrency;
         @AuraEnabled public Decimal conversionRate;
@@ -90,6 +91,7 @@ public with sharing class InvoiceManageController {
         v.paid = nz(inv.Paid_Amount__c);
         v.pending = nz(inv.Pending_Amount__c);
         v.status = inv.Status__c;
+        v.cancelled = (inv.Status__c == 'Cancelled');
         v.secondaryCurrency = inv.Secondary_Currency__c;
         v.conversionRate = inv.Conversion_Rate__c;
         v.otherCurrency = String.isNotBlank(inv.Secondary_Currency__c);
@@ -194,6 +196,22 @@ public with sharing class InvoiceManageController {
         } catch (Exception e) {
             throw new AuraHandledException('Could not add the installment: ' + e.getMessage());
         }
+    }
+
+    /**
+     * Soft-cancel the invoice: set Status = Cancelled. The Financial Engine freezes cancelled
+     * invoices (preserves their stored Paid_Amount and excludes them from active totals), so this
+     * is the safe, reversible way to remove an invoice that has payments on it.
+     */
+    @AuraEnabled
+    public static InvoiceView cancelInvoice(Id invoiceId) {
+        if (invoiceId == null) throw new AuraHandledException('No invoice specified.');
+        try {
+            update new Invoice__c(Id = invoiceId, Status__c = 'Cancelled');
+        } catch (Exception e) {
+            throw new AuraHandledException('Could not cancel the invoice: ' + e.getMessage());
+        }
+        return getInvoice(invoiceId);
     }
 
     /** Remove an installment the invoice covers. */

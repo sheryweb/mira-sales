@@ -14,6 +14,13 @@
 
             <template if:true={view}>
 
+                <template if:true={isCancelled}>
+                    <div class="slds-notify slds-notify_alert slds-theme_warning slds-m-bottom_small" role="alert">
+                        <span class="slds-assistive-text">Warning</span>
+                        This invoice is <strong>&nbsp;Cancelled</strong>&nbsp;— excluded from active totals.
+                    </div>
+                </template>
+
                 <!-- Summary tiles -->
                 <div class="slds-grid slds-gutters_x-small slds-m-bottom_medium">
                     <div class="slds-col">
@@ -90,7 +97,7 @@
                     </template>
                     <div class="slds-m-top_x-small">
                         <lightning-button label="Save currency" variant="brand" stretch
-                            onclick={handleSaveCurrency}></lightning-button>
+                            disabled={isCancelled} onclick={handleSaveCurrency}></lightning-button>
                     </div>
                 </div>
 
@@ -129,7 +136,7 @@
                                     </td>
                                     <td class="col-act slds-text-align_center">
                                         <lightning-button-icon icon-name="utility:delete" variant="border-filled"
-                                            alternative-text="Remove" title="Remove"
+                                            alternative-text="Remove" title="Remove" disabled={isCancelled}
                                             data-id={i.milestoneId} onclick={handleRemoveInstallment}></lightning-button-icon>
                                     </td>
                                 </tr>
@@ -164,10 +171,37 @@
 
                     <div class="slds-m-top_x-small">
                         <lightning-button label="Add installment" variant="brand" stretch
-                            onclick={handleAddInstallment}></lightning-button>
+                            disabled={isCancelled} onclick={handleAddInstallment}></lightning-button>
                     </div>
                 </div>
             </template>
         </div>
+
+        <div slot="footer">
+            <lightning-button label="Cancel Invoice" variant="destructive-text"
+                disabled={isCancelled} onclick={handleCancelClick}></lightning-button>
+        </div>
+
+        <template if:true={showCancelConfirm}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-modal__title">Cancel this invoice?</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        The invoice is kept (with its number and history) but marked Cancelled and
+                        excluded from active totals. Its paid amount is preserved. You can reverse
+                        this later by changing its status.
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Keep it" onclick={handleCancelDismiss}
+                            class="slds-m-right_x-small"></lightning-button>
+                        <lightning-button label="Cancel Invoice" variant="destructive"
+                            onclick={handleCancelConfirm}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
     </lightning-card>
 </template>

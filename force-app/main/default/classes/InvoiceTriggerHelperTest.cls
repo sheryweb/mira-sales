@@ -377,4 +377,51 @@ private class InvoiceTriggerHelperTest {
         System.assertEquals(null, updated.Invoice_Seq__c, 'Invoice sequence should be null for unknown project');
         System.assertEquals(null, updated.Invoice_Number__c, 'Invoice number should be null for unknown project');
     }
+
+    @IsTest
+    static void deleteBlockedWhenInvoicePaid() {
+        Unit__c u = [SELECT Id FROM Unit__c WHERE Property_Code_Text__c = 'TEST-001' LIMIT 1];
+        Invoice__c inv = new Invoice__c(Unit__c = u.Id, Sub_Total_Amount__c = 1000,
+            Paid_Amount__c = 500, Status__c = 'Partially Paid');
+        insert inv;
+
+        Boolean blocked = false;
+        Test.startTest();
+        try {
+            delete inv;
+        } catch (DmlException e) {
+            blocked = true;
+            System.assert(e.getMessage().contains('cannot be deleted'),
+                'Expected the guard message, got: ' + e.getMessage());
+        }
+        Test.stopTest();
+
+        System.assert(blocked, 'Deleting a paid invoice must be blocked');
+        System.assertEquals(1, [SELECT COUNT() FROM Invoice__c WHERE Id = :inv.Id], 'Invoice should still exist');
+    }
+
+    @IsTest
+    static void deleteAllowedWhenUnpaidFreesInstallments() {
+        Unit__c u = [SELECT Id FROM Unit__c WHERE Property_Code_Text__c = 'TEST-001' LIMIT 1];
+        Cash_Flow_Sum__c s = new Cash_Flow_Sum__c(Name = 'CFS', Unit__c = u.Id);
+        insert s;
+        Cash_Flow__c cf = new Cash_Flow__c(Name = 'M1', Unit__c = u.Id, Cash_Flow_Sum__c = s.Id,
+            Date__c = Date.today(), Constant__c = 1000, Received_Amount__c = 0, Is_Invoiced__c = true);
+        insert cf;
+        Invoice__c inv = new Invoice__c(Unit__c = u.Id, Sub_Total_Amount__c = 1000,
+            Paid_Amount__c = 0, Status__c = 'Pending');
+        insert inv;
+        Milestone_Invoice__c mi = new Milestone_Invoice__c(Invoice__c = inv.Id, Cash_Flow__c = cf.Id);
+        insert mi;
+
+        Test.startTest();
+        delete inv;
+        Test.stopTest();
+
+        System.assertEquals(0, [SELECT COUNT() FROM Invoice__c WHERE Id = :inv.Id], 'Unpaid invoice should be deleted');
+        System.assertEquals(0, [SELECT COUNT() FROM Milestone_Invoice__c WHERE Id = :mi.Id], 'Milestone link should be removed');
+        System.assertEquals(false,
+            [SELECT Is_Invoiced__c FROM Cash_Flow__c WHERE Id = :cf.Id].Is_Invoiced__c,
+            'The covered installment should be freed (Is_Invoiced reset)');
+    }
 }

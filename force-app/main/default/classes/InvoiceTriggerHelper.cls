@@ -98,6 +98,67 @@ public class InvoiceTriggerHelper {
         }
     }
 
+    /**
+     * Before-delete guard + cleanup.
+     *  - BLOCKS deletion of any invoice that has money on it (Paid_Amount > 0) or any receipt
+     *    allocation (Receipt_Amount__c / Receipt_Invoice__c). Such an invoice must be Cancelled
+     *    (soft) instead, or have its receipt allocations removed first. Enforced here so it holds
+     *    for every delete path (UI, list view, API, mass delete).
+     *  - For an allowed (unpaid, unallocated) delete, frees the covered installments: resets
+     *    Cash_Flow__c.Is_Invoiced__c = false and removes the Milestone_Invoice__c links (which are
+     *    Lookup/SetNull and would otherwise orphan, leaving the installments stuck as invoiced).
+     */
+    public static void handleInvoiceDelete(List<Invoice__c> oldInvoices) {
+        Set<Id> invoiceIds = new Set<Id>();
+        for (Invoice__c inv : oldInvoices) {
+            invoiceIds.add(inv.Id);
+        }
+
+        // Invoices that carry any receipt allocation (either junction).
+        Set<Id> allocated = new Set<Id>();
+        for (Receipt_Amount__c ra : [SELECT Invoice__c FROM Receipt_Amount__c WHERE Invoice__c IN :invoiceIds]) {
+            if (ra.Invoice__c != null) allocated.add(ra.Invoice__c);
+        }
+        for (Receipt_Invoice__c ri : [SELECT Invoice__c FROM Receipt_Invoice__c WHERE Invoice__c IN :invoiceIds]) {
+            if (ri.Invoice__c != null) allocated.add(ri.Invoice__c);
+        }
+
+        Set<Id> deletableIds = new Set<Id>();
+        for (Invoice__c inv : oldInvoices) {
+            Boolean hasPayment = (inv.Paid_Amount__c != null && inv.Paid_Amount__c > 0) || allocated.contains(inv.Id);
+            if (hasPayment) {
+                inv.addError(
+                    'This invoice has payments allocated to it and cannot be deleted. ' +
+                    'Cancel it instead (set Status to Cancelled), or remove its receipt allocations first.'
+                );
+            } else {
+                deletableIds.add(inv.Id);
+            }
+        }
+        if (deletableIds.isEmpty()) {
+            return;
+        }
+
+        // Free the covered installments for the invoices that are actually being deleted.
+        List<Milestone_Invoice__c> links = [
+            SELECT Id, Cash_Flow__c FROM Milestone_Invoice__c WHERE Invoice__c IN :deletableIds
+        ];
+        Set<Id> cashFlowIds = new Set<Id>();
+        for (Milestone_Invoice__c mi : links) {
+            if (mi.Cash_Flow__c != null) cashFlowIds.add(mi.Cash_Flow__c);
+        }
+        if (!cashFlowIds.isEmpty()) {
+            List<Cash_Flow__c> cfUpdates = new List<Cash_Flow__c>();
+            for (Id cfId : cashFlowIds) {
+                cfUpdates.add(new Cash_Flow__c(Id = cfId, Is_Invoiced__c = false));
+            }
+            update cfUpdates;
+        }
+        if (!links.isEmpty()) {
+            delete links;
+        }
+    }
+
     private static Map<String, Project_Numbering_Setting__mdt> getActiveConfigByProject() {
         Map<String, Project_Numbering_Setting__mdt> byProject =
             new Map<String, Project_Numbering_Setting__mdt>();

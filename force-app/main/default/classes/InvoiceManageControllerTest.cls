@@ -54,6 +54,19 @@ private class InvoiceManageControllerTest {
     }
 
     @IsTest
+    static void cancelInvoiceSetsStatusCancelled() {
+        Ctx c = build(); // starts Fully Paid
+        Test.startTest();
+        InvoiceManageController.InvoiceView v = InvoiceManageController.cancelInvoice(c.inv.Id);
+        Test.stopTest();
+
+        System.assertEquals(true, v.cancelled, 'Returned view should be marked cancelled');
+        System.assertEquals('Cancelled', v.status, 'Returned status should be Cancelled');
+        Invoice__c inv = [SELECT Status__c FROM Invoice__c WHERE Id = :c.inv.Id];
+        System.assertEquals('Cancelled', inv.Status__c, 'Invoice status should persist as Cancelled');
+    }
+
+    @IsTest
     static void addInstallmentRederivesStatus() {
         Ctx c = build(); // starts Fully Paid at 1000 (one 1000 installment, 1000 receipt)
         Test.startTest();
