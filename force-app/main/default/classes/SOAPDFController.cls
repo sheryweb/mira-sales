@@ -505,10 +505,12 @@ public without sharing class SOAPDFController {
     // for every case (including the T2 Offices retail variant), falling back to the normal voucher.
     private void fetchReceipts() {
         try {
+            // Cancelled receipts are excluded from the customer statement.
             receipts = [
                 SELECT Id, Voucher_Number_Retail__c, Status__c, Payment_Date__c, Received_Amount__c
                 FROM Receipt__c
                 WHERE Unit__c = :propertyDetails.Id
+                  AND Payment_Status__c != 'Cancelled'
                 ORDER BY Payment_Date__c ASC NULLS LAST, CreatedDate ASC
             ];
         } catch (Exception e) {

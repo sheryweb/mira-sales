@@ -776,7 +776,10 @@ private class SOAPDFControllerTest {
             new Receipt__c(Unit__c = u.Id, Description__c = 'R1', Payment_Date__c = Date.today().addDays(-10),
                 Received_Amount__c = 60000, Status__c = 'Reconciled', Payment_Status__c = 'Fully Paid', Payable_Amount__c = 60000),
             new Receipt__c(Unit__c = u.Id, Description__c = 'R2', Payment_Date__c = Date.today().addDays(-2),
-                Received_Amount__c = 40000, Status__c = 'Reconciled', Payment_Status__c = 'Fully Paid', Payable_Amount__c = 40000)
+                Received_Amount__c = 40000, Status__c = 'Reconciled', Payment_Status__c = 'Fully Paid', Payable_Amount__c = 40000),
+            // Cancelled receipt — must NOT appear on the SOA.
+            new Receipt__c(Unit__c = u.Id, Description__c = 'R3-cancelled', Payment_Date__c = Date.today().addDays(-1),
+                Received_Amount__c = 99999, Status__c = 'Reconciled', Payment_Status__c = 'Cancelled', Payable_Amount__c = 99999)
         };
 
         PageReference pageRef = Page.SOAPDF;
@@ -788,7 +791,7 @@ private class SOAPDFControllerTest {
         Test.stopTest();
 
         System.assertEquals(true, controller.getHasReceipts(), 'Unit has receipts');
-        System.assertEquals(2, controller.receipts.size(), 'Both receipts listed');
-        System.assertEquals(100000, controller.getTotalReceiptsReceived(), 'Total received summed across receipts');
+        System.assertEquals(2, controller.receipts.size(), 'Only the 2 non-cancelled receipts are listed');
+        System.assertEquals(100000, controller.getTotalReceiptsReceived(), 'Total excludes the cancelled receipt');
     }
 }
