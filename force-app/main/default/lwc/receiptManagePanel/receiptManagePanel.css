@@ -36,11 +36,14 @@
 
 /* Allocations table */
 .alloc-scroll {
-    overflow-x: auto;
+    /* Must NOT clip: any overflow other than `visible` becomes a clipping context
+       that cuts off the Invoice/Mode combobox dropdowns. Let the dropdowns overflow
+       the panel instead. Columns are percentage-based, so the table fits its container. */
+    overflow: visible;
 }
 
 .alloc-table {
-    min-width: 36rem;
+    min-width: 0;
 }
 
 .alloc-table th {

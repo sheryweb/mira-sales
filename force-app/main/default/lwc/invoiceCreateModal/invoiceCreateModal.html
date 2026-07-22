@@ -46,6 +46,35 @@
 
             <!-- Step 2: details -->
             <template if:true={isDetails}>
+                <!-- Recap of the installments selected on step 1 -->
+                <p class="slds-text-title_caps slds-m-bottom_x-small">Selected installments</p>
+                <table class="slds-table slds-table_bordered slds-table_fixed-layout slds-m-bottom_medium">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col"><div class="slds-truncate" title="Installment">Installment</div></th>
+                            <th scope="col"><div class="slds-truncate slds-text-align_right" title="%">%</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Date">Date</div></th>
+                            <th scope="col"><div class="slds-truncate slds-text-align_right" title="Price">Price</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={selectedInstallments} for:item="i">
+                            <tr key={i.cashFlowId}>
+                                <td><div class="slds-truncate" title={i.milestone}>{i.milestone}</div></td>
+                                <td class="slds-text-align_right">
+                                    <lightning-formatted-number value={i.percent} format-style="percent"></lightning-formatted-number>
+                                </td>
+                                <td>
+                                    <lightning-formatted-date-time value={i.installmentDate} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                </td>
+                                <td class="slds-text-align_right">
+                                    <lightning-formatted-number value={i.amount} format-style="currency" currency-code="AED"></lightning-formatted-number>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+
                 <div class="slds-grid slds-gutters_x-small slds-wrap">
                     <div class="slds-col slds-size_1-of-2">
                         <lightning-input type="date" label="Invoice Date" value={invoiceDate}

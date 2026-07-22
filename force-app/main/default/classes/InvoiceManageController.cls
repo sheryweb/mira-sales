@@ -56,7 +56,7 @@ public with sharing class InvoiceManageController {
         @AuraEnabled public Date installmentDate;
         @AuraEnabled public Decimal amount;
         public CashFlowOption(Cash_Flow__c cf) {
-            this.label = cf.Name;
+            this.label = String.isNotBlank(cf.Installment_Milestone__c) ? cf.Installment_Milestone__c : cf.Name;
             this.value = cf.Id;
             // Percent__c holds the display number (10 for 10%); the LWC percent formatter
             // expects a fraction, so send it as 0.10.
@@ -97,7 +97,8 @@ public with sharing class InvoiceManageController {
 
         v.installments = new List<InstallmentView>();
         for (Milestone_Invoice__c mi : [
-            SELECT Id, Cash_Flow__c, Cash_Flow__r.Name, Cash_Flow__r.Percent__c,
+            SELECT Id, Cash_Flow__c, Cash_Flow__r.Name, Cash_Flow__r.Installment_Milestone__c,
+                   Cash_Flow__r.Percent__c,
                    Cash_Flow__r.Date__c, Cash_Flow__r.Amount_on_Invoice__c, Amount__c
             FROM Milestone_Invoice__c
             WHERE Invoice__c = :invoiceId
@@ -107,7 +108,8 @@ public with sharing class InvoiceManageController {
             iv.milestoneId = mi.Id;
             iv.cashFlowId = mi.Cash_Flow__c;
             if (mi.Cash_Flow__r != null) {
-                iv.cashFlowLabel = mi.Cash_Flow__r.Name;
+                iv.cashFlowLabel = String.isNotBlank(mi.Cash_Flow__r.Installment_Milestone__c)
+                    ? mi.Cash_Flow__r.Installment_Milestone__c : mi.Cash_Flow__r.Name;
                 iv.percent = asFraction(mi.Cash_Flow__r.Percent__c);
                 iv.installmentDate = mi.Cash_Flow__r.Date__c;
                 iv.amount = mi.Cash_Flow__r.Amount_on_Invoice__c;
@@ -122,9 +124,10 @@ public with sharing class InvoiceManageController {
         v.cashFlowOptions = new List<CashFlowOption>();
         if (inv.Unit__c != null) {
             for (Cash_Flow__c cf : [
-                SELECT Id, Name, Percent__c, Date__c, Amount_on_Invoice__c FROM Cash_Flow__c
+                SELECT Id, Name, Installment_Milestone__c, Percent__c, Date__c, Amount_on_Invoice__c
+                FROM Cash_Flow__c
                 WHERE Unit__c = :inv.Unit__c AND Is_Invoiced__c = false AND Waived_Off__c = false
-                ORDER BY Date__c ASC NULLS LAST, Name ASC
+                ORDER BY Date__c ASC NULLS LAST, Installment_Milestone__c ASC NULLS LAST
             ]) {
                 v.cashFlowOptions.add(new CashFlowOption(cf));
             }
