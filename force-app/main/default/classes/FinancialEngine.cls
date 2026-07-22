@@ -98,8 +98,7 @@ public without sharing class FinancialEngine {
             if (inv.Status__c == STATUS_CANCELLED) cancelledInvoiceIds.add(inv.Id);
         }
         Map<Id, List<Id>> invoiceOwnCashFlows = new Map<Id, List<Id>>();
-        Set<Id> cfHasCancelledOwner = new Set<Id>();
-        Set<Id> cfHasLiveOwner = new Set<Id>();
+        Map<Id, Set<Id>> cashFlowOwners = new Map<Id, Set<Id>>(); // cash flow -> invoice ids that own it
         if (!invById.isEmpty()) {
             for (Milestone_Invoice__c mi : [
                 SELECT Invoice__c, Cash_Flow__c
@@ -111,15 +110,25 @@ public without sharing class FinancialEngine {
                     invoiceOwnCashFlows.put(mi.Invoice__c, new List<Id>());
                 }
                 invoiceOwnCashFlows.get(mi.Invoice__c).add(mi.Cash_Flow__c);
-                if (cancelledInvoiceIds.contains(mi.Invoice__c)) cfHasCancelledOwner.add(mi.Cash_Flow__c);
-                else cfHasLiveOwner.add(mi.Cash_Flow__c);
+                if (!cashFlowOwners.containsKey(mi.Cash_Flow__c)) {
+                    cashFlowOwners.put(mi.Cash_Flow__c, new Set<Id>());
+                }
+                cashFlowOwners.get(mi.Cash_Flow__c).add(mi.Invoice__c);
             }
         }
-        // A cash flow is frozen only if it belongs EXCLUSIVELY to cancelled invoice(s); a shared
-        // installment that also serves a live invoice stays in play.
-        Set<Id> frozenCashFlowIds = new Set<Id>();
-        for (Id cfId : cfHasCancelledOwner) {
-            if (!cfHasLiveOwner.contains(cfId)) frozenCashFlowIds.add(cfId);
+
+        // Invoices that carry a legacy Receipt_Invoice__c link (the older payment junction the engine
+        // does not read). Combined with "no Receipt_Amount line", this marks a legacy-paid invoice to
+        // freeze. The Manage panel keeps the two junctions in sync (removing the last line deletes the
+        // link), so a modern invoice whose allocation was fully removed has neither and self-heals to 0.
+        Set<Id> invoiceIdsWithReceiptInvoice = new Set<Id>();
+        if (!invById.isEmpty()) {
+            for (Receipt_Invoice__c ri : [
+                SELECT Invoice__c FROM Receipt_Invoice__c
+                WHERE Invoice__c IN :invById.keySet() AND Invoice__c != null
+            ]) {
+                invoiceIdsWithReceiptInvoice.add(ri.Invoice__c);
+            }
         }
 
         // ---- 3. Receipts for the units (for received=0 defaults + exclusion) ----
@@ -133,8 +142,7 @@ public without sharing class FinancialEngine {
         }
 
         // ---- 4. Replay receipt lines in chronological order ----
-        Map<Id, Decimal> perInvoiceCumulative = new Map<Id, Decimal>();
-        for (Receipt_Amount__c ra : [
+        List<Receipt_Amount__c> lines = [
             SELECT Id, Receipt__c, Invoice__c, Amount__c,
                    Receipt__r.Unit__c, Receipt__r.Payment_Status__c, Receipt__r.Status__c
             FROM Receipt_Amount__c
@@ -143,14 +151,44 @@ public without sharing class FinancialEngine {
                      Receipt__r.Payment_Date__c ASC NULLS LAST,
                      Receipt__r.CreatedDate ASC,
                      Id ASC
-        ]) {
+        ];
+
+        // An invoice is FROZEN when it is manually Cancelled OR it was paid the LEGACY way: no
+        // Receipt_Amount__c line but a Receipt_Invoice__c link (the older junction the engine does
+        // not read). Freezing preserves such an invoice's stored Paid_Amount/Status instead of
+        // zeroing it. NOTES: (1) an invoice whose only lines come from cancelled receipts still HAS
+        // lines, so it is NOT frozen and correctly derives to 0 (soft-cancel reversal); (2) a modern
+        // invoice whose allocation was fully removed has neither junction, so it self-heals to 0.
+        Set<Id> invoiceIdsWithLines = new Set<Id>();
+        for (Receipt_Amount__c ra : lines) {
+            if (ra.Invoice__c != null) invoiceIdsWithLines.add(ra.Invoice__c);
+        }
+        Set<Id> frozenInvoiceIds = new Set<Id>(cancelledInvoiceIds);
+        for (Id invId : invById.keySet()) {
+            if (!invoiceIdsWithLines.contains(invId) && invoiceIdsWithReceiptInvoice.contains(invId)) {
+                frozenInvoiceIds.add(invId);
+            }
+        }
+        // A cash flow is frozen only if EVERY invoice that owns it is frozen; a shared installment
+        // that also serves a live invoice stays in play.
+        Set<Id> frozenCashFlowIds = new Set<Id>();
+        for (Id cfId : cashFlowOwners.keySet()) {
+            Boolean allFrozen = true;
+            for (Id ownerInv : cashFlowOwners.get(cfId)) {
+                if (!frozenInvoiceIds.contains(ownerInv)) { allFrozen = false; break; }
+            }
+            if (allFrozen) frozenCashFlowIds.add(cfId);
+        }
+
+        Map<Id, Decimal> perInvoiceCumulative = new Map<Id, Decimal>();
+        for (Receipt_Amount__c ra : lines) {
             if (isExcluded(ra.Receipt__r.Payment_Status__c, ra.Receipt__r.Status__c)) {
                 continue; // cancelled / unreconciled receipt -> ignored entirely
             }
             if (ra.Invoice__c == null || ra.Amount__c == null || ra.Amount__c == 0) {
                 continue;
             }
-            if (cancelledInvoiceIds.contains(ra.Invoice__c)) {
+            if (frozenInvoiceIds.contains(ra.Invoice__c)) {
                 continue; // frozen invoice -> its money is not re-derived or re-spilled
             }
 
@@ -205,7 +243,7 @@ public without sharing class FinancialEngine {
             if (!frozenCashFlowIds.contains(cfId)) res.cashFlowReceived.put(cfId, cfReceived.get(cfId));
         }
         for (Id invId : invById.keySet()) {
-            if (cancelledInvoiceIds.contains(invId)) continue; // frozen: leave stored Paid_Amount + Status
+            if (frozenInvoiceIds.contains(invId)) continue; // frozen: leave stored Paid_Amount + Status
             Decimal paid = res.invoicePaidAmount.containsKey(invId) ? res.invoicePaidAmount.get(invId) : 0;
             res.invoicePaidAmount.put(invId, paid);
             Invoice__c inv = invById.get(invId);

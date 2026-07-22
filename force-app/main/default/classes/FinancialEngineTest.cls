@@ -278,6 +278,35 @@ private class FinancialEngineTest {
     }
 
     @IsTest
+    static void legacyNoLineInvoiceFrozen() {
+        // An invoice with NO Receipt_Amount__c lines (legacy invoices paid via the Receipt_Invoice__c
+        // junction, which the engine doesn't read) is frozen: stored Paid_Amount/Status preserved,
+        // not zeroed.
+        Unit__c u = makeUnit('u_legacy');
+        Cash_Flow_Sum__c s = makeSum(u.Id);
+        Cash_Flow__c cf = makeCF(u.Id, s.Id, 'M1', -5, 1000);
+        insert cf;
+
+        Invoice__c legacy = makeInvoice(u.Id, 1000, 0);
+        legacy.Status__c = 'Fully Paid';
+        legacy.Paid_Amount__c = 1000;
+        insert legacy;
+        insert new Milestone_Invoice__c(Invoice__c = legacy.Id, Cash_Flow__c = cf.Id);
+        // Legacy payment recorded via the Receipt_Invoice junction, NOT Receipt_Amount lines.
+        Receipt__c r = makeReceipt(u.Id, -1, 'Fully Paid');
+        insert r;
+        insert new Receipt_Invoice__c(Receipt__c = r.Id, Invoice__c = legacy.Id, Amount__c = 1000);
+
+        Test.startTest();
+        FinancialEngine.DerivationResult res = new FinancialEngine().deriveForUnits(new Set<Id>{ u.Id });
+        Test.stopTest();
+
+        System.assert(!res.invoicePaidAmount.containsKey(legacy.Id), 'No-line invoice must not be re-derived (frozen)');
+        System.assert(!res.invoiceStatus.containsKey(legacy.Id), 'No-line invoice status must not be re-derived (frozen)');
+        System.assert(!res.cashFlowReceived.containsKey(cf.Id), 'Its installment is frozen (not re-derived)');
+    }
+
+    @IsTest
     static void idempotentReRun() {
         Unit__c u = makeUnit('u7');
         Cash_Flow_Sum__c s = makeSum(u.Id);
