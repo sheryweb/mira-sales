@@ -125,6 +125,7 @@ export default class ReceiptCreateModal extends LightningElement {
                 key: l.key,
                 invoiceLabel: inv ? inv.label : '—',
                 amount: parseFloat(l.amount) || 0,
+                pending: inv ? (inv.pending || 0) : 0,
                 mode: l.modeOfPayment
             };
         });

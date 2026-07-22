@@ -99,18 +99,22 @@
                     <thead>
                         <tr class="slds-line-height_reset">
                             <th scope="col"><div class="slds-truncate" title="Invoice">Invoice</div></th>
-                            <th scope="col"><div class="slds-truncate" title="Mode">Mode</div></th>
                             <th scope="col"><div class="slds-truncate slds-text-align_right" title="Amount">Amount</div></th>
+                            <th scope="col"><div class="slds-truncate slds-text-align_right" title="Pending">Pending</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Mode">Mode</div></th>
                         </tr>
                     </thead>
                     <tbody>
                         <template for:each={selectedLinesView} for:item="s">
                             <tr key={s.key}>
                                 <td><div class="slds-truncate" title={s.invoiceLabel}>{s.invoiceLabel}</div></td>
-                                <td><div class="slds-truncate" title={s.mode}>{s.mode}</div></td>
                                 <td class="slds-text-align_right">
                                     <lightning-formatted-number value={s.amount} format-style="currency" currency-code="AED"></lightning-formatted-number>
                                 </td>
+                                <td class="slds-text-align_right">
+                                    <lightning-formatted-number value={s.pending} format-style="currency" currency-code="AED"></lightning-formatted-number>
+                                </td>
+                                <td><div class="slds-truncate" title={s.mode}>{s.mode}</div></td>
                             </tr>
                         </template>
                     </tbody>
