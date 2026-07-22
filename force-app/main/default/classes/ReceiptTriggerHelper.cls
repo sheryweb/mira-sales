@@ -92,6 +92,48 @@ public class ReceiptTriggerHelper {
         }
     }
 
+    /**
+     * Before-delete guard + cleanup.
+     *  - BLOCKS deletion of a RECONCILED receipt (committed money). It must be Cancelled (soft —
+     *    kept for the audit trail, excluded from all totals) or set back to Unreconciled first.
+     *    Enforced here so it holds for every delete path (UI, list view, API, mass delete).
+     *  - For an allowed (Unreconciled/provisional) delete, removes the receipt's junction + ledger
+     *    children (Receipt_Amount__c / Receipt_Invoice__c / Milestone_Receipt__c) so they don't
+     *    orphan (all Lookup/SetNull). Unreconciled receipts are excluded from the engine, so this
+     *    changes no stored total.
+     */
+    public static void handleReceiptDelete(List<Receipt__c> oldReceipts) {
+        Set<Id> deletableIds = new Set<Id>();
+        for (Receipt__c r : oldReceipts) {
+            if (r.Status__c == 'Reconciled') {
+                r.addError(
+                    'This receipt is Reconciled and cannot be deleted. Cancel it instead ' +
+                    '(it is kept for the audit trail but excluded from all totals), or set its ' +
+                    'Status to Unreconciled first.'
+                );
+            } else {
+                deletableIds.add(r.Id);
+            }
+        }
+        if (deletableIds.isEmpty()) {
+            return;
+        }
+
+        // Bypass the engine during cleanup; the single after-delete recompute (with bypass cleared)
+        // covers the unit, and Unreconciled receipts are excluded anyway.
+        FinancialEngine.bypass = true;
+        try {
+            List<Receipt_Amount__c> lines = [SELECT Id FROM Receipt_Amount__c WHERE Receipt__c IN :deletableIds];
+            if (!lines.isEmpty()) delete lines;
+            List<Receipt_Invoice__c> links = [SELECT Id FROM Receipt_Invoice__c WHERE Receipt__c IN :deletableIds];
+            if (!links.isEmpty()) delete links;
+            List<Milestone_Receipt__c> ledger = [SELECT Id FROM Milestone_Receipt__c WHERE Receipt__c IN :deletableIds];
+            if (!ledger.isEmpty()) delete ledger;
+        } finally {
+            FinancialEngine.bypass = false;
+        }
+    }
+
     private static Map<String, Project_Numbering_Setting__mdt> getActiveConfigByProject() {
         Map<String, Project_Numbering_Setting__mdt> byProject =
             new Map<String, Project_Numbering_Setting__mdt>();

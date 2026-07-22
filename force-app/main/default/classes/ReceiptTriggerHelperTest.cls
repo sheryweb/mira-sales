@@ -306,4 +306,48 @@ private class ReceiptTriggerHelperTest {
 
         System.assertEquals(null, newReceipt.Voucher_Seq__c, 'Voucher sequence should not be assigned for unknown project');
     }
+
+    @IsTest
+    static void deleteBlockedWhenReconciled() {
+        Unit__c u = [SELECT Id FROM Unit__c WHERE Property_Code_Text__c = 'TEST-001' LIMIT 1];
+        Receipt__c r = new Receipt__c(Unit__c = u.Id, Description__c = 'R', Payment_Date__c = Date.today(),
+            Payable_Amount__c = 1000, Status__c = 'Reconciled', Payment_Status__c = 'Fully Paid');
+        insert r;
+
+        Boolean blocked = false;
+        Test.startTest();
+        try {
+            delete r;
+        } catch (DmlException e) {
+            blocked = true;
+            System.assert(e.getMessage().contains('cannot be deleted'),
+                'Expected the guard message, got: ' + e.getMessage());
+        }
+        Test.stopTest();
+
+        System.assert(blocked, 'Deleting a reconciled receipt must be blocked');
+        System.assertEquals(1, [SELECT COUNT() FROM Receipt__c WHERE Id = :r.Id], 'Receipt should still exist');
+    }
+
+    @IsTest
+    static void deleteAllowedWhenUnreconciledCleansUp() {
+        Unit__c u = [SELECT Id FROM Unit__c WHERE Property_Code_Text__c = 'TEST-001' LIMIT 1];
+        Invoice__c inv = new Invoice__c(Unit__c = u.Id, Sub_Total_Amount__c = 1000, Paid_Amount__c = 0, Status__c = 'Pending');
+        insert inv;
+        Receipt__c r = new Receipt__c(Unit__c = u.Id, Description__c = 'R', Payment_Date__c = Date.today(),
+            Payable_Amount__c = 1000, Status__c = 'Unreconciled', Payment_Status__c = 'Fully Paid');
+        insert r;
+        Receipt_Amount__c ra = new Receipt_Amount__c(Receipt__c = r.Id, Invoice__c = inv.Id, Amount__c = 500);
+        insert ra;
+        Receipt_Invoice__c ri = new Receipt_Invoice__c(Receipt__c = r.Id, Invoice__c = inv.Id, Amount__c = 500);
+        insert ri;
+
+        Test.startTest();
+        delete r;
+        Test.stopTest();
+
+        System.assertEquals(0, [SELECT COUNT() FROM Receipt__c WHERE Id = :r.Id], 'Unreconciled receipt should be deleted');
+        System.assertEquals(0, [SELECT COUNT() FROM Receipt_Amount__c WHERE Id = :ra.Id], 'Its lines should be cleaned up');
+        System.assertEquals(0, [SELECT COUNT() FROM Receipt_Invoice__c WHERE Id = :ri.Id], 'Its links should be cleaned up');
+    }
 }
