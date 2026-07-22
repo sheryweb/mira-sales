@@ -3,16 +3,16 @@
  * Voucher_Seq__c) from the legacy per-project counter fields
  * (Invoice_Number_To_Process_* / Voucher_Number_To_Process_*).
  *
- * WHY: the CMDT-driven numbering (InvoiceTriggerHelper / ReceiptTriggerHelper)
- * continues each project's sequence from MAX(Invoice_Seq__c|Voucher_Seq__c), and
- * the Voucher_Number__c formula now reads Voucher_Seq__c. Existing records must
- * carry their current counter value in the new field so that (a) new numbers keep
- * counting up instead of colliding at 1, and (b) existing receipt vouchers
- * recompute to the exact same string.
+ * IMPORTANT: the legacy data sometimes has MORE THAN ONE per-project counter
+ * populated on a single record (stray values). The old number formula/trigger
+ * always read the counter for the record's OWN project, so this batch must do the
+ * same — pick the counter field that matches Unit.Project_Name_F__c, NOT the first
+ * non-null one. (An earlier version took first-non-null and mis-set records that
+ * carried a stray counter from another project.)
  *
  * WHEN: run once per object, BEFORE the numbering formula/trigger change goes live
- * in an org that already holds data (production). The working sandbox has no
- * invoice/receipt data, so this is a no-op there.
+ * in an org that already holds data (production). Idempotent — safe to re-run; it
+ * only writes when the correct value differs from what's stored.
  *
  * Usage (anonymous Apex):
  *   Database.executeBatch(NumberingSeqBackfillBatch.forInvoices(), 200);
@@ -22,84 +22,74 @@ public class NumberingSeqBackfillBatch implements Database.Batchable<SObject> {
 
     private final String objectName;
     private final String seqField;
-    private final List<String> legacyFields;
+    private final Map<String, String> counterByProject; // project name -> legacy counter field
 
-    private NumberingSeqBackfillBatch(String objectName, String seqField, List<String> legacyFields) {
+    private static final Map<String, String> INVOICE_COUNTER_BY_PROJECT = new Map<String, String>{
+        'Trussardi Residences'                 => 'Invoice_Number_To_Process_Trussardi__c',
+        'Trussardi Residences 2'               => 'Invoice_Number_To_Process_Trussardi2__c',
+        'MIRA Villas Designed by Bentley Home' => 'Invoice_Number_To_Process_Bentley__c',
+        'POST HOTEL & RESIDENCES By ELIE SAAB' => 'Invoice_Number_To_Process_POST__c',
+        'GIANFRANCO FERRE RESIDENCES'          => 'Invoice_Number_To_Process_Gianfranco__c',
+        'Trussardi Residences 2 Offices'       => 'Invoice_Number_To_Process_T2_Offices__c',
+        'Trussardi Residences MIRA VERDE'      => 'Invoice_Number_To_Process_MIRA_VERDE__c',
+        'John Richmond Residences'             => 'Invoice_Number_To_Process_Richmond__c'
+    };
+
+    private static final Map<String, String> RECEIPT_COUNTER_BY_PROJECT = new Map<String, String>{
+        'Trussardi Residences'                 => 'Voucher_Number_To_Process_Trussardi__c',
+        'Trussardi Residences 2'               => 'Voucher_Number_To_Process_Trussardi2__c',
+        'MIRA Villas Designed by Bentley Home' => 'Voucher_Number_To_Process_Bentley__c',
+        'POST HOTEL & RESIDENCES By ELIE SAAB' => 'Voucher_Number_To_Process_POST__c',
+        'GIANFRANCO FERRE RESIDENCES'          => 'Voucher_Number_To_Process_Gianfranco__c',
+        'Trussardi Residences 2 Offices'       => 'Voucher_Number_To_Process_T2_Offices__c',
+        'Trussardi Residences MIRA VERDE'      => 'Voucher_Number_To_Process_MIRA_VERDE__c',
+        'John Richmond Residences'             => 'Voucher_Number_To_Process_Richmond__c'
+    };
+
+    private NumberingSeqBackfillBatch(String objectName, String seqField, Map<String, String> counterByProject) {
         this.objectName = objectName;
         this.seqField = seqField;
-        this.legacyFields = legacyFields;
+        this.counterByProject = counterByProject;
     }
 
     public static NumberingSeqBackfillBatch forInvoices() {
-        return new NumberingSeqBackfillBatch(
-            'Invoice__c',
-            'Invoice_Seq__c',
-            new List<String>{
-                'Invoice_Number_To_Process_Trussardi__c',
-                'Invoice_Number_To_Process_Trussardi2__c',
-                'Invoice_Number_To_Process_Bentley__c',
-                'Invoice_Number_To_Process_POST__c',
-                'Invoice_Number_To_Process_Gianfranco__c',
-                'Invoice_Number_To_Process_T2_Offices__c',
-                'Invoice_Number_To_Process_MIRA_VERDE__c',
-                'Invoice_Number_To_Process_Richmond__c'
-            }
-        );
+        return new NumberingSeqBackfillBatch('Invoice__c', 'Invoice_Seq__c', INVOICE_COUNTER_BY_PROJECT);
     }
 
     public static NumberingSeqBackfillBatch forReceipts() {
-        return new NumberingSeqBackfillBatch(
-            'Receipt__c',
-            'Voucher_Seq__c',
-            new List<String>{
-                'Voucher_Number_To_Process_Trussardi__c',
-                'Voucher_Number_To_Process_Trussardi2__c',
-                'Voucher_Number_To_Process_Bentley__c',
-                'Voucher_Number_To_Process_POST__c',
-                'Voucher_Number_To_Process_Gianfranco__c',
-                'Voucher_Number_To_Process_T2_Offices__c',
-                'Voucher_Number_To_Process_MIRA_VERDE__c',
-                'Voucher_Number_To_Process_Richmond__c'
-            }
-        );
+        return new NumberingSeqBackfillBatch('Receipt__c', 'Voucher_Seq__c', RECEIPT_COUNTER_BY_PROJECT);
     }
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
-        List<String> selectFields = new List<String>{ 'Id', seqField };
-        selectFields.addAll(legacyFields);
-
-        List<String> notNullClauses = new List<String>();
-        for (String f : legacyFields) {
-            notNullClauses.add(f + ' != null');
-        }
-
-        String q = 'SELECT ' + String.join(selectFields, ', ') +
+        Set<String> projectNames = counterByProject.keySet();
+        Set<String> fieldSet = new Set<String>{ 'Id', seqField, 'Unit__r.Project_Name_F__c' };
+        fieldSet.addAll(counterByProject.values());
+        // Process every record that belongs to a recognized project; execute() only
+        // writes when the correct (own-project) value differs from what is stored.
+        String q = 'SELECT ' + String.join(new List<String>(fieldSet), ', ') +
                    ' FROM ' + objectName +
-                   ' WHERE ' + seqField + ' = null' +
-                   ' AND (' + String.join(notNullClauses, ' OR ') + ')';
+                   ' WHERE Unit__r.Project_Name_F__c IN :projectNames';
         return Database.getQueryLocator(q);
     }
 
     public void execute(Database.BatchableContext bc, List<SObject> scope) {
-        // Numbering only runs on before-insert; this batch does updates, so the
-        // numbering helpers never fire. Bypass the financial engine so a pure
-        // numbering backfill does not recompute stored totals.
-        FinancialEngine.bypass = true;
-
         List<SObject> toUpdate = new List<SObject>();
         for (SObject rec : scope) {
-            // A record only ever has one project's legacy counter populated;
-            // take the first non-null.
-            Decimal seq = null;
-            for (String f : legacyFields) {
-                Object v = rec.get(f);
-                if (v != null) {
-                    seq = (Decimal) v;
-                    break;
-                }
+            SObject unit = rec.getSObject('Unit__r');
+            String projectName = (unit == null) ? null : (String) unit.get('Project_Name_F__c');
+            if (projectName == null || !counterByProject.containsKey(projectName)) {
+                continue;
             }
-            if (seq != null) {
-                rec.put(seqField, seq);
+            // The correct sequence is the counter for the record's OWN project (may be null,
+            // which faithfully reproduces the old formula's blank-as-zero behavior).
+            Object v = rec.get(counterByProject.get(projectName));
+            Decimal correctSeq = (v == null) ? null : (Decimal) v;
+
+            Object current = rec.get(seqField);
+            Decimal currentSeq = (current == null) ? null : (Decimal) current;
+
+            if (correctSeq != currentSeq) {
+                rec.put(seqField, correctSeq);
                 toUpdate.add(rec);
             }
         }

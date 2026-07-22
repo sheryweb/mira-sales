@@ -24,9 +24,10 @@
  */
 public without sharing class FinancialEngine {
 
-    @TestVisible static final String STATUS_PENDING = 'Pending';
-    @TestVisible static final String STATUS_PARTIAL = 'Partially Paid';
-    @TestVisible static final String STATUS_FULL    = 'Fully Paid';
+    @TestVisible static final String STATUS_PENDING   = 'Pending';
+    @TestVisible static final String STATUS_PARTIAL   = 'Partially Paid';
+    @TestVisible static final String STATUS_FULL      = 'Fully Paid';
+    @TestVisible static final String STATUS_CANCELLED = 'Cancelled';
 
     /** Recursion guard: true while the engine is writing its own DML, so triggers don't re-enter. */
     @TestVisible public static Boolean bypass = false;
@@ -84,11 +85,21 @@ public without sharing class FinancialEngine {
 
         // ---- 2. Invoices for the units + each invoice's own cash flows (via Milestone_Invoice) ----
         Map<Id, Invoice__c> invById = new Map<Id, Invoice__c>([
-            SELECT Id, Unit__c, Sub_Total_Amount__c, VAT_Amount__c
+            SELECT Id, Unit__c, Sub_Total_Amount__c, VAT_Amount__c, Status__c
             FROM Invoice__c
             WHERE Unit__c IN :unitIds
         ]);
+        // Manually-cancelled invoices are FROZEN: the engine preserves their stored Paid_Amount__c
+        // and Status__c and excludes their own cash-flow installments from the allocation waterfall,
+        // so live payments never land on a cancelled invoice's installments. (Their funding receipts
+        // are separately Payment_Status__c='Cancelled', so they are already excluded in step 4.)
+        Set<Id> cancelledInvoiceIds = new Set<Id>();
+        for (Invoice__c inv : invById.values()) {
+            if (inv.Status__c == STATUS_CANCELLED) cancelledInvoiceIds.add(inv.Id);
+        }
         Map<Id, List<Id>> invoiceOwnCashFlows = new Map<Id, List<Id>>();
+        Set<Id> cfHasCancelledOwner = new Set<Id>();
+        Set<Id> cfHasLiveOwner = new Set<Id>();
         if (!invById.isEmpty()) {
             for (Milestone_Invoice__c mi : [
                 SELECT Invoice__c, Cash_Flow__c
@@ -100,7 +111,15 @@ public without sharing class FinancialEngine {
                     invoiceOwnCashFlows.put(mi.Invoice__c, new List<Id>());
                 }
                 invoiceOwnCashFlows.get(mi.Invoice__c).add(mi.Cash_Flow__c);
+                if (cancelledInvoiceIds.contains(mi.Invoice__c)) cfHasCancelledOwner.add(mi.Cash_Flow__c);
+                else cfHasLiveOwner.add(mi.Cash_Flow__c);
             }
+        }
+        // A cash flow is frozen only if it belongs EXCLUSIVELY to cancelled invoice(s); a shared
+        // installment that also serves a live invoice stays in play.
+        Set<Id> frozenCashFlowIds = new Set<Id>();
+        for (Id cfId : cfHasCancelledOwner) {
+            if (!cfHasLiveOwner.contains(cfId)) frozenCashFlowIds.add(cfId);
         }
 
         // ---- 3. Receipts for the units (for received=0 defaults + exclusion) ----
@@ -130,6 +149,9 @@ public without sharing class FinancialEngine {
             }
             if (ra.Invoice__c == null || ra.Amount__c == null || ra.Amount__c == 0) {
                 continue;
+            }
+            if (cancelledInvoiceIds.contains(ra.Invoice__c)) {
+                continue; // frozen invoice -> its money is not re-derived or re-spilled
             }
 
             Id invId = ra.Invoice__c;
@@ -161,12 +183,13 @@ public without sharing class FinancialEngine {
             if (remaining > 0 && unitId != null && unitCashFlows.containsKey(unitId)) {
                 for (Cash_Flow__c cf : unitCashFlows.get(unitId)) {
                     if (remaining <= 0) break;
+                    if (frozenCashFlowIds.contains(cf.Id)) continue; // never spill onto a frozen installment
                     remaining = applyToCashFlow(cf.Id, invId, recId, remaining, cfById, cfReceived, cfDate, res);
                 }
             }
             // phase C: true overpayment leftover -> last installment with a price
             if (remaining > 0 && unitId != null && unitCashFlows.containsKey(unitId)) {
-                Cash_Flow__c last = lastWithPrice(unitCashFlows.get(unitId));
+                Cash_Flow__c last = lastWithPrice(unitCashFlows.get(unitId), frozenCashFlowIds);
                 if (last != null) {
                     cfReceived.put(last.Id, cfReceived.get(last.Id) + remaining);
                     res.ledger.add(new LedgerRow(recId, invId, last.Id, remaining, cfDate.get(last.Id)));
@@ -177,8 +200,12 @@ public without sharing class FinancialEngine {
         }
 
         // ---- 5. Finalize cash flow received + invoice paid/status ----
-        res.cashFlowReceived.putAll(cfReceived);
+        // Frozen cash flows are omitted so writeResults leaves their stored Received_Amount as-is.
+        for (Id cfId : cfReceived.keySet()) {
+            if (!frozenCashFlowIds.contains(cfId)) res.cashFlowReceived.put(cfId, cfReceived.get(cfId));
+        }
         for (Id invId : invById.keySet()) {
+            if (cancelledInvoiceIds.contains(invId)) continue; // frozen: leave stored Paid_Amount + Status
             Decimal paid = res.invoicePaidAmount.containsKey(invId) ? res.invoicePaidAmount.get(invId) : 0;
             res.invoicePaidAmount.put(invId, paid);
             Invoice__c inv = invById.get(invId);
@@ -203,8 +230,9 @@ public without sharing class FinancialEngine {
         return remaining - applied;
     }
 
-    private Cash_Flow__c lastWithPrice(List<Cash_Flow__c> cfs) {
+    private Cash_Flow__c lastWithPrice(List<Cash_Flow__c> cfs, Set<Id> frozenCashFlowIds) {
         for (Integer i = cfs.size() - 1; i >= 0; i--) {
+            if (frozenCashFlowIds.contains(cfs[i].Id)) continue; // skip frozen installments
             if (nz(cfs[i].Price_Formula__c) > 0) return cfs[i];
         }
         return null;

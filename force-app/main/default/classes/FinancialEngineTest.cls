@@ -233,6 +233,51 @@ private class FinancialEngineTest {
     }
 
     @IsTest
+    static void cancelledInvoiceFrozen() {
+        // A manually-cancelled invoice must be FROZEN: the engine neither re-derives its
+        // Paid_Amount/Status nor lets live overpayments spill onto its installment.
+        Unit__c u = makeUnit('u_cancel');
+        Cash_Flow_Sum__c s = makeSum(u.Id);
+        Cash_Flow__c cfLive = makeCF(u.Id, s.Id, 'M1', -5, 1000);
+        Cash_Flow__c cfCancelled = makeCF(u.Id, s.Id, 'M2', 0, 1000);
+        insert new List<Cash_Flow__c>{ cfLive, cfCancelled };
+
+        Invoice__c invLive = makeInvoice(u.Id, 1000, 0);
+        Invoice__c invCancelled = makeInvoice(u.Id, 1000, 1);
+        invCancelled.Status__c = 'Cancelled';
+        invCancelled.Paid_Amount__c = 1000; // historical value that must be preserved
+        insert new List<Invoice__c>{ invLive, invCancelled };
+        insert new List<Milestone_Invoice__c>{
+            new Milestone_Invoice__c(Invoice__c = invLive.Id, Cash_Flow__c = cfLive.Id),
+            new Milestone_Invoice__c(Invoice__c = invCancelled.Id, Cash_Flow__c = cfCancelled.Id)
+        };
+
+        // Live receipt overpays its own installment by 500; the cancelled invoice's receipt is
+        // itself Cancelled (mirrors real data).
+        Receipt__c good = makeReceipt(u.Id, -1, 'Fully Paid');
+        Receipt__c dead = makeReceipt(u.Id, 0, 'Cancelled');
+        insert new List<Receipt__c>{ good, dead };
+        insert new List<Receipt_Amount__c>{
+            new Receipt_Amount__c(Receipt__c = good.Id, Invoice__c = invLive.Id, Amount__c = 1500),
+            new Receipt_Amount__c(Receipt__c = dead.Id, Invoice__c = invCancelled.Id, Amount__c = 1000)
+        };
+
+        Test.startTest();
+        FinancialEngine.DerivationResult res = new FinancialEngine().deriveForUnits(new Set<Id>{ u.Id });
+        Test.stopTest();
+
+        // Cancelled invoice frozen: engine returns NO derived Paid/Status for it (writeResults skips it).
+        System.assert(!res.invoicePaidAmount.containsKey(invCancelled.Id), 'Cancelled invoice paid must not be re-derived');
+        System.assert(!res.invoiceStatus.containsKey(invCancelled.Id), 'Cancelled invoice status must not be re-derived');
+        // Its installment is frozen: absent from the derived cash-flow map.
+        System.assert(!res.cashFlowReceived.containsKey(cfCancelled.Id), 'Frozen installment must not be re-derived');
+        // Live invoice derives normally; the 500 overpayment stays on its own installment, NOT the frozen one.
+        System.assertEquals(1500, res.invoicePaidAmount.get(invLive.Id), 'Live invoice paid = 1500');
+        System.assertEquals(1500, res.cashFlowReceived.get(cfLive.Id), 'Overpay stays on the live installment');
+        System.assertEquals(0, res.receiptReceived.get(dead.Id), 'Cancelled receipt received = 0');
+    }
+
+    @IsTest
     static void idempotentReRun() {
         Unit__c u = makeUnit('u7');
         Cash_Flow_Sum__c s = makeSum(u.Id);

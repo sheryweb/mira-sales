@@ -80,4 +80,32 @@ private class NumberingSeqBackfillBatchTest {
             [SELECT Voucher_Seq__c FROM Receipt__c WHERE Id = :rec.Id].Voucher_Seq__c,
             'Voucher_Seq__c should be backfilled from the legacy Bentley counter');
     }
+
+    @IsTest
+    static void backfillUsesOwnProjectCounterDespiteStrayCounter() {
+        // Regression: a John Richmond receipt that also carries a stray Gianfranco counter must
+        // be backfilled from its OWN project's (Richmond) counter, not the first non-null one.
+        Unit__c u = makeUnit('John Richmond Residences', 'BF-JRD-001');
+
+        ReceiptTriggerHelper.skipTrigger = true;
+        Receipt__c rec = new Receipt__c(
+            Unit__c = u.Id,
+            Voucher_Number_To_Process_Gianfranco__c = 1,   // stray value from bad legacy data
+            Voucher_Number_To_Process_Richmond__c = 143,   // the real, project-specific counter
+            Description__c = 'JRD receipt with stray counter',
+            Payment_Date__c = Date.today(),
+            Payable_Amount__c = 1000,
+            Status__c = 'Reconciled'
+        );
+        insert rec;
+        ReceiptTriggerHelper.skipTrigger = false;
+
+        Test.startTest();
+        Database.executeBatch(NumberingSeqBackfillBatch.forReceipts(), 200);
+        Test.stopTest();
+
+        System.assertEquals(143,
+            [SELECT Voucher_Seq__c FROM Receipt__c WHERE Id = :rec.Id].Voucher_Seq__c,
+            'Must use the John Richmond counter (143), not the stray Gianfranco counter (1)');
+    }
 }
