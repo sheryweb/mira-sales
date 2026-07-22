@@ -350,6 +350,49 @@
         </table>
     </apex:outputPanel>
 </apex:outputPanel>
+
+<!-- Receipts list (last page) -->
+<apex:outputPanel rendered="{!hasReceipts}" layout="block" styleClass="page-break">
+    <div class="page" style="text-align: right;"><apex:image value="{!$Resource.MiraDocLogo}" alt="Logo" width="18%;"/></div>
+    <div style="text-align: center; margin: 20px 0;">
+        <h2>STATEMENT OF ACCOUNT - RECEIPTS</h2>
+    </div>
+
+    <table class="data-table" width="100%">
+        <tr>
+            <th>Voucher #</th>
+            <th>Status</th>
+            <th class="date-cell">Payment Date</th>
+            <th class="amount-cell">Received Amount</th>
+        </tr>
+        <apex:repeat value="{!receipts}" var="rcpt">
+            <tr>
+                <td>{!rcpt.Voucher_Number_Retail__c}</td>
+                <td>{!rcpt.Status__c}</td>
+                <td class="date-cell">
+                    <apex:outputText value="{0,date,dd-MMM-yyyy}" rendered="{!rcpt.Payment_Date__c != null}">
+                        <apex:param value="{!rcpt.Payment_Date__c}" />
+                    </apex:outputText>
+                </td>
+                <td class="amount-cell">
+                    <apex:outputText value="{0, number, ###,##0.00}" rendered="{!rcpt.Received_Amount__c != null}">
+                        <apex:param value="{!rcpt.Received_Amount__c}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+        </apex:repeat>
+        <tr class="total-row">
+            <td class="right-align">Total</td>
+            <td></td>
+            <td></td>
+            <td class="amount-cell">
+                <apex:outputText value="{0, number, ###,##0.00}">
+                    <apex:param value="{!totalReceiptsReceived}" />
+                </apex:outputText>
+            </td>
+        </tr>
+    </table>
+</apex:outputPanel>
 </body>
 </html>
 </apex:page>

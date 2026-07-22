@@ -22,6 +22,9 @@ public without sharing class SOAPDFController {
     
     // Cash Flow items for property registration/other charges
     public List<Cash_Flow__c> registrationItems {get; private set;}
+
+    // Receipts raised against this unit (shown as a list on the last SOA page)
+    public List<Receipt__c> receipts {get; private set;}
     
     // Property to expose unitCost for the page
     public Decimal unitCost {get; private set;}
@@ -75,6 +78,9 @@ public without sharing class SOAPDFController {
                 
                 // Fetch registration/other charge items for this unit
                 fetchRegistrationItems();
+
+                // Fetch receipts raised against this unit
+                fetchReceipts();
             }
             
             // Load customer details from Account
@@ -492,6 +498,39 @@ public without sharing class SOAPDFController {
     // Check if there are any registration items
     public Boolean getHasRegistrationItems() {
         return registrationItems != null && !registrationItems.isEmpty();
+    }
+
+    // Fetch all receipts raised against this unit (for the receipts list on the last SOA page).
+    // Voucher_Number_Retail__c is used because that formula already resolves to the correct voucher
+    // for every case (including the T2 Offices retail variant), falling back to the normal voucher.
+    private void fetchReceipts() {
+        try {
+            receipts = [
+                SELECT Id, Voucher_Number_Retail__c, Status__c, Payment_Date__c, Received_Amount__c
+                FROM Receipt__c
+                WHERE Unit__c = :propertyDetails.Id
+                ORDER BY Payment_Date__c ASC NULLS LAST, CreatedDate ASC
+            ];
+        } catch (Exception e) {
+            receipts = new List<Receipt__c>();
+            System.debug('Error fetching receipts: ' + e.getMessage());
+        }
+    }
+
+    // Check if there are any receipts
+    public Boolean getHasReceipts() {
+        return receipts != null && !receipts.isEmpty();
+    }
+
+    // Total received across the listed receipts (for the totals row)
+    public Decimal getTotalReceiptsReceived() {
+        Decimal total = 0;
+        if (receipts != null) {
+            for (Receipt__c r : receipts) {
+                if (r.Received_Amount__c != null) total += r.Received_Amount__c;
+            }
+        }
+        return total;
     }
 
     // Get total remaining instalment amount for Current Amounts Due Summary

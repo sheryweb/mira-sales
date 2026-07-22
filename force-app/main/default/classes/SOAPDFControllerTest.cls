@@ -763,4 +763,32 @@ private class SOAPDFControllerTest {
         System.assert(totalWithVAT >= 0, 'Total with VAT should be non-negative');
         System.assert(totalBalWithVAT != null, 'Total balance with VAT calculated (can be negative when overpaid)');
     }
+
+    /**
+     * Test the receipts list shown on the last SOA page.
+     */
+    @isTest
+    static void testReceiptsListOnUnit() {
+        Unit__c u = [SELECT Id FROM Unit__c WHERE Title__c = 'Unit-123' LIMIT 1];
+        Opportunity o = [SELECT Id FROM Opportunity WHERE Unit__c = :u.Id LIMIT 1];
+
+        insert new List<Receipt__c>{
+            new Receipt__c(Unit__c = u.Id, Description__c = 'R1', Payment_Date__c = Date.today().addDays(-10),
+                Received_Amount__c = 60000, Status__c = 'Reconciled', Payment_Status__c = 'Fully Paid', Payable_Amount__c = 60000),
+            new Receipt__c(Unit__c = u.Id, Description__c = 'R2', Payment_Date__c = Date.today().addDays(-2),
+                Received_Amount__c = 40000, Status__c = 'Reconciled', Payment_Status__c = 'Fully Paid', Payable_Amount__c = 40000)
+        };
+
+        PageReference pageRef = Page.SOAPDF;
+        pageRef.getParameters().put('oppId', o.Id);
+        Test.setCurrentPage(pageRef);
+
+        Test.startTest();
+        SOAPDFController controller = new SOAPDFController();
+        Test.stopTest();
+
+        System.assertEquals(true, controller.getHasReceipts(), 'Unit has receipts');
+        System.assertEquals(2, controller.receipts.size(), 'Both receipts listed');
+        System.assertEquals(100000, controller.getTotalReceiptsReceived(), 'Total received summed across receipts');
+    }
 }
