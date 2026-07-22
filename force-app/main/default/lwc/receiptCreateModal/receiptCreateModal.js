@@ -116,6 +116,19 @@ export default class ReceiptCreateModal extends LightningElement {
     get paymentStatusPreview() {
         return this.received >= this.payable && this.received > 0 ? 'Fully Paid' : 'Partially Paid';
     }
+    // Recap of the payment lines (invoices selected on step 1) for the details step.
+    get selectedLinesView() {
+        const byId = new Map(this.payableInvoices.map((i) => [i.invoiceId, i]));
+        return this.lines.map((l) => {
+            const inv = byId.get(l.invoiceId);
+            return {
+                key: l.key,
+                invoiceLabel: inv ? inv.label : '—',
+                amount: parseFloat(l.amount) || 0,
+                mode: l.modeOfPayment
+            };
+        });
+    }
     get unitName() { return this.ctx ? this.ctx.unitName : ''; }
     get blockReason() { return (this.ctx && this.ctx.blockReason) ? this.ctx.blockReason : this.error; }
     get unitIdForSave() { return (this.ctx && this.ctx.unitId) ? this.ctx.unitId : this._recordId; }
