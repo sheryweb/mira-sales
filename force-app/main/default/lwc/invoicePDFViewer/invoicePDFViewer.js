@@ -2,7 +2,6 @@ import { LightningElement, api, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getInvoicePDFUrl from '@salesforce/apex/InvoicePDFUtil.getInvoicePDFUrl';
 import getTaxInvoicePDFUrl from '@salesforce/apex/InvoicePDFUtil.getTaxInvoicePDFUrl';
-import attachInvoicePDF from '@salesforce/apex/InvoicePDFUtil.attachInvoicePDF';
 
 export default class InvoicePDFViewer extends LightningElement {
     @api recordId;
@@ -64,20 +63,6 @@ export default class InvoicePDFViewer extends LightningElement {
             });
     }
 
-    // Attach the PDF to the record
-    handleAttachPDF() {
-        this.isLoading = true;
-        attachInvoicePDF({ invoiceId: this.recordId })
-            .then(attachmentId => {
-                this.showToast('Success', 'PDF has been attached to the record', 'success');
-                this.isLoading = false;
-            })
-            .catch(error => {
-                this.handleError(error);
-                this.isLoading = false;
-            });
-    }
-    
     // Handle errors
     handleError(error) {
         let message = 'Unknown error';
