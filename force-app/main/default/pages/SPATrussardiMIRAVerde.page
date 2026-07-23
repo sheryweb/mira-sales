@@ -722,8 +722,8 @@
             </div>
             <div class="table-div" style="text-align: justify;">
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ნასყიდობის ღირებულება სიტყვიერად: {!oppData['formattedNumbers'].formattedUnitCostUSD} აშშ დოლარის ექვივალენტი ლარში {!oppData['formattedNumbers'].formattedUnitCostGEL}</div>
-                    <div class="column-div" style="width: 50%;">Purchase Price: {!oppData['formattedNumbers'].formattedUnitCostUSD} USD  equivalent in GEL {!oppData['formattedNumbers'].formattedUnitCostGEL}</div>
+                    <div class="column-div" style="width: 50%;">ნასყიდობის ღირებულება სიტყვიერად: {!oppData['formattedNumbers'].formattedUnitCostUSD} აშშ დოლარის ექვივალენტი ლარში</div>
+                    <div class="column-div" style="width: 50%;">Purchase Price: {!oppData['formattedNumbers'].formattedUnitCostUSD} USD  equivalent in GEL</div>
                 </div>
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">ნასყიდობის ღირებულება სიტყვიერად: <span style="font-style: italic;">{!oppData['Opportunity'].Unit__r.Amount_in_Words_USD__c}</span> აშშ დოლარის ექვივალენტი ლარში <span style="font-style: italic;">{!oppData['Opportunity'].Unit__r.Amount_in_Words_GEL__c}</span></div>
@@ -2501,8 +2501,8 @@
                     <div class="column-div" style="width: 50%;"><strong>Purchase Price and Payment Schedule</strong></div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ნასყიდობის ღირებულება სიტყვიერად: {!oppData['formattedNumbers'].formattedUnitCostUSD} აშშ დოლარის ექვივალენტი ლარში {!oppData['formattedNumbers'].formattedUnitCostGEL}</div>
-                    <div class="column-div" style="width: 50%;">Purchase Price: {!oppData['formattedNumbers'].formattedUnitCostUSD} USD  equivalent in GEL {!oppData['formattedNumbers'].formattedUnitCostGEL}</div>
+                    <div class="column-div" style="width: 50%;">ნასყიდობის ღირებულება სიტყვიერად: {!oppData['formattedNumbers'].formattedUnitCostUSD} აშშ დოლარის ექვივალენტი ლარში</div>
+                    <div class="column-div" style="width: 50%;">Purchase Price: {!oppData['formattedNumbers'].formattedUnitCostUSD} USD  equivalent in GEL</div>
                 </div>
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">ნასყიდობის ღირებულება სიტყვიერად: <span style="font-style: italic;">{!oppData['Opportunity'].Unit__r.Amount_in_Words_USD__c}</span> აშშ დოლარის ექვივალენტი ლარში <span style="font-style: italic;">{!oppData['Opportunity'].Unit__r.Amount_in_Words_GEL__c}</span></div>
