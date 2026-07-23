@@ -332,4 +332,79 @@ private class FinancialEngineTest {
         System.assertEquals(500, a.cashFlowReceived.get(cf2.Id), 'CF2 got the 500 spill');
         System.assertEquals(a.invoicePaidAmount.get(inv.Id), b.invoicePaidAmount.get(inv.Id), 'Invoice paid stable');
     }
+
+    // A registration cash flow is identified by Payment_Plan_Name__c (a formula = Name), so its Name
+    // must be 'Oqood'/'DLD Fee'. For 'Oqood', Price_Formula__c resolves to 3150 (Constant is ignored).
+    private static final Decimal OQOOD_PRICE = 3150;
+    private static Cash_Flow__c makeOqoodCF(Id unitId, Id sumId, Integer daysOffset) {
+        return makeCF(unitId, sumId, 'Oqood', daysOffset, OQOOD_PRICE);
+    }
+
+    // Mirrors prod unit TR2-D-A810: a receipt re-allocates money from an installment invoice to the
+    // Oqood/DLD invoice via a matched +/- pair. The negative correction line must DRAIN the
+    // installment cash flow, not be silently dropped (which left installments over-allocated).
+    @IsTest
+    static void negativeCorrectionLineDrainsInstallment() {
+        Unit__c u = makeUnit('u8');
+        Cash_Flow_Sum__c s = makeSum(u.Id);
+        Cash_Flow__c cfOqood = makeOqoodCF(u.Id, s.Id, 1);
+        Cash_Flow__c cfInst  = makeCF(u.Id, s.Id, 'CF-INST', 5, 5000);
+        insert new List<Cash_Flow__c>{ cfOqood, cfInst };
+
+        Invoice__c invOqood = makeInvoice(u.Id, OQOOD_PRICE, 1);
+        Invoice__c invInst  = makeInvoice(u.Id, 5000, 5);
+        insert new List<Invoice__c>{ invOqood, invInst };
+        insert new List<Milestone_Invoice__c>{
+            new Milestone_Invoice__c(Invoice__c = invOqood.Id, Cash_Flow__c = cfOqood.Id),
+            new Milestone_Invoice__c(Invoice__c = invInst.Id,  Cash_Flow__c = cfInst.Id)
+        };
+
+        // r1 (earlier): 5000 to the installment invoice -> fills cfInst to 5000
+        Receipt__c r1 = makeReceipt(u.Id, 1, 'Fully Paid');
+        insert r1;
+        insert new Receipt_Amount__c(Receipt__c = r1.Id, Invoice__c = invInst.Id, Amount__c = 5000);
+        // r2 (later): +3150 to Oqood invoice, -3150 correction against the installment invoice
+        Receipt__c r2 = makeReceipt(u.Id, 2, 'Fully Paid');
+        insert r2;
+        insert new List<Receipt_Amount__c>{
+            new Receipt_Amount__c(Receipt__c = r2.Id, Invoice__c = invOqood.Id, Amount__c = OQOOD_PRICE),
+            new Receipt_Amount__c(Receipt__c = r2.Id, Invoice__c = invInst.Id,  Amount__c = -OQOOD_PRICE)
+        };
+
+        Test.startTest();
+        FinancialEngine.DerivationResult res = new FinancialEngine().deriveForUnits(new Set<Id>{ u.Id });
+        Test.stopTest();
+
+        System.assertEquals(OQOOD_PRICE, res.cashFlowReceived.get(cfOqood.Id), 'Oqood cash flow keeps its 3150');
+        System.assertEquals(5000 - OQOOD_PRICE, res.cashFlowReceived.get(cfInst.Id), 'Installment drained by the -3150 correction');
+        System.assertEquals(5000 - OQOOD_PRICE, res.invoicePaidAmount.get(invInst.Id), 'Installment invoice paid = 5000 - 3150');
+        System.assertEquals(OQOOD_PRICE, res.invoicePaidAmount.get(invOqood.Id), 'Oqood invoice paid = 3150');
+    }
+
+    // Cross-pool spill is blocked in BOTH directions. Here an installment overpayment must not spill
+    // onto the earlier-dated Oqood cash flow (which the pre-fix waterfall would have filled first);
+    // it stays in the installment pool. The registration cash flow keeps a zero received amount.
+    @IsTest
+    static void installmentOverpaymentDoesNotSpillToRegistration() {
+        Unit__c u = makeUnit('u9');
+        Cash_Flow_Sum__c s = makeSum(u.Id);
+        Cash_Flow__c cfOqood = makeOqoodCF(u.Id, s.Id, 1);           // earliest date, registration pool
+        Cash_Flow__c cfInst  = makeCF(u.Id, s.Id, 'CF-INST', 5, 1000);
+        insert new List<Cash_Flow__c>{ cfOqood, cfInst };
+
+        Invoice__c invInst = makeInvoice(u.Id, 1000, 5);
+        insert invInst;
+        insert new Milestone_Invoice__c(Invoice__c = invInst.Id, Cash_Flow__c = cfInst.Id);
+
+        Receipt__c r = makeReceipt(u.Id, 1, 'Fully Paid');
+        insert r;
+        insert new Receipt_Amount__c(Receipt__c = r.Id, Invoice__c = invInst.Id, Amount__c = 5000); // overpay by 4000
+
+        Test.startTest();
+        FinancialEngine.DerivationResult res = new FinancialEngine().deriveForUnits(new Set<Id>{ u.Id });
+        Test.stopTest();
+
+        System.assertEquals(0, res.cashFlowReceived.get(cfOqood.Id), 'Oqood untouched by installment overpayment');
+        System.assertEquals(5000, res.cashFlowReceived.get(cfInst.Id), 'Installment absorbs its own overpayment (phase A + phase C)');
+    }
 }

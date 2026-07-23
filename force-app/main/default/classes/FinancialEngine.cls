@@ -64,12 +64,17 @@ public without sharing class FinancialEngine {
         }
 
         // ---- 1. Cash flows for the units (chronological) ----
+        // Registration cash flows (Oqood / DLD Fee) are a SEPARATE money pool from installments:
+        // the SOA installment list excludes them (NOT LIKE '%Oqood%'/'%DLD Fee%'), so their received
+        // money must never spill onto installment cash flows and installment money must never spill
+        // onto them. We only tag them here; the spill phases (B/C) enforce the pool boundary.
         Map<Id, List<Cash_Flow__c>> unitCashFlows = new Map<Id, List<Cash_Flow__c>>();
         Map<Id, Cash_Flow__c> cfById = new Map<Id, Cash_Flow__c>();
         Map<Id, Decimal> cfReceived = new Map<Id, Decimal>();
         Map<Id, Date> cfDate = new Map<Id, Date>();
+        Set<Id> registrationCashFlowIds = new Set<Id>();
         for (Cash_Flow__c cf : [
-            SELECT Id, Unit__c, Price_Formula__c, Date__c
+            SELECT Id, Unit__c, Price_Formula__c, Date__c, Payment_Plan_Name__c
             FROM Cash_Flow__c
             WHERE Unit__c IN :unitIds
             ORDER BY Date__c ASC NULLS LAST, Id ASC
@@ -81,6 +86,7 @@ public without sharing class FinancialEngine {
             cfById.put(cf.Id, cf);
             cfReceived.put(cf.Id, 0);
             cfDate.put(cf.Id, cf.Date__c);
+            if (isRegistrationCashFlow(cf.Payment_Plan_Name__c)) registrationCashFlowIds.add(cf.Id);
         }
 
         // ---- 2. Invoices for the units + each invoice's own cash flows (via Milestone_Invoice) ----
@@ -115,6 +121,20 @@ public without sharing class FinancialEngine {
                 }
                 cashFlowOwners.get(mi.Cash_Flow__c).add(mi.Invoice__c);
             }
+        }
+
+        // Classify each invoice's receipt money as registration (Oqood/DLD) or installment, based on
+        // the cash flows it owns. A DEDICATED registration invoice owns only registration cash flows;
+        // its money must stay in the registration pool and never spill onto installments (and vice
+        // versa). A mixed/installment invoice is treated as installment for spill purposes — its own
+        // registration cash flows are still filled directly by phase A.
+        Map<Id, Boolean> invoiceIsRegistration = new Map<Id, Boolean>();
+        for (Id invId : invoiceOwnCashFlows.keySet()) {
+            Boolean hasReg = false, hasInstallment = false;
+            for (Id cfId : invoiceOwnCashFlows.get(invId)) {
+                if (registrationCashFlowIds.contains(cfId)) hasReg = true; else hasInstallment = true;
+            }
+            invoiceIsRegistration.put(invId, hasReg && !hasInstallment);
         }
 
         // Invoices that carry a legacy Receipt_Invoice__c link (the older payment junction the engine
@@ -208,33 +228,72 @@ public without sharing class FinancialEngine {
             addTo(res.invoicePaidAmount, invId, amt);
             addTo(res.receiptReceived, recId, amt);
 
-            // waterfall allocation -> ledger
+            // Which money pool this line spills within: registration (Oqood/DLD) or installment.
+            Boolean lineIsRegistration = invoiceIsRegistration.containsKey(invId)
+                                         && invoiceIsRegistration.get(invId);
+
+            List<Cash_Flow__c> unitCfs = (unitId != null && unitCashFlows.containsKey(unitId))
+                                         ? unitCashFlows.get(unitId) : null;
             Decimal remaining = amt;
-            // phase A: invoice's own cash flows, oldest-first
-            if (invoiceOwnCashFlows.containsKey(invId)) {
-                for (Id cfId : invoiceOwnCashFlows.get(invId)) {
-                    if (remaining <= 0) break;
-                    remaining = applyToCashFlow(cfId, invId, recId, remaining, cfById, cfReceived, cfDate, res);
+
+            if (amt > 0) {
+                // ---- POSITIVE line: fill (waterfall) ----
+                // phase A: invoice's own cash flows, oldest-first (fills the exact linked items
+                // regardless of pool — an Oqood/DLD invoice fills its own Oqood/DLD cash flow here)
+                if (invoiceOwnCashFlows.containsKey(invId)) {
+                    for (Id cfId : invoiceOwnCashFlows.get(invId)) {
+                        if (remaining <= 0) break;
+                        remaining = applyToCashFlow(cfId, invId, recId, remaining, cfById, cfReceived, cfDate, res);
+                    }
                 }
-            }
-            // phase B: unit's cash flows in date order (spill to next installments, even unlinked)
-            if (remaining > 0 && unitId != null && unitCashFlows.containsKey(unitId)) {
-                for (Cash_Flow__c cf : unitCashFlows.get(unitId)) {
-                    if (remaining <= 0) break;
-                    if (frozenCashFlowIds.contains(cf.Id)) continue; // never spill onto a frozen installment
-                    remaining = applyToCashFlow(cf.Id, invId, recId, remaining, cfById, cfReceived, cfDate, res);
+                // phase B: unit's cash flows in date order, WITHIN THE SAME POOL (spill to next items,
+                // even unlinked). A registration line only spills onto registration cash flows and an
+                // installment line only onto installments, so Oqood/DLD money never inflates installments.
+                if (remaining > 0 && unitCfs != null) {
+                    for (Cash_Flow__c cf : unitCfs) {
+                        if (remaining <= 0) break;
+                        if (frozenCashFlowIds.contains(cf.Id)) continue; // never spill onto a frozen installment
+                        if (registrationCashFlowIds.contains(cf.Id) != lineIsRegistration) continue; // stay in pool
+                        remaining = applyToCashFlow(cf.Id, invId, recId, remaining, cfById, cfReceived, cfDate, res);
+                    }
                 }
-            }
-            // phase C: true overpayment leftover -> last installment with a price
-            if (remaining > 0 && unitId != null && unitCashFlows.containsKey(unitId)) {
-                Cash_Flow__c last = lastWithPrice(unitCashFlows.get(unitId), frozenCashFlowIds);
-                if (last != null) {
-                    cfReceived.put(last.Id, cfReceived.get(last.Id) + remaining);
-                    res.ledger.add(new LedgerRow(recId, invId, last.Id, remaining, cfDate.get(last.Id)));
-                    remaining = 0;
+                // phase C: true overpayment leftover -> last item with a price, WITHIN THE SAME POOL
+                if (remaining > 0 && unitCfs != null) {
+                    Cash_Flow__c last = lastWithPrice(unitCfs, frozenCashFlowIds,
+                                                      registrationCashFlowIds, lineIsRegistration);
+                    if (last != null) {
+                        cfReceived.put(last.Id, cfReceived.get(last.Id) + remaining);
+                        res.ledger.add(new LedgerRow(recId, invId, last.Id, remaining, cfDate.get(last.Id)));
+                        remaining = 0;
+                    }
                 }
+                // if remaining > 0 here, the unit has no cash flows to absorb it; it stays unallocated.
+            } else {
+                // ---- NEGATIVE line: drain (reverse waterfall) ----
+                // A correction line (e.g. money reallocated to another invoice) must REMOVE its
+                // amount from the cash flows the invoice's payments filled, mirroring the fill in
+                // reverse (newest-first, LIFO). Without this the removal is invisible at the cash
+                // flow level and the installments stay over-allocated. Stays within the line's pool.
+                // phase A(rev): invoice's own cash flows, newest-first
+                if (invoiceOwnCashFlows.containsKey(invId)) {
+                    List<Id> own = invoiceOwnCashFlows.get(invId);
+                    for (Integer i = own.size() - 1; i >= 0; i--) {
+                        if (remaining >= 0) break;
+                        remaining = drainCashFlow(own[i], invId, recId, remaining, cfById, cfReceived, cfDate, res);
+                    }
+                }
+                // phase B(rev): unit's cash flows newest-first, WITHIN THE SAME POOL
+                if (remaining < 0 && unitCfs != null) {
+                    for (Integer i = unitCfs.size() - 1; i >= 0; i--) {
+                        if (remaining >= 0) break;
+                        Cash_Flow__c cf = unitCfs[i];
+                        if (frozenCashFlowIds.contains(cf.Id)) continue;
+                        if (registrationCashFlowIds.contains(cf.Id) != lineIsRegistration) continue;
+                        remaining = drainCashFlow(cf.Id, invId, recId, remaining, cfById, cfReceived, cfDate, res);
+                    }
+                }
+                // if remaining < 0 here, there was nothing left to drain; it stays unallocated.
             }
-            // if remaining > 0 here, the unit has no cash flows to absorb it; it stays unallocated.
         }
 
         // ---- 5. Finalize cash flow received + invoice paid/status ----
@@ -268,12 +327,40 @@ public without sharing class FinancialEngine {
         return remaining - applied;
     }
 
-    private Cash_Flow__c lastWithPrice(List<Cash_Flow__c> cfs, Set<Id> frozenCashFlowIds) {
+    /** Remove as much of `remaining` (a NEGATIVE amount) as this cash flow currently holds. Drains
+     *  toward zero, never below, mirroring applyToCashFlow for correction/refund lines. Returns the
+     *  still-unremoved (negative) leftover. */
+    private Decimal drainCashFlow(Id cfId, Id invId, Id recId, Decimal remaining,
+            Map<Id, Cash_Flow__c> cfById, Map<Id, Decimal> cfReceived, Map<Id, Date> cfDate,
+            DerivationResult res) {
+        Cash_Flow__c cf = cfById.get(cfId);
+        if (cf == null) return remaining;
+        Decimal available = cfReceived.get(cfId); // what is currently sitting on this cash flow (>= 0)
+        if (available <= 0) return remaining;      // nothing to remove
+        Decimal removable = -available;            // most negative we may apply
+        Decimal applied = (remaining > removable) ? remaining : removable; // closer-to-zero of the two
+        if (applied >= 0) return remaining;
+        cfReceived.put(cfId, cfReceived.get(cfId) + applied); // applied is negative -> subtracts
+        res.ledger.add(new LedgerRow(recId, invId, cfId, applied, cfDate.get(cfId)));
+        return remaining - applied;
+    }
+
+    private Cash_Flow__c lastWithPrice(List<Cash_Flow__c> cfs, Set<Id> frozenCashFlowIds,
+            Set<Id> registrationCashFlowIds, Boolean lineIsRegistration) {
         for (Integer i = cfs.size() - 1; i >= 0; i--) {
             if (frozenCashFlowIds.contains(cfs[i].Id)) continue; // skip frozen installments
+            if (registrationCashFlowIds.contains(cfs[i].Id) != lineIsRegistration) continue; // stay in pool
             if (nz(cfs[i].Price_Formula__c) > 0) return cfs[i];
         }
         return null;
+    }
+
+    /** Oqood / DLD Fee cash flows form the registration pool, mirroring the SOA installment-list
+     *  exclusion (NOT LIKE '%Oqood%' / '%DLD Fee%'). Kept in one place so both stay in sync. */
+    @TestVisible
+    static Boolean isRegistrationCashFlow(String paymentPlanName) {
+        if (String.isBlank(paymentPlanName)) return false;
+        return paymentPlanName.contains('Oqood') || paymentPlanName.contains('DLD Fee');
     }
 
     private static Boolean isExcluded(String paymentStatus, String status) {
