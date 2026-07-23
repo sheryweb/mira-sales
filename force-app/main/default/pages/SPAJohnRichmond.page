@@ -158,6 +158,8 @@
               </tr>
            </table><br />
            
+           <!--<div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right; display: {!IF(AND(NOT(ISNULL(oppData['jointOwners'])), oppData['jointOwners'] != 'Null'), '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />-->
+           
            <!-- Start of Person Information / Basic Information -->
            <table class="half-width" style="display: {!IF(oppData['isPerson'] == 'Yes', '', 'none')}">
               <tr class="table-title" style="text-align: left;">
@@ -253,10 +255,10 @@
           <!-- Start of Joint Owner Person Information / Basic Information -->
           <apex:variable value="{!1}" var="count" />
           <apex:outputPanel rendered="{!AND(NOT(ISNULL(oppData['jointOwners'])), oppData['jointOwners'] != 'Null')}">
-          <!--<div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right; display: {!IF(AND(NOT(ISNULL(oppData['jointOwners'])), oppData['jointOwners'] != 'Null'), '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />-->
+          <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 3%; text-align: right; display: {!IF(AND(NOT(ISNULL(oppData['jointOwners']) && (count == 2 || count == 4 || count == 6 || count == 8)), oppData['jointOwners'] != 'Null'), '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
           <apex:repeat value="{!oppData['jointOwners']}" var="jOwner">
-              <div class="page" style="display: {!IF(((count > 0) && (count == 2 || count == 4 || count == 6 || count == 8)), '', 'none')}; top: 110px;"></div>
-              <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right; display: {!IF(((count > 0) && (count == 2 || count == 4 || count == 6 || count == 8)), '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+              <!--<div class="page" style="display: {!IF(((count > 0) && (count == 2 || count == 4 || count == 3 || count == 6 || count == 8)), '', 'none')}; top: 110px;"></div>-->
+              <!--<div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right; display: {!IF(((count > 0) && (count == 2 || count == 3|| count == 4 || count == 6 || count == 8)), '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />-->
               <apex:variable value="{!count+1}" var="count" />
               <table class="half-width" style="display: {!IF(oppData['isPerson'] == 'Yes', '', 'none')}">
                   <tr class="table-title" style="text-align: left;">
@@ -348,7 +350,7 @@
                       <td>POA Holder’s Emirates Id (if any): <p style="margin: 0;">{!oppData['jpInfo'][jOwner.Id]['jpersonPOAHolderEmiratesIdNumber']}</p></td>
                       <td class="ar-lang">رقم الهوية الإماراتية لحامل التوكيل (إن وجدت): <p style="margin: 0;">{!oppData['jpInfo'][jOwner.Id]['jpersonPOAHolderEmiratesIdNumberArabic']}</p></td>
                   </tr>
-              </table>
+              </table><br />
           </apex:repeat>
           </apex:outputPanel>
           <!-- END of Joint Owner Person Information / Basic Information -->
@@ -452,7 +454,7 @@
           
           <!-- Start of Property Information -->
           <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right; display: {!IF(count == 1, '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br style="display: {!IF(count == 1, '', 'none')}" />
-          <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right; display: {!IF(((count > 0) && (count == 2 || count == 4 || count == 6 || count == 8)), '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+          <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right; display: {!IF(((count > 0) && (count == 2 || count == 3 || count == 4 || count == 6 || count == 8)), '', 'none')}"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
           <table class="half-width">
               <tr class="table-title">
                   <th style="text-align: left;">C. PROPERTY</th>
@@ -2307,6 +2309,8 @@
         </table>
         <!-- End of Seal -->
         
+        <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+        
         <!-- Start of Signature -->
         <apex:variable value="{!1}" var="signCount" />
         <table class="half-width" style="text-align: justify;">
@@ -2538,14 +2542,14 @@
                 <td>2. The kitchen in the Unit is prepared and equipped by "Miele" in a way that allows it to be used directly, by providing it with the state-of-art electronics and devices necessary for this, including but not limited to (refrigerator, oven, stove) and other basic appliances.</td>
                 <td class="ar-lang">٢. يتم إعداد وتجهيز المطبخ من قبل "Miele" على النحو الذي يسمح بإستخدامه مباشرة، وذلك من خلال تزويده بأرقى المعدات والأجهزة اللازمة لذلك والتي منها على سبيل المثال لا الحصر (براد “الثلاجة”،فرن ، موقد) وغيرها من الأجهزة الأساسية الأخرى.</td>
             </tr>
-        </table>
-        
-        <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
-        <table class="half-width" style="text-align: justify; font-size: 8pt;">
             <tr>
                 <td>3. The appliances and the manufacturing company are chosen by the Seller, and the Buyer does not have the right to object or request modification or change.</td>
                 <td class="ar-lang">٣. يتم إختيار الإجهزة والشركة المصنعه من قبل البائع، ولا يكون للمشتري الحق في الإعتراض أو طلب تعديل أو تغيير ذلك.</td>
             </tr>
+        </table>
+        
+        <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+        <table class="half-width" style="text-align: justify; font-size: 8pt;">
             <tr>
                 <td><strong>Fourth: Housekeeping services for the Unit.</strong></td>
                 <td class="ar-lang"><strong>رابعاً: خدمات النظافة للوحدة.</strong></td>
@@ -2579,8 +2583,8 @@
                 <td class="ar-lang">٤. سوف يؤثر رفض المشتري الحصول على خدمة النظافة على الضمان المقرر على الأثاث المنزلي والأدوات والأجهزة والتشطيبات، وذلك في حالات الإتلاف أو إستخدام اداوت نظافة او معدات غير مناسبة، وبالتالي فإن امر تقدير سريان الضمان من عدمه في هذه الحالة يكون خاضع للسلطة التقديريه للبائع.</td>
             </tr>
             <tr>
-                <td><strong>Fifth: Warranty.</strong></td>
-                <td class="ar-lang"><strong>خامساً: الضمان.</strong></td>
+                <td><strong>Fifth: Warranty (MIRA CARE).</strong></td>
+                <td class="ar-lang"><strong>خامساً: الضمان. (ميرا كير)</strong></td>
             </tr>
             <tr>
                 <td>1. The Seller provides the Buyer with a warranty service which covers the following:</td>
@@ -2599,8 +2603,16 @@
                 <td class="ar-lang">جـ . اعمال تشطيبات الدهانات والأرضيات.</td>
             </tr>
             <tr>
-                <td>2. The warranty period is (3) three years, starting from the date of the actual or legal handover of the Unit by the Buyer. The warranty covers defects in finishing work, home furniture, and appliances that do not conform to the specified standards or have manufacturing defects.</td>
-                <td class="ar-lang">٢. مدة الضمان (٣) ثلاثة سنوات تبدأ من تاريخ الإستلام الفعلي او القانوني للوحدة من قبل المشتري، وذلك فقط إذا ما تبين أن اعمال التشطيبات والأثاث المنزلي والأجهزة غير مطابقة للمواصفات المحدده من قبل البائع، وعيوب الصناعة.</td>
+                <td>D. The core building systems and structural elements of the Unit.</td>
+                <td class="ar-lang">د . أنظمة المبنى الأساسية والعناصر الإنشائية للوحدة.</td>
+            </tr>
+            <tr>
+                <td>E. The MEP installations and lighting.</td>
+                <td class="ar-lang">هـ . تركيبات (MEP) وأعمال الإضاءة.</td>
+            </tr>
+            <tr>
+                <td>2. The warranty period is (3) three years for the loose furniture, and (5) Five years for the fixtures, starting from the date of the actual or legal handover of the Unit by the Buyer. The warranty covers defects in finishing work, home furniture, and appliances that do not conform to the specified standards or have manufacturing defects.</td>
+                <td class="ar-lang">٢. مدة الضمان (٣) ثلاث سنوات على قطع الأثاث المنقول (غير المثبت)، و(٥) خمس سنوات على التجهيزات والتركيبات الثابتة، تبدأ من تاريخ الإستلام الفعلي او القانوني للوحدة من قبل المشتري، وذلك فقط إذا ما تبين أن اعمال التشطيبات والأثاث المنزلي والأجهزة غير مطابقة للمواصفات المحدده من قبل البائع، وعيوب الصناعة.</td>
             </tr>
             <tr>
                 <td>3. The Buyer must notify the Seller of defects that indicate the violations of the agreed-upon specifications. In this case, the Seller will investigate the defect and determine whether to repair or replace the defect based on the type of defect.</td>
@@ -2664,7 +2676,7 @@
                 <td class="ar-lang"><strong>١. يقر المشتري ويفهم أن:</strong></td>
             </tr>
             <tr>
-                <td>(a) The Master Developer is the developer of the Master Community, within which the building and other Buildings will be developed into a homogenous residential, commercial, leisure and retail community, where certain facilities and amenities will be shared.</td>
+                <td>(a) The Master Developer is the developer of the Master Community, within which the building and other Buildings will be developed into a homogenous residential,</td>
                 <td class="ar-lang">أ‌- المطور الرئيسي هو مطور المجمع الرئيسي، حيث يتم تطوير المبنى والمباني الأخرى إلى مجمع سكني وتجاري وترفيهي وتجزئة متجانس، حيث يتم مشاركة بعض المرافق ووسائل الراحة.</td>
             </tr>
         </table>
@@ -2672,7 +2684,7 @@
         <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
         <table class="half-width" style="text-align: justify; font-size: 8pt;">
             <tr>
-                <td>residential, commercial, leisure and retail community, where certain facilities and amenities will be shared.</td>
+                <td>commercial, leisure and retail community, where certain facilities and amenities will be shared residential, commercial, leisure and retail community, where certain facilities and amenities will be shared.</td>
                 <td class="ar-lang"></td>
             </tr>
             <tr>
@@ -2771,13 +2783,13 @@
                 <td>(b) The provisions of the Master Community Declaration and all rules and regulations passed by the Master Developer pursuant to it, including compliance with all concepts, themes, building parameters and restrictions benefiting or burdening the Unit in terms of the Agreement;</td>
                 <td class="ar-lang">ب- أحكام إعلان المجمع الرئيسي وجميع القواعد واللوائح التي أقرها المطور الرئيسي بموجبه، بما في ذلك الامتثال لجميع المفاهيم والموضوعات ومعايير البناء والقيود التي تقيد الوحدة أو تحدها بموجب احكام هذه بالاتفاقية؛</td>
             </tr>
+        </table>
+        <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+        <table class="half-width" style="text-align: justify; font-size: 8pt;">
             <tr>
                 <td>(c) The Master Plan, the Design Guidelines and the Building Regulations.</td>
                 <td class="ar-lang">ت- المخطط الرئيسي وإرشادات التصميم ولوائح البناء.</td>
             </tr>
-        </table>
-        <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
-        <table class="half-width" style="text-align: justify; font-size: 8pt;">
             <tr>
                 <td>(d) The requirement to pay Master Community Service Charges.</td>
                 <td class="ar-lang">ث- شرط سداد رسوم خدمة المجمع الرئيسي.</td>
