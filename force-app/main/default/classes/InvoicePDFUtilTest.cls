@@ -142,6 +142,87 @@ private class InvoicePDFUtilTest {
         System.assert(attachment.Name.startsWith('Invoice_'), 'Filename should start with Invoice_');
     }
 
+    // Helper: add a reconciled receipt + line funding the invoice on the given date.
+    private static void addReceipt(Id unitId, Id invoiceId, Date paymentDate) {
+        Receipt__c r = new Receipt__c(
+            Description__c = 'R',
+            Unit__c = unitId,
+            Payment_Date__c = paymentDate,
+            Received_Amount__c = 0,
+            Status__c = 'Reconciled',
+            Payment_Status__c = 'Fully Paid'
+        );
+        insert r;
+        insert new Receipt_Amount__c(Receipt__c = r.Id, Invoice__c = invoiceId, Amount__c = 500);
+    }
+
+    @IsTest
+    static void testTaxInvoiceBlockedWithoutPayment() {
+        Invoice__c testInvoice = [SELECT Id FROM Invoice__c LIMIT 1];
+        Boolean blocked = false;
+        String msg = '';
+        Test.startTest();
+        try {
+            InvoicePDFUtil.getTaxInvoicePDFUrl(testInvoice.Id);
+        } catch (AuraHandledException e) {
+            blocked = true;
+            msg = e.getMessage();
+        }
+        Test.stopTest();
+        System.assert(blocked, 'Tax invoice must be blocked when no payment exists');
+        // date must remain unset
+        Invoice__c after = [SELECT Tax_Invoice_Date__c FROM Invoice__c WHERE Id = :testInvoice.Id];
+        System.assertEquals(null, after.Tax_Invoice_Date__c, 'Tax Invoice Date should stay blank when blocked');
+    }
+
+    @IsTest
+    static void testTaxInvoiceLocksFirstPaymentDate() {
+        Invoice__c testInvoice = [SELECT Id, Unit__c FROM Invoice__c LIMIT 1];
+        Date early = Date.today().addDays(-10);
+        Date later = Date.today().addDays(-3);
+        addReceipt(testInvoice.Unit__c, testInvoice.Id, later);
+        addReceipt(testInvoice.Unit__c, testInvoice.Id, early); // earliest -> should win
+
+        Test.startTest();
+        String url = InvoicePDFUtil.getTaxInvoicePDFUrl(testInvoice.Id);
+        Test.stopTest();
+
+        System.assert(url.endsWith('/apex/InvoicePDF?id=' + testInvoice.Id + '&mode=tax'), 'URL should carry mode=tax: ' + url);
+        Invoice__c after = [SELECT Tax_Invoice_Date__c FROM Invoice__c WHERE Id = :testInvoice.Id];
+        System.assertEquals(early, after.Tax_Invoice_Date__c, 'Should lock the earliest payment date');
+    }
+
+    @IsTest
+    static void testTaxInvoiceDateNotOverwritten() {
+        Invoice__c testInvoice = [SELECT Id, Unit__c FROM Invoice__c LIMIT 1];
+        Date locked = Date.today().addDays(-30);
+        testInvoice.Tax_Invoice_Date__c = locked;
+        update testInvoice;
+        // a later payment exists but must NOT change the already-locked date
+        addReceipt(testInvoice.Unit__c, testInvoice.Id, Date.today());
+
+        Test.startTest();
+        String url = InvoicePDFUtil.getTaxInvoicePDFUrl(testInvoice.Id);
+        Test.stopTest();
+
+        Invoice__c after = [SELECT Tax_Invoice_Date__c FROM Invoice__c WHERE Id = :testInvoice.Id];
+        System.assertEquals(locked, after.Tax_Invoice_Date__c, 'Existing Tax Invoice Date must not be overwritten');
+        System.assert(url.contains('mode=tax'), 'URL should carry mode=tax');
+    }
+
+    @IsTest
+    static void testGetTaxInvoicePDFUrlWithNullId() {
+        Boolean thrown = false;
+        Test.startTest();
+        try {
+            InvoicePDFUtil.getTaxInvoicePDFUrl(null);
+        } catch (AuraHandledException e) {
+            thrown = true;
+        }
+        Test.stopTest();
+        System.assert(thrown, 'Null id should throw');
+    }
+
     @IsTest
     static void testAttachInvoicePDFWithNullId() {
         Boolean exceptionThrown = false;

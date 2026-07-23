@@ -496,4 +496,43 @@ private class InvoicePDFControllerTest {
         System.assertEquals('0.00', controller.getFormattedVATAmount(), 'Zero VAT should format as 0.00');
         System.assertEquals('0.00', controller.getFormattedSalePrice(), 'Zero sale price should format as 0.00');
     }
+
+    @IsTest
+    static void testProformaModeDefault() {
+        Invoice__c testInvoice = [SELECT Id FROM Invoice__c LIMIT 1];
+        Test.setCurrentPage(Page.InvoicePDF);
+        ApexPages.currentPage().getParameters().put('id', testInvoice.Id);
+        // no mode param -> proforma
+
+        Test.startTest();
+        InvoicePDFController controller = new InvoicePDFController();
+        Test.stopTest();
+
+        System.assertEquals(false, controller.isTaxMode, 'Default is not tax mode');
+        System.assertEquals('PROFORMA INVOICE', controller.getDocumentTitle(), 'Default title is proforma');
+        System.assertEquals('Date of Issue:', controller.getDateLabel(), 'Default date label');
+        System.assertEquals(controller.formattedInvoiceDate, controller.getFormattedDisplayDate(), 'Proforma shows invoice date');
+    }
+
+    @IsTest
+    static void testTaxModeTitleAndDate() {
+        Invoice__c testInvoice = [SELECT Id FROM Invoice__c LIMIT 1];
+        Date taxDate = Date.today().addDays(-5);
+        testInvoice.Tax_Invoice_Date__c = taxDate;
+        update testInvoice;
+
+        Test.setCurrentPage(Page.InvoicePDF);
+        ApexPages.currentPage().getParameters().put('id', testInvoice.Id);
+        ApexPages.currentPage().getParameters().put('mode', 'tax');
+
+        Test.startTest();
+        InvoicePDFController controller = new InvoicePDFController();
+        Test.stopTest();
+
+        System.assertEquals(true, controller.isTaxMode, 'mode=tax -> tax mode');
+        System.assertEquals('TAX INVOICE', controller.getDocumentTitle(), 'Tax title');
+        System.assertEquals('Tax Invoice Date:', controller.getDateLabel(), 'Tax date label');
+        Datetime dt = Datetime.newInstance(taxDate, Time.newInstance(0, 0, 0, 0));
+        System.assertEquals(dt.format('dd-MM-yyyy'), controller.getFormattedDisplayDate(), 'Tax mode shows tax invoice date');
+    }
 }

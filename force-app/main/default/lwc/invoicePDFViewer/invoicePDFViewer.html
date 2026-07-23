@@ -2,16 +2,23 @@
     <lightning-card title="Invoice PDF" icon-name="standard:document">
         <div class="slds-p-around_medium">
             <lightning-button-group>
-                <lightning-button 
-                    label="View PDF" 
-                    icon-name="utility:preview" 
+                <lightning-button
+                    label="View PDF"
+                    icon-name="utility:preview"
                     onclick={handleViewPDF}
                     disabled={isLoading}
                     class="slds-m-right_x-small">
                 </lightning-button>
-                <lightning-button 
-                    label="Attach to Record" 
-                    icon-name="utility:attach" 
+                <lightning-button
+                    label="Tax Invoice"
+                    icon-name="utility:money"
+                    onclick={handleViewTaxInvoice}
+                    disabled={isLoading}
+                    class="slds-m-right_x-small">
+                </lightning-button>
+                <lightning-button
+                    label="Attach to Record"
+                    icon-name="utility:attach"
                     onclick={handleAttachPDF}
                     disabled={isLoading}>
                 </lightning-button>

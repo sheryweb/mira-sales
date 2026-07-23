@@ -14,7 +14,67 @@ public with sharing class InvoicePDFUtil {
         String pdfUrl = baseUrl + '/apex/InvoicePDF?id=' + invoiceId;
         return pdfUrl;
     }
-    
+
+    /**
+     * Get the URL to view the TAX INVOICE PDF for a given invoice ID. The same PDF is reused; the
+     * VF page renders it in "tax" mode (title = TAX INVOICE, date = Tax_Invoice_Date__c).
+     *
+     * The Tax Invoice Date is locked in ONCE: if the invoice has no Tax_Invoice_Date__c yet, it is
+     * set here to the earliest non-cancelled receipt's Payment Date and saved. A tax invoice implies
+     * a taxable payment, so if no such receipt exists yet the request is blocked.
+     *
+     * @param invoiceId The ID of the invoice record
+     * @return The URL to view the tax invoice PDF (with mode=tax)
+     */
+    @AuraEnabled
+    public static String getTaxInvoicePDFUrl(Id invoiceId) {
+        if (invoiceId == null) {
+            throw new AuraHandledException('Invoice ID is required');
+        }
+
+        Invoice__c invoice = [SELECT Id, Tax_Invoice_Date__c FROM Invoice__c WHERE Id = :invoiceId LIMIT 1];
+
+        // Lock the tax date on first generation only.
+        if (invoice.Tax_Invoice_Date__c == null) {
+            Date firstPaymentDate = firstReceiptPaymentDate(invoiceId);
+            if (firstPaymentDate == null) {
+                throw new AuraHandledException(
+                    'A payment must be received before a Tax Invoice can be issued for this invoice.');
+            }
+            invoice.Tax_Invoice_Date__c = firstPaymentDate;
+            try {
+                update invoice;
+            } catch (Exception e) {
+                throw new AuraHandledException('Could not set the Tax Invoice date: ' + e.getMessage());
+            }
+        }
+
+        String baseUrl = System.URL.getOrgDomainUrl().toExternalForm();
+        return baseUrl + '/apex/InvoicePDF?id=' + invoiceId + '&mode=tax';
+    }
+
+    /**
+     * Earliest Payment Date across the receipts that fund this invoice (via Receipt_Amount lines),
+     * excluding Cancelled / Unreconciled receipts (mirrors FinancialEngine's exclusion rule).
+     * @return the earliest payment date, or null if there is no qualifying receipt.
+     */
+    private static Date firstReceiptPaymentDate(Id invoiceId) {
+        Date earliest = null;
+        for (Receipt_Amount__c ra : [
+            SELECT Receipt__r.Payment_Date__c
+            FROM Receipt_Amount__c
+            WHERE Invoice__c = :invoiceId
+              AND Receipt__r.Payment_Date__c != null
+              AND Receipt__r.Payment_Status__c != 'Cancelled'
+              AND Receipt__r.Status__c != 'Unreconciled'
+            ORDER BY Receipt__r.Payment_Date__c ASC
+            LIMIT 1
+        ]) {
+            earliest = ra.Receipt__r.Payment_Date__c;
+        }
+        return earliest;
+    }
+
     /**
      * Get the page reference to view the invoice PDF for a given invoice ID
      * This method is useful for redirecting to the PDF from a controller

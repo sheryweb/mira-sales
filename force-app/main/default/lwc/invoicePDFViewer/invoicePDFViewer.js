@@ -1,6 +1,7 @@
 import { LightningElement, api, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getInvoicePDFUrl from '@salesforce/apex/InvoicePDFUtil.getInvoicePDFUrl';
+import getTaxInvoicePDFUrl from '@salesforce/apex/InvoicePDFUtil.getTaxInvoicePDFUrl';
 import attachInvoicePDF from '@salesforce/apex/InvoicePDFUtil.attachInvoicePDF';
 
 export default class InvoicePDFViewer extends LightningElement {
@@ -38,6 +39,31 @@ export default class InvoicePDFViewer extends LightningElement {
         }
     }
     
+    // View the Tax Invoice PDF. This locks in the Tax Invoice Date (first payment date) on the
+    // server the first time, so the URL is fetched on click rather than in connectedCallback.
+    // A blank tab is opened synchronously (within the click gesture) to avoid popup blocking,
+    // then pointed at the tax PDF once the URL comes back.
+    handleViewTaxInvoice() {
+        const tab = window.open('', '_blank');
+        this.isLoading = true;
+        getTaxInvoicePDFUrl({ invoiceId: this.recordId })
+            .then(url => {
+                if (tab) {
+                    tab.location.href = url;
+                } else {
+                    window.open(url, '_blank');
+                }
+                this.isLoading = false;
+            })
+            .catch(error => {
+                if (tab) {
+                    tab.close();
+                }
+                this.handleError(error);
+                this.isLoading = false;
+            });
+    }
+
     // Attach the PDF to the record
     handleAttachPDF() {
         this.isLoading = true;

@@ -13,6 +13,9 @@ public class InvoicePDFController {
     public String jointOwnerCustomerIds { get; private set; }
     public String fullCustomerName { get; private set; }
     public String fullCustomerId { get; private set; }
+    // Render mode: 'tax' prints a Tax Invoice (title + date differ); anything else = Proforma.
+    public Boolean isTaxMode { get; private set; }
+    public String formattedTaxInvoiceDate { get; private set; }
     
     // Wrapper class to include serial number with line items
     public class LineItemWrapper {
@@ -40,10 +43,11 @@ public class InvoicePDFController {
             if (String.isBlank(invoiceId)) {
                 throw new InvoicePDFException('Invoice ID is required.');
             }
+            isTaxMode = 'tax'.equalsIgnoreCase(ApexPages.currentPage().getParameters().get('mode'));
 
             // Fetch Invoice record with related fields
             invoice = [
-                SELECT Id, Name, Invoice_Date__c, Invoice_Number__c, Customer_Id__c, Customer_Name__c, Paid_Amount__c,
+                SELECT Id, Name, Invoice_Date__c, Tax_Invoice_Date__c, Invoice_Number__c, Customer_Id__c, Customer_Name__c, Paid_Amount__c,
                        Sub_Total_Amount__c, VAT_Amount__c, Grand_Total_Formula__c,
                        Secondary_Currency__c, Secondary_Currency_Amount__c,
                        Unit__c, Unit__r.Project_Name_Text__c, Unit__r.Cost_AED__c, Unit__r.Cost_CHF__c, Unit__r.Cost_USD__c,
@@ -58,6 +62,11 @@ public class InvoicePDFController {
             if (invoice.Invoice_Date__c != null) {
                 Datetime dt = Datetime.newInstance(invoice.Invoice_Date__c, Time.newInstance(0, 0, 0, 0));
                 formattedInvoiceDate = dt.format('dd-MM-yyyy');
+            }
+            // Format Tax Invoice Date (locked at first tax-invoice generation)
+            if (invoice.Tax_Invoice_Date__c != null) {
+                Datetime dt = Datetime.newInstance(invoice.Tax_Invoice_Date__c, Time.newInstance(0, 0, 0, 0));
+                formattedTaxInvoiceDate = dt.format('dd-MM-yyyy');
             }
 
             // Fetch Financial Detail if available
@@ -236,6 +245,22 @@ public class InvoicePDFController {
     // Grand Total = Sub Total + VAT - Paid Amount
     private Decimal getEffectiveGrandTotal() {
         return getEffectiveSubTotal() + (getEffectiveVat() != null ? getEffectiveVat() : 0) - getEffectivePaid();
+    }
+
+    // --- Document mode display (Proforma vs Tax Invoice) ---
+    // Title in the PDF header.
+    public String getDocumentTitle() {
+        return isTaxMode == true ? 'TAX INVOICE' : 'PROFORMA INVOICE';
+    }
+
+    // Label next to the date in the PDF header.
+    public String getDateLabel() {
+        return isTaxMode == true ? 'Tax Invoice Date:' : 'Date of Issue:';
+    }
+
+    // The date shown in the PDF header: the locked tax date in tax mode, else the invoice date.
+    public String getFormattedDisplayDate() {
+        return isTaxMode == true ? formattedTaxInvoiceDate : formattedInvoiceDate;
     }
 
     // Getter methods for formatted amounts

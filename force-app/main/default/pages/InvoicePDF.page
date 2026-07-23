@@ -132,7 +132,7 @@
                             <img src="{!$Resource.MiraDocLogo}" alt="Mira Logo" style="height: 40px;"/>
                         </td>
                         <td width="50%" align="right" valign="middle">
-                            <b style="font-size: 18px;">PROFORMA INVOICE</b>
+                            <b style="font-size: 18px;">{!documentTitle}</b>
                         </td>
                     </tr>
                 </table>
@@ -143,7 +143,7 @@
                             <p style="margin: 0;"><b>Invoice Number:</b> {!invoice.Invoice_Number__c}</p>
                         </td>
                         <td width="50%" align="right">
-                            <p style="margin: 0;"><b>Date of Issue:</b> {!formattedInvoiceDate}</p>
+                            <p style="margin: 0;"><b>{!dateLabel}</b> {!formattedDisplayDate}</p>
                         </td>
                     </tr>
                 </table>
