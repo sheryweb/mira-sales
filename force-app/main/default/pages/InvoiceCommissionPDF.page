@@ -124,7 +124,8 @@
                             <img src="{!$Resource.MiraDocLogo}" alt="Mira Logo" style="height: 40px;"/>
                         </td>
                         <td width="50%" align="right" valign="middle">
-                            <b style="font-size: 18px;">COMMISSION INVOICE</b>
+                            <b style="font-size: 18px;">TAX INVOICE</b>
+                            <p style="font-style: italic !important; margin: 0; color: #666;">(Self-Billing Invoice)</p>
                         </td>
                     </tr>
                 </table>
@@ -148,12 +149,6 @@
                 </tr>
                 <tr>
                     <td style="width: 50%;">
-                        <p><b>M I R A Developments L L C</b></p>
-                        <p><b>TRN:</b> 104070222500003</p>
-                        <p><b>Address:</b> Office No601-606, Park Heights Square 1, Dubai Hills, Dubai, 213983, Dubai</p>
-                        <p><b>Email:</b> finance@miradevelopments.ae</p>
-                    </td>
-                    <td style="width: 50%;">
                         <p><b>Agency Name:</b> {!agencyName}</p>
                         <p><b>Registration Number:</b> {!agencyRegistrationNumber}</p>
                         <apex:outputPanel rendered="{!isVatRegistered}">
@@ -161,6 +156,12 @@
                         </apex:outputPanel>
                         <p>&nbsp;</p>
                         <p>&nbsp;</p>
+                    </td>
+                    <td style="width: 50%;">
+                        <p><b>M I R A Developments L L C</b></p>
+                        <p><b>TRN:</b> 104070222500003</p>
+                        <p><b>Address:</b> Office No601-606, Park Heights Square 1, Dubai Hills, Dubai, 213983, Dubai</p>
+                        <p><b>Email:</b> finance@miradevelopments.ae</p>
                     </td>
                 </tr>
             </table>
