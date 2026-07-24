@@ -18,6 +18,7 @@ public with sharing class ReceiptManageController {
         @AuraEnabled public Decimal allocatedAmount;
         @AuraEnabled public Decimal unappliedAmount;
         @AuraEnabled public Boolean cancelled;
+        @AuraEnabled public String cancellationReason;
         @AuraEnabled public List<AllocationView> allocations;
         @AuraEnabled public List<ComboOption> invoiceOptions;
         @AuraEnabled public List<ComboOption> modeOptions;
@@ -65,7 +66,8 @@ public with sharing class ReceiptManageController {
     public static ReceiptView getReceipt(Id receiptId) {
         if (receiptId == null) throw new AuraHandledException('No receipt specified.');
         List<Receipt__c> recs = [
-            SELECT Id, Name, Status__c, Payment_Status__c, Received_Amount__c, Unit__c
+            SELECT Id, Name, Status__c, Payment_Status__c, Received_Amount__c, Unit__c,
+                   Cancellation_Reason__c
             FROM Receipt__c WHERE Id = :receiptId LIMIT 1
         ];
         if (recs.isEmpty()) throw new AuraHandledException('Receipt not found.');
@@ -78,6 +80,7 @@ public with sharing class ReceiptManageController {
         v.paymentStatus = r.Payment_Status__c;
         v.receivedAmount = r.Received_Amount__c == null ? 0 : r.Received_Amount__c;
         v.cancelled = (r.Payment_Status__c == 'Cancelled');
+        v.cancellationReason = r.Cancellation_Reason__c;
         v.allocations = new List<AllocationView>();
 
         Decimal allocated = 0;

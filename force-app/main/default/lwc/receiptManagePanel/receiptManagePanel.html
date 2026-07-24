@@ -17,7 +17,12 @@
                 <template if:true={isCancelled}>
                     <div class="slds-notify slds-notify_alert slds-theme_warning slds-m-bottom_small" role="alert">
                         <span class="slds-assistive-text">Warning</span>
-                        This receipt is <strong>&nbsp;Cancelled</strong>&nbsp;— excluded from all totals.
+                        <template if:true={view.cancellationReason}>
+                            <strong>Cancellation Reason:</strong>&nbsp;{view.cancellationReason}
+                        </template>
+                        <template if:false={view.cancellationReason}>
+                            This receipt is <strong>&nbsp;Cancelled</strong>&nbsp;— excluded from all totals.
+                        </template>
                     </div>
                 </template>
 
