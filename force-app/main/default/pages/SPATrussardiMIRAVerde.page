@@ -1,4 +1,4 @@
-<apex:page renderAs="" showHeader="true" title="SPA TRUSSARDI MIRAVERDE ({!oppData['Opportunity'].Unit__r.Title_Formula__c})" sidebar="false" standardStylesheets="false" applyBodyTag="true" applyHtmlTag="true" controller="SpaTrussardiMIRAVerdeController">
+<apex:page renderAs="" showHeader="true" title="SPA TRUSSARDI MIRAVERDE ({!oppData['Opportunity'].Unit__r.Title_Formula__c})" sidebar="false" standardStylesheets="false" applyBodyTag="true" applyHtmlTag="true" controller="SpaTrussardiMIRAVerdeController" action="{!updateSpaGeneratedDate}">
     <html>
         <head>
             <style>
@@ -693,16 +693,16 @@
                     <div class="column-div" style="width: 50%;">Floor Number: {!oppData['Opportunity'].Unit__r.Floor__c}</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">შიდა ფართობი: sq.ft. {!oppData['formattedNumbers'].formattedBuiltupArea} --- {!oppData['formattedNumbers'].formattedBuiltupAreaSquareMeter} sq.m.</div>
-                    <div class="column-div" style="width: 50%;">Internal Area: sq.ft. {!oppData['formattedNumbers'].formattedBuiltupArea} --- {!oppData['formattedNumbers'].formattedBuiltupAreaSquareMeter} sq.m.</div>
+                    <div class="column-div" style="width: 50%;">შიდა ფართობი: sq.ft. {!oppData['formattedNumbers'].formattedBuiltupArea} / {!oppData['formattedNumbers'].formattedBuiltupAreaSquareMeter} sq.m.</div>
+                    <div class="column-div" style="width: 50%;">Internal Area: sq.ft. {!oppData['formattedNumbers'].formattedBuiltupArea} / {!oppData['formattedNumbers'].formattedBuiltupAreaSquareMeter} sq.m.</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">აივნის ფართობი: sq.ft. {!oppData['Opportunity'].Unit__r.Balcony_Size__c} --- {!oppData['Opportunity'].Unit__r.Unit__r.Balcony_Size_Square_Meter__c} sq.m.</div>
-                    <div class="column-div" style="width: 50%;">Balcony Area: sq.ft. {!oppData['Opportunity'].Unit__r.Balcony_Size__c} --- {!oppData['Opportunity'].Unit__r.Unit__r.Balcony_Size_Square_Meter__c} sq.m.</div>
+                    <div class="column-div" style="width: 50%;">აივნის ფართობი: sq.ft. {!oppData['Opportunity'].Unit__r.Balcony_Size__c} / {!oppData['Opportunity'].Unit__r.Balcony_Size_Square_Meter__c} sq.m.</div>
+                    <div class="column-div" style="width: 50%;">Balcony Area: sq.ft. {!oppData['Opportunity'].Unit__r.Balcony_Size__c} / {!oppData['Opportunity'].Unit__r.Balcony_Size_Square_Meter__c} sq.m.</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ჯამური ფართობი: sq.ft. {!oppData['formattedNumbers'].formattedTotalArea} --- {!oppData['formattedNumbers'].formattedTotalAreaSquareMeter} sq.m.</div>
-                    <div class="column-div" style="width: 50%;">Total Area: sq.ft. {!oppData['formattedNumbers'].formattedTotalArea} --- {!oppData['formattedNumbers'].formattedTotalAreaSquareMeter} sq.m.</div>
+                    <div class="column-div" style="width: 50%;">ჯამური ფართობი: sq.ft. {!oppData['formattedNumbers'].formattedTotalArea} / {!oppData['formattedNumbers'].formattedTotalAreaSquareMeter} sq.m.</div>
+                    <div class="column-div" style="width: 50%;">Total Area: sq.ft. {!oppData['formattedNumbers'].formattedTotalArea} / {!oppData['formattedNumbers'].formattedTotalAreaSquareMeter} sq.m.</div>
                 </div>
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">საკადასტრო კოდი (არსებობის შემთხვევაში): 81.03.16.205</div>
@@ -924,8 +924,17 @@
                     <div class="column-div" style="width: 50%;">Beneficiary Bank: Emirates Islamic Bank</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ანგარიშის ნომერი (IBAN): AE400340003708470562406</div>
-                    <div class="column-div" style="width: 50%;">Account Number (IBAN): AE400340003708470562406</div>
+                    <div class="column-div" style="width: 50%;">ანგარიშის ნომერი: 3708470562406</div>
+                    <div class="column-div" style="width: 50%;">Account Number: 3708470562406</div>
+                </div>
+            </div>
+
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">IBAN: AE400340003708470562406</div>
+                    <div class="column-div" style="width: 50%;">IBAN: AE400340003708470562406</div>
                 </div>
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">სვიფტ კოდი: MEBLAEADXXX</div>
@@ -935,11 +944,6 @@
                     <div class="column-div" style="width: 50%;">მისამართი: დუბაის ჯანდაცვის ქალაქი, დუბაი, არაბთა გაერთიანებული საამიროები</div>
                     <div class="column-div" style="width: 50%;">Address: EI Health Care City, Dubai, UAE</div>
                 </div>
-            </div>
-
-            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
-
-            <div class="table-div" style="text-align: justify;">
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">3. გამყიდველი იტოვებს უფლებას, შეცვალოს საბანკო ანგარიშის მონაცემები, რის თაობაზეც, იგი ვალდებულია, მყიდველს აცნობოს წერილობით ან ელექტრონული საშუალებით. ასეთი ცვლილება ძალაშია მყიდველისათვის ამ ხელშეკრულებით გათვალისწინებულ შესაბამის მისამართზე შეტყობინების ჩაბარებისთანავე ან ელ. ფოსტის მისამართზე შეტყობინების გაგზავნისთანავე.</div>
                     <div class="column-div" style="width: 50%;">3. The Seller reserves the right to change the bank account details, of which the Seller shall notify the Buyer in writing or by electronic means. Such change shall become effective upon delivery of the notification to the Buyer at the address specified in this Agreement or upon sending the notification to the Buyer’s email address.</div>
