@@ -2,6 +2,8 @@
 private class InvoicePreviewControllerTest {
     @TestSetup
     static void setupTestData() {
+        insert new Financial_Engine_Settings__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), Engine_Owns_Totals__c = true);
         // Create test data
         Financial_Detail__c financialDetail = new Financial_Detail__c(
             Name = 'Test Bank',

@@ -1,4 +1,5 @@
 <template>
+    <template if:true={engineEnabled}>
     <lightning-card title="Receipt PDF" icon-name="standard:document">
         <div class="slds-p-around_medium">
             <lightning-button-group>
@@ -22,4 +23,5 @@
             </div>
         </div>
     </lightning-card>
+    </template>
 </template>

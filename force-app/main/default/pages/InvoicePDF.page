@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<apex:page controller="InvoicePDFController" renderAs="pdf" applyHtmlTag="false" showHeader="false" standardStylesheets="false">
+<apex:page controller="InvoicePDFController" action="{!blockIfDisabled}" renderAs="pdf" applyHtmlTag="false" showHeader="false" standardStylesheets="false">
     <head>
         <style type="text/css">
             @page {

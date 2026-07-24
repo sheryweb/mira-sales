@@ -2,6 +2,7 @@ public with sharing class InvoiceEmailService {
     
     @AuraEnabled
     public static String sendInvoiceEmail(Id invoiceId) {
+        FinancialEngine.requireEnabled();
         try {
             // Fetch Invoice record with Account Email and Opportunity Owner Email
             Invoice__c invoice = [

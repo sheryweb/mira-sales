@@ -2,6 +2,7 @@ public with sharing class SOAEmailService {
     
     @AuraEnabled
     public static String sendSOAEmail(Id opportunityId) {
+        FinancialEngine.requireEnabled();
         try {
             // Validate input
             if (opportunityId == null) {

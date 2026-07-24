@@ -1,12 +1,20 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import sendReceiptEmail from '@salesforce/apex/ReceiptEmailService.sendReceiptEmail';
+import isFinanceUiEnabled from '@salesforce/apex/FinancialEngine.isFinanceUiEnabled';
 
 export default class ReceiptEmailSender extends LightningElement {
     @api recordId;
     @track isLoading = false;
     @track showSuccess = false;
     @track showConfirmDialog = false;
+
+    // Self-hide when the Financial Engine master switch is off (default true to avoid a flash).
+    engineEnabled = true;
+    @wire(isFinanceUiEnabled)
+    wiredEngineFlag({ data }) {
+        if (data !== undefined) this.engineEnabled = data;
+    }
     
     // Show confirmation dialog
     handleSendEmail() {

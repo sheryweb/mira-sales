@@ -1,4 +1,4 @@
-<apex:page controller="ReceiptPDFController" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false">
+<apex:page controller="ReceiptPDFController" action="{!blockIfDisabled}" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false">
     <html>
     <head>
         <style type="text/css">

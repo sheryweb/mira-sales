@@ -1,7 +1,8 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { getRecordNotifyChange } from 'lightning/uiRecordApi';
 import LightningConfirm from 'lightning/confirm';
+import isFinanceUiEnabled from '@salesforce/apex/FinancialEngine.isFinanceUiEnabled';
 import getInvoice from '@salesforce/apex/InvoiceManageController.getInvoice';
 import updateCurrency from '@salesforce/apex/InvoiceManageController.updateCurrency';
 import addInstallment from '@salesforce/apex/InvoiceManageController.addInstallment';
@@ -14,6 +15,13 @@ export default class InvoiceManagePanel extends LightningElement {
     @track isLoading = false;
     @track showCancelConfirm = false;
     error;
+
+    // Self-hide when the Financial Engine master switch is off (default true to avoid a flash).
+    engineEnabled = true;
+    @wire(isFinanceUiEnabled)
+    wiredEngineFlag({ data }) {
+        if (data !== undefined) this.engineEnabled = data;
+    }
 
     // currency fields (Sub-Total / VAT are derived and shown read-only)
     @track otherCurrency = false;

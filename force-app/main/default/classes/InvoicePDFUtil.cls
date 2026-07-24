@@ -6,6 +6,7 @@ public with sharing class InvoicePDFUtil {
      */
     @AuraEnabled
     public static String getInvoicePDFUrl(Id invoiceId) {
+        FinancialEngine.requireEnabled();
         if (invoiceId == null) {
             throw new AuraHandledException('Invoice ID is required');
         }
@@ -28,6 +29,7 @@ public with sharing class InvoicePDFUtil {
      */
     @AuraEnabled
     public static String getTaxInvoicePDFUrl(Id invoiceId) {
+        FinancialEngine.requireEnabled();
         if (invoiceId == null) {
             throw new AuraHandledException('Invoice ID is required');
         }
@@ -122,6 +124,7 @@ public with sharing class InvoicePDFUtil {
      */
     @AuraEnabled
     public static Id attachInvoicePDF(Id invoiceId) {
+        FinancialEngine.requireEnabled();
         if (invoiceId == null) {
             throw new AuraHandledException('Invoice ID is required');
         }

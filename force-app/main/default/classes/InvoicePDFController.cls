@@ -249,6 +249,16 @@ public class InvoicePDFController {
 
     // --- Document mode display (Proforma vs Tax Invoice) ---
     // Title in the PDF header.
+    /** Page action: redirect to a notice when the Financial Engine is disabled (blocks direct URL access). */
+    public PageReference blockIfDisabled() {
+        if (!FinancialEngine.isEngineEnabled()) {
+            PageReference ref = Page.FinanceDisabled;
+            ref.setRedirect(true);
+            return ref;
+        }
+        return null;
+    }
+
     public String getDocumentTitle() {
         return isTaxMode == true ? 'TAX INVOICE' : 'PROFORMA INVOICE';
     }

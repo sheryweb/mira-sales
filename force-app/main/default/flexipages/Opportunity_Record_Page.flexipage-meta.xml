@@ -9,7 +9,7 @@
                         <valueListItems>
                             <value>CustomButton.Opportunity.Generate_SOA</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND 2</booleanFilter>
+                                <booleanFilter>1 AND 2 AND 3</booleanFilter>
                                 <criteria>
                                     <leftValue>{!Record.StageName}</leftValue>
                                     <operator>NE</operator>
@@ -19,6 +19,11 @@
                                     <leftValue>{!Record.StageName}</leftValue>
                                     <operator>NE</operator>
                                     <rightValue>Cancelled</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.Engine_Enabled__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -230,7 +235,7 @@
                 <componentName>soaEmailSender</componentName>
                 <identifier>c_soaEmailSender</identifier>
                 <visibilityRule>
-                    <booleanFilter>1 OR 2</booleanFilter>
+                    <booleanFilter>(1 OR 2) AND 3</booleanFilter>
                     <criteria>
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
@@ -240,6 +245,11 @@
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>Finance</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.Engine_Enabled__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>

@@ -427,8 +427,8 @@
                     <div class="column-div" style="width: 50%;">Passport No: {!oppData['Opportunity'].Account.Passport_No__c}</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">პირადი ნომერი (არსებობის შემთხვევაში): {!oppData['personInformation']['personMobile']}</div>
-                    <div class="column-div" style="width: 50%;">Personal Number (if any): {!oppData['personInformation']['personMobile']}</div>
+                    <div class="column-div" style="width: 50%;">პირადი ნომერი (არსებობის შემთხვევაში): არ მიესადაგება</div>
+                    <div class="column-div" style="width: 50%;">Personal Number (if any): Not Applicable</div>
                 </div>
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">გაცემის ადგილი: {!oppData['Opportunity'].Account.Passport_Place_of_Issue__pc}</div>
@@ -499,8 +499,8 @@
                         <div class="column-div" style="width: 50%;">Passport No: {!jOwner.Passport_No__c}</div>
                     </div>
                     <div class="row-div">
-                        <div class="column-div" style="width: 50%;">პირადი ნომერი (არსებობის შემთხვევაში): {!IF(oppData['isPerson'] == 'Yes', jOwner.PersonMobilePhone, jOwner.MobilePhone)}</div>
-                        <div class="column-div" style="width: 50%;">PersonalNumber (if any): {!IF(oppData['isPerson'] == 'Yes', jOwner.PersonMobilePhone, jOwner.MobilePhone)}</div>
+                        <div class="column-div" style="width: 50%;">პირადი ნომერი (არსებობის შემთხვევაში): არ მიესადაგება</div>
+                        <div class="column-div" style="width: 50%;">PersonalNumber (if any): Not Applicable</div>
                     </div>
                     <div class="row-div">
                         <div class="column-div" style="width: 50%;">გაცემის ადგილი: {!oppData['jpInfo'][jOwner.Id]['jpersonVisaPlaceIssue']}</div>
@@ -693,16 +693,16 @@
                     <div class="column-div" style="width: 50%;">Floor Number: {!oppData['Opportunity'].Unit__r.Floor__c}</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">შიდა ფართობი: sq.ft. {!oppData['formattedNumbers'].formattedBuiltupArea}</div>
-                    <div class="column-div" style="width: 50%;">Internal Area: sq.ft. {!oppData['formattedNumbers'].formattedBuiltupArea}</div>
+                    <div class="column-div" style="width: 50%;">შიდა ფართობი: sq.ft. {!oppData['formattedNumbers'].formattedBuiltupArea} --- {!oppData['formattedNumbers'].formattedBuiltupAreaSquareMeter} sq.m.</div>
+                    <div class="column-div" style="width: 50%;">Internal Area: sq.ft. {!oppData['formattedNumbers'].formattedBuiltupArea} --- {!oppData['formattedNumbers'].formattedBuiltupAreaSquareMeter} sq.m.</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">აივნის ფართობი: {!oppData['Opportunity'].Unit__r.Balcony_Size__c}</div>
-                    <div class="column-div" style="width: 50%;">Balcony Area: {!oppData['Opportunity'].Unit__r.Balcony_Size__c}</div>
+                    <div class="column-div" style="width: 50%;">აივნის ფართობი: sq.ft. {!oppData['Opportunity'].Unit__r.Balcony_Size__c} --- {!oppData['Opportunity'].Unit__r.Unit__r.Balcony_Size_Square_Meter__c} sq.m.</div>
+                    <div class="column-div" style="width: 50%;">Balcony Area: sq.ft. {!oppData['Opportunity'].Unit__r.Balcony_Size__c} --- {!oppData['Opportunity'].Unit__r.Unit__r.Balcony_Size_Square_Meter__c} sq.m.</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ჯამური ფართობი: sq.ft. {!oppData['formattedNumbers'].formattedTotalArea}</div>
-                    <div class="column-div" style="width: 50%;">Total Area: sq.ft. {!oppData['formattedNumbers'].formattedTotalArea}</div>
+                    <div class="column-div" style="width: 50%;">ჯამური ფართობი: sq.ft. {!oppData['formattedNumbers'].formattedTotalArea} --- {!oppData['formattedNumbers'].formattedTotalAreaSquareMeter} sq.m.</div>
+                    <div class="column-div" style="width: 50%;">Total Area: sq.ft. {!oppData['formattedNumbers'].formattedTotalArea} --- {!oppData['formattedNumbers'].formattedTotalAreaSquareMeter} sq.m.</div>
                 </div>
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">საკადასტრო კოდი (არსებობის შემთხვევაში): 81.03.16.205</div>
@@ -886,24 +886,28 @@
                     <div class="column-div" style="width: 50%;"><strong>Bank №1</strong></div>
                 </div>
                 <div class="row-div">
+                    <div class="column-div" style="width: 50%;">მიმღები ბანკი: The Bank of New York Mellon, New York, USA SWIFT: IRVTUS3N, ABA: 021000018</div>
+                    <div class="column-div" style="width: 50%;">Intermediary Bank: The Bank of New York Mellon, New York, USA SWIFT: IRVTUS3N, ABA: 021000018</div>
+                </div>
+                <div class="row-div">
                     <div class="column-div" style="width: 50%;">მიმღების დასახელება: შპს მირა დეველოპმენტს</div>
                     <div class="column-div" style="width: 50%;">Beneficiary: MIRA DEVELOPMENTS LLC</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">მიმღების ბანკი: სს ტერაბანკი</div>
-                    <div class="column-div" style="width: 50%;">Beneficiary Bank: JSC Terabank</div>
+                    <div class="column-div" style="width: 50%;">მიმღების ბანკი: ბანკის კოდი</div>
+                    <div class="column-div" style="width: 50%;">Beneficiary Bank: Basisbank JSC</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ანგარიშის ნომერი (IBAN): GE79KS0000000360501059</div>
-                    <div class="column-div" style="width: 50%;">Account Number (IBAN): GE79KS0000000360501059</div>
+                    <div class="column-div" style="width: 50%;">ანგარიშის ნომერი (IBAN): GE16BS0000099881536001</div>
+                    <div class="column-div" style="width: 50%;">Account Number (IBAN): GE16BS0000099881536001</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">სვიფტ კოდი: TEBAGE22</div>
-                    <div class="column-div" style="width: 50%;">SWIFT Code: TEBAGE22</div>
+                    <div class="column-div" style="width: 50%;">სვიფტ კოდი:  CBASGE22</div>
+                    <div class="column-div" style="width: 50%;">SWIFT Code:  CBASGE22</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">მისამართი: საქართველო, თბილისი, ქეთევან დედოფლის გამზ. №3</div>
-                    <div class="column-div" style="width: 50%;">Address: 3 Queen Ketevan Ave., Tbilisi, Georgia</div>
+                    <div class="column-div" style="width: 50%;">მისამართი: თბილისი, საქართველო</div>
+                    <div class="column-div" style="width: 50%;">Address: Tbilisi, Georgia</div>
                 </div>
             </div>
             <div class="table-div" style="text-align: justify;">
@@ -913,53 +917,29 @@
                 </div>
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">მიმღების დასახელება: შპს მირა დეველოპმენტს</div>
-                    <div class="column-div" style="width: 50%;">Beneficiary: MIRA DEVELOPMENTS LLC</div>
+                    <div class="column-div" style="width: 50%;">Beneficiary: M I R A DEVELOPMENTS LLC</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">მიმღების ბანკი: სს თიბისი ბანკი</div>
-                    <div class="column-div" style="width: 50%;">Beneficiary Bank: JSC TBC Bank</div>
+                    <div class="column-div" style="width: 50%;">მიმღების ბანკი: Emirates Islamic Bank </div>
+                    <div class="column-div" style="width: 50%;">Beneficiary Bank: Emirates Islamic Bank</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ანგარიშის ნომერი (IBAN): GE78TB7704236150100002</div>
-                    <div class="column-div" style="width: 50%;">Account Number (IBAN): GE78TB7704236150100002</div>
+                    <div class="column-div" style="width: 50%;">ანგარიშის ნომერი (IBAN): AE400340003708470562406</div>
+                    <div class="column-div" style="width: 50%;">Account Number (IBAN): AE400340003708470562406</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">სვიფტ კოდი: TBCBGE22</div>
-                    <div class="column-div" style="width: 50%;">SWIFT Code: TBCBGE22</div>
+                    <div class="column-div" style="width: 50%;">სვიფტ კოდი: MEBLAEADXXX</div>
+                    <div class="column-div" style="width: 50%;">SWIFT Code: MEBLAEADXXX</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">მისამართი: საქართველო, თბილისი, მარჯანიშვილის ქ., №7.</div>
-                    <div class="column-div" style="width: 50%;">Address: №7 Marjanishvili St., Tbilisi, Georgia</div>
+                    <div class="column-div" style="width: 50%;">მისამართი: დუბაის ჯანდაცვის ქალაქი, დუბაი, არაბთა გაერთიანებული საამიროები</div>
+                    <div class="column-div" style="width: 50%;">Address: EI Health Care City, Dubai, UAE</div>
                 </div>
             </div>
 
             <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
 
             <div class="table-div" style="text-align: justify;">
-                <div class="row-div">
-                    <div class="column-div" style="width: 50%;"><strong>ბანკი №3</strong></div>
-                    <div class="column-div" style="width: 50%;"><strong>Bank №3</strong></div>
-                </div>
-                <div class="row-div">
-                    <div class="column-div" style="width: 50%;">მიმღების დასახელება: შპს მირა დეველოპმენტს</div>
-                    <div class="column-div" style="width: 50%;">Beneficiary: MIRA DEVELOPMENTS LLC</div>
-                </div>
-                <div class="row-div">
-                    <div class="column-div" style="width: 50%;">მიმღების ბანკი: სს საქართველოს ბანკი</div>
-                    <div class="column-div" style="width: 50%;">Beneficiary Bank: JSC Bank of Georgia</div>
-                </div>
-                <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ანგარიშის ნომერი (IBAN): GE05BG0000000611219836</div>
-                    <div class="column-div" style="width: 50%;">Account Number (IBAN): GE05BG0000000611219836</div>
-                </div>
-                <div class="row-div">
-                    <div class="column-div" style="width: 50%;">სვიფტ კოდი: BAGAGE22</div>
-                    <div class="column-div" style="width: 50%;">SWIFT Code: BAGAGE22</div>
-                </div>
-                <div class="row-div">
-                    <div class="column-div" style="width: 50%;">მისამართი: საქართველო, თბილისი, გაგარინის ქ., №29ა</div>
-                    <div class="column-div" style="width: 50%;">Address: 29a Gagarini St., Tbilisi, Georgia</div>
-                </div>
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">3. გამყიდველი იტოვებს უფლებას, შეცვალოს საბანკო ანგარიშის მონაცემები, რის თაობაზეც, იგი ვალდებულია, მყიდველს აცნობოს წერილობით ან ელექტრონული საშუალებით. ასეთი ცვლილება ძალაშია მყიდველისათვის ამ ხელშეკრულებით გათვალისწინებულ შესაბამის მისამართზე შეტყობინების ჩაბარებისთანავე ან ელ. ფოსტის მისამართზე შეტყობინების გაგზავნისთანავე.</div>
                     <div class="column-div" style="width: 50%;">3. The Seller reserves the right to change the bank account details, of which the Seller shall notify the Buyer in writing or by electronic means. Such change shall become effective upon delivery of the notification to the Buyer at the address specified in this Agreement or upon sending the notification to the Buyer’s email address.</div>

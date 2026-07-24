@@ -1,4 +1,4 @@
-<apex:page controller="SOAPDFController" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
+<apex:page controller="SOAPDFController" action="{!blockIfDisabled}" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
 <html>
 <head>
   <meta charset="UTF-8"/>

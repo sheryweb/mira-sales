@@ -403,7 +403,7 @@
                         <valueListItems>
                             <value>CustomButton.Opportunity.Generate_SOA</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND 2 AND (3 OR 4 OR 5)</booleanFilter>
+                                <booleanFilter>1 AND 2 AND (3 OR 4 OR 5) AND 6</booleanFilter>
                                 <criteria>
                                     <leftValue>{!Record.StageName}</leftValue>
                                     <operator>NE</operator>
@@ -428,6 +428,11 @@
                                     <leftValue>{!$User.Profile.Name}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>Sales Admin</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.Engine_Enabled__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>

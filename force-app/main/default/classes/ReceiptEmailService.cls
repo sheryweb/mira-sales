@@ -6,6 +6,7 @@ public with sharing class ReceiptEmailService {
     
     @AuraEnabled
     public static String sendReceiptEmail(Id receiptId) {
+        FinancialEngine.requireEnabled();
         try {
             // Fetch Receipt record with Account Email and Opportunity Owner Email
             Receipt__c receipt = [

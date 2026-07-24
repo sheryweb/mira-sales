@@ -1,6 +1,7 @@
 public with sharing class InvoicePreviewController {
     @AuraEnabled
     public static Financial_Detail__c getFinancialDetail(String financialDetailId) {
+        FinancialEngine.requireEnabled();
         try {
             if (String.isBlank(financialDetailId)) {
                 return null;

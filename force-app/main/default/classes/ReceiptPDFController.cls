@@ -209,6 +209,16 @@ public class ReceiptPDFController {
         }
     }
 
+    /** Page action: redirect to a notice when the Financial Engine is disabled (blocks direct URL access). */
+    public PageReference blockIfDisabled() {
+        if (!FinancialEngine.isEngineEnabled()) {
+            PageReference ref = Page.FinanceDisabled;
+            ref.setRedirect(true);
+            return ref;
+        }
+        return null;
+    }
+
     public String getCurrencySymbol() {
         String projectName = receipt.Project_Name__c;
         if (projectName == null) return '';

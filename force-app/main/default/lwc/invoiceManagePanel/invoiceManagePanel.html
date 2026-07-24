@@ -1,4 +1,5 @@
 <template>
+    <template if:true={engineEnabled}>
     <lightning-card icon-name="standard:invoice">
         <span slot="title">Manage Invoice</span>
 
@@ -204,4 +205,5 @@
             <div class="slds-backdrop slds-backdrop_open"></div>
         </template>
     </lightning-card>
+    </template>
 </template>

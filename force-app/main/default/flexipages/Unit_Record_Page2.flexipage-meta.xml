@@ -7,6 +7,26 @@
                     <name>actionNames</name>
                     <valueList>
                         <valueListItems>
+                            <value>Unit__c.Create_Invoice_LWC</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!Record.Engine_Enabled__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Unit__c.Generate_Receipt_LWC</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!Record.Engine_Enabled__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
                             <value>Clone</value>
                             <visibilityRule>
                                 <criteria>
@@ -55,7 +75,7 @@
                         <valueListItems>
                             <value>Unit__c.Create_Invoice</value>
                             <visibilityRule>
-                                <booleanFilter>(1 OR 2) AND 3</booleanFilter>
+                                <booleanFilter>(1 OR 2) AND 3 AND 4</booleanFilter>
                                 <criteria>
                                     <leftValue>{!$User.Profile.Name}</leftValue>
                                     <operator>EQUAL</operator>
@@ -71,12 +91,17 @@
                                     <operator>EQUAL</operator>
                                     <rightValue>true</rightValue>
                                 </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.Engine_Enabled__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
                             </visibilityRule>
                         </valueListItems>
                         <valueListItems>
                             <value>Unit__c.Generate_Receipt</value>
                             <visibilityRule>
-                                <booleanFilter>(1 OR 2) AND 3</booleanFilter>
+                                <booleanFilter>(1 OR 2) AND 3 AND 4</booleanFilter>
                                 <criteria>
                                     <leftValue>{!$User.Profile.Name}</leftValue>
                                     <operator>EQUAL</operator>
@@ -89,6 +114,11 @@
                                 </criteria>
                                 <criteria>
                                     <leftValue>{!Record.DLD_Fee_Setup__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>true</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.Engine_Enabled__c}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>true</rightValue>
                                 </criteria>

@@ -71,6 +71,7 @@ public with sharing class InvoiceManageController {
     // currency change) and must get freshly re-derived totals/status, not a stale client cache.
     @AuraEnabled
     public static InvoiceView getInvoice(Id invoiceId) {
+        FinancialEngine.requireEnabled();
         if (invoiceId == null) throw new AuraHandledException('No invoice specified.');
         List<Invoice__c> invs = [
             SELECT Id, Name, Invoice_Number__c, Unit__c, Unit__r.Name,
@@ -147,6 +148,7 @@ public with sharing class InvoiceManageController {
     @AuraEnabled
     public static void updateCurrency(Id invoiceId,
             Boolean otherCurrency, String secondaryCurrency, Decimal conversionRate) {
+        FinancialEngine.requireEnabled();
         if (invoiceId == null) throw new AuraHandledException('No invoice specified.');
 
         Boolean useOther = (otherCurrency == true);
@@ -178,6 +180,7 @@ public with sharing class InvoiceManageController {
     /** Add a cash-flow installment the invoice covers. Amount is taken from the cash flow. */
     @AuraEnabled
     public static void addInstallment(Id invoiceId, Id cashFlowId) {
+        FinancialEngine.requireEnabled();
         if (invoiceId == null || cashFlowId == null) throw new AuraHandledException('Invoice and installment are required.');
         try {
             assertSameUnit(invoiceId, cashFlowId);
@@ -205,6 +208,7 @@ public with sharing class InvoiceManageController {
      */
     @AuraEnabled
     public static InvoiceView cancelInvoice(Id invoiceId) {
+        FinancialEngine.requireEnabled();
         if (invoiceId == null) throw new AuraHandledException('No invoice specified.');
         try {
             update new Invoice__c(Id = invoiceId, Status__c = 'Cancelled');
@@ -217,6 +221,7 @@ public with sharing class InvoiceManageController {
     /** Remove an installment the invoice covers. */
     @AuraEnabled
     public static void removeInstallment(Id milestoneId) {
+        FinancialEngine.requireEnabled();
         if (milestoneId == null) throw new AuraHandledException('No installment specified.');
         try {
             List<Milestone_Invoice__c> rows = [SELECT Id, Invoice__c, Cash_Flow__c FROM Milestone_Invoice__c WHERE Id = :milestoneId];

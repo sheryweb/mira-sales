@@ -6,6 +6,7 @@ public with sharing class ReceiptPDFUtil {
      */
     @AuraEnabled
     public static String getReceiptPDFUrl(Id receiptId) {
+        FinancialEngine.requireEnabled();
         if (receiptId == null) {
             throw new AuraHandledException('Receipt ID is required');
         }
@@ -62,6 +63,7 @@ public with sharing class ReceiptPDFUtil {
      */
     @AuraEnabled
     public static Id attachReceiptPDF(Id receiptId) {
+        FinancialEngine.requireEnabled();
         if (receiptId == null) {
             throw new AuraHandledException('Receipt ID is required');
         }

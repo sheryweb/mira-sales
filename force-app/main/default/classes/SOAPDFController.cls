@@ -108,6 +108,16 @@ public without sharing class SOAPDFController {
     }
     
     // Helper method to check if the project is POST HOTEL & RESIDENCES By ELIE SAAB
+    /** Page action: redirect to a notice when the Financial Engine is disabled (blocks direct URL access). */
+    public PageReference blockIfDisabled() {
+        if (!FinancialEngine.isEngineEnabled()) {
+            PageReference ref = Page.FinanceDisabled;
+            ref.setRedirect(true);
+            return ref;
+        }
+        return null;
+    }
+
     public Boolean getIsElieSaab() {
         return propertyDetails != null && 
                propertyDetails.Project_Name_F__c == 'POST HOTEL & RESIDENCES By ELIE SAAB';

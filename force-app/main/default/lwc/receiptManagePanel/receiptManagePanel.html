@@ -1,4 +1,5 @@
 <template>
+    <template if:true={engineEnabled}>
     <lightning-card icon-name="standard:receipt">
         <span slot="title">Manage Receipt</span>
 
@@ -244,4 +245,5 @@
             <div class="slds-backdrop slds-backdrop_open"></div>
         </template>
     </lightning-card>
+    </template>
 </template>

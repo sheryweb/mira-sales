@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Engine_Enabled__c</fullName>
+    <label>Engine Enabled</label>
+    <description>Formula mirror of Financial_Engine_Settings__c.Engine_Owns_Totals__c (the master switch). Used by Lightning page component/action visibility to hide the finance surface when the engine is off. Read-only; do not edit.</description>
+    <formula>$Setup.Financial_Engine_Settings__c.Engine_Owns_Totals__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <externalId>false</externalId>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

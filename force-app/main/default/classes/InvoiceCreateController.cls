@@ -83,6 +83,7 @@ public with sharing class InvoiceCreateController {
      */
     @AuraEnabled(cacheable=false)
     public static CreateContext getContext(Id unitId) {
+        FinancialEngine.requireEnabled();
         if (unitId == null) throw new AuraHandledException('No unit specified.');
 
         List<Unit__c> units = [
@@ -149,6 +150,7 @@ public with sharing class InvoiceCreateController {
      */
     @AuraEnabled
     public static Id createInvoice(String payload) {
+        FinancialEngine.requireEnabled();
         if (String.isBlank(payload)) throw new AuraHandledException('No data supplied.');
         CreateRequest req;
         try {

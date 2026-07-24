@@ -3,6 +3,8 @@ public class InvoiceEmailServiceTest {
     
     @TestSetup
     static void setupTestData() {
+        insert new Financial_Engine_Settings__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), Engine_Owns_Totals__c = true);
         // Create test Account (Person Account assumed)
         Account testAccount = new Account(
             LastName = 'Test Customer',

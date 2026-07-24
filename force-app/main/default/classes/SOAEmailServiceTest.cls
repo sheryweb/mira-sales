@@ -1,5 +1,12 @@
 @isTest
 public class SOAEmailServiceTest {
+
+    // Seeded inline (not @TestSetup) because this class has a @isTest(SeeAllData=true) method,
+    // which Salesforce forbids alongside a test-setup method.
+    private static void seedEngineFlag() {
+        insert new Financial_Engine_Settings__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), Engine_Owns_Totals__c = true);
+    }
     
     // Helper method to create test opportunity with proper data
     private static Opportunity createTestOpportunity(Boolean withEmail, Boolean withUnit) {
@@ -57,6 +64,7 @@ public class SOAEmailServiceTest {
     
     @isTest
     static void testSendSOAEmailWithNullId() {
+        seedEngineFlag();
         Test.startTest();
         
         String result = SOAEmailService.sendSOAEmail(null);
@@ -69,6 +77,7 @@ public class SOAEmailServiceTest {
     
     @isTest
     static void testSendSOAEmailOpportunityNotFound() {
+        seedEngineFlag();
         Test.startTest();
         
         String result = SOAEmailService.sendSOAEmail('006000000000000AAA');
@@ -81,6 +90,7 @@ public class SOAEmailServiceTest {
     
     @isTest
     static void testSendSOAEmailNoCustomerEmail() {
+        seedEngineFlag();
         Opportunity opp = createTestOpportunity(false, true);
         
         Test.startTest();
@@ -95,6 +105,7 @@ public class SOAEmailServiceTest {
     
     @isTest
     static void testSendSOAEmailNoUnit() {
+        seedEngineFlag();
         Opportunity opp = createTestOpportunity(false, false);
         
         Test.startTest();
@@ -109,6 +120,7 @@ public class SOAEmailServiceTest {
     
     @isTest
     static void testSendSOAEmailWithEmailAndUnit() {
+        seedEngineFlag();
         Opportunity opp = createTestOpportunity(true, true);
         
         Test.startTest();
@@ -126,6 +138,7 @@ public class SOAEmailServiceTest {
     
     @isTest
     static void testMultipleErrorScenarios() {
+        seedEngineFlag();
         Test.startTest();
         
         // Test multiple IDs to increase code coverage
@@ -151,6 +164,7 @@ public class SOAEmailServiceTest {
     
     @isTest
     static void testExceptionHandling() {
+        seedEngineFlag();
         Test.startTest();
         
         // Test with various scenarios
@@ -204,6 +218,7 @@ public class SOAEmailServiceTest {
     
     @isTest
     static void testPDFGenerationPath() {
+        seedEngineFlag();
         // This test ensures the Test.isRunningTest() path in PDF generation is covered
         Opportunity opp = createTestOpportunity(true, true);
         
@@ -220,6 +235,7 @@ public class SOAEmailServiceTest {
     
     @isTest
     static void testEmailFormattingPaths() {
+        seedEngineFlag();
         // Create multiple opportunities to test different code paths
         Opportunity opp1 = createTestOpportunity(true, true);
         Opportunity opp2 = createTestOpportunity(false, true);

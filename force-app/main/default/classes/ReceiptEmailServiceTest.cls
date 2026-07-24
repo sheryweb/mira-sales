@@ -4,6 +4,8 @@ public class ReceiptEmailServiceTest {
     // Test data setup
     @TestSetup
     static void setupTestData() {
+        insert new Financial_Engine_Settings__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), Engine_Owns_Totals__c = true);
         // Create a test Account - avoid using Person Account record type
         Account testAccount = new Account(
             Name = 'Test Customer'

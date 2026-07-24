@@ -290,7 +290,7 @@ public class SpaTrussardiMIRAVerdeController {
 
             Opportunity opportunity = [SELECT Id, Name, Booking_Date_Time__c, Registration_Fees__c, Ownership_Share_of_the_Main_Purchaser__c, Offer_layout__c, Unit__r.Project__r.Name,
                 Unit__r.Project__r.Project_Name_Arabic__c, Unit__r.Title_Formula__c, Unit__r.Property_Code_Text__c, Unit__r.Building__c, Unit__r.Building_Arabic_Text__c, Unit__r.Number_of_bedrooms__c, Unit__r.Total_Area__c, Unit__r.Balcony_Size__c, Unit__r.Community__c, Unit__r.Community_Arabic__c,
-                Unit__r.Additional_Area__c, Unit__r.Floor__c, Unit__r.Parking_Space__c, Unit__r.Living_Space__c, Unit__r.Cost_AED__c, Unit__r.Cost_GEL__c, Unit__r.Cost_USD__c, Unit__r.Name, Unit__r.Title__c, Unit__r.Type__c, Unit__c, Unit__r.Total_in_Arabic__c, Unit__r.Amount_in_Words_USD__c, Unit__r.Amount_in_Words_GEL__c, Unit__r.Project_Handover_Date__c, Account.PersonBirthdate,
+                Unit__r.Additional_Area__c, Unit__r.Floor__c, Unit__r.Parking_Space__c, Unit__r.Living_Space__c, Unit__r.Total_Area_Square_Meter__c, Unit__r.Living_Space_Square_Meter__c, Unit__r.Balcony_Size_Square_Meter__c, Unit__r.Cost_AED__c, Unit__r.Cost_GEL__c, Unit__r.Cost_USD__c, Unit__r.Name, Unit__r.Title__c, Unit__r.Type__c, Unit__c, Unit__r.Total_in_Arabic__c, Unit__r.Amount_in_Words_USD__c, Unit__r.Amount_in_Words_GEL__c, Unit__r.Project_Handover_Date__c, Account.PersonBirthdate,
                 Account.Date_of_Birth_Arabic__c, Account.Place_of_Birth__pc, Account.Place_of_Birth_Arabic__pc, Account.Occupation__pc, Account.Occupation_Arabic__pc, Account.Name, Account.Nature_of_Business__pc,
                 Account.Nature_of_Business_Arabic__pc, Account.Person_Account_Salutation__pc, Account.Salutation_Arabic__c, Account.Contact_First_Name_Arabic__pc, Account.Contact_Last_Name_Arabic__pc, Account.Contact_Middle_Name_Arabic__pc, Account.Bank_Name__pc,
                 Account.Bank_Name_Arabic__pc, Account.Subject_to_Sanction__pc, Account.RecordTypeId, toLabel(Account.Nationality__c), Account.Nationality_Arabic__c, Account.Country_of_Incorporation_Arabic__c,
@@ -387,6 +387,7 @@ public class SpaTrussardiMIRAVerdeController {
             Map<String, String> numbersToFormat = new Map<String, String>();
         	numbersToFormat.put('unitNumberArabic', arabicNumbers(opportunity.Unit__r.Title__c));
             numbersToFormat.put('formattedTotalArea', formatNumber(opportunity.Unit__r.Total_Area__c));
+            numbersToFormat.put('formattedTotalAreaSquareMeter', formatNumber(opportunity.Unit__r.Total_Area_Square_Meter__c));
         	numbersToFormat.put('formattedTotalAreaArabic', arabicNumbers(formatNumber(opportunity.Unit__r.Total_Area__c)));
             numbersToFormat.put('formattedPlotArea', opportunity.Unit__r.Additional_Area__c > 0 ? formatNumber(opportunity.Unit__r.Additional_Area__c) : '');
         	numbersToFormat.put('formattedPlotAreaArabic', opportunity.Unit__r.Additional_Area__c > 0 ? arabicNumbers(formatNumber(opportunity.Unit__r.Additional_Area__c)) : '');
@@ -395,6 +396,7 @@ public class SpaTrussardiMIRAVerdeController {
         	numbersToFormat.put('formattedParkingSpace', opportunity.Unit__r.Parking_Space__c > 0 ? String.valueOf(opportunity.Unit__r.Parking_Space__c) : '');
         	numbersToFormat.put('formattedParkingSpaceArabic', opportunity.Unit__r.Parking_Space__c > 0 ? arabicNumbers(String.valueOf(opportunity.Unit__r.Parking_Space__c)) : '');
             numbersToFormat.put('formattedBuiltupArea', formatNumber(opportunity.Unit__r.Living_Space__c));
+            numbersToFormat.put('formattedBuiltupAreaSquareMeter', formatNumber(opportunity.Unit__r.Living_Space_Square_Meter__c));
         	//numbersToFormat.put('formattedBuiltupAreaArabic', arabicNumbers(formatNumber(opportunity.Unit__r.Living_Space__c)));
             numbersToFormat.put('formattedUnitCost', formatNumber(opportunity.Unit__r.Cost_AED__c));
         	numbersToFormat.put('formattedUnitCostArabic', arabicNumbers(formatNumber(opportunity.Unit__r.Cost_AED__c)));

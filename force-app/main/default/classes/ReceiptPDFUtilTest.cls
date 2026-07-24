@@ -3,6 +3,8 @@ private class ReceiptPDFUtilTest {
     
     @TestSetup
     static void setupTestData() {
+        insert new Financial_Engine_Settings__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), Engine_Owns_Totals__c = true);
         // Create a test receipt
         Receipt__c receipt = new Receipt__c(
             Description__c = 'Test Receipt Description',

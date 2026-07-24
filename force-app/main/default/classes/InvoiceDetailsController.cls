@@ -1,6 +1,7 @@
 public without sharing class InvoiceDetailsController {
     @AuraEnabled(cacheable=true)
     public static List<Invoice__c> getInvoiceDetails(List<String> invoiceIds) {
+        FinancialEngine.requireEnabled();
         try {
             System.debug('Received invoice IDs: ' + invoiceIds);
             

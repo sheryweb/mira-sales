@@ -1,0 +1,5 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="true">
+    <apex:pageMessage severity="warning" strength="3"
+        title="Finance unavailable"
+        summary="The Financial Engine is currently disabled. Please contact your administrator." />
+</apex:page>

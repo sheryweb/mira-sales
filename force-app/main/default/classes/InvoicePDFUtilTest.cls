@@ -2,6 +2,8 @@
 private class InvoicePDFUtilTest {
     @TestSetup
     static void setupTestData() {
+        insert new Financial_Engine_Settings__c(
+            SetupOwnerId = UserInfo.getOrganizationId(), Engine_Owns_Totals__c = true);
         // Create test data
         Unit__c unit = new Unit__c(
             Project_Name_Text__c = 'Test Project',

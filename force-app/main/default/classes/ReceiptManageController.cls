@@ -64,6 +64,7 @@ public with sharing class ReceiptManageController {
     // allocation) and must get freshly re-derived amounts/status, not a stale client cache.
     @AuraEnabled
     public static ReceiptView getReceipt(Id receiptId) {
+        FinancialEngine.requireEnabled();
         if (receiptId == null) throw new AuraHandledException('No receipt specified.');
         List<Receipt__c> recs = [
             SELECT Id, Name, Status__c, Payment_Status__c, Received_Amount__c, Unit__c,
@@ -125,6 +126,7 @@ public with sharing class ReceiptManageController {
 
     @AuraEnabled
     public static void updateAllocationAmount(Id lineId, Decimal newAmount) {
+        FinancialEngine.requireEnabled();
         if (lineId == null) throw new AuraHandledException('No allocation specified.');
         if (newAmount == null || newAmount < 0) throw new AuraHandledException('Amount must be zero or greater.');
         try {
@@ -144,6 +146,7 @@ public with sharing class ReceiptManageController {
 
     @AuraEnabled
     public static void reassignAllocation(Id lineId, Id newInvoiceId) {
+        FinancialEngine.requireEnabled();
         if (lineId == null || newInvoiceId == null) throw new AuraHandledException('Line and target invoice are required.');
         try {
             Receipt_Amount__c line = [
@@ -169,6 +172,7 @@ public with sharing class ReceiptManageController {
      */
     @AuraEnabled
     public static void saveAllocation(String payload) {
+        FinancialEngine.requireEnabled();
         AllocationInput input = parseInput(payload);
         if (input == null || input.lineId == null || input.invoiceId == null) throw new AuraHandledException('Line and invoice are required.');
         if (input.amount == null || input.amount < 0) throw new AuraHandledException('Amount must be zero or greater.');
@@ -192,6 +196,7 @@ public with sharing class ReceiptManageController {
     /** Apply money from this receipt to another invoice on the same unit. Payload is a JSON string. */
     @AuraEnabled
     public static void addAllocation(Id receiptId, String payload) {
+        FinancialEngine.requireEnabled();
         AllocationInput input = parseInput(payload);
         if (receiptId == null || input == null || input.invoiceId == null) throw new AuraHandledException('Receipt and invoice are required.');
         if (input.amount == null || input.amount <= 0) throw new AuraHandledException('Amount must be greater than zero.');
@@ -211,6 +216,7 @@ public with sharing class ReceiptManageController {
 
     @AuraEnabled
     public static void removeAllocation(Id lineId) {
+        FinancialEngine.requireEnabled();
         if (lineId == null) throw new AuraHandledException('No allocation specified.');
         try {
             Receipt_Amount__c line = [SELECT Id, Receipt__c, Invoice__c FROM Receipt_Amount__c WHERE Id = :lineId LIMIT 1];
@@ -227,6 +233,7 @@ public with sharing class ReceiptManageController {
 
     @AuraEnabled
     public static void cancelReceipt(Id receiptId, String reason) {
+        FinancialEngine.requireEnabled();
         if (receiptId == null) throw new AuraHandledException('No receipt specified.');
         // A cancellation reason is mandatory — enforced here so the rule holds even if the
         // client is bypassed (direct Apex/API call).

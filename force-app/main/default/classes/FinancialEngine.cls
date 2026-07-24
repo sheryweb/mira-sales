@@ -393,6 +393,28 @@ public without sharing class FinancialEngine {
         return s != null && s.Engine_Owns_Totals__c == true;
     }
 
+    @TestVisible
+    static final String ENGINE_DISABLED_MESSAGE =
+        'The Financial Engine is currently disabled. Please contact your administrator.';
+
+    /**
+     * Authoritative gate for the finance UI surface (invoice/receipt/SOA create, manage, PDF,
+     * email). Throws when the engine is disabled so no finance action can run even via a direct
+     * Apex/API/URL call. The UI layers (flexipage visibility + LWC self-hide) also hide the
+     * surface, but this is the real kill switch.
+     */
+    public static void requireEnabled() {
+        if (!isEngineEnabled()) {
+            throw new AuraHandledException(ENGINE_DISABLED_MESSAGE);
+        }
+    }
+
+    /** Cacheable flag read for LWCs that self-hide the finance surface when the engine is off. */
+    @AuraEnabled(cacheable=true)
+    public static Boolean isFinanceUiEnabled() {
+        return isEngineEnabled();
+    }
+
     /**
      * Re-derive and WRITE the corrected totals + rebuild the Milestone_Receipt ledger for the
      * given units. No-op unless the feature flag is on. Recursion-guarded so the engine's own
