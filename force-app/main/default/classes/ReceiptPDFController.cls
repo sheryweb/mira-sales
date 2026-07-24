@@ -159,7 +159,9 @@ public class ReceiptPDFController {
                     'id' => ra.Id,
                     'Mode_of_Payment__c' => ra.Mode_of_Payment__c != null ? ra.Mode_of_Payment__c : '',
                     'Reference_Number__c' => ra.Reference_Number__c != null ? ra.Reference_Number__c : '',
-                    'formattedReceiptAmount' => ra.Amount_Text__c,
+                    'formattedReceiptAmount' => ra.Amount_Text__c != null
+                        ? ra.Amount_Text__c
+                        : (ra.Amount__c != null ? ra.Amount__c.setScale(2).format() : ''),
                     'Cheque_Number__c' => ra.Cheque_Number__c != null ? ra.Cheque_Number__c : '',
                     'formattedChequeDate' => formatDate(ra.Cheque_Date__c),
                     'Bank_Name__c' => ra.Bank_Name__c != null ? ra.Bank_Name__c : '',

@@ -126,7 +126,11 @@ public with sharing class ReceiptManageController {
         if (newAmount == null || newAmount < 0) throw new AuraHandledException('Amount must be zero or greater.');
         try {
             Receipt_Amount__c line = [SELECT Id, Receipt__c, Invoice__c FROM Receipt_Amount__c WHERE Id = :lineId LIMIT 1];
-            update new Receipt_Amount__c(Id = lineId, Amount__c = newAmount);
+            update new Receipt_Amount__c(
+                Id = lineId,
+                Amount__c = newAmount,
+                Amount_Text__c = newAmount.setScale(2).format()
+            );
             syncReceiptInvoice(line.Receipt__c, line.Invoice__c);
         } catch (AuraHandledException e) {
             throw e;
@@ -219,10 +223,17 @@ public with sharing class ReceiptManageController {
     }
 
     @AuraEnabled
-    public static void cancelReceipt(Id receiptId) {
+    public static void cancelReceipt(Id receiptId, String reason) {
         if (receiptId == null) throw new AuraHandledException('No receipt specified.');
+        // A cancellation reason is mandatory — enforced here so the rule holds even if the
+        // client is bypassed (direct Apex/API call).
+        if (String.isBlank(reason)) throw new AuraHandledException('A cancellation reason is required.');
         try {
-            update new Receipt__c(Id = receiptId, Payment_Status__c = 'Cancelled');
+            update new Receipt__c(
+                Id = receiptId,
+                Payment_Status__c = 'Cancelled',
+                Cancellation_Reason__c = reason.trim()
+            );
         } catch (Exception e) {
             throw new AuraHandledException('Could not cancel the receipt: ' + e.getMessage());
         }
@@ -235,6 +246,9 @@ public with sharing class ReceiptManageController {
             Id = lineId,
             Invoice__c = input.invoiceId,
             Amount__c = input.amount,
+            // Keep the formatted text in lockstep with the amount — the Receipt PDF renders
+            // Amount_Text__c directly, so a null/stale value breaks or misprints the PDF.
+            Amount_Text__c = (input.amount != null) ? input.amount.setScale(2).format() : null,
             Mode_of_Payment__c = input.modeOfPayment,
             Reference_Number__c = input.referenceNumber,
             Cheque_Number__c = input.chequeNumber,

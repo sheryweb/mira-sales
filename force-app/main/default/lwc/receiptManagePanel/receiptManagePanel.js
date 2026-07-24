@@ -13,7 +13,10 @@ export default class ReceiptManagePanel extends LightningElement {
     @track view;
     @track rows = [];
     @track isLoading = false;
-    @track showCancelConfirm = false;
+    // Cancel flow: '' (closed) -> 'reason' (enter mandatory reason) -> 'confirm' (final confirmation)
+    @track cancelStep = '';
+    @track cancellationReason = '';
+    cancelReasonError;
     error;
 
     // add-allocation form
@@ -185,17 +188,59 @@ export default class ReceiptManagePanel extends LightningElement {
 
     // ---- cancel receipt ----
 
+    get isCancelReasonStep() {
+        return this.cancelStep === 'reason';
+    }
+
+    get isCancelConfirmStep() {
+        return this.cancelStep === 'confirm';
+    }
+
+    get showCancelModal() {
+        return this.cancelStep === 'reason' || this.cancelStep === 'confirm';
+    }
+
     handleCancelClick() {
-        this.showCancelConfirm = true;
+        this.cancellationReason = '';
+        this.cancelReasonError = undefined;
+        this.cancelStep = 'reason';
+    }
+
+    handleReasonChange(event) {
+        this.cancellationReason = event.target.value;
+        if (this.cancelReasonError && this.cancellationReason.trim()) {
+            this.cancelReasonError = undefined;
+        }
+    }
+
+    // Step 1 -> Step 2. Reason is mandatory.
+    handleReasonNext() {
+        if (!this.cancellationReason || !this.cancellationReason.trim()) {
+            this.cancelReasonError = 'A cancellation reason is required.';
+            return;
+        }
+        this.cancelReasonError = undefined;
+        this.cancelStep = 'confirm';
+    }
+
+    handleBackToReason() {
+        this.cancelStep = 'reason';
     }
 
     handleCancelDismiss() {
-        this.showCancelConfirm = false;
+        this.cancelStep = '';
     }
 
     handleCancelConfirm() {
-        this.showCancelConfirm = false;
-        this.run(cancelReceipt({ receiptId: this.recordId }), 'Receipt cancelled.');
+        const reason = (this.cancellationReason || '').trim();
+        if (!reason) {
+            // Should not happen (guarded at step 1), but never cancel without a reason.
+            this.cancelStep = 'reason';
+            this.cancelReasonError = 'A cancellation reason is required.';
+            return;
+        }
+        this.cancelStep = '';
+        this.run(cancelReceipt({ receiptId: this.recordId, reason }), 'Receipt cancelled.');
     }
 
     run(promise, successMessage) {

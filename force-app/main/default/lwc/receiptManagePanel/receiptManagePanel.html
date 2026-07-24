@@ -185,23 +185,55 @@
                 disabled={isCancelled} onclick={handleCancelClick}></lightning-button>
         </div>
 
-        <template if:true={showCancelConfirm}>
+        <template if:true={showCancelModal}>
             <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
                 <div class="slds-modal__container">
-                    <header class="slds-modal__header">
-                        <h2 class="slds-modal__title">Cancel this receipt?</h2>
-                    </header>
-                    <div class="slds-modal__content slds-p-around_medium">
-                        The receipt and its number are kept, but it will be excluded from all
-                        invoice, cash-flow and unit totals. You can reverse this later by
-                        changing its payment status.
-                    </div>
-                    <footer class="slds-modal__footer">
-                        <lightning-button label="Keep it" onclick={handleCancelDismiss}
-                            class="slds-m-right_x-small"></lightning-button>
-                        <lightning-button label="Cancel Receipt" variant="destructive"
-                            onclick={handleCancelConfirm}></lightning-button>
-                    </footer>
+
+                    <!-- Step 1: mandatory cancellation reason -->
+                    <template if:true={isCancelReasonStep}>
+                        <header class="slds-modal__header">
+                            <h2 class="slds-modal__title">Reason for cancellation</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <lightning-textarea name="cancellationReason" label="Cancellation Reason"
+                                required value={cancellationReason} onchange={handleReasonChange}
+                                message-when-value-missing="A cancellation reason is required."
+                                placeholder="Explain why this receipt is being cancelled…"></lightning-textarea>
+                            <template if:true={cancelReasonError}>
+                                <div class="slds-text-color_error slds-p-top_x-small">{cancelReasonError}</div>
+                            </template>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning-button label="Keep it" onclick={handleCancelDismiss}
+                                class="slds-m-right_x-small"></lightning-button>
+                            <lightning-button label="Next" variant="brand"
+                                onclick={handleReasonNext}></lightning-button>
+                        </footer>
+                    </template>
+
+                    <!-- Step 2: final confirmation -->
+                    <template if:true={isCancelConfirmStep}>
+                        <header class="slds-modal__header">
+                            <h2 class="slds-modal__title">Cancel this receipt?</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <p>
+                                The receipt and its number are kept, but it will be excluded from all
+                                invoice, cash-flow and unit totals. You can reverse this later by
+                                changing its payment status.
+                            </p>
+                            <p class="slds-m-top_x-small">
+                                <strong>Reason:</strong> {cancellationReason}
+                            </p>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning-button label="Back" onclick={handleBackToReason}
+                                class="slds-m-right_x-small"></lightning-button>
+                            <lightning-button label="Cancel Receipt" variant="destructive"
+                                onclick={handleCancelConfirm}></lightning-button>
+                        </footer>
+                    </template>
+
                 </div>
             </section>
             <div class="slds-backdrop slds-backdrop_open"></div>

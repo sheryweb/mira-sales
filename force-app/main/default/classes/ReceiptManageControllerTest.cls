@@ -96,15 +96,32 @@ private class ReceiptManageControllerTest {
     static void cancelReceiptExcludesFromTotals() {
         Ctx c = build();
         Test.startTest();
-        ReceiptManageController.cancelReceipt(c.r.Id);
+        ReceiptManageController.cancelReceipt(c.r.Id, 'Duplicate receipt');
         Test.stopTest();
 
-        Receipt__c r = [SELECT Payment_Status__c FROM Receipt__c WHERE Id = :c.r.Id];
+        Receipt__c r = [SELECT Payment_Status__c, Cancellation_Reason__c FROM Receipt__c WHERE Id = :c.r.Id];
         System.assertEquals('Cancelled', r.Payment_Status__c, 'Receipt soft-cancelled');
+        System.assertEquals('Duplicate receipt', r.Cancellation_Reason__c, 'Cancellation reason stored');
         Invoice__c inv = [SELECT Paid_Amount__c FROM Invoice__c WHERE Id = :c.inv.Id];
         System.assertEquals(0, inv.Paid_Amount__c, 'Cancelled receipt excluded from invoice paid');
         Cash_Flow__c cf = [SELECT Received_Amount__c FROM Cash_Flow__c WHERE Id = :c.cf.Id];
         System.assertEquals(0, cf.Received_Amount__c, 'Cancelled receipt excluded from cash flow');
+    }
+
+    @IsTest
+    static void cancelWithoutReasonThrows() {
+        Ctx c = build();
+        Test.startTest();
+        try {
+            ReceiptManageController.cancelReceipt(c.r.Id, '   ');
+            System.assert(false, 'Blank cancellation reason should throw');
+        } catch (AuraHandledException e) {
+            System.assert(true);
+        }
+        Test.stopTest();
+
+        Receipt__c r = [SELECT Payment_Status__c FROM Receipt__c WHERE Id = :c.r.Id];
+        System.assertNotEquals('Cancelled', r.Payment_Status__c, 'Receipt not cancelled without a reason');
     }
 
     @IsTest
