@@ -435,12 +435,12 @@
                     <div class="column-div" style="width: 50%;">Place of Issue: {!oppData['Opportunity'].Account.Passport_Place_of_Issue__pc}</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">რეგისტრაციის მისამართი: {!oppData['Opportunity'].Account.BillingStreet}</div>
-                    <div class="column-div" style="width: 50%;">Registered Address: {!oppData['Opportunity'].Account.BillingStreet}</div>
+                    <div class="column-div" style="width: 50%;">რეგისტრაციის მისამართი: {!oppData['Opportunity'].Account.BillingStreet}, {!oppData['Opportunity'].Account.BillingCity}, {!oppData['Opportunity'].Account.BillingCountry}</div>
+                    <div class="column-div" style="width: 50%;">Registered Address: {!oppData['Opportunity'].Account.BillingStreet}, {!oppData['Opportunity'].Account.BillingCity}, {!oppData['Opportunity'].Account.BillingCountry}</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">მუდმივი საცხოვრებელი მისამართი: {!oppData['Opportunity'].Account.BillingStreet}</div>
-                    <div class="column-div" style="width: 50%;">Permanent Residential Address: {!oppData['Opportunity'].Account.BillingStreet}</div>
+                    <div class="column-div" style="width: 50%;">მუდმივი საცხოვრებელი მისამართი: {!oppData['Opportunity'].Account.BillingStreet}, {!oppData['Opportunity'].Account.BillingCity}, {!oppData['Opportunity'].Account.BillingCountry}</div>
+                    <div class="column-div" style="width: 50%;">Permanent Residential Address: {!oppData['Opportunity'].Account.BillingStreet}, {!oppData['Opportunity'].Account.BillingCity}, {!oppData['Opportunity'].Account.BillingCountry}</div>
                 </div>
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">ელ. ფოსტა: {!oppData['personInformation']['personEmail']}</div>
@@ -511,8 +511,8 @@
                         <div class="column-div" style="width: 50%;">Date of Issue: {!oppData['jpInfo'][jOwner.Id]['jpersonVisaDateIssue']}</div>
                     </div>
                     <div class="row-div">
-                        <div class="column-div" style="width: 50%;">რეგისტრაციის მისამართი: {!IF(oppData['isPerson'] == 'Yes', jOwner.BillingStreet, jOwner.Account.BillingStreet)}</div>
-                        <div class="column-div" style="width: 50%;">Registered Address: {!IF(oppData['isPerson'] == 'Yes', jOwner.BillingStreet, jOwner.Account.BillingStreet)}</div>
+                        <div class="column-div" style="width: 50%;">რეგისტრაციის მისამართი: {!IF(jOwner.BillingStreet == null, 'Not Applicable', jOwner.BillingStreet)}{!IF(jOwner.Address__c == null, '', ',')} {!IF(jOwner.BillingCity == null, '', jOwner.BillingCity)}{!IF(jOwner.Address__c == null, '', ',')} {!IF(jOwner.BillingCountry == null, '', jOwner.BillingCountry)}</div>
+                        <div class="column-div" style="width: 50%;">Registered Address: {!IF(jOwner.BillingStreet == null, 'Not Applicable', jOwner.BillingStreet)}{!IF(jOwner.Address__c == null, '', ',')} {!IF(jOwner.BillingCity == null, '', jOwner.BillingCity)}{!IF(jOwner.Address__c == null, '', ',')} {!IF(jOwner.BillingCountry == null, '', jOwner.BillingCountry)}</div>
                     </div>
                     <div class="row-div">
                         <div class="column-div" style="width: 50%;">მუდმივი საცხოვრებელი მისამართი: {!IF(oppData['isPerson'] == 'Yes', jOwner.BillingStreet, jOwner.Account.BillingStreet)}</div>
