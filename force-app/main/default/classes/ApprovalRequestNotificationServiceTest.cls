@@ -179,7 +179,7 @@ private class ApprovalRequestNotificationServiceTest {
             insert g;
             insert new GroupMember(GroupId = g.Id, UserOrGroupId = UserInfo.getUserId());
         }
-        ApprovalRequestNotificationService.OPS_GROUP_DEV_NAME = 'Test_DoO_Group';
+        ApprovalRequestNotificationService.OPS_GROUP_DEV_NAMES = new Set<String>{ 'Test_DoO_Group' };
 
         Unit__c unit = new Unit__c();
         insert unit;
@@ -207,6 +207,46 @@ private class ApprovalRequestNotificationServiceTest {
         System.assert(built[0].getToAddresses().size() >= 1, 'at least one recipient resolved from the group');
     }
 
+    // Recipients are the union of every OPS_GROUP_DEV_NAMES group, de-duplicated: in production
+    // Jad sits in Sales_Admin_Special only, the rest in Director_of_Operations.
+    @isTest
+    static void operations_recipients_span_all_groups_without_duplicates() {
+        Group a = new Group(Name = 'Test Ops A', DeveloperName = 'Test_Ops_A', Type = 'Regular');
+        Group b = new Group(Name = 'Test Ops B', DeveloperName = 'Test_Ops_B', Type = 'Regular');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert new List<Group>{ a, b };
+            // Member of the SECOND group only — must still be notified.
+            insert new GroupMember(GroupId = b.Id, UserOrGroupId = UserInfo.getUserId());
+        }
+        ApprovalRequestNotificationService.OPS_GROUP_DEV_NAMES =
+            new Set<String>{ 'Test_Ops_A', 'Test_Ops_B' };
+
+        Approval_Request__c req = new Approval_Request__c(
+            Request_Type__c = 'Unit Price Change',
+            Related_Object_Type__c = 'Unit__c',
+            Field_To_Update__c = 'Cost_AED__c',
+            Current_Value__c = 'AED 1,000,000',
+            Requested_Value__c = 'AED 950,000',
+            Justification__c = 'Client negotiation',
+            Status__c = 'Pending'
+        );
+        insert req;
+
+        List<Messaging.SingleEmailMessage> built =
+            ApprovalRequestNotificationService.buildOperationsEmails(new Set<Id>{ req.Id });
+        System.assertEquals(1, built.size(), 'a member of the second group alone is still notified');
+        System.assertEquals(1, built[0].getToAddresses().size(), 'one recipient');
+
+        // Same user now in BOTH groups -> still a single copy.
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert new GroupMember(GroupId = a.Id, UserOrGroupId = UserInfo.getUserId());
+        }
+        built = ApprovalRequestNotificationService.buildOperationsEmails(new Set<Id>{ req.Id });
+        System.assertEquals(1, built.size(), 'still one email');
+        System.assertEquals(1, built[0].getToAddresses().size(),
+            'membership in both groups is de-duplicated');
+    }
+
     // Regression: applyApprovedChanges() stamps Status__c = 'Applied' before notify() runs, so a
     // finally-approved request reads as 'Applied' when the service re-queries it. That used to map
     // to no event at all and the Director of Operations never got the final-approval email.
@@ -217,7 +257,7 @@ private class ApprovalRequestNotificationServiceTest {
             insert g;
             insert new GroupMember(GroupId = g.Id, UserOrGroupId = UserInfo.getUserId());
         }
-        ApprovalRequestNotificationService.OPS_GROUP_DEV_NAME = 'Test_DoO_Applied';
+        ApprovalRequestNotificationService.OPS_GROUP_DEV_NAMES = new Set<String>{ 'Test_DoO_Applied' };
 
         Approval_Request__c req = new Approval_Request__c(
             Request_Type__c = 'Payment Plan Change',
@@ -242,7 +282,7 @@ private class ApprovalRequestNotificationServiceTest {
 
     @isTest
     static void operations_no_group_members_means_no_email() {
-        ApprovalRequestNotificationService.OPS_GROUP_DEV_NAME = 'No_Such_Group_X';
+        ApprovalRequestNotificationService.OPS_GROUP_DEV_NAMES = new Set<String>{ 'No_Such_Group_X' };
         Approval_Request__c req = new Approval_Request__c(
             Request_Type__c = 'Payment Plan Change',
             Related_Object_Type__c = 'Unit__c',

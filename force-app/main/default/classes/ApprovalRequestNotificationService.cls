@@ -34,11 +34,15 @@ public without sharing class ApprovalRequestNotificationService {
     // Exposed so tests can assert on what would be sent without delivering mail.
     @TestVisible private static List<Messaging.SingleEmailMessage> lastBuilt;
 
-    // ── Director of Operations internal notifications ─────────────────────────
-    // Separate audience/purpose from the agency emails above: the Director of
-    // Operations is notified on submit + final decision for these internal sales
-    // approval types. Recipients = active direct user members of the public group.
-    @TestVisible private static String OPS_GROUP_DEV_NAME = 'Director_of_Operations';
+    // ── Internal operations notifications ─────────────────────────────────────
+    // Separate audience/purpose from the agency emails above: operations is notified on
+    // submit + final decision for these internal sales approval types. Recipients = active
+    // direct user members of these public groups (union, de-duplicated). Membership is org
+    // data, not metadata, so it is maintained per-org in Setup -> Public Groups.
+    @TestVisible private static Set<String> OPS_GROUP_DEV_NAMES = new Set<String>{
+        'Director_of_Operations',
+        'Sales_Admin_Special'
+    };
     private static final Set<String> OPS_TYPES = new Set<String>{
         'Unit Price Change', 'Payment Plan Change'
     };
@@ -304,26 +308,29 @@ public without sharing class ApprovalRequestNotificationService {
         return emails;
     }
 
-    // Active direct user members of the Director of Operations public group.
+    // Active direct user members across all OPS_GROUP_DEV_NAMES public groups.
     private static List<String> operationsGroupEmails() {
-        List<String> addrs = new List<String>();
         List<Group> grps = [
             SELECT Id FROM Group
-            WHERE DeveloperName = :OPS_GROUP_DEV_NAME AND Type = 'Regular' LIMIT 1
+            WHERE DeveloperName IN :OPS_GROUP_DEV_NAMES AND Type = 'Regular'
         ];
-        if (grps.isEmpty()) return addrs;
+        if (grps.isEmpty()) return new List<String>();
 
+        Set<Id> groupIds = (new Map<Id, Group>(grps)).keySet();
         Set<Id> userIds = new Set<Id>();
-        for (GroupMember gm : [SELECT UserOrGroupId FROM GroupMember WHERE GroupId = :grps[0].Id]) {
+        for (GroupMember gm : [SELECT UserOrGroupId FROM GroupMember WHERE GroupId IN :groupIds]) {
             if (gm.UserOrGroupId != null && gm.UserOrGroupId.getSobjectType() == User.SObjectType) {
                 userIds.add(gm.UserOrGroupId);
             }
         }
-        if (userIds.isEmpty()) return addrs;
+        if (userIds.isEmpty()) return new List<String>();
+
+        // Set so someone who belongs to more than one group is not mailed twice.
+        Set<String> unique = new Set<String>();
         for (User u : [SELECT Email FROM User WHERE Id IN :userIds AND IsActive = true AND Email != null]) {
-            addrs.add(u.Email.trim());
+            unique.add(u.Email.trim());
         }
-        return addrs;
+        return new List<String>(unique);
     }
 
     // Unit records per parent-record id (only for parents that are Units).
