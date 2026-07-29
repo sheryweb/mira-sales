@@ -46,6 +46,10 @@
                 <behavior>Edit</behavior>
                 <field>Community_Arabic__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Project_Location__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

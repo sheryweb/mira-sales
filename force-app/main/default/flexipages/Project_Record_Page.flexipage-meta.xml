@@ -158,6 +158,12 @@
                 <identifier>RecordCommunity_Arabic_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.Project_Location__c</fieldItem>
+                <identifier>RecordProject_Location__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-765dcf10-fdbc-4130-83fd-de5aa6a24689</name>
         <type>Facet</type>
     </flexiPageRegions>
