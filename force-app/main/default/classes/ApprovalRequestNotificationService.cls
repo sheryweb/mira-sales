@@ -134,7 +134,10 @@ public without sharing class ApprovalRequestNotificationService {
     private static Map<Id, String> decisionComments(List<Approval_Request__c> reqs) {
         Set<Id> decidedIds = new Set<Id>();
         for (Approval_Request__c r : reqs) {
-            if (r.Status__c == 'Approved' || r.Status__c == 'Rejected') decidedIds.add(r.Id);
+            // Via eventFor so post-approval states (e.g. 'Applied') still count as decided and
+            // keep the approver's comment in the email.
+            String event = eventFor(r.Status__c);
+            if (event == 'Approved' || event == 'Rejected') decidedIds.add(r.Id);
         }
         Map<Id, String> byReq = new Map<Id, String>();
         if (decidedIds.isEmpty()) return byReq;
@@ -158,6 +161,12 @@ public without sharing class ApprovalRequestNotificationService {
         if (status == 'Pending')  return 'Submitted';
         if (status == 'Approved') return 'Approved';
         if (status == 'Rejected') return 'Rejected';
+        // 'Applied' is a post-approval state, not a separate event: for Unit Price Change and
+        // Payment Plan Change the trigger runs applyApprovedChanges() BEFORE notify(), and that
+        // stamps Status__c = 'Applied' in the same transaction. Since we re-query the request
+        // here, an approved record already reads as 'Applied' by the time we see it — treating it
+        // as anything but Approved silently drops the final-approval email.
+        if (status == 'Applied')  return 'Approved';
         return null;
     }
 

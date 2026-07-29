@@ -207,6 +207,39 @@ private class ApprovalRequestNotificationServiceTest {
         System.assert(built[0].getToAddresses().size() >= 1, 'at least one recipient resolved from the group');
     }
 
+    // Regression: applyApprovedChanges() stamps Status__c = 'Applied' before notify() runs, so a
+    // finally-approved request reads as 'Applied' when the service re-queries it. That used to map
+    // to no event at all and the Director of Operations never got the final-approval email.
+    @isTest
+    static void operations_applied_status_still_sends_approved_email() {
+        Group g = new Group(Name = 'Test DoO Applied', DeveloperName = 'Test_DoO_Applied', Type = 'Regular');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert g;
+            insert new GroupMember(GroupId = g.Id, UserOrGroupId = UserInfo.getUserId());
+        }
+        ApprovalRequestNotificationService.OPS_GROUP_DEV_NAME = 'Test_DoO_Applied';
+
+        Approval_Request__c req = new Approval_Request__c(
+            Request_Type__c = 'Payment Plan Change',
+            Related_Object_Type__c = 'Unit__c',
+            Field_To_Update__c = 'Cash_Flow__c',
+            Current_Value__c = 'Unit (7 installment(s))',
+            Requested_Value__c = 'Add: 0, Update: 1, Delete: 0',
+            Justification__c = 'test',
+            Status__c = 'Applied'
+        );
+        insert req;
+
+        Test.startTest();
+        List<Messaging.SingleEmailMessage> built =
+            ApprovalRequestNotificationService.buildOperationsEmails(new Set<Id>{ req.Id });
+        Test.stopTest();
+
+        System.assertEquals(1, built.size(), 'Applied must still produce the final-approval email');
+        System.assert(built[0].getSubject().startsWith('Approval Approved: Payment Plan Change'),
+            'Applied is reported as Approved: ' + built[0].getSubject());
+    }
+
     @isTest
     static void operations_no_group_members_means_no_email() {
         ApprovalRequestNotificationService.OPS_GROUP_DEV_NAME = 'No_Such_Group_X';
