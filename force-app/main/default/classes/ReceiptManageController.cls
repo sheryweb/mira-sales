@@ -9,6 +9,8 @@
  */
 public with sharing class ReceiptManageController {
 
+    private static final String TYPE_COMMISSION = 'Commission';
+
     public class ReceiptView {
         @AuraEnabled public Id receiptId;
         @AuraEnabled public String name;
@@ -86,6 +88,7 @@ public with sharing class ReceiptManageController {
         v.allocations = new List<AllocationView>();
 
         Decimal allocated = 0;
+        Set<Id> allocatedInvoiceIds = new Set<Id>();
         for (Receipt_Amount__c ra : [
             SELECT Id, Invoice__c, Invoice__r.Invoice_Number__c, Invoice__r.Name, Amount__c,
                    Mode_of_Payment__c, Reference_Number__c, Cheque_Number__c, Cheque_Date__c,
@@ -107,15 +110,20 @@ public with sharing class ReceiptManageController {
             a.posReceiptNumber = ra.POS_Receipt_Number__c;
             v.allocations.add(a);
             allocated += (ra.Amount__c == null ? 0 : ra.Amount__c);
+            if (ra.Invoice__c != null) allocatedInvoiceIds.add(ra.Invoice__c);
         }
         v.allocatedAmount = allocated;
         v.unappliedAmount = v.receivedAmount - allocated;
 
         v.invoiceOptions = new List<ComboOption>();
         if (r.Unit__c != null) {
+            // Commission invoices are not receiptable. Any already carrying an allocation on this
+            // receipt still appears, so an existing line keeps showing its invoice in the picker.
             for (Invoice__c inv : [
                 SELECT Id, Invoice_Number__c, Name FROM Invoice__c
-                WHERE Unit__c = :r.Unit__c ORDER BY Invoice_Date__c ASC NULLS LAST, Name ASC
+                WHERE Unit__c = :r.Unit__c
+                  AND (Type__c != :TYPE_COMMISSION OR Id IN :allocatedInvoiceIds)
+                ORDER BY Invoice_Date__c ASC NULLS LAST, Name ASC
             ]) {
                 v.invoiceOptions.add(new ComboOption(invoiceLabelFor(inv.Invoice_Number__c, inv.Name), inv.Id));
             }
@@ -155,7 +163,7 @@ public with sharing class ReceiptManageController {
             ];
             Id oldInvoiceId = line.Invoice__c;
             if (oldInvoiceId == newInvoiceId) return;
-            assertSameUnit(line.Receipt__r.Unit__c, newInvoiceId);
+            assertAllocatable(line.Receipt__r.Unit__c, newInvoiceId);
             update new Receipt_Amount__c(Id = lineId, Invoice__c = newInvoiceId);
             syncReceiptInvoice(line.Receipt__c, oldInvoiceId);
             syncReceiptInvoice(line.Receipt__c, newInvoiceId);
@@ -183,7 +191,7 @@ public with sharing class ReceiptManageController {
             ];
             Id oldInvoiceId = line.Invoice__c;
             Boolean invoiceChanged = (input.invoiceId != oldInvoiceId);
-            if (invoiceChanged) assertSameUnit(line.Receipt__r.Unit__c, input.invoiceId);
+            if (invoiceChanged) assertAllocatable(line.Receipt__r.Unit__c, input.invoiceId);
             update toReceiptAmount(input.lineId, input);
             syncReceiptInvoice(line.Receipt__c, oldInvoiceId);
             if (invoiceChanged) syncReceiptInvoice(line.Receipt__c, input.invoiceId);
@@ -203,7 +211,7 @@ public with sharing class ReceiptManageController {
         if (input.amount == null || input.amount <= 0) throw new AuraHandledException('Amount must be greater than zero.');
         try {
             Receipt__c r = [SELECT Id, Unit__c FROM Receipt__c WHERE Id = :receiptId LIMIT 1];
-            assertSameUnit(r.Unit__c, input.invoiceId);
+            assertAllocatable(r.Unit__c, input.invoiceId);
             Receipt_Amount__c ra = toReceiptAmount(null, input);
             ra.Receipt__c = receiptId;
             insert ra;
@@ -286,10 +294,14 @@ public with sharing class ReceiptManageController {
         return String.isNotBlank(num) ? num : name;
     }
 
-    private static void assertSameUnit(Id receiptUnitId, Id invoiceId) {
-        Invoice__c inv = [SELECT Unit__c FROM Invoice__c WHERE Id = :invoiceId LIMIT 1];
+    /** Called wherever a line is newly pointed at an invoice (add / reassign / save-with-change). */
+    private static void assertAllocatable(Id receiptUnitId, Id invoiceId) {
+        Invoice__c inv = [SELECT Unit__c, Type__c FROM Invoice__c WHERE Id = :invoiceId LIMIT 1];
         if (receiptUnitId == null || inv.Unit__c != receiptUnitId) {
             throw new AuraHandledException('The invoice must belong to the same unit as the receipt.');
+        }
+        if (inv.Type__c == TYPE_COMMISSION) {
+            throw new AuraHandledException('Commission invoices cannot be receipted.');
         }
     }
 

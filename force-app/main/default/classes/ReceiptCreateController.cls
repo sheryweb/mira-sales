@@ -18,6 +18,7 @@ public with sharing class ReceiptCreateController {
     private static final String STAGE_NEW = 'New';
     private static final String STAGE_CANCELLED = 'Cancelled';
     private static final String STAGE_TRANSFERRED = 'Transferred';
+    private static final String TYPE_COMMISSION = 'Commission';
     private static final String MODE_CHEQUE = 'Cheque';
     private static final String MODE_POS = 'POS Machine';
     private static final String MSG_NO_BOOKING =
@@ -275,6 +276,7 @@ public with sharing class ReceiptCreateController {
                    Paid_Amount__c, Pending_Amount__c, Status__c
             FROM Invoice__c
             WHERE Unit__c = :unitId AND Pending_Amount__c > 0 AND Status__c != 'Cancelled'
+              AND Type__c != :TYPE_COMMISSION
             ORDER BY Invoice_Date__c ASC NULLS LAST, Name ASC
         ];
     }
