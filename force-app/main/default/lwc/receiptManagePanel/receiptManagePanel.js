@@ -1,8 +1,7 @@
-import { LightningElement, api, track, wire } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { getRecordNotifyChange } from 'lightning/uiRecordApi';
 import LightningConfirm from 'lightning/confirm';
-import isFinanceUiEnabled from '@salesforce/apex/FinancialEngine.isFinanceUiEnabled';
 import getReceipt from '@salesforce/apex/ReceiptManageController.getReceipt';
 import saveAllocation from '@salesforce/apex/ReceiptManageController.saveAllocation';
 import addAllocation from '@salesforce/apex/ReceiptManageController.addAllocation';
@@ -15,12 +14,6 @@ export default class ReceiptManagePanel extends LightningElement {
     @track rows = [];
     @track isLoading = false;
 
-    // Self-hide when the Financial Engine master switch is off (default true to avoid a flash).
-    engineEnabled = true;
-    @wire(isFinanceUiEnabled)
-    wiredEngineFlag({ data }) {
-        if (data !== undefined) this.engineEnabled = data;
-    }
     // Cancel flow: '' (closed) -> 'reason' (enter mandatory reason) -> 'confirm' (final confirmation)
     @track cancelStep = '';
     @track cancellationReason = '';

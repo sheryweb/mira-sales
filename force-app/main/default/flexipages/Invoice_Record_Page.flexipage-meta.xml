@@ -9,7 +9,7 @@
                         <valueListItems>
                             <value>Invoice__c.Add_to_Invoice</value>
                             <visibilityRule>
-                                <booleanFilter>(1 OR 2) AND 3</booleanFilter>
+                                <booleanFilter>1 OR 2</booleanFilter>
                                 <criteria>
                                     <leftValue>{!$User.Profile.Name}</leftValue>
                                     <operator>EQUAL</operator>
@@ -19,11 +19,6 @@
                                     <leftValue>{!$User.Profile.Name}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>Finance</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!Record.Engine_Enabled__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>true</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -634,7 +629,7 @@
                 <componentName>invoiceManagePanel</componentName>
                 <identifier>c_invoiceManagePanel</identifier>
                 <visibilityRule>
-                    <booleanFilter>(1 OR 2) AND 3</booleanFilter>
+                    <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
@@ -644,11 +639,6 @@
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>System Administrator</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.Engine_Enabled__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>true</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
@@ -718,7 +708,7 @@
                 <componentName>invoiceEmailSender</componentName>
                 <identifier>c_invoiceEmailSender</identifier>
                 <visibilityRule>
-                    <booleanFilter>(1 OR 2) AND 3</booleanFilter>
+                    <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
@@ -729,11 +719,6 @@
                         <operator>EQUAL</operator>
                         <rightValue>System Administrator</rightValue>
                     </criteria>
-                    <criteria>
-                        <leftValue>{!Record.Engine_Enabled__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>true</rightValue>
-                    </criteria>
                 </visibilityRule>
             </componentInstance>
         </itemInstances>
@@ -741,13 +726,6 @@
             <componentInstance>
                 <componentName>invoicePDFViewer</componentName>
                 <identifier>c_invoicePDFViewer</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.Engine_Enabled__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>true</rightValue>
-                    </criteria>
-                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <itemInstances>

@@ -1,19 +1,11 @@
-import { LightningElement, api, wire } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getInvoicePDFUrl from '@salesforce/apex/InvoicePDFUtil.getInvoicePDFUrl';
 import getTaxInvoicePDFUrl from '@salesforce/apex/InvoicePDFUtil.getTaxInvoicePDFUrl';
-import isFinanceUiEnabled from '@salesforce/apex/FinancialEngine.isFinanceUiEnabled';
 
 export default class InvoicePDFViewer extends LightningElement {
     @api recordId;
 
-    // Self-hide when the Financial Engine master switch is off (defence-in-depth behind
-    // Lightning page visibility). Default true to avoid a flash in the normal (on) case.
-    engineEnabled = true;
-    @wire(isFinanceUiEnabled)
-    wiredEngineFlag({ data }) {
-        if (data !== undefined) this.engineEnabled = data;
-    }
     pdfUrl;
     isLoading = false;
     

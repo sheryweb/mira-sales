@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <label>Financial Engine UI Access</label>
-    <description>Read access to Engine_Enabled__c (master-switch mirror) so finance-surface Lightning page visibility rules evaluate correctly. Assign to all users who should see invoice/receipt/SOA UI. Without it the UI hides even when the engine is on.</description>
+    <description>Read access to Engine_Enabled__c (master-switch mirror) for admins/reporting. No longer required to see the finance UI: the invoice/receipt/SOA surface always renders and the switch only blocks the actions server-side. Optional to assign.</description>
     <hasActivationRequired>false</hasActivationRequired>
     <fieldPermissions>
         <editable>false</editable>

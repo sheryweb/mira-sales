@@ -2,7 +2,6 @@ import { LightningElement, api, wire, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { getRecord } from 'lightning/uiRecordApi';
 import sendSOAEmail from '@salesforce/apex/SOAEmailService.sendSOAEmail';
-import isFinanceUiEnabled from '@salesforce/apex/FinancialEngine.isFinanceUiEnabled';
 
 // Fields to retrieve
 import ACCOUNT_EMAIL_FIELD from '@salesforce/schema/Opportunity.Account_Email__c';
@@ -13,13 +12,6 @@ export default class SoaEmailSender extends LightningElement {
     @track isLoading = false;
     @track showConfirmDialog = false;
     @track showSuccess = false;
-
-    // Self-hide when the Financial Engine master switch is off (default true to avoid a flash).
-    engineEnabled = true;
-    @wire(isFinanceUiEnabled)
-    wiredEngineFlag({ data }) {
-        if (data !== undefined) this.engineEnabled = data;
-    }
 
     // Wire the record to get the account email
     @wire(getRecord, { recordId: '$recordId', fields: [ACCOUNT_EMAIL_FIELD] })

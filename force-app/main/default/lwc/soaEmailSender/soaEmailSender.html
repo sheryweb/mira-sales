@@ -1,5 +1,4 @@
 <template>
-    <template if:true={engineEnabled}>
     <lightning-card title="Send Statement of Account" icon-name="standard:email">
         <div class="slds-p-around_medium">
             <lightning-button 
@@ -25,7 +24,6 @@
             </div>
         </div>
     </lightning-card>
-    </template>
 
     <!-- Confirmation Dialog -->
     <template if:true={showConfirmDialog}>

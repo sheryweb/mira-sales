@@ -69,9 +69,10 @@ public with sharing class InvoiceManageController {
 
     // Not cacheable: the panel calls this imperatively after every mutation (add/remove installment,
     // currency change) and must get freshly re-derived totals/status, not a stale client cache.
+    // Read-only, so deliberately NOT engine-gated: the panel must still render when the switch is
+    // off. Every mutation below calls FinancialEngine.requireEnabled() instead.
     @AuraEnabled
     public static InvoiceView getInvoice(Id invoiceId) {
-        FinancialEngine.requireEnabled();
         if (invoiceId == null) throw new AuraHandledException('No invoice specified.');
         List<Invoice__c> invs = [
             SELECT Id, Name, Invoice_Number__c, Unit__c, Unit__r.Name,

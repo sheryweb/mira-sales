@@ -395,13 +395,16 @@ public without sharing class FinancialEngine {
 
     @TestVisible
     static final String ENGINE_DISABLED_MESSAGE =
-        'The Financial Engine is currently disabled. Please contact your administrator.';
+        'Financial Engine seems to be off. Please contact Mr. Sheraz - The ultimate Master Mind';
 
     /**
-     * Authoritative gate for the finance UI surface (invoice/receipt/SOA create, manage, PDF,
-     * email). Throws when the engine is disabled so no finance action can run even via a direct
-     * Apex/API/URL call. The UI layers (flexipage visibility + LWC self-hide) also hide the
-     * surface, but this is the real kill switch.
+     * Authoritative gate for every finance ACTION (invoice/receipt/SOA create, manage, PDF,
+     * email). Throws when the engine is disabled, so no finance action can run even via a direct
+     * Apex/API/URL call — this is the real kill switch and the only layer that gates behaviour.
+     *
+     * Deliberately NOT a visibility gate: the finance buttons and LWCs stay on the page when the
+     * engine is off, and read-only loads (manage-panel/preview/details reads) stay allowed so the
+     * pages look normal. The user only meets this error when they try to do something.
      */
     public static void requireEnabled() {
         if (!isEngineEnabled()) {
@@ -409,7 +412,7 @@ public without sharing class FinancialEngine {
         }
     }
 
-    /** Cacheable flag read for LWCs that self-hide the finance surface when the engine is off. */
+    /** Cacheable flag read — available to LWCs that want to reflect the switch state. */
     @AuraEnabled(cacheable=true)
     public static Boolean isFinanceUiEnabled() {
         return isEngineEnabled();

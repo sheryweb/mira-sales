@@ -62,9 +62,10 @@ public with sharing class ReceiptManageController {
 
     // Not cacheable: the panel calls this imperatively after every mutation (save/add/remove/reassign
     // allocation) and must get freshly re-derived amounts/status, not a stale client cache.
+    // Read-only, so deliberately NOT engine-gated: the panel must still render when the switch is
+    // off. Every mutation below calls FinancialEngine.requireEnabled() instead.
     @AuraEnabled
     public static ReceiptView getReceipt(Id receiptId) {
-        FinancialEngine.requireEnabled();
         if (receiptId == null) throw new AuraHandledException('No receipt specified.');
         List<Receipt__c> recs = [
             SELECT Id, Name, Status__c, Payment_Status__c, Received_Amount__c, Unit__c,

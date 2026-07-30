@@ -2,7 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Engine_Enabled__c</fullName>
     <label>Engine Enabled</label>
-    <description>Formula mirror of Financial_Engine_Settings__c.Engine_Owns_Totals__c (the master switch). Used by Lightning page component/action visibility to hide the finance surface when the engine is off. Read-only; do not edit.</description>
+    <description>Formula mirror of Financial_Engine_Settings__c.Engine_Owns_Totals__c (the master switch). Informational only: lets admins see/report on the master-switch state per record. The switch no longer drives page visibility - the finance surface always renders and FinancialEngine.requireEnabled() blocks the actions instead. Read-only; do not edit.</description>
     <formula>$Setup.Financial_Engine_Settings__c.Engine_Owns_Totals__c</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <externalId>false</externalId>

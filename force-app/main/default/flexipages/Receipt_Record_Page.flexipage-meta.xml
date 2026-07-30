@@ -397,7 +397,7 @@
                 <componentName>receiptManagePanel</componentName>
                 <identifier>c_receiptManagePanel</identifier>
                 <visibilityRule>
-                    <booleanFilter>(1 OR 2) AND 3</booleanFilter>
+                    <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
@@ -407,11 +407,6 @@
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>System Administrator</rightValue>
-                    </criteria>
-                    <criteria>
-                        <leftValue>{!Record.Engine_Enabled__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>true</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
@@ -547,7 +542,7 @@
                 <componentName>receiptEmailSender</componentName>
                 <identifier>c_receiptEmailSender</identifier>
                 <visibilityRule>
-                    <booleanFilter>(1 OR 2) AND 3</booleanFilter>
+                    <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
                         <leftValue>{!$User.Profile.Name}</leftValue>
                         <operator>EQUAL</operator>
@@ -558,11 +553,6 @@
                         <operator>EQUAL</operator>
                         <rightValue>System Administrator</rightValue>
                     </criteria>
-                    <criteria>
-                        <leftValue>{!Record.Engine_Enabled__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>true</rightValue>
-                    </criteria>
                 </visibilityRule>
             </componentInstance>
         </itemInstances>
@@ -570,13 +560,6 @@
             <componentInstance>
                 <componentName>receiptPDFViewer</componentName>
                 <identifier>c_receiptPDFViewer</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.Engine_Enabled__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>true</rightValue>
-                    </criteria>
-                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <itemInstances>

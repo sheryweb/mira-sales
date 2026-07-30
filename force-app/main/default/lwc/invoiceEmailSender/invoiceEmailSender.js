@@ -2,7 +2,6 @@ import { LightningElement, api, wire, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { getRecord } from 'lightning/uiRecordApi';
 import sendInvoiceEmail from '@salesforce/apex/InvoiceEmailService.sendInvoiceEmail';
-import isFinanceUiEnabled from '@salesforce/apex/FinancialEngine.isFinanceUiEnabled';
 
 // Fields to retrieve
 import ACCOUNT_PERSONEMAIL_FIELD from '@salesforce/schema/Invoice__c.Account__r.PersonEmail';
@@ -14,13 +13,6 @@ export default class InvoiceEmailSender extends LightningElement {
     @track isLoading = false;
     @track showConfirmDialog = false;
     @track showSuccess = false;
-
-    // Self-hide when the Financial Engine master switch is off (default true to avoid a flash).
-    engineEnabled = true;
-    @wire(isFinanceUiEnabled)
-    wiredEngineFlag({ data }) {
-        if (data !== undefined) this.engineEnabled = data;
-    }
 
     // Wire the record to get the account email
     @wire(getRecord, { recordId: '$recordId', fields: [ACCOUNT_PERSONEMAIL_FIELD, ACCOUNT_COMPANY_EMAIL_FIELD] })

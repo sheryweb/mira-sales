@@ -1,7 +1,8 @@
 public with sharing class InvoicePreviewController {
     @AuraEnabled
+    // Read-only: intentionally not gated by the engine switch, so the page renders normally
+    // when the engine is off. Only actions are gated (FinancialEngine.requireEnabled).
     public static Financial_Detail__c getFinancialDetail(String financialDetailId) {
-        FinancialEngine.requireEnabled();
         try {
             if (String.isBlank(financialDetailId)) {
                 return null;

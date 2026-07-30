@@ -1,7 +1,8 @@
 public without sharing class InvoiceDetailsController {
     @AuraEnabled(cacheable=true)
+    // Read-only: intentionally not gated by the engine switch, so the page renders normally
+    // when the engine is off. Only actions are gated (FinancialEngine.requireEnabled).
     public static List<Invoice__c> getInvoiceDetails(List<String> invoiceIds) {
-        FinancialEngine.requireEnabled();
         try {
             System.debug('Received invoice IDs: ' + invoiceIds);
             
