@@ -1,4 +1,9 @@
 trigger UnitTrigger on Unit__c (before insert, after insert, before update, after update) {
+    if (Trigger.isBefore && Trigger.isUpdate) {
+        // Sale cancelled (Sold -> Blocked/other): reset commission tracking so the
+        // unit goes through the commission eligibility process again from scratch.
+        UnitCommissionResetHandler.clearCommissionStatusOnSaleCancellation(Trigger.new, Trigger.oldMap);
+    }
     if (Trigger.isAfter && Trigger.isUpdate) {
           // List to hold the records that need sharing logic
           /*List<Unit__c> unitsToProcess = new List<Unit__c>();

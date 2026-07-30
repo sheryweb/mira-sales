@@ -14,6 +14,16 @@ public with sharing class CommissionInvoiceController {
         if (objType == 'Commission__c') {
             commissionId = recordId;
         } else if (objType == 'Unit__c') {
+            // A blank Commission_Status__c means the unit is at the start of the
+            // eligibility process (e.g. its sale was cancelled and tracking was reset),
+            // so commissions from a previous sale cycle are not surfaced on the card.
+            List<Unit__c> units = [
+                SELECT Commission_Status__c FROM Unit__c WHERE Id = :recordId LIMIT 1
+            ];
+            if (units.isEmpty() || String.isBlank(units[0].Commission_Status__c)) {
+                ctx.ineligibilityReasons = computeIneligibilityReasonsForUnit(recordId);
+                return ctx;
+            }
             List<Commission__c> matches = [
                 SELECT Id FROM Commission__c
                 WHERE Unit__c = :recordId

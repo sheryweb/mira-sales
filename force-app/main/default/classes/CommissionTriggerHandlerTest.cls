@@ -30,6 +30,7 @@ private class CommissionTriggerHandlerTest {
         Account agency = new Account(
             Name = 'CommTest Agency ' + String.valueOf(Crypto.getRandomLong()),
             Company_Email__c = 'commtest_' + String.valueOf(Crypto.getRandomLong()) + '@example.com',
+            Status__c = 'Completed',
             Skip_Trigger__c = true
         );
         Id rtId = getAccountRecordTypeId();
@@ -59,12 +60,22 @@ private class CommissionTriggerHandlerTest {
         insert unit;
         refs.unitId = unit.Id;
 
+        // Org validation: an Opportunity with an Agency must also flag Assisted by
+        // Agent and reference an Agent contact.
+        Contact agent = new Contact(
+            LastName = 'CommTest Agent ' + String.valueOf(Crypto.getRandomLong()),
+            AccountId = refs.agencyId
+        );
+        insert agent;
+
         Opportunity opp = new Opportunity(
             Name = 'CommTest Unit Opp ' + String.valueOf(Crypto.getRandomLong()),
             StageName = 'New',
             CloseDate = Date.today().addDays(30),
             AccountId = refs.agencyId,
             Agency__c = refs.agencyId,
+            Assisted_by_Agent__c = true,
+            Agent__c = agent.Id,
             Unit__c = unit.Id,
             Amount = 1000000
         );

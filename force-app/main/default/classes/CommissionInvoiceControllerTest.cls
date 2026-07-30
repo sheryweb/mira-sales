@@ -334,6 +334,27 @@ private class CommissionInvoiceControllerTest {
     }
 
     @isTest
+    static void testGetContextForUnitHidesCommissionAfterSaleCancellationReset() {
+        TestRefs refs = createTestDataWithUnit();
+        // Sale cancellation clears the unit's commission tracking (see
+        // UnitCommissionResetHandler) but leaves the commission record untouched.
+        update new Unit__c(Id = refs.unitId, Commission_Status__c = null);
+
+        CommissionInvoiceController.CommissionContext ctx =
+            CommissionInvoiceController.getCommissionContext(refs.unitId);
+
+        System.assertEquals(null, ctx.commissionId,
+            'Commission from the previous sale cycle must not be surfaced on the unit card');
+        System.assertNotEquals(null, ctx.ineligibilityReasons,
+            'Card should fall back to the eligibility checklist');
+        System.assert(!ctx.ineligibilityReasons.isEmpty());
+
+        Commission__c saved = [SELECT Status__c FROM Commission__c WHERE Id = :refs.commissionId];
+        System.assertEquals('Eligible', saved.Status__c,
+            'The commission record keeps its status; only the card visibility changes');
+    }
+
+    @isTest
     static void testGetContextForUnitNoCommission_PaidStatus() {
         Account agency = insertAgencyForUnitTests();
         Unit__c unit = new Unit__c(
