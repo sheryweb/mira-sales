@@ -1,7 +1,3 @@
-.totals p {
-    line-height: 1.4;
-}
-
 /* Blocked state — a deliberate, readable panel instead of a bare line of red text. */
 .block-panel {
     max-width: 26rem;

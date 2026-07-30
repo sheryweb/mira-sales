@@ -7,13 +7,21 @@
         </template>
 
         <template if:false={isLoading}>
-            <template if:true={error}>
+            <!-- Step-level validation errors. Suppressed while blocked, since the panel below
+                 already states the reason and would otherwise show it twice. -->
+            <template if:true={showInlineError}>
                 <div class="slds-text-color_error slds-p-around_x-small slds-m-bottom_small">{error}</div>
             </template>
 
             <!-- Blocked -->
             <template if:true={isBlocked}>
-                <div class="slds-text-color_error slds-p-around_small">{blockReason}</div>
+                <div class="block-panel slds-text-align_center">
+                    <span class="block-badge">
+                        <lightning-icon icon-name="utility:warning" variant="error" size="small"></lightning-icon>
+                    </span>
+                    <h2 class="block-title">We can't continue just yet</h2>
+                    <p class="block-message">{blockReason}</p>
+                </div>
             </template>
 
             <!-- Step 1: payment lines -->

@@ -135,6 +135,8 @@ export default class ReceiptCreateModal extends LightningElement {
     get unitIdForSave() { return (this.ctx && this.ctx.unitId) ? this.ctx.unitId : this._recordId; }
 
     get isBlocked() { return this.step === 'blocked'; }
+    // While blocked, blockReason already renders this.error - don't print it twice.
+    get showInlineError() { return !!this.error && !this.isBlocked; }
     get isLines() { return this.step === 'lines'; }
     get isDetails() { return this.step === 'details'; }
     get isPreview() { return this.step === 'preview'; }

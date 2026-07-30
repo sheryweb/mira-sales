@@ -124,6 +124,8 @@ export default class InvoiceCreateModal extends LightningElement {
     }
 
     get isBlocked() { return this.step === 'blocked'; }
+    // While blocked, blockReason already renders this.error - don't print it twice.
+    get showInlineError() { return !!this.error && !this.isBlocked; }
     get isSelect() { return this.step === 'select'; }
     get isDetails() { return this.step === 'details'; }
     get isPreview() { return this.step === 'preview'; }
