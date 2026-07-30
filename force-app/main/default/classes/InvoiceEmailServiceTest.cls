@@ -45,7 +45,11 @@ public class InvoiceEmailServiceTest {
             Financial_Detail__c = testFinancialDetail.Id
         );
         insert testInvoice;
-        
+        // InvoiceTrigger assigns Invoice_Number__c on before-insert and blanks it when the unit's
+        // project has no Project_Numbering_Setting__mdt entry (as here). Re-stamp the number the
+        // tests below look up — numbering does not run on update.
+        update new Invoice__c(Id = testInvoice.Id, Invoice_Number__c = 'INV-001');
+
         // Create test Milestone Invoice
         Milestone_Invoice__c testMilestone = new Milestone_Invoice__c(
             Name = 'Test Milestone',

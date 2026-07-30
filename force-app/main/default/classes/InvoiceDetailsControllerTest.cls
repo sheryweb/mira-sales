@@ -12,6 +12,10 @@ private class InvoiceDetailsControllerTest {
             Property_Code_Text__c = 'TEST-001'
         );
         insert unit;
+        // The Update_Project_Detail_on_New_Unit flow (after-save, Create only) rewrites
+        // Project_Name_Text__c from the Project lookup, which is empty here. Re-stamp it so the
+        // assertions below do not depend on that flow being present.
+        update new Unit__c(Id = unit.Id, Project_Name_Text__c = 'Test Project');
 
         Account testAccount = new Account(
             Name = 'Test Account'
@@ -33,6 +37,16 @@ private class InvoiceDetailsControllerTest {
             ));
         }
         insert testInvoices;
+
+        // InvoiceTrigger assigns Invoice_Number__c on before-insert and blanks it when the unit's
+        // project has no Project_Numbering_Setting__mdt entry (as here). Re-stamp the numbers the
+        // assertions rely on — numbering does not run on update.
+        List<Invoice__c> renumber = new List<Invoice__c>();
+        Integer i = 0;
+        for (Invoice__c inv : [SELECT Id FROM Invoice__c ORDER BY CreatedDate ASC]) {
+            renumber.add(new Invoice__c(Id = inv.Id, Invoice_Number__c = 'INV-00' + (++i)));
+        }
+        update renumber;
     }
 
     @IsTest
