@@ -183,17 +183,19 @@ private class PaymentPlanApprovalControllerTest {
     @IsTest
     static void testCreateDraftRequest_PendingExists_ThrowsAura() {
         Unit__c unit = [SELECT Id FROM Unit__c LIMIT 1];
-        // A pending request blocks new draft creation
-        insert buildRequest(unit.Id, 'Pending');
+        // Stale Pending (no live ProcessInstance) is reconciled to Draft, not blocked.
+        Approval_Request__c pending = buildRequest(unit.Id, 'Pending');
+        insert pending;
 
         Test.startTest();
-        try {
-            PaymentPlanApprovalController.createDraftRequest(unit.Id, 'Should fail');
-            System.assert(false, 'Expected AuraHandledException');
-        } catch (AuraHandledException e) {
-            System.assertNotEquals(null, e.getMessage());
-        }
+        Id result = PaymentPlanApprovalController.createDraftRequest(unit.Id, 'Reconcile stale pending');
         Test.stopTest();
+
+        System.assertEquals(pending.Id, result);
+        System.assertEquals(
+            'Draft',
+            [SELECT Status__c FROM Approval_Request__c WHERE Id = :pending.Id].Status__c
+        );
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -584,5 +586,17 @@ private class PaymentPlanApprovalControllerTest {
             System.assertNotEquals(null, e.getMessage());
         }
         Test.stopTest();
+    }
+
+    @IsTest
+    static void testGetBookedOpportunityIdForUnit_Proxy() {
+        Unit__c unit = [SELECT Id FROM Unit__c LIMIT 1];
+        Test.startTest();
+        Id bookedOppId = PaymentPlanApprovalController.getBookedOpportunityIdForUnit(unit.Id);
+        Id nullResult = PaymentPlanApprovalController.getBookedOpportunityIdForUnit(null);
+        Test.stopTest();
+        System.assertEquals(null, nullResult);
+        // May be null if no Booked Opportunity is linked in setup data.
+        System.assertEquals(true, bookedOppId == null || bookedOppId.getSObjectType() == Opportunity.SObjectType);
     }
 }

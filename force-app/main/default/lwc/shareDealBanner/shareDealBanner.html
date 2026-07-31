@@ -1,0 +1,19 @@
+<template>
+    <template if:true={showBanner}>
+        <div class={bannerClass} role="status">
+            <lightning-icon
+                icon-name={iconName}
+                size="small"
+                alternative-text="Share Deal"
+                class="slds-m-right_small banner-icon">
+            </lightning-icon>
+            <div class="banner-text">
+                <div class="banner-title">{titleText}</div>
+                <div class="banner-detail">{detailText}</div>
+            </div>
+            <template if:true={isApprovedShare}>
+                <span class="share-pill">50 / 50</span>
+            </template>
+        </div>
+    </template>
+</template>

@@ -1,0 +1,21 @@
+.pending-status-box {
+    display: flex;
+    align-items: center;
+    background: #fff3cd;
+    border-left: 4px solid #e2a60e;
+    border-radius: 4px;
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.approved-status-box {
+    display: flex;
+    align-items: center;
+    background: #e8f5e9;
+    border-left: 4px solid #2e844a;
+    border-radius: 4px;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    gap: 4px;
+}

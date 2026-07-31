@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Share_Deal_Fields_Approval_Only</fullName>
+    <active>true</active>
+    <description>Share Deal and Shared RM may only change with a Share Deal Status update (approval apply) or by System Administrator.</description>
+    <errorConditionFormula>AND(
+  OR(ISCHANGED(Share_Deal__c), ISCHANGED(Shared_RM__c)),
+  NOT($Profile.Name = &quot;System Administrator&quot;),
+  NOT(
+    AND(
+      ISCHANGED(Share_Deal_Status__c),
+      OR(
+        ISPICKVAL(Share_Deal_Status__c, &quot;Approved&quot;),
+        ISPICKVAL(Share_Deal_Status__c, &quot;Pending&quot;),
+        ISPICKVAL(Share_Deal_Status__c, &quot;Rejected&quot;),
+        ISPICKVAL(Share_Deal_Status__c, &quot;None&quot;)
+      )
+    )
+  )
+)</errorConditionFormula>
+    <errorMessage>Share Deal and Shared RM can only be set through the Share Deal approval process (or by a System Administrator).</errorMessage>
+</ValidationRule>

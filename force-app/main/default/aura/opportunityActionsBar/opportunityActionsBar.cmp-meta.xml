@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <AuraDefinitionBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Action bar on Opportunity record pages for unit approval requests (Payment Plan Change, Unit Price Change). Resolves the linked unit from Opportunity.Unit__c.</description>
+    <description>Action bar on Opportunity record pages for Payment Plan Change, Unit Price Change, and Share Deal approval requests.</description>
 </AuraDefinitionBundle>

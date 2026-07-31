@@ -92,6 +92,12 @@ public class ApprovalRequestTriggerHandler {
                 && oldReq.Unit__c != null) {
                 req.addError('Unit cannot be changed once set on a unit price approval request.');
             }
+
+            if (req.Request_Type__c == ShareDealApprovalService.REQUEST_TYPE_SHARE_DEAL
+                && req.Opportunity__c != oldReq.Opportunity__c
+                && oldReq.Opportunity__c != null) {
+                req.addError('Opportunity cannot be changed once set on a Share Deal approval request.');
+            }
         }
     }
 
@@ -137,6 +143,11 @@ public class ApprovalRequestTriggerHandler {
             if (req.Status__c == 'Pending' || req.Status__c == 'Approved' || req.Status__c == 'Rejected') {
                 notifyIds.add(req.Id);
             }
+            if (req.Status__c == 'Rejected'
+                && req.Request_Type__c == ShareDealApprovalService.REQUEST_TYPE_SHARE_DEAL) {
+                ShareDealApprovalService.handleRejected(req.Id);
+                continue;
+            }
             if (req.Status__c != 'Approved') {
                 continue;
             }
@@ -144,6 +155,8 @@ public class ApprovalRequestTriggerHandler {
                 PaymentPlanApprovalService.applyApprovedChanges(req.Id);
             } else if (req.Request_Type__c == UnitPriceApprovalService.REQUEST_TYPE_UNIT_PRICE) {
                 UnitPriceApprovalService.applyApprovedChanges(req.Id);
+            } else if (req.Request_Type__c == ShareDealApprovalService.REQUEST_TYPE_SHARE_DEAL) {
+                ShareDealApprovalService.applyApprovedChanges(req.Id);
             }
         }
         if (!notifyIds.isEmpty()) {

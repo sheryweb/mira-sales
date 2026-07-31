@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Share_Deal__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>True when this Opportunity is an approved share deal between two RMs (50/50 credit).</description>
+    <inlineHelpText>Checked when this deal is shared 50/50 between the Opportunity Owner and the Shared RM. Set via Share Deal approval.</inlineHelpText>
+    <label>Share Deal</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Checkbox</type>
+</CustomField>

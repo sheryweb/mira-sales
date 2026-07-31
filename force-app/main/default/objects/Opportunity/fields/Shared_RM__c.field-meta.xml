@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Shared_RM__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Second Relationship Manager on an approved share deal. Opportunity Owner remains the primary RM.</description>
+    <inlineHelpText>The second RM sharing this deal 50/50. Must differ from the Opportunity Owner. Set via Share Deal approval.</inlineHelpText>
+    <label>Shared RM</label>
+    <lookupFilter>
+        <active>true</active>
+        <filterItems>
+            <field>User.Profile.Name</field>
+            <operation>equals</operation>
+            <value>Sales Manager MIRA</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>User</referenceTo>
+    <relationshipLabel>Shared Opportunities</relationshipLabel>
+    <relationshipName>Shared_Opportunities</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Lookup</type>
+</CustomField>

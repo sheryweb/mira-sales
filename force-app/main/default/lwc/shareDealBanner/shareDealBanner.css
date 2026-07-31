@@ -1,0 +1,56 @@
+.share-banner {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 0 0 8px;
+    box-sizing: border-box;
+    gap: 4px;
+}
+
+.share-banner_approved {
+    background: #e8f5e9;
+    border: 1px solid #2e844a;
+    border-left: 5px solid #2e844a;
+}
+
+.share-banner_pending {
+    background: #fff3cd;
+    border: 1px solid #e2a60e;
+    border-left: 5px solid #e2a60e;
+}
+
+.banner-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.banner-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #181818;
+}
+
+.banner-detail {
+    font-size: 0.8rem;
+    color: #3e3e3c;
+    margin-top: 2px;
+}
+
+.share-pill {
+    flex-shrink: 0;
+    background: #2e844a;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+.banner-icon {
+    flex-shrink: 0;
+}

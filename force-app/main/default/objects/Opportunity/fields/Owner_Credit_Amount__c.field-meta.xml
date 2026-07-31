@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Owner_Credit_Amount__c</fullName>
+    <description>Attributed unit price for the Opportunity Owner: 50% on share deals, 100% on single deals.</description>
+    <externalId>false</externalId>
+    <formula>IF(Share_Deal__c, Unit_Price__c * 0.5, Unit_Price__c)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Owner Credit Amount</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

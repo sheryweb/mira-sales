@@ -303,6 +303,22 @@ public with sharing class UnitPriceApprovalService {
 
         UnitPriceComparisonReader.applyUnitPriceToUnit(unit);
         UnitPriceComparisonReader.markRequestApplied(approvalRequestId);
+        rebuildRmDealCreditsForUnit(request.Unit__c);
+    }
+
+    private static void rebuildRmDealCreditsForUnit(Id unitId) {
+        if (unitId == null) {
+            return;
+        }
+        Set<Id> opportunityIds = new Set<Id>();
+        for (Opportunity opp : [
+            SELECT Id
+            FROM Opportunity
+            WHERE Unit__c = :unitId
+        ]) {
+            opportunityIds.add(opp.Id);
+        }
+        RMDealCreditService.rebuildForOpportunityIds(opportunityIds);
     }
 
     private static void populateHeaderFields(

@@ -3,13 +3,16 @@
         var opp = component.get('v.opportunityRecord');
         var unitId = opp && opp.Unit__c ? opp.Unit__c : null;
         var status = opp && opp.Unit__r ? opp.Unit__r.Status__c : null;
+        var stageName = opp ? opp.StageName : null;
         var canPaymentPlan = component.get('v.canRequestPaymentPlanChange') === true;
-        var isBooked = status === 'Booked';
+        var isUnitBooked = status === 'Booked';
+        var isOppBooked = stageName === 'Booked';
 
         component.set('v.unitId', unitId);
-        component.set('v.showPaymentPlanChange', unitId && isBooked && canPaymentPlan);
-        component.set('v.showUnitPriceChange', unitId && isBooked);
-        component.set('v.showBar', unitId && isBooked);
+        component.set('v.showPaymentPlanChange', unitId && isUnitBooked && canPaymentPlan);
+        component.set('v.showUnitPriceChange', unitId && isUnitBooked);
+        component.set('v.showShareDeal', isOppBooked);
+        component.set('v.showBar', (unitId && isUnitBooked) || isOppBooked);
     },
 
     loadPaymentPlanAccess: function(component) {

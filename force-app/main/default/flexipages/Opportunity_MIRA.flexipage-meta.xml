@@ -545,6 +545,12 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
+                <componentName>shareDealBanner</componentName>
+                <identifier>c_shareDealBanner</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
                 <componentName>opportunityActionsBar</componentName>
                 <identifier>c_opportunityActionsBar</identifier>
                 <visibilityRule>
@@ -669,6 +675,46 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.OwnerId</fieldItem>
                 <identifier>RecordOwnerIdField2</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Share_Deal__c</fieldItem>
+                <identifier>RecordShare_Deal_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Shared_RM__c</fieldItem>
+                <identifier>RecordShared_RM_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Share_Deal_Status__c</fieldItem>
+                <identifier>RecordShare_Deal_Status_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Deal_Type__c</fieldItem>
+                <identifier>RecordDeal_Type_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-4f50cd77-a859-4ca6-bdbc-a58453ce2f6a</name>

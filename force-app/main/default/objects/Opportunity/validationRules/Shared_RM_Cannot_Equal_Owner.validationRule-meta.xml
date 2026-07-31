@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Shared_RM_Cannot_Equal_Owner</fullName>
+    <active>true</active>
+    <description>Shared RM must be a different user from the Opportunity Owner.</description>
+    <errorConditionFormula>AND(
+  NOT(ISBLANK(Shared_RM__c)),
+  Shared_RM__c = OwnerId
+)</errorConditionFormula>
+    <errorDisplayField>Shared_RM__c</errorDisplayField>
+    <errorMessage>Shared RM cannot be the same as the Opportunity Owner.</errorMessage>
+</ValidationRule>

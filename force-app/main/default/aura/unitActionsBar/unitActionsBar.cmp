@@ -1,8 +1,14 @@
-<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global" controller="PaymentPlanApprovalController">
     <aura:attribute name="recordId" type="String"/>
     <aura:attribute name="unitRecord" type="Object"/>
+    <aura:attribute name="opportunityId" type="String"/>
     <aura:attribute name="showGenerateSalesOffer" type="Boolean" default="false"/>
     <aura:attribute name="showBookThisUnit" type="Boolean" default="false"/>
+    <aura:attribute name="showPaymentPlanChange" type="Boolean" default="false"/>
+    <aura:attribute name="showUnitPriceChange" type="Boolean" default="false"/>
+    <aura:attribute name="showShareDeal" type="Boolean" default="false"/>
+    <aura:attribute name="canRequestPaymentPlanChange" type="Boolean" default="false"/>
+    <aura:attribute name="showBar" type="Boolean" default="false"/>
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
 
@@ -13,19 +19,44 @@
         recordUpdated="{!c.onRecordUpdated}"
         mode="VIEW"/>
 
-    <div style="display:flex; flex-direction:row; align-items:center; justify-content:flex-end; background:#ffffff; border:1px solid #dddbda; border-radius:8px; padding:6px 12px; box-shadow:0 2px 6px rgba(0,0,0,0.1); width:100%; gap:4px;">
+    <aura:if isTrue="{!v.showBar}">
+        <div style="display:flex; flex-direction:row; align-items:center; justify-content:flex-end; background:#ffffff; border:1px solid #dddbda; border-radius:8px; padding:6px 12px; box-shadow:0 2px 6px rgba(0,0,0,0.1); width:100%; gap:4px;">
 
-        <aura:if isTrue="{!v.showBookThisUnit}">
-            <div style="display:flex; align-items:center;"><c:bookThisUnit recordId="{!v.recordId}"/></div>
-        </aura:if>
+            <aura:if isTrue="{!v.showBookThisUnit}">
+                <div style="display:flex; align-items:center;"><c:bookThisUnit recordId="{!v.recordId}"/></div>
+            </aura:if>
 
-        <aura:if isTrue="{!and(v.showBookThisUnit, v.showGenerateSalesOffer)}">
-            <div style="width:1px; height:22px; background:#dddbda; flex-shrink:0;"></div>
-        </aura:if>
+            <aura:if isTrue="{!and(v.showBookThisUnit, v.showGenerateSalesOffer)}">
+                <div style="width:1px; height:22px; background:#dddbda; flex-shrink:0;"></div>
+            </aura:if>
 
-        <aura:if isTrue="{!v.showGenerateSalesOffer}">
-            <div style="display:flex; align-items:center;"><c:generateSalesOfferPDFWrapper recordId="{!v.recordId}"/></div>
-        </aura:if>
+            <aura:if isTrue="{!v.showGenerateSalesOffer}">
+                <div style="display:flex; align-items:center;"><c:generateSalesOfferPDFWrapper recordId="{!v.recordId}"/></div>
+            </aura:if>
 
-    </div>
+            <aura:if isTrue="{!and(or(v.showBookThisUnit, v.showGenerateSalesOffer), or(v.showPaymentPlanChange, or(v.showUnitPriceChange, v.showShareDeal)))}">
+                <div style="width:1px; height:22px; background:#dddbda; flex-shrink:0;"></div>
+            </aura:if>
+
+            <aura:if isTrue="{!v.showPaymentPlanChange}">
+                <div style="display:flex; align-items:center;"><c:paymentPlanApprovalEditor recordId="{!v.recordId}"/></div>
+            </aura:if>
+
+            <aura:if isTrue="{!and(v.showPaymentPlanChange, v.showUnitPriceChange)}">
+                <div style="width:1px; height:22px; background:#dddbda; flex-shrink:0;"></div>
+            </aura:if>
+
+            <aura:if isTrue="{!v.showUnitPriceChange}">
+                <div style="display:flex; align-items:center;"><c:unitPriceChangeApproval recordId="{!v.recordId}"/></div>
+            </aura:if>
+
+            <aura:if isTrue="{!v.showShareDeal}">
+                <aura:if isTrue="{!or(v.showPaymentPlanChange, v.showUnitPriceChange)}">
+                    <div style="width:1px; height:22px; background:#dddbda; flex-shrink:0;"></div>
+                </aura:if>
+                <div style="display:flex; align-items:center;"><c:shareDealApproval recordId="{!v.opportunityId}"/></div>
+            </aura:if>
+
+        </div>
+    </aura:if>
 </aura:component>

@@ -3,7 +3,7 @@
     <apiVersion>62.0</apiVersion>
     <isExposed>true</isExposed>
     <masterLabel>Opportunity Approval History</masterLabel>
-    <description>Admin-only timeline of Unit Price Change and Payment Plan Change approval requests for the opportunity's unit.</description>
+    <description>Admin-only timeline of Unit Price Change, Payment Plan Change, and Share Deal approval requests for the Opportunity.</description>
     <targets>
         <target>lightning__RecordPage</target>
     </targets>

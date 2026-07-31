@@ -1,5 +1,5 @@
 /**
- * Read-only history of Unit Price Change and Payment Plan Change approval requests
+ * Read-only history of Unit Price Change, Payment Plan Change, and Share Deal approval requests
  * for a given Opportunity, for display on the Opportunity record page.
  *
  * The approval requests are anchored to the Opportunity's Unit (via Parent_Record_Id__c),
@@ -25,7 +25,8 @@ public without sharing class OpportunityApprovalHistoryController {
 
     private static final Set<String> TRACKED_TYPES = new Set<String>{
         'Unit Price Change',
-        'Payment Plan Change'
+        'Payment Plan Change',
+        'Share Deal'
     };
 
     @AuraEnabled(cacheable=true)
@@ -39,28 +40,46 @@ public without sharing class OpportunityApprovalHistoryController {
             return new List<RequestHistory>();
         }
 
-        // 1. Resolve the Opportunity's Unit.
+        // 1. Resolve the Opportunity's Unit (Unit Price / Payment Plan are unit-anchored).
         List<Opportunity> opps = [
             SELECT Id, Unit__c
             FROM Opportunity
             WHERE Id = :opportunityId
             LIMIT 1
         ];
-        if (opps.isEmpty() || opps[0].Unit__c == null) {
+        if (opps.isEmpty()) {
             return new List<RequestHistory>();
         }
-        String unitId = String.valueOf(opps[0].Unit__c);
+        String unitId = opps[0].Unit__c == null ? null : String.valueOf(opps[0].Unit__c);
+        String opportunityIdValue = String.valueOf(opportunityId);
 
-        // 2. Approval requests of the tracked types anchored to that Unit.
-        List<Approval_Request__c> requests = [
+        // 2. Approval requests: unit-anchored types + Share Deal (Opportunity-anchored).
+        Map<Id, Approval_Request__c> requestsById = new Map<Id, Approval_Request__c>();
+        if (String.isNotBlank(unitId)) {
+            for (Approval_Request__c req : [
+                SELECT Id, Name, Request_Type__c, Status__c, Current_Value__c,
+                       Requested_Value__c, Field_To_Update__c, Justification__c,
+                       Requester__r.Name, CreatedDate
+                FROM Approval_Request__c
+                WHERE Parent_Record_Id__c = :unitId
+                  AND Request_Type__c IN ('Unit Price Change', 'Payment Plan Change')
+                ORDER BY CreatedDate DESC
+            ]) {
+                requestsById.put(req.Id, req);
+            }
+        }
+        for (Approval_Request__c req : [
             SELECT Id, Name, Request_Type__c, Status__c, Current_Value__c,
                    Requested_Value__c, Field_To_Update__c, Justification__c,
                    Requester__r.Name, CreatedDate
             FROM Approval_Request__c
-            WHERE Parent_Record_Id__c = :unitId
-              AND Request_Type__c IN :TRACKED_TYPES
+            WHERE Request_Type__c = 'Share Deal'
+              AND (Opportunity__c = :opportunityId OR Parent_Record_Id__c = :opportunityIdValue)
             ORDER BY CreatedDate DESC
-        ];
+        ]) {
+            requestsById.put(req.Id, req);
+        }
+        List<Approval_Request__c> requests = requestsById.values();
         if (requests.isEmpty()) {
             return new List<RequestHistory>();
         }

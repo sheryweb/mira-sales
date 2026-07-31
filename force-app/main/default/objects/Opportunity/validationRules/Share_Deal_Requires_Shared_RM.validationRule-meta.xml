@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Share_Deal_Requires_Shared_RM</fullName>
+    <active>true</active>
+    <description>An approved share deal must have a Shared RM populated.</description>
+    <errorConditionFormula>AND(
+  Share_Deal__c = TRUE,
+  ISBLANK(Shared_RM__c)
+)</errorConditionFormula>
+    <errorDisplayField>Shared_RM__c</errorDisplayField>
+    <errorMessage>Share Deal requires a Shared RM.</errorMessage>
+</ValidationRule>

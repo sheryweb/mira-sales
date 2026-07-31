@@ -4,6 +4,12 @@ public with sharing class PaymentPlanApprovalController {
         return PaymentPlanApprovalService.canUserRequestPaymentPlanChange();
     }
 
+    /** Proxy for unitActionsBar — resolves Booked Opportunity for Share Deal on Unit pages. */
+    @AuraEnabled(cacheable=true)
+    public static Id getBookedOpportunityIdForUnit(Id unitId) {
+        return ShareDealApprovalController.getBookedOpportunityIdForUnit(unitId);
+    }
+
     @AuraEnabled(cacheable=true)
     public static PaymentPlanApprovalService.PaymentPlanLinesResultDTO getUnitPaymentPlanLines(Id unitId) {
         try {

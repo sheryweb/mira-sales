@@ -1,8 +1,20 @@
 <template>
-    <lightning-card title="Approval History" icon-name="standard:approval">
-        <span slot="actions" class="slds-text-body_small slds-text-color_weak">
-            Unit Price &amp; Payment Plan changes
-        </span>
+    <lightning-card>
+        <div slot="title" class="history-header">
+            <div class="history-title-row">
+                <lightning-icon
+                    icon-name="standard:approval"
+                    size="small"
+                    alternative-text="Approval History">
+                </lightning-icon>
+                <span class="history-title">Approval History</span>
+            </div>
+            <div class="history-chips" aria-label="Included approval types">
+                <span class="history-chip history-chip_price">Unit Price</span>
+                <span class="history-chip history-chip_plan">Payment Plan</span>
+                <span class="history-chip history-chip_share">Share Deal</span>
+            </div>
+        </div>
 
         <div class="slds-p-horizontal_medium slds-p-bottom_medium">
             <template if:true={isLoading}>
@@ -14,8 +26,8 @@
             </template>
 
             <template if:true={showEmpty}>
-                <div class="slds-illustration slds-illustration_small slds-p-vertical_medium slds-text-align_center slds-text-color_weak">
-                    No Unit Price Change or Payment Plan Change approvals for this opportunity's unit.
+                <div class="empty-state slds-p-vertical_medium slds-p-horizontal_small slds-text-align_center slds-text-color_weak">
+                    No Unit Price, Payment Plan, or Share Deal approvals for this opportunity yet.
                 </div>
             </template>
 

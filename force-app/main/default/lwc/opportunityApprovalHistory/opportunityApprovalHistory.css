@@ -1,0 +1,66 @@
+.history-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 2px;
+}
+
+.history-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.history-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #181818;
+    line-height: 1.2;
+}
+
+.history-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.history-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    font-weight: 650;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.history-chip_price {
+    background: #eef4ff;
+    color: #1b4f9c;
+    border-color: #c7d7f5;
+}
+
+.history-chip_plan {
+    background: #f3f0ff;
+    color: #5a3ea1;
+    border-color: #d8cdf5;
+}
+
+.history-chip_share {
+    background: #e8f5e9;
+    color: #1f6b3a;
+    border-color: #b7dfc2;
+}
+
+.empty-state {
+    border: 1px dashed #dddbda;
+    border-radius: 8px;
+    background: #fafaf9;
+}

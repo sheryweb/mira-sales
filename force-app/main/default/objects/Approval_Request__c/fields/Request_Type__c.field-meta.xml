@@ -41,6 +41,11 @@
                 <label>Unit Price Change</label>
             </value>
             <value>
+                <fullName>Share Deal</fullName>
+                <default>false</default>
+                <label>Share Deal</label>
+            </value>
+            <value>
                 <fullName>Agency Profile Update</fullName>
                 <default>false</default>
                 <label>Agency Profile Update</label>
