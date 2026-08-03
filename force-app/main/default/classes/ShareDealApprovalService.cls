@@ -1,6 +1,9 @@
 /**
- * Share Deal approval: Opportunity Owner requests a second RM (always 50/50).
+ * Share Deal approval: Opportunity Owner (or privileged ops users) requests a second RM (always 50/50).
  * Mirrors Unit Price Change: Approval_Request__c → Manager → CSO → apply.
+ *
+ * Who may raise a request: Opportunity Owner, System Administrator, Sales Admin profile,
+ * or active members of public groups Director_of_Operations / Sales_Admin_Special.
  */
 public with sharing class ShareDealApprovalService {
     public static final String REQUEST_TYPE_SHARE_DEAL = 'Share Deal';
@@ -8,6 +11,21 @@ public with sharing class ShareDealApprovalService {
     public static final String SALES_MANAGER_MIRA_PROFILE = 'Sales Manager MIRA';
     private static final Integer MIN_JUSTIFICATION_LENGTH = 10;
     private static final Integer HEADER_FIELD_MAX_LENGTH = 255;
+
+    @TestVisible
+    private static final Set<String> PRIVILEGED_REQUESTER_PROFILES = new Set<String>{
+        'System Administrator',
+        'Sales Admin'
+    };
+    // Same ops groups as ApprovalRequestNotificationService — maintained in Setup → Public Groups.
+    @TestVisible
+    private static Set<String> PRIVILEGED_REQUESTER_GROUP_DEV_NAMES = new Set<String>{
+        'Director_of_Operations',
+        'Sales_Admin_Special'
+    };
+    // Test hook: when non-null, skips profile/group lookup (null = real check).
+    @TestVisible private static Boolean forcePrivilegedRequester = null;
+    @TestVisible private static String lastSubmitError;
 
     public class ShareDealInfoDTO {
         @AuraEnabled public Id opportunityId;
@@ -58,9 +76,10 @@ public with sharing class ShareDealApprovalService {
         if (opp.StageName != 'Booked') {
             dto.eligible = false;
             dto.ineligibleReason = 'Share Deal requests are only allowed for Booked Opportunities.';
-        } else if (opp.OwnerId != UserInfo.getUserId() && !isRunningUserAdmin()) {
+        } else if (!canRaiseShareDeal(opp)) {
             dto.eligible = false;
-            dto.ineligibleReason = 'Only the Opportunity Owner can request a Share Deal.';
+            dto.ineligibleReason =
+                'Only the Opportunity Owner, Sales Admin, or Director of Operations can request a Share Deal.';
         } else {
             dto.eligible = true;
         }
@@ -135,7 +154,7 @@ public with sharing class ShareDealApprovalService {
             );
             if (pendingRequest != null) {
                 if (hasPendingApprovalProcess(pendingRequest.Id)) {
-                    throw new AuraHandledException(
+                    throw auraError(
                         'A Share Deal request is already pending approval' +
                         (String.isNotBlank(pendingRequest.Name) ? ' (' + pendingRequest.Name + ').' : '.')
                     );
@@ -157,11 +176,14 @@ public with sharing class ShareDealApprovalService {
             markOpportunityPending(opportunityId);
             return approvalRequestId;
         } catch (AuraHandledException e) {
-            throw e;
+            lastSubmitError = getExceptionMessage(e);
+            throw auraError(lastSubmitError);
         } catch (DmlException e) {
-            throw new AuraHandledException(formatDmlException(e));
+            lastSubmitError = formatDmlException(e);
+            throw auraError(lastSubmitError);
         } catch (Exception e) {
-            throw new AuraHandledException('Share Deal submit failed: ' + getExceptionMessage(e));
+            lastSubmitError = 'Share Deal submit failed: ' + getExceptionMessage(e);
+            throw auraError(lastSubmitError);
         }
     }
 
@@ -300,7 +322,7 @@ public with sharing class ShareDealApprovalService {
     private static void submitForApproval(Id approvalRequestId) {
         Approval_Request__c request = getEditableRequest(approvalRequestId);
         if (request.Requested_Shared_RM__c == null) {
-            throw new AuraHandledException('Select a Shared RM before submitting for approval.');
+            throw auraError('Select a Shared RM before submitting for approval.');
         }
 
         if (
@@ -320,18 +342,18 @@ public with sharing class ShareDealApprovalService {
             LIMIT 1
         ];
         if (submitRecord.Request_Type__c != REQUEST_TYPE_SHARE_DEAL) {
-            throw new AuraHandledException('Request type must be Share Deal.');
+            throw auraError('Request type must be Share Deal.');
         }
         if (submitRecord.Status__c == 'Pending') {
-            throw new AuraHandledException('This request is already pending approval.');
+            throw auraError('This request is already pending approval.');
         }
         if (submitRecord.Status__c != 'Draft') {
-            throw new AuraHandledException(
+            throw auraError(
                 'Only Draft requests can be submitted. Current status: ' + submitRecord.Status__c
             );
         }
         if (hasPendingApprovalProcess(approvalRequestId)) {
-            throw new AuraHandledException('An approval process is already pending for this request.');
+            throw auraError('An approval process is already pending for this request.');
         }
 
         List<String> processReferences = new List<String>{
@@ -368,7 +390,7 @@ public with sharing class ShareDealApprovalService {
             String detail = lastError != null
                 ? getExceptionMessage(lastError)
                 : (result == null ? 'Unknown approval submit failure.' : String.valueOf(result.getErrors()));
-            throw new AuraHandledException('Unable to submit Share Deal approval: ' + detail);
+            throw auraError('Unable to submit Share Deal approval: ' + detail);
         }
 
         try {
@@ -379,7 +401,7 @@ public with sharing class ShareDealApprovalService {
             );
         } catch (DmlException e) {
             if (!hasPendingApprovalProcess(approvalRequestId)) {
-                throw new AuraHandledException(formatDmlException(e));
+                throw auraError(formatDmlException(e));
             }
         }
     }
@@ -404,7 +426,7 @@ public with sharing class ShareDealApprovalService {
 
     private static Opportunity loadOpportunity(Id opportunityId) {
         if (opportunityId == null) {
-            throw new AuraHandledException('Opportunity Id is required.');
+            throw auraError('Opportunity Id is required.');
         }
         List<Opportunity> opps = [
             SELECT Id, Name, StageName, OwnerId, Owner.Name, Unit__c, Unit_Price__c,
@@ -414,7 +436,7 @@ public with sharing class ShareDealApprovalService {
             LIMIT 1
         ];
         if (opps.isEmpty()) {
-            throw new AuraHandledException('Opportunity was not found.');
+            throw auraError('Opportunity was not found.');
         }
         return opps[0];
     }
@@ -425,19 +447,67 @@ public with sharing class ShareDealApprovalService {
 
     private static void validateEligible(Opportunity opp) {
         if (opp.StageName != 'Booked') {
-            throw new AuraHandledException('Share Deal requests are only allowed for Booked Opportunities.');
+            throw auraError('Share Deal requests are only allowed for Booked Opportunities.');
         }
-        if (opp.OwnerId != UserInfo.getUserId() && !isRunningUserAdmin()) {
-            throw new AuraHandledException('Only the Opportunity Owner can request a Share Deal.');
+        if (!canRaiseShareDeal(opp)) {
+            throw auraError(
+                'Only the Opportunity Owner, Sales Admin, or Director of Operations can request a Share Deal.'
+            );
         }
+    }
+
+    private static Boolean canRaiseShareDeal(Opportunity opp) {
+        if (opp != null && opp.OwnerId == UserInfo.getUserId()) {
+            return true;
+        }
+        return isPrivilegedShareDealRequester();
+    }
+
+    private static Boolean isPrivilegedShareDealRequester() {
+        if (forcePrivilegedRequester != null) {
+            return forcePrivilegedRequester;
+        }
+        List<Profile> profiles = [
+            SELECT Name
+            FROM Profile
+            WHERE Id = :UserInfo.getProfileId()
+            LIMIT 1
+        ];
+        if (!profiles.isEmpty() && PRIVILEGED_REQUESTER_PROFILES.contains(profiles[0].Name)) {
+            return true;
+        }
+        return isMemberOfPrivilegedRequesterGroups();
+    }
+
+    private static Boolean isMemberOfPrivilegedRequesterGroups() {
+        if (PRIVILEGED_REQUESTER_GROUP_DEV_NAMES == null || PRIVILEGED_REQUESTER_GROUP_DEV_NAMES.isEmpty()) {
+            return false;
+        }
+        List<Group> groups = [
+            SELECT Id
+            FROM Group
+            WHERE DeveloperName IN :PRIVILEGED_REQUESTER_GROUP_DEV_NAMES
+              AND Type = 'Regular'
+        ];
+        if (groups.isEmpty()) {
+            return false;
+        }
+        Set<Id> groupIds = (new Map<Id, Group>(groups)).keySet();
+        return ![
+            SELECT Id
+            FROM GroupMember
+            WHERE GroupId IN :groupIds
+              AND UserOrGroupId = :UserInfo.getUserId()
+            LIMIT 1
+        ].isEmpty();
     }
 
     private static void validateRequestedSharedRm(Opportunity opp, Id requestedSharedRmId) {
         if (requestedSharedRmId == null) {
-            throw new AuraHandledException('Select a Shared RM.');
+            throw auraError('Select a Shared RM.');
         }
         if (requestedSharedRmId == opp.OwnerId) {
-            throw new AuraHandledException('Shared RM cannot be the same as the Opportunity Owner.');
+            throw auraError('Shared RM cannot be the same as the Opportunity Owner.');
         }
 
         List<User> users = [
@@ -447,13 +517,13 @@ public with sharing class ShareDealApprovalService {
             LIMIT 1
         ];
         if (users.isEmpty()) {
-            throw new AuraHandledException('Selected Shared RM was not found.');
+            throw auraError('Selected Shared RM was not found.');
         }
         if (!users[0].IsActive) {
-            throw new AuraHandledException('Selected Shared RM must be an active user.');
+            throw auraError('Selected Shared RM must be an active user.');
         }
         if (users[0].Profile == null || users[0].Profile.Name != SALES_MANAGER_MIRA_PROFILE) {
-            throw new AuraHandledException(
+            throw auraError(
                 'Shared RM must have the Sales Manager MIRA profile.'
             );
         }
@@ -461,7 +531,7 @@ public with sharing class ShareDealApprovalService {
 
     private static void validateJustification(String justification) {
         if (String.isBlank(justification) || justification.trim().length() < MIN_JUSTIFICATION_LENGTH) {
-            throw new AuraHandledException(
+            throw auraError(
                 'Justification must be at least ' + MIN_JUSTIFICATION_LENGTH + ' characters.'
             );
         }
@@ -490,10 +560,10 @@ public with sharing class ShareDealApprovalService {
             LIMIT 1
         ];
         if (requests.isEmpty()) {
-            throw new AuraHandledException('Approval request was not found.');
+            throw auraError('Approval request was not found.');
         }
         if (requests[0].Request_Type__c != REQUEST_TYPE_SHARE_DEAL) {
-            throw new AuraHandledException('This is not a Share Deal approval request.');
+            throw auraError('This is not a Share Deal approval request.');
         }
         return requests[0];
     }
@@ -549,16 +619,6 @@ public with sharing class ShareDealApprovalService {
         ].isEmpty();
     }
 
-    private static Boolean isRunningUserAdmin() {
-        return [
-            SELECT Id
-            FROM Profile
-            WHERE Id = :UserInfo.getProfileId()
-              AND Name = 'System Administrator'
-            LIMIT 1
-        ].size() > 0;
-    }
-
     private static String truncateField(String value) {
         if (value == null) {
             return null;
@@ -574,5 +634,11 @@ public with sharing class ShareDealApprovalService {
 
     private static String getExceptionMessage(Exception e) {
         return String.isNotBlank(e.getMessage()) ? e.getMessage() : e.getTypeName();
+    }
+
+    private static AuraHandledException auraError(String message) {
+        AuraHandledException ex = new AuraHandledException(message);
+        ex.setMessage(message);
+        return ex;
     }
 }

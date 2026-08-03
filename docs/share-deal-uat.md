@@ -30,7 +30,7 @@
 - [ ] Two `RM_Deal_Credit__c` rows at 50% each; Owner Credit Amount = Unit Price / 2
 - [ ] Rejection path: Opp `Share_Deal_Status__c` = Rejected; Share Deal remains unchecked
 - [ ] Cannot pick Owner as Shared RM
-- [ ] Non-owner cannot submit (unless System Administrator)
+- [ ] Non-owner cannot submit (unless System Administrator, Sales Admin, or ops group member)
 - [ ] Unit sharing still only grants access to Opportunity Owner (not Shared RM)
 - [ ] Report type **RM Deal Credits with Opportunity**: group by RM Name, sum Credit Amount
 - [ ] Opportunity custom report type shows Deal Type / Share Deal / Shared RM Name columns

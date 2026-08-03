@@ -85,6 +85,22 @@ private class ShareDealApprovalServiceTest {
             unit.Status__c = 'Booked';
             update unit;
 
+            // Sales Manager owners need Unit visibility to stamp Unit__c on Approval_Request__c.
+            insert new List<Unit__Share>{
+                new Unit__Share(
+                    ParentId = unit.Id,
+                    UserOrGroupId = ownerUser.Id,
+                    AccessLevel = 'Edit',
+                    RowCause = Schema.Unit__Share.RowCause.Manual
+                ),
+                new Unit__Share(
+                    ParentId = unit.Id,
+                    UserOrGroupId = sharedRm.Id,
+                    AccessLevel = 'Read',
+                    RowCause = Schema.Unit__Share.RowCause.Manual
+                )
+            };
+
             Account account = new Account(Name = 'Share Deal Test Account');
             insert account;
 
@@ -160,6 +176,112 @@ private class ShareDealApprovalServiceTest {
 
         System.assertEquals(true, info.eligible, 'Booked owner should be eligible');
         System.assertEquals(opp.Id, info.opportunityId);
+    }
+
+    @IsTest
+    static void testNonOwnerWithoutPrivilegeIsIneligible() {
+        Opportunity opp = getOpp();
+        User nonOwner = getSharedRm();
+
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert new OpportunityShare(
+                OpportunityId = opp.Id,
+                UserOrGroupId = nonOwner.Id,
+                OpportunityAccessLevel = 'Edit',
+                RowCause = Schema.OpportunityShare.RowCause.Manual
+            );
+        }
+
+        ShareDealApprovalService.forcePrivilegedRequester = false;
+        ShareDealApprovalService.ShareDealInfoDTO info;
+        System.runAs(nonOwner) {
+            Test.startTest();
+            info = ShareDealApprovalController.getShareDealInfo(opp.Id);
+            Test.stopTest();
+        }
+
+        System.assertEquals(false, info.eligible, 'Non-owner without privilege must be ineligible');
+        System.assert(
+            info.ineligibleReason != null && info.ineligibleReason.contains('Opportunity Owner'),
+            'Reason should mention who may request: ' + info.ineligibleReason
+        );
+    }
+
+    @IsTest
+    static void testSystemAdminNonOwnerIsEligible() {
+        Opportunity opp = getOpp();
+        System.assertNotEquals(
+            UserInfo.getUserId(),
+            opp.OwnerId,
+            'Test runner must not be the Opportunity Owner'
+        );
+
+        ShareDealApprovalService.forcePrivilegedRequester = null;
+        Test.startTest();
+        ShareDealApprovalService.ShareDealInfoDTO info =
+            ShareDealApprovalController.getShareDealInfo(opp.Id);
+        Test.stopTest();
+
+        System.assertEquals(true, info.eligible,
+            'System Administrator may request Share Deal without being the Owner');
+    }
+
+    @IsTest
+    static void testOpsGroupMemberNonOwnerIsEligible() {
+        Opportunity opp = getOpp();
+        User nonOwner = getSharedRm();
+
+        Group g = new Group(Name = 'Test Share Deal Ops', DeveloperName = 'Test_Share_Deal_Ops', Type = 'Regular');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert g;
+            insert new GroupMember(GroupId = g.Id, UserOrGroupId = nonOwner.Id);
+            insert new OpportunityShare(
+                OpportunityId = opp.Id,
+                UserOrGroupId = nonOwner.Id,
+                OpportunityAccessLevel = 'Edit',
+                RowCause = Schema.OpportunityShare.RowCause.Manual
+            );
+        }
+        ShareDealApprovalService.PRIVILEGED_REQUESTER_GROUP_DEV_NAMES =
+            new Set<String>{ 'Test_Share_Deal_Ops' };
+        ShareDealApprovalService.forcePrivilegedRequester = null;
+
+        ShareDealApprovalService.ShareDealInfoDTO info;
+        System.runAs(nonOwner) {
+            Test.startTest();
+            info = ShareDealApprovalController.getShareDealInfo(opp.Id);
+            Test.stopTest();
+        }
+
+        System.assertEquals(true, info.eligible, 'Ops public-group member may raise Share Deal');
+    }
+
+    @IsTest
+    static void testPrivilegedNonOwnerCanSubmit() {
+        Opportunity opp = getOpp();
+        User sharedRm = getSharedRm();
+        System.assertNotEquals(UserInfo.getUserId(), opp.OwnerId);
+
+        // System Administrator profile path (no force hook) — ops raising on behalf of RM.
+        ShareDealApprovalService.forcePrivilegedRequester = null;
+        Id requestId;
+        Test.startTest();
+        requestId = ShareDealApprovalController.submitShareDealApproval(
+            opp.Id,
+            sharedRm.Id,
+            'Ops-raised share deal request for this booking.',
+            null
+        );
+        Test.stopTest();
+
+        System.assertNotEquals(null, requestId, 'Privileged non-owner submit should succeed');
+        Approval_Request__c saved = [
+            SELECT Status__c, Requested_Shared_RM__c
+            FROM Approval_Request__c
+            WHERE Id = :requestId
+        ];
+        System.assertEquals('Pending', saved.Status__c);
+        System.assertEquals(sharedRm.Id, saved.Requested_Shared_RM__c);
     }
 
     @IsTest
