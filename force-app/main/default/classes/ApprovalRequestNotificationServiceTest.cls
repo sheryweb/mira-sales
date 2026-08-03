@@ -319,7 +319,7 @@ private class ApprovalRequestNotificationServiceTest {
              FROM Approval_Request__c WHERE Id = :r.Id];
 
         String body = ApprovalRequestNotificationService.opsBodyFor(
-            r, 'Rejected', 'A-211', 'MIRA Project', 'Price too low <b>no</b>');
+            r, 'Rejected', 'A-211', 'MIRA Project', null, 'Price too low <b>no</b>');
 
         System.assert(body.contains('A-211'), 'unit label shown');
         System.assert(body.contains('MIRA Project'), 'project name shown');
@@ -327,6 +327,113 @@ private class ApprovalRequestNotificationServiceTest {
         System.assert(body.contains('Approver comment'), 'comment heading shown');
         System.assert(body.contains('Price too low &lt;b&gt;no&lt;/b&gt;'), 'comment HTML-escaped');
         System.assert(body.contains('/lightning/r/Approval_Request__c/'), 'record link present');
+    }
+
+    @isTest
+    static void operations_share_deal_pending_builds_email() {
+        Group g = new Group(Name = 'Test DoO Share', DeveloperName = 'Test_DoO_Share', Type = 'Regular');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert g;
+            insert new GroupMember(GroupId = g.Id, UserOrGroupId = UserInfo.getUserId());
+        }
+        ApprovalRequestNotificationService.OPS_GROUP_DEV_NAMES = new Set<String>{ 'Test_DoO_Share' };
+
+        Unit__c unit = new Unit__c(Title__c = 'SD-101', Building__c = 'A');
+        insert unit;
+
+        Account acct = new Account(Name = 'Share Deal Notify Acct ' + String.valueOf(Crypto.getRandomLong()));
+        insert acct;
+        Opportunity opp = new Opportunity(
+            Name = 'Share Deal Notify Opp',
+            StageName = 'New',
+            CloseDate = Date.today().addDays(30),
+            AccountId = acct.Id,
+            Unit__c = unit.Id
+        );
+        insert opp;
+
+        Approval_Request__c req = new Approval_Request__c(
+            Request_Type__c = 'Share Deal',
+            Related_Object_Type__c = 'Opportunity',
+            Parent_Object__c = 'Opportunity',
+            Parent_Record_Id__c = String.valueOf(opp.Id),
+            Opportunity__c = opp.Id,
+            Unit__c = unit.Id,
+            Field_To_Update__c = 'Shared_RM__c',
+            Current_Value__c = 'Single deal (Owner: Test User)',
+            Requested_Value__c = 'Share 50/50 with Shared RM',
+            Justification__c = 'Client asked for co-ownership',
+            Status__c = 'Pending'
+        );
+        insert req;
+
+        Test.startTest();
+        List<Messaging.SingleEmailMessage> built =
+            ApprovalRequestNotificationService.buildOperationsEmails(new Set<Id>{ req.Id });
+        Test.stopTest();
+
+        System.assertEquals(1, built.size(), 'Share Deal Pending must produce an ops email');
+        System.assert(built[0].getSubject().startsWith('Approval Submitted: Share Deal'),
+            'share deal subject: ' + built[0].getSubject());
+        System.assert(built[0].getSubject().contains('A-SD-101'),
+            'subject includes unit label: ' + built[0].getSubject());
+        System.assert(built[0].getHtmlBody().contains('Share 50/50 with Shared RM'), 'requested value in body');
+        System.assert(built[0].getHtmlBody().contains('Single deal (Owner: Test User)'), 'current value in body');
+    }
+
+    @isTest
+    static void operations_share_deal_applied_still_sends_approved_email() {
+        Group g = new Group(Name = 'Test DoO Share Applied', DeveloperName = 'Test_DoO_Share_Applied', Type = 'Regular');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert g;
+            insert new GroupMember(GroupId = g.Id, UserOrGroupId = UserInfo.getUserId());
+        }
+        ApprovalRequestNotificationService.OPS_GROUP_DEV_NAMES = new Set<String>{ 'Test_DoO_Share_Applied' };
+
+        Approval_Request__c req = new Approval_Request__c(
+            Request_Type__c = 'Share Deal',
+            Related_Object_Type__c = 'Opportunity',
+            Parent_Object__c = 'Opportunity',
+            Field_To_Update__c = 'Shared_RM__c',
+            Current_Value__c = 'Single deal',
+            Requested_Value__c = 'Share 50/50 with Shared RM',
+            Justification__c = 'test',
+            Status__c = 'Applied'
+        );
+        insert req;
+
+        Test.startTest();
+        List<Messaging.SingleEmailMessage> built =
+            ApprovalRequestNotificationService.buildOperationsEmails(new Set<Id>{ req.Id });
+        Test.stopTest();
+
+        System.assertEquals(1, built.size(), 'Share Deal Applied must still produce the final-approval email');
+        System.assert(built[0].getSubject().startsWith('Approval Approved: Share Deal'),
+            'Applied is reported as Approved: ' + built[0].getSubject());
+    }
+
+    @isTest
+    static void operations_body_shows_opportunity_name_for_share_deal() {
+        Approval_Request__c r = new Approval_Request__c(
+            Request_Type__c = 'Share Deal',
+            Related_Object_Type__c = 'Opportunity',
+            Field_To_Update__c = 'Shared_RM__c',
+            Current_Value__c = 'Single deal',
+            Requested_Value__c = 'Share 50/50 with Shared RM',
+            Justification__c = 'Co-brokered',
+            Status__c = 'Pending'
+        );
+        insert r;
+        r = [SELECT Id, Request_Type__c, Status__c, Current_Value__c, Requested_Value__c,
+                    Field_To_Update__c, Justification__c, Requester__r.Name
+             FROM Approval_Request__c WHERE Id = :r.Id];
+
+        String body = ApprovalRequestNotificationService.opsBodyFor(
+            r, 'Submitted', 'A-SD-101', 'MIRA Project', 'Opp Share Deal X', null);
+
+        System.assert(body.contains('Opp Share Deal X'), 'opportunity name shown');
+        System.assert(body.contains('A-SD-101'), 'unit label shown');
+        System.assert(body.contains('Share 50/50 with Shared RM'), 'requested value shown');
     }
 
     @isTest

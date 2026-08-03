@@ -5,7 +5,8 @@
  *
  * Scope: only the three portal-originated request types (Agency Profile Update, Bank Detail
  * Update, Document Re-upload). Internal sales approvals (Fee Change, Discount, Credit Limit,
- * Payment Plan Change, Unit Price Change, Other) are deliberately ignored.
+ * Payment Plan Change, Unit Price Change, Share Deal, Other) are deliberately ignored for
+ * agency mail; ops group notifications for Unit Price / Payment Plan / Share Deal are separate.
  *
  * Recipient: every Active__c Broker_User__c.Email__c for the request's Account
  * (Related_Record_Id__c). Sender: org-wide address, sandbox/prod auto-detected.
@@ -44,7 +45,7 @@ public without sharing class ApprovalRequestNotificationService {
         'Sales_Admin_Special'
     };
     private static final Set<String> OPS_TYPES = new Set<String>{
-        'Unit Price Change', 'Payment Plan Change'
+        'Unit Price Change', 'Payment Plan Change', 'Share Deal'
     };
     // DOO emails come from a system-style address (noreply), not the broker-facing "MIRA Agents".
     private static final String OPS_FROM_ADDRESS = 'noreply@miradevelopments.ae';
@@ -262,7 +263,7 @@ public without sharing class ApprovalRequestNotificationService {
         List<Approval_Request__c> reqs = [
             SELECT Id, Name, Request_Type__c, Status__c, Current_Value__c, Requested_Value__c,
                    Field_To_Update__c, Justification__c, Parent_Object__c, Parent_Record_Id__c,
-                   Requester__r.Name
+                   Unit__c, Opportunity__c, Opportunity__r.Name, Requester__r.Name
             FROM Approval_Request__c
             WHERE Id IN :requestIds AND Request_Type__c IN :OPS_TYPES
         ];
@@ -289,18 +290,15 @@ public without sharing class ApprovalRequestNotificationService {
 
         for (Approval_Request__c r : notifiable) {
             String event = eventFor(r.Status__c);
-            Unit__c unit = null;
-            if (String.isNotBlank(r.Parent_Record_Id__c)) {
-                try { unit = unitsById.get(Id.valueOf(r.Parent_Record_Id__c)); }
-                catch (Exception ignored) { /* not a unit id */ }
-            }
+            Unit__c unit = resolveUnit(r, unitsById);
             String unitLabel = unitLabelFor(unit);
             String projectName = projectNameFor(unit);
+            String opportunityName = (r.Opportunity__r != null) ? r.Opportunity__r.Name : null;
 
             Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
             email.setToAddresses(toAddresses);
             email.setSubject(opsSubjectFor(event, r.Request_Type__c, unitLabel));
-            email.setHtmlBody(opsBodyFor(r, event, unitLabel, projectName, commentByReq.get(r.Id)));
+            email.setHtmlBody(opsBodyFor(r, event, unitLabel, projectName, opportunityName, commentByReq.get(r.Id)));
             email.setSaveAsActivity(false);
             if (!oweas.isEmpty()) email.setOrgWideEmailAddressId(oweas[0].Id);
             emails.add(email);
@@ -333,10 +331,14 @@ public without sharing class ApprovalRequestNotificationService {
         return new List<String>(unique);
     }
 
-    // Unit records per parent-record id (only for parents that are Units).
+    // Unit records keyed by Unit Id: from Unit parents and from Unit__c on Opportunity-parented
+    // requests (e.g. Share Deal).
     private static Map<Id, Unit__c> unitsFor(List<Approval_Request__c> reqs) {
         Set<Id> unitIds = new Set<Id>();
         for (Approval_Request__c r : reqs) {
+            if (r.Unit__c != null) {
+                unitIds.add(r.Unit__c);
+            }
             if (r.Parent_Object__c == 'Unit__c' && String.isNotBlank(r.Parent_Record_Id__c)) {
                 try {
                     Id pid = Id.valueOf(r.Parent_Record_Id__c);
@@ -353,6 +355,19 @@ public without sharing class ApprovalRequestNotificationService {
             byId.put(u.Id, u);
         }
         return byId;
+    }
+
+    private static Unit__c resolveUnit(Approval_Request__c r, Map<Id, Unit__c> unitsById) {
+        if (r == null || unitsById == null || unitsById.isEmpty()) return null;
+        if (r.Unit__c != null && unitsById.containsKey(r.Unit__c)) {
+            return unitsById.get(r.Unit__c);
+        }
+        if (String.isNotBlank(r.Parent_Record_Id__c)) {
+            try {
+                return unitsById.get(Id.valueOf(r.Parent_Record_Id__c));
+            } catch (Exception ignored) { /* not a unit id */ }
+        }
+        return null;
     }
 
     // "Building-Title" (e.g. "A-101"); falls back to Title, then the Id.
@@ -375,7 +390,14 @@ public without sharing class ApprovalRequestNotificationService {
     }
 
     @TestVisible
-    private static String opsBodyFor(Approval_Request__c r, String event, String unitName, String projectName, String reviewerComment) {
+    private static String opsBodyFor(
+        Approval_Request__c r,
+        String event,
+        String unitName,
+        String projectName,
+        String opportunityName,
+        String reviewerComment
+    ) {
         String recordLink = URL.getOrgDomainUrl().toExternalForm()
             + '/lightning/r/Approval_Request__c/' + r.Id + '/view';
         String requester = (r.Requester__r != null && r.Requester__r.Name != null) ? r.Requester__r.Name : 'a user';
@@ -397,6 +419,7 @@ public without sharing class ApprovalRequestNotificationService {
             'An approval request has been <strong style="color:' + statusColor + ';">' + event.toLowerCase() + '</strong>:' +
             '<table style="border-collapse:collapse;margin:16px 0;">' +
             opsRow('Request type', r.Request_Type__c) +
+            (String.isBlank(opportunityName) ? '' : opsRow('Opportunity', opportunityName)) +
             (String.isBlank(projectName) ? '' : opsRow('Project', projectName)) +
             (String.isBlank(unitName) ? '' : opsRow('Unit', unitName)) +
             opsRow('Current value', r.Current_Value__c) +
