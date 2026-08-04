@@ -346,7 +346,23 @@ private class ApprovalRequestNotificationServiceTest {
         }
         ApprovalRequestNotificationService.OPS_GROUP_DEV_NAMES = new Set<String>{ 'Test_DoO_Share' };
 
-        Unit__c unit = new Unit__c(Title__c = 'SD-101', Building__c = 'A');
+        Project__c project = new Project__c(
+            Name = 'Share Deal Notify Project',
+            Description__c = 'Test',
+            District__c = 'Meydan',
+            Coordinates_Latitude__c = 1,
+            Coordinates_Longitude__c = 1,
+            Handover__c = Date.today(),
+            Minimum_Cost__c = 1,
+            Publish_Project__c = 'Draft'
+        );
+        insert project;
+        Unit__c unit = new Unit__c(
+            Title__c = 'SD-101',
+            Building__c = 'A',
+            Project__c = project.Id,
+            Project_Name_Text__c = 'Share Deal Notify Project'
+        );
         insert unit;
 
         Account acct = new Account(Name = 'Share Deal Notify Acct ' + String.valueOf(Crypto.getRandomLong()));
@@ -359,14 +375,15 @@ private class ApprovalRequestNotificationServiceTest {
             Unit__c = unit.Id
         );
         insert opp;
+        String oppName = [SELECT Name FROM Opportunity WHERE Id = :opp.Id].Name;
 
+        // Production Share Deal leaves Unit__c blank — email must resolve Unit/Project from Opportunity.
         Approval_Request__c req = new Approval_Request__c(
             Request_Type__c = 'Share Deal',
             Related_Object_Type__c = 'Opportunity',
             Parent_Object__c = 'Opportunity',
             Parent_Record_Id__c = String.valueOf(opp.Id),
             Opportunity__c = opp.Id,
-            Unit__c = unit.Id,
             Field_To_Update__c = 'Shared_RM__c',
             Current_Value__c = 'Single deal (Owner: Test User)',
             Requested_Value__c = 'Share 50/50 with Shared RM',
@@ -384,7 +401,12 @@ private class ApprovalRequestNotificationServiceTest {
         System.assert(built[0].getSubject().startsWith('Approval Submitted: Share Deal'),
             'share deal subject: ' + built[0].getSubject());
         System.assert(built[0].getSubject().contains('A-SD-101'),
-            'subject includes unit label: ' + built[0].getSubject());
+            'subject includes unit from Opportunity: ' + built[0].getSubject());
+        System.assert(built[0].getHtmlBody().contains('A-SD-101'), 'unit row from Opportunity');
+        System.assert(built[0].getHtmlBody().contains('Share Deal Notify Project'),
+            'project row from Opportunity Unit');
+        System.assert(built[0].getHtmlBody().contains(oppName.escapeHtml4()),
+            'opportunity name in body: ' + oppName);
         System.assert(built[0].getHtmlBody().contains('Share 50/50 with Shared RM'), 'requested value in body');
         System.assert(built[0].getHtmlBody().contains('Single deal (Owner: Test User)'), 'current value in body');
     }

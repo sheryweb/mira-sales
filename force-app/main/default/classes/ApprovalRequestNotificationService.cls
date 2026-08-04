@@ -263,7 +263,8 @@ public without sharing class ApprovalRequestNotificationService {
         List<Approval_Request__c> reqs = [
             SELECT Id, Name, Request_Type__c, Status__c, Current_Value__c, Requested_Value__c,
                    Discount_Percent__c, Field_To_Update__c, Justification__c, Parent_Object__c,
-                   Parent_Record_Id__c, Unit__c, Opportunity__c, Opportunity__r.Name, Requester__r.Name
+                   Parent_Record_Id__c, Unit__c, Opportunity__c, Opportunity__r.Name,
+                   Opportunity__r.Unit__c, Requester__r.Name
             FROM Approval_Request__c
             WHERE Id IN :requestIds AND Request_Type__c IN :OPS_TYPES
         ];
@@ -331,13 +332,16 @@ public without sharing class ApprovalRequestNotificationService {
         return new List<String>(unique);
     }
 
-    // Unit records keyed by Unit Id: from Unit parents and from Unit__c on Opportunity-parented
-    // requests (e.g. Share Deal).
+    // Unit records keyed by Unit Id: Unit__c on the request, Unit parents, or Opportunity.Unit__c
+    // (Share Deal is Opportunity-anchored and often leaves Approval_Request.Unit__c blank).
     private static Map<Id, Unit__c> unitsFor(List<Approval_Request__c> reqs) {
         Set<Id> unitIds = new Set<Id>();
         for (Approval_Request__c r : reqs) {
             if (r.Unit__c != null) {
                 unitIds.add(r.Unit__c);
+            }
+            if (r.Opportunity__r != null && r.Opportunity__r.Unit__c != null) {
+                unitIds.add(r.Opportunity__r.Unit__c);
             }
             if (r.Parent_Object__c == 'Unit__c' && String.isNotBlank(r.Parent_Record_Id__c)) {
                 try {
@@ -361,6 +365,11 @@ public without sharing class ApprovalRequestNotificationService {
         if (r == null || unitsById == null || unitsById.isEmpty()) return null;
         if (r.Unit__c != null && unitsById.containsKey(r.Unit__c)) {
             return unitsById.get(r.Unit__c);
+        }
+        if (r.Opportunity__r != null
+                && r.Opportunity__r.Unit__c != null
+                && unitsById.containsKey(r.Opportunity__r.Unit__c)) {
+            return unitsById.get(r.Opportunity__r.Unit__c);
         }
         if (String.isNotBlank(r.Parent_Record_Id__c)) {
             try {

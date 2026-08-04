@@ -29,6 +29,11 @@ public with sharing class ShareDealApprovalController {
     }
 
     @AuraEnabled(cacheable=true)
+    public static List<ShareDealApprovalService.RmOptionDTO> getLineManagerOptions() {
+        return ShareDealApprovalService.getLineManagerOptions();
+    }
+
+    @AuraEnabled(cacheable=true)
     public static ShareDealApprovalService.OpenShareDealRequestDTO getOpenShareDealRequest(Id opportunityId) {
         return ShareDealApprovalService.getOpenShareDealRequest(opportunityId);
     }
@@ -38,13 +43,15 @@ public with sharing class ShareDealApprovalController {
         Id opportunityId,
         Id requestedSharedRmId,
         String justification,
-        Id approvalRequestId
+        Id approvalRequestId,
+        Id lineManagerUserId
     ) {
         return ShareDealApprovalService.submitShareDealApproval(
             opportunityId,
             requestedSharedRmId,
             justification,
-            approvalRequestId
+            approvalRequestId,
+            lineManagerUserId
         );
     }
 }

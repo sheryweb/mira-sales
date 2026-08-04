@@ -2,6 +2,7 @@ import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getShareDealInfo from '@salesforce/apex/ShareDealApprovalController.getShareDealInfo';
 import getEligibleSharedRmOptions from '@salesforce/apex/ShareDealApprovalController.getEligibleSharedRmOptions';
+import getLineManagerOptions from '@salesforce/apex/ShareDealApprovalController.getLineManagerOptions';
 import getOpenShareDealRequest from '@salesforce/apex/ShareDealApprovalController.getOpenShareDealRequest';
 import submitShareDealApproval from '@salesforce/apex/ShareDealApprovalController.submitShareDealApproval';
 
@@ -12,7 +13,9 @@ export default class ShareDealApproval extends LightningElement {
 
     @track info;
     @track rmOptions = [];
+    @track lineManagerOptions = [];
     @track selectedSharedRmId;
+    @track selectedLineManagerId;
     @track justification = '';
     @track loading = false;
     @track showMainModal = false;
@@ -42,6 +45,26 @@ export default class ShareDealApproval extends LightningElement {
                 label: opt.name,
                 value: opt.id
             }));
+
+            if (info && info.requiresLineManagerSelection) {
+                const managers = await getLineManagerOptions();
+                this.lineManagerOptions = (managers || []).map((opt) => ({
+                    label: opt.name,
+                    value: opt.id
+                }));
+                if (
+                    this.selectedLineManagerId &&
+                    !this.lineManagerOptions.some((opt) => opt.value === this.selectedLineManagerId)
+                ) {
+                    this.selectedLineManagerId = null;
+                }
+                if (!this.selectedLineManagerId && this.lineManagerOptions.length === 1) {
+                    this.selectedLineManagerId = this.lineManagerOptions[0].value;
+                }
+            } else {
+                this.lineManagerOptions = [];
+                this.selectedLineManagerId = null;
+            }
 
             if (openRequest && openRequest.approvalRequestId) {
                 this.approvalRequestId = openRequest.approvalRequestId;
@@ -90,6 +113,14 @@ export default class ShareDealApproval extends LightningElement {
         return this.info && this.info.shareDeal;
     }
 
+    get requiresLineManagerSelection() {
+        return this.info && this.info.requiresLineManagerSelection === true;
+    }
+
+    get hasLineManagerOptions() {
+        return (this.lineManagerOptions || []).length > 0;
+    }
+
     get modalTitle() {
         return this.isReviewStep ? 'Review Share Deal' : 'Request Share Deal';
     }
@@ -113,16 +144,29 @@ export default class ShareDealApproval extends LightningElement {
         return match ? match.label : '—';
     }
 
+    get selectedLineManagerName() {
+        if (!this.selectedLineManagerId) {
+            return '—';
+        }
+        const match = (this.lineManagerOptions || []).find(
+            (opt) => opt.value === this.selectedLineManagerId
+        );
+        return match ? match.label : '—';
+    }
+
     get approvalRequestUrl() {
         return this.approvalRequestId ? `/${this.approvalRequestId}` : '#';
     }
 
     get canContinue() {
         const justification = (this.justification || '').trim();
+        const lineManagerOk =
+            !this.requiresLineManagerSelection || !!this.selectedLineManagerId;
         return (
             this.isEligible &&
             !this.isReadOnly &&
             !!this.selectedSharedRmId &&
+            lineManagerOk &&
             justification.length >= MIN_JUSTIFICATION_LENGTH
         );
     }
@@ -132,7 +176,11 @@ export default class ShareDealApproval extends LightningElement {
     }
 
     get disableSubmit() {
-        return this.loading || !this.selectedSharedRmId;
+        return (
+            this.loading ||
+            !this.selectedSharedRmId ||
+            (this.requiresLineManagerSelection && !this.selectedLineManagerId)
+        );
     }
 
     handleOpenModal() {
@@ -149,6 +197,10 @@ export default class ShareDealApproval extends LightningElement {
         this.selectedSharedRmId = event.detail.value;
     }
 
+    handleLineManagerChange(event) {
+        this.selectedLineManagerId = event.detail.value;
+    }
+
     handleJustificationChange(event) {
         this.justification = event.target.value;
     }
@@ -161,6 +213,20 @@ export default class ShareDealApproval extends LightningElement {
         if (!this.selectedSharedRmId) {
             this.showToast('Validation', 'Select a Shared RM.', 'error');
             return false;
+        }
+        if (this.requiresLineManagerSelection) {
+            if (!this.hasLineManagerOptions) {
+                this.showToast(
+                    'Validation',
+                    'No Line Managers are available. Active users need the Sales Director MIRA profile.',
+                    'error'
+                );
+                return false;
+            }
+            if (!this.selectedLineManagerId) {
+                this.showToast('Validation', 'Select a Line Manager.', 'error');
+                return false;
+            }
         }
         if (!this.justification || this.justification.trim().length < MIN_JUSTIFICATION_LENGTH) {
             this.showToast('Validation', 'Justification must be at least 10 characters.', 'error');
@@ -190,7 +256,10 @@ export default class ShareDealApproval extends LightningElement {
                 opportunityId: this.recordId,
                 requestedSharedRmId: this.selectedSharedRmId,
                 justification: this.justification,
-                approvalRequestId: this.approvalRequestId
+                approvalRequestId: this.approvalRequestId,
+                lineManagerUserId: this.requiresLineManagerSelection
+                    ? this.selectedLineManagerId
+                    : null
             });
 
             this.approvalRequestId = submittedId;

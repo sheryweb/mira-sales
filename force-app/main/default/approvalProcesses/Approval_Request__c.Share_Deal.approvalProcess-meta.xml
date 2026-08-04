@@ -20,8 +20,9 @@
     <approvalStep>
         <allowDelegate>false</allowDelegate>
         <assignedApprover>
+            <!-- Manually chosen: Apex passes Sales Admin selection or RM User.ManagerId. -->
             <approver>
-                <type>userHierarchyField</type>
+                <type>adhoc</type>
             </approver>
         </assignedApprover>
         <label>Approve By Line Manager</label>
@@ -42,7 +43,7 @@
             <type>RejectRequest</type>
         </rejectBehavior>
     </approvalStep>
-    <description>Share Deal approval process (Manager → CSO). Applies 50/50 Shared RM on Opportunity.</description>
+    <description>Share Deal approval (Line Manager manually chosen via Apex → CSO). Applies 50/50 Shared RM on Opportunity.</description>
     <enableMobileDeviceAccess>false</enableMobileDeviceAccess>
     <entryCriteria>
         <criteriaItems>

@@ -4,15 +4,9 @@
     <deleteConstraint>SetNull</deleteConstraint>
     <description>Proposed Shared RM for a Share Deal approval request.</description>
     <label>Requested Shared RM</label>
-    <lookupFilter>
-        <active>true</active>
-        <filterItems>
-            <field>User.Profile.Name</field>
-            <operation>equals</operation>
-            <value>Sales Manager MIRA</value>
-        </filterItems>
-        <isOptional>false</isOptional>
-    </lookupFilter>
+    <!-- No lookup filter: Profile.Name filters fail for Sales Admin (no Profile visibility)
+         and surface as "Value does not exist or does not match filter criteria".
+         Apex ShareDealApprovalService still enforces Sales Manager MIRA. -->
     <referenceTo>User</referenceTo>
     <relationshipLabel>Share Deal Approval Requests</relationshipLabel>
     <relationshipName>Share_Deal_Approval_Requests</relationshipName>

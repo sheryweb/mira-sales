@@ -138,6 +138,21 @@ private class ShareDealApprovalServiceTest {
         return [SELECT Id, Name FROM User WHERE Alias = 'sdown' LIMIT 1];
     }
 
+    private static Id getLineManagerUserId() {
+        List<User> salesDirectors = [
+            SELECT Id
+            FROM User
+            WHERE IsActive = true
+              AND Profile.Name = :ShareDealApprovalService.LINE_MANAGER_PROFILE
+            LIMIT 1
+        ];
+        System.assert(
+            !salesDirectors.isEmpty(),
+            'Test requires at least one active user with the Sales Director MIRA profile.'
+        );
+        return salesDirectors[0].Id;
+    }
+
     private static Approval_Request__c newShareDealRequest(
         Id opportunityId,
         Id requesterId,
@@ -270,6 +285,7 @@ private class ShareDealApprovalServiceTest {
             opp.Id,
             sharedRm.Id,
             'Ops-raised share deal request for this booking.',
+            null,
             null
         );
         Test.stopTest();
@@ -512,14 +528,20 @@ private class ShareDealApprovalServiceTest {
                 opp.Id,
                 sharedRm.Id,
                 'Jointly closed this booking with partner RM.',
+                null,
                 null
             );
             Test.stopTest();
         }
 
         System.assertNotEquals(null, requestId);
+        Id ownerManagerId = [
+            SELECT ManagerId
+            FROM User
+            WHERE Id = :ownerUser.Id
+        ].ManagerId;
         Approval_Request__c submitted = [
-            SELECT Status__c, Request_Type__c, Requested_Shared_RM__c, Opportunity__c
+            SELECT Status__c, Request_Type__c, Requested_Shared_RM__c, Opportunity__c, Approver__c
             FROM Approval_Request__c
             WHERE Id = :requestId
         ];
@@ -527,6 +549,11 @@ private class ShareDealApprovalServiceTest {
         System.assertEquals(ShareDealApprovalService.REQUEST_TYPE_SHARE_DEAL, submitted.Request_Type__c);
         System.assertEquals(sharedRm.Id, submitted.Requested_Shared_RM__c);
         System.assertEquals(opp.Id, submitted.Opportunity__c);
+        System.assertEquals(
+            ownerManagerId,
+            submitted.Approver__c,
+            'RM submit should stamp Approver from User.Manager hierarchy'
+        );
 
         Opportunity pendingOpp = [
             SELECT Share_Deal_Status__c
@@ -549,6 +576,7 @@ private class ShareDealApprovalServiceTest {
                     opp.Id,
                     sharedRm.Id,
                     'short',
+                    null,
                     null
                 );
             } catch (Exception e) {
@@ -562,6 +590,7 @@ private class ShareDealApprovalServiceTest {
                     opp.Id,
                     ownerUser.Id,
                     'Same owner cannot be Shared RM.',
+                    null,
                     null
                 );
             } catch (Exception e) {
@@ -666,6 +695,7 @@ private class ShareDealApprovalServiceTest {
                 opp.Id,
                 sharedRm.Id,
                 'Request while already shared keeps Opp Approved.',
+                null,
                 null
             );
             ShareDealApprovalService.OpenShareDealRequestDTO openPending =
@@ -680,6 +710,7 @@ private class ShareDealApprovalServiceTest {
                     opp.Id,
                     sharedRm.Id,
                     'Second pending request should be blocked.',
+                    null,
                     null
                 );
             } catch (Exception e) {
@@ -711,7 +742,8 @@ private class ShareDealApprovalServiceTest {
                 opp.Id,
                 sharedRm.Id,
                 'Submitting from an existing draft request.',
-                draft.Id
+                draft.Id,
+                null
             );
             Test.stopTest();
         }
@@ -720,6 +752,176 @@ private class ShareDealApprovalServiceTest {
         System.assertEquals(
             'Pending',
             [SELECT Status__c FROM Approval_Request__c WHERE Id = :requestId].Status__c
+        );
+    }
+
+    @IsTest
+    static void testLineManagerOptionsAndSalesAdminFlag() {
+        Opportunity opp = getOpp();
+        User ownerUser = getOwnerUser();
+
+        List<ShareDealApprovalService.RmOptionDTO> options =
+            ShareDealApprovalController.getLineManagerOptions();
+        System.assert(!options.isEmpty(), 'Expected Sales Director MIRA Line Manager options');
+
+        // RM owner path — no Line Manager picker required.
+        ShareDealApprovalService.forceRequiresLineManagerSelection = false;
+        ShareDealApprovalService.ShareDealInfoDTO ownerInfo;
+        System.runAs(ownerUser) {
+            ownerInfo = ShareDealApprovalController.getShareDealInfo(opp.Id);
+        }
+        System.assertEquals(false, ownerInfo.requiresLineManagerSelection);
+
+        // Sales Admin path — Line Manager selection required.
+        ShareDealApprovalService.forceRequiresLineManagerSelection = true;
+        ShareDealApprovalService.ShareDealInfoDTO adminInfo =
+            ShareDealApprovalController.getShareDealInfo(opp.Id);
+        System.assertEquals(true, adminInfo.requiresLineManagerSelection);
+        ShareDealApprovalService.forceRequiresLineManagerSelection = null;
+    }
+
+    @IsTest
+    static void testSalesAdminSubmitRequiresLineManager() {
+        Opportunity opp = getOpp();
+        User sharedRm = getSharedRm();
+        Id lineManagerId = getLineManagerUserId();
+
+        // Simulate Sales Admin (privileged, no Manager hierarchy).
+        ShareDealApprovalService.forcePrivilegedRequester = true;
+        ShareDealApprovalService.forceRequiresLineManagerSelection = true;
+
+        Boolean missingManagerFailed = false;
+        try {
+            ShareDealApprovalController.submitShareDealApproval(
+                opp.Id,
+                sharedRm.Id,
+                'Sales Admin must select a Line Manager.',
+                null,
+                null
+            );
+        } catch (Exception e) {
+            missingManagerFailed = true;
+        }
+        System.assertEquals(true, missingManagerFailed, 'Submit without Line Manager should fail');
+
+        Id requestId;
+        Test.startTest();
+        requestId = ShareDealApprovalController.submitShareDealApproval(
+            opp.Id,
+            sharedRm.Id,
+            'Sales Admin selected Line Manager for Share Deal.',
+            null,
+            lineManagerId
+        );
+        Test.stopTest();
+
+        ShareDealApprovalService.forcePrivilegedRequester = null;
+        ShareDealApprovalService.forceRequiresLineManagerSelection = null;
+
+        System.assertNotEquals(null, requestId);
+        Approval_Request__c submitted = [
+            SELECT Status__c, Approver__c, Requested_Shared_RM__c
+            FROM Approval_Request__c
+            WHERE Id = :requestId
+        ];
+        System.assertEquals('Pending', submitted.Status__c);
+        System.assertEquals(lineManagerId, submitted.Approver__c);
+        System.assertEquals(sharedRm.Id, submitted.Requested_Shared_RM__c);
+    }
+
+    @IsTest
+    static void testUnregisteredAgencyBlocksSubmitAndApply() {
+        User sharedRm = getSharedRm();
+        User ownerUser = getOwnerUser();
+        Unit__c unit = [SELECT Id FROM Unit__c WHERE Title__c = 'Share Deal Unit' LIMIT 1];
+
+        Id agencyRtId = Schema.SObjectType.Account.getRecordTypeInfosByName()
+            .get('Agency')
+            .getRecordTypeId();
+        Account agency = new Account(
+            Name = 'Unregistered Share Deal Agency',
+            RecordTypeId = agencyRtId,
+            Status__c = 'Completed',
+            Company_Email__c = 'unregistered.share.deal@example.com'
+        );
+        insert agency;
+        Contact agent = new Contact(
+            LastName = 'Unregistered Share Deal Agent',
+            AccountId = agency.Id
+        );
+        insert agent;
+
+        Account client = new Account(Name = 'Share Deal Agency Client');
+        insert client;
+        Opportunity opp = new Opportunity(
+            Name = 'Share Deal Agency Opp',
+            StageName = 'New',
+            CloseDate = Date.today().addDays(30),
+            AccountId = client.Id,
+            OwnerId = ownerUser.Id,
+            Assisted_by_Agent__c = true,
+            Agency__c = agency.Id,
+            Agent__c = agent.Id
+        );
+        insert opp;
+        opp.Unit__c = unit.Id;
+        opp.StageName = 'Booked';
+        update opp;
+
+        // Drop registration after booking — Opp Share Deal updates must surface the friendly message.
+        update new Account(Id = agency.Id, Status__c = 'In Process');
+
+        System.assertEquals(
+            ShareDealApprovalService.AGENCY_NOT_REGISTERED_MESSAGE,
+            ShareDealApprovalService.assistedAgencyRegistrationError(opp.Id)
+        );
+
+        ShareDealApprovalService.forcePrivilegedRequester = true;
+        Boolean submitFailed = false;
+        String submitMessage;
+        try {
+            System.runAs(ownerUser) {
+                ShareDealApprovalController.submitShareDealApproval(
+                    opp.Id,
+                    sharedRm.Id,
+                    'Should fail because Assisted Agency is not registered.',
+                    null,
+                    null
+                );
+            }
+        } catch (Exception e) {
+            submitFailed = true;
+            submitMessage = e.getMessage();
+        }
+        ShareDealApprovalService.forcePrivilegedRequester = null;
+        System.assertEquals(true, submitFailed, 'Submit must fail for unregistered Assisted Agency');
+        System.assert(
+            submitMessage != null &&
+            submitMessage.contains(ShareDealApprovalService.AGENCY_NOT_REGISTERED_MESSAGE),
+            'Submit message: ' + submitMessage
+        );
+
+        Approval_Request__c approvedReq = newShareDealRequest(
+            opp.Id,
+            ownerUser.Id,
+            sharedRm.Id,
+            'Approved',
+            'Apply blocked by unregistered Assisted Agency.'
+        );
+        insert approvedReq;
+
+        Boolean applyFailed = false;
+        String applyMessage;
+        try {
+            ShareDealApprovalService.applyApprovedChanges(approvedReq.Id);
+        } catch (ShareDealApprovalService.ShareDealApprovalException e) {
+            applyFailed = true;
+            applyMessage = e.getMessage();
+        }
+        System.assertEquals(true, applyFailed, 'Final apply must fail for unregistered Assisted Agency');
+        System.assertEquals(
+            ShareDealApprovalService.AGENCY_NOT_REGISTERED_MESSAGE,
+            applyMessage
         );
     }
 }

@@ -2575,13 +2575,23 @@
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Approval_Request__c.Approver__c</field>
-        <readable>false</readable>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Approval_Request__c.Assigned_Approver__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Approval_Request__c.Opportunity__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Approval_Request__c.Requested_Shared_RM__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

@@ -9,8 +9,15 @@ public with sharing class ShareDealApprovalService {
     public static final String REQUEST_TYPE_SHARE_DEAL = 'Share Deal';
     public static final String SHARE_DEAL_APPROVAL_PROCESS = 'Share_Deal';
     public static final String SALES_MANAGER_MIRA_PROFILE = 'Sales Manager MIRA';
+    public static final String SALES_ADMIN_PROFILE = 'Sales Admin';
+    // Same profile pool as Payment Plan approvers — first approval step for Sales Admin.
+    public static final String LINE_MANAGER_PROFILE = 'Sales Director MIRA';
     private static final Integer MIN_JUSTIFICATION_LENGTH = 10;
     private static final Integer HEADER_FIELD_MAX_LENGTH = 255;
+    // Opportunity.Agency__c required lookup: Agency Record Type + Status = Completed.
+    @TestVisible
+    private static final String AGENCY_NOT_REGISTERED_MESSAGE =
+        'The Assisted Agency is not yet registered! Please contact Agent Relationship Manager.';
 
     @TestVisible
     private static final Set<String> PRIVILEGED_REQUESTER_PROFILES = new Set<String>{
@@ -25,6 +32,8 @@ public with sharing class ShareDealApprovalService {
     };
     // Test hook: when non-null, skips profile/group lookup (null = real check).
     @TestVisible private static Boolean forcePrivilegedRequester = null;
+    // Test hook: when non-null, overrides Sales Admin Line Manager selection requirement.
+    @TestVisible private static Boolean forceRequiresLineManagerSelection = null;
     @TestVisible private static String lastSubmitError;
 
     public class ShareDealInfoDTO {
@@ -40,6 +49,8 @@ public with sharing class ShareDealApprovalService {
         @AuraEnabled public String shareDealStatus;
         @AuraEnabled public Boolean eligible;
         @AuraEnabled public String ineligibleReason;
+        // Sales Admin has no User.Manager — must pick Line Manager (Sales Director MIRA).
+        @AuraEnabled public Boolean requiresLineManagerSelection;
     }
 
     public class OpenShareDealRequestDTO {
@@ -72,6 +83,7 @@ public with sharing class ShareDealApprovalService {
         dto.sharedRmId = opp.Shared_RM__c;
         dto.sharedRmName = opp.Shared_RM__r == null ? null : opp.Shared_RM__r.Name;
         dto.shareDealStatus = opp.Share_Deal_Status__c;
+        dto.requiresLineManagerSelection = requiresLineManagerSelection();
 
         if (opp.StageName != 'Booked') {
             dto.eligible = false;
@@ -84,6 +96,28 @@ public with sharing class ShareDealApprovalService {
             dto.eligible = true;
         }
         return dto;
+    }
+
+    /**
+     * Line Manager options for Sales Admin submitters (Sales Director MIRA users).
+     * RMs use their User.Manager hierarchy and do not see this picker.
+     */
+    public static List<RmOptionDTO> getLineManagerOptions() {
+        List<RmOptionDTO> options = new List<RmOptionDTO>();
+        for (User manager : [
+            SELECT Id, Name
+            FROM User
+            WHERE IsActive = true
+              AND Profile.Name = :LINE_MANAGER_PROFILE
+            ORDER BY Name
+            LIMIT 200
+        ]) {
+            RmOptionDTO option = new RmOptionDTO();
+            option.id = manager.Id;
+            option.name = manager.Name;
+            options.add(option);
+        }
+        return options;
     }
 
     public static List<RmOptionDTO> getEligibleSharedRmOptions(Id opportunityId) {
@@ -140,13 +174,18 @@ public with sharing class ShareDealApprovalService {
         Id opportunityId,
         Id requestedSharedRmId,
         String justification,
-        Id existingRequestId
+        Id existingRequestId,
+        Id lineManagerUserId
     ) {
         try {
             validateJustification(justification);
             Opportunity opp = loadOpportunity(opportunityId);
             validateEligible(opp);
             validateRequestedSharedRm(opp, requestedSharedRmId);
+            // Resolve early so Sales Admin / RM failures surface before draft DML.
+            resolveFirstApproverId(lineManagerUserId);
+            // Agency lookup re-validates on Opportunity update — fail before starting approval.
+            validateAssistedAgencyRegistered(opportunityId);
 
             Approval_Request__c pendingRequest = findShareDealRequest(
                 opportunityId,
@@ -169,10 +208,10 @@ public with sharing class ShareDealApprovalService {
                 Approval_Request__c existing = getEditableRequest(approvalRequestId);
                 populateHeaderFields(existing, opp, requestedSharedRmId);
                 existing.Justification__c = justification;
-                update existing;
+                new RequestDml().upsertRequest(existing);
             }
 
-            submitForApproval(approvalRequestId);
+            submitForApproval(approvalRequestId, lineManagerUserId);
             markOpportunityPending(opportunityId);
             return approvalRequestId;
         } catch (AuraHandledException e) {
@@ -214,6 +253,10 @@ public with sharing class ShareDealApprovalService {
 
         Opportunity opp = loadOpportunity(request.Opportunity__c);
         validateRequestedSharedRm(opp, request.Requested_Shared_RM__c);
+        String agencyError = assistedAgencyRegistrationError(opp.Id);
+        if (agencyError != null) {
+            throw new ShareDealApprovalException(agencyError);
+        }
 
         Opportunity updateOpp = new Opportunity(
             Id = opp.Id,
@@ -221,7 +264,8 @@ public with sharing class ShareDealApprovalService {
             Shared_RM__c = request.Requested_Shared_RM__c,
             Share_Deal_Status__c = 'Approved'
         );
-        update updateOpp;
+        // without sharing: Sales Admin often cannot see Agency Account (lookup re-validates).
+        updateOpportunityOrAgencyError(updateOpp, true);
         // RM_Deal_Credit__c rows rebuild via OpportunityTrigger after update.
 
         // Best-effort: request may still be approval-locked immediately after final approval.
@@ -255,9 +299,9 @@ public with sharing class ShareDealApprovalService {
         ];
         // Only clear Pending; leave an already-approved share deal intact.
         if (opp.Share_Deal_Status__c == 'Pending' && opp.Share_Deal__c != true) {
-            update new Opportunity(
-                Id = opp.Id,
-                Share_Deal_Status__c = 'Rejected'
+            updateOpportunityOrAgencyError(
+                new Opportunity(Id = opp.Id, Share_Deal_Status__c = 'Rejected'),
+                true
             );
         }
     }
@@ -284,7 +328,7 @@ public with sharing class ShareDealApprovalService {
 
         request.Justification__c = justification;
         populateHeaderFields(request, opp, requestedSharedRmId);
-        upsert request;
+        new RequestDml().upsertRequest(request);
         return request.Id;
     }
 
@@ -303,7 +347,10 @@ public with sharing class ShareDealApprovalService {
         request.Request_Type__c = REQUEST_TYPE_SHARE_DEAL;
         request.Opportunity__c = opp.Id;
         request.Requested_Shared_RM__c = requestedSharedRmId;
-        request.Unit__c = opp.Unit__c;
+        // Do not set Unit__c: Sales Admin often cannot see the Unit (sharing), which
+        // throws "Value does not exist or does not match filter criteria" on DML.
+        // Share Deal is Opportunity-anchored via Opportunity__c / Related_Record_Id__c.
+        request.Unit__c = null;
         request.Field_To_Update__c = 'Shared_RM__c';
         request.Related_Record_Id__c = String.valueOf(opp.Id);
         request.Related_Object_Type__c = 'Opportunity';
@@ -319,21 +366,31 @@ public with sharing class ShareDealApprovalService {
         );
     }
 
-    private static void submitForApproval(Id approvalRequestId) {
+    private static void submitForApproval(Id approvalRequestId, Id lineManagerUserId) {
         Approval_Request__c request = getEditableRequest(approvalRequestId);
         if (request.Requested_Shared_RM__c == null) {
             throw auraError('Select a Shared RM before submitting for approval.');
         }
 
+        // Step 1 is Manually Chosen (adhoc): always pass nextApproverIds.
+        // Sales Admin → selected Line Manager; RM / others → User.Manager hierarchy.
+        Id firstApproverId = resolveFirstApproverId(lineManagerUserId);
+        List<Id> nextApproverIds = new List<Id>{ firstApproverId };
+        // Stamp Approver__c without sharing so FLS/lookup visibility cannot block submit.
+        // Approval routing itself uses nextApproverIds, not this field.
+        Approval_Request__c preSubmit = new Approval_Request__c(
+            Id = approvalRequestId,
+            Approver__c = firstApproverId
+        );
         if (
             request.Status__c == null ||
             request.Status__c == 'Rejected' ||
             request.Status__c == 'Approved' ||
             request.Status__c == 'Applied'
         ) {
-            request.Status__c = 'Draft';
-            update request;
+            preSubmit.Status__c = 'Draft';
         }
+        new RequestDml().upsertRequest(preSubmit);
 
         Approval_Request__c submitRecord = [
             SELECT Id, Request_Type__c, Status__c
@@ -376,6 +433,7 @@ public with sharing class ShareDealApprovalService {
                 if (String.isNotBlank(processRef)) {
                     submitRequest.setProcessDefinitionNameOrId(processRef);
                 }
+                submitRequest.setNextApproverIds(nextApproverIds);
                 result = Approval.process(submitRequest);
                 if (result != null && result.isSuccess()) {
                     break;
@@ -418,10 +476,83 @@ public with sharing class ShareDealApprovalService {
             // keep Approved on the Opportunity until the new request is applied.
             return;
         }
-        update new Opportunity(
-            Id = opportunityId,
-            Share_Deal_Status__c = 'Pending'
+        // without sharing: Sales Admin often cannot see Agency Account (lookup re-validates).
+        updateOpportunityOrAgencyError(
+            new Opportunity(Id = opportunityId, Share_Deal_Status__c = 'Pending'),
+            false
         );
+    }
+
+    private static void validateAssistedAgencyRegistered(Id opportunityId) {
+        String agencyError = assistedAgencyRegistrationError(opportunityId);
+        if (agencyError != null) {
+            throw auraError(agencyError);
+        }
+    }
+
+    /**
+     * Opportunity.Agency__c required lookup: Agency record type + Status = Completed.
+     * Returns a user-facing message when the Assisted Agency cannot pass that filter.
+     */
+    @TestVisible
+    private static String assistedAgencyRegistrationError(Id opportunityId) {
+        if (opportunityId == null) {
+            return null;
+        }
+        Opportunity opp = new RequestDml().queryOpportunityAgency(opportunityId);
+        if (opp == null || opp.Agency__c == null) {
+            return null;
+        }
+        String status = opp.Agency__r == null ? null : opp.Agency__r.Status__c;
+        String rtName = (opp.Agency__r == null || opp.Agency__r.RecordType == null)
+            ? null
+            : opp.Agency__r.RecordType.Name;
+        String rtDevName = (opp.Agency__r == null || opp.Agency__r.RecordType == null)
+            ? null
+            : opp.Agency__r.RecordType.DeveloperName;
+        Boolean isAgencyRecordType =
+            rtName == 'Agency' || rtDevName == 'Agency';
+        Boolean isCompleted = status == 'Completed';
+        if (isAgencyRecordType && isCompleted) {
+            return null;
+        }
+        return AGENCY_NOT_REGISTERED_MESSAGE;
+    }
+
+    private static void updateOpportunityOrAgencyError(Opportunity opp, Boolean asApplyException) {
+        try {
+            new RequestDml().updateOpportunity(opp);
+        } catch (DmlException e) {
+            if (isAgencyLookupFilterError(e)) {
+                if (asApplyException) {
+                    throw new ShareDealApprovalException(AGENCY_NOT_REGISTERED_MESSAGE);
+                }
+                throw auraError(AGENCY_NOT_REGISTERED_MESSAGE);
+            }
+            if (asApplyException) {
+                throw e;
+            }
+            throw auraError(formatDmlException(e));
+        }
+    }
+
+    private static Boolean isAgencyLookupFilterError(DmlException e) {
+        if (e == null || e.getNumDml() <= 0) {
+            return false;
+        }
+        String message = e.getDmlMessage(0);
+        if (String.isBlank(message) || !message.contains('Value does not exist')) {
+            return false;
+        }
+        List<String> fieldNames = e.getDmlFieldNames(0);
+        if (fieldNames != null) {
+            for (String fieldName : fieldNames) {
+                if (fieldName != null && fieldName.contains('Agency__c')) {
+                    return true;
+                }
+            }
+        }
+        return message.contains('Agency__c') || formatDmlException(e).contains('Agency__c');
     }
 
     private static Opportunity loadOpportunity(Id opportunityId) {
@@ -463,17 +594,80 @@ public with sharing class ShareDealApprovalService {
         return isPrivilegedShareDealRequester();
     }
 
-    private static Boolean isPrivilegedShareDealRequester() {
-        if (forcePrivilegedRequester != null) {
-            return forcePrivilegedRequester;
+    /**
+     * Sales Admin users typically have no Manager on User — same pattern as Payment Plan.
+     * RMs (Opportunity Owners) use hierarchy and do not need this selection.
+     */
+    @TestVisible
+    private static Boolean requiresLineManagerSelection() {
+        if (forceRequiresLineManagerSelection != null) {
+            return forceRequiresLineManagerSelection;
         }
+        return getCurrentUserProfileName() == SALES_ADMIN_PROFILE;
+    }
+
+    private static String getCurrentUserProfileName() {
         List<Profile> profiles = [
             SELECT Name
             FROM Profile
             WHERE Id = :UserInfo.getProfileId()
             LIMIT 1
         ];
-        if (!profiles.isEmpty() && PRIVILEGED_REQUESTER_PROFILES.contains(profiles[0].Name)) {
+        return profiles.isEmpty() ? null : profiles[0].Name;
+    }
+
+    /**
+     * First-step approver for Manually Chosen approval step.
+     * Sales Admin: selected Line Manager. Everyone else: submitter's Manager.
+     */
+    private static Id resolveFirstApproverId(Id lineManagerUserId) {
+        if (requiresLineManagerSelection()) {
+            validateLineManager(lineManagerUserId);
+            return lineManagerUserId;
+        }
+        Id managerId = getCurrentUserManagerId();
+        if (managerId == null) {
+            throw auraError(
+                'Your user has no Manager assigned. Ask an admin to set your Manager, or use a Sales Admin account to select a Line Manager.'
+            );
+        }
+        return managerId;
+    }
+
+    private static Id getCurrentUserManagerId() {
+        List<User> users = [
+            SELECT ManagerId
+            FROM User
+            WHERE Id = :UserInfo.getUserId()
+            LIMIT 1
+        ];
+        return users.isEmpty() ? null : users[0].ManagerId;
+    }
+
+    private static void validateLineManager(Id lineManagerUserId) {
+        if (lineManagerUserId == null) {
+            throw auraError('Select a Line Manager before submitting for approval.');
+        }
+        Boolean allowed = false;
+        for (RmOptionDTO option : getLineManagerOptions()) {
+            if (option.id == lineManagerUserId) {
+                allowed = true;
+                break;
+            }
+        }
+        if (!allowed) {
+            throw auraError(
+                'Selected Line Manager must be an active user with the Sales Director MIRA profile.'
+            );
+        }
+    }
+
+    private static Boolean isPrivilegedShareDealRequester() {
+        if (forcePrivilegedRequester != null) {
+            return forcePrivilegedRequester;
+        }
+        String profileName = getCurrentUserProfileName();
+        if (String.isNotBlank(profileName) && PRIVILEGED_REQUESTER_PROFILES.contains(profileName)) {
             return true;
         }
         return isMemberOfPrivilegedRequesterGroups();
@@ -554,7 +748,7 @@ public with sharing class ShareDealApprovalService {
     private static Approval_Request__c getEditableRequest(Id approvalRequestId) {
         List<Approval_Request__c> requests = [
             SELECT Id, Name, Status__c, Justification__c, Request_Type__c, Opportunity__c,
-                   Requested_Shared_RM__c, Unit__c, Related_Record_Id__c
+                   Requested_Shared_RM__c, Unit__c, Related_Record_Id__c, Approver__c
             FROM Approval_Request__c
             WHERE Id = :approvalRequestId
             LIMIT 1
@@ -629,7 +823,15 @@ public with sharing class ShareDealApprovalService {
     }
 
     private static String formatDmlException(DmlException e) {
-        return e.getNumDml() > 0 ? e.getDmlMessage(0) : e.getMessage();
+        if (e.getNumDml() <= 0) {
+            return e.getMessage();
+        }
+        String fields = '';
+        List<String> fieldNames = e.getDmlFieldNames(0);
+        if (fieldNames != null && !fieldNames.isEmpty()) {
+            fields = ' [' + String.join(fieldNames, ', ') + ']';
+        }
+        return e.getDmlMessage(0) + fields;
     }
 
     private static String getExceptionMessage(Exception e) {
@@ -640,5 +842,28 @@ public with sharing class ShareDealApprovalService {
         AuraHandledException ex = new AuraHandledException(message);
         ex.setMessage(message);
         return ex;
+    }
+
+    /**
+     * Share Deal DML / Agency reads run without sharing so Sales Admin can evaluate
+     * Assisted Agency status and update Opportunity even when sharing is tight.
+     */
+    private without sharing class RequestDml {
+        private void upsertRequest(Approval_Request__c request) {
+            upsert request;
+        }
+        private void updateOpportunity(Opportunity opp) {
+            update opp;
+        }
+        private Opportunity queryOpportunityAgency(Id opportunityId) {
+            List<Opportunity> opps = [
+                SELECT Id, Agency__c, Agency__r.Status__c,
+                       Agency__r.RecordType.Name, Agency__r.RecordType.DeveloperName
+                FROM Opportunity
+                WHERE Id = :opportunityId
+                LIMIT 1
+            ];
+            return opps.isEmpty() ? null : opps[0];
+        }
     }
 }

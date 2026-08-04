@@ -108,6 +108,28 @@
                             </lightning-combobox>
                         </div>
 
+                        <template if:true={requiresLineManagerSelection}>
+                            <div class="slds-m-top_medium">
+                                <lightning-combobox
+                                    label="Line Manager"
+                                    value={selectedLineManagerId}
+                                    placeholder="Select Line Manager"
+                                    options={lineManagerOptions}
+                                    required
+                                    disabled={isReadOnly}
+                                    onchange={handleLineManagerChange}>
+                                </lightning-combobox>
+                                <template if:false={hasLineManagerOptions}>
+                                    <p class="slds-text-body_small slds-text-color_error slds-m-top_xx-small">
+                                        No Line Managers found. Active users need the Sales Director MIRA profile.
+                                    </p>
+                                </template>
+                                <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                                    Sales Admin has no assigned Manager — choose who will approve this request first.
+                                </p>
+                            </div>
+                        </template>
+
                         <div class="slds-m-top_medium">
                             <lightning-textarea
                                 label="Justification"
@@ -136,6 +158,12 @@
                                 <div class="slds-text-title slds-text-color_weak">Shared RM</div>
                                 <div class="slds-text-heading_small">{selectedSharedRmName}</div>
                             </div>
+                            <template if:true={requiresLineManagerSelection}>
+                                <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                    <div class="slds-text-title slds-text-color_weak">Line Manager</div>
+                                    <div class="slds-text-heading_small">{selectedLineManagerName}</div>
+                                </div>
+                            </template>
                             <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
                                 <div class="slds-text-title slds-text-color_weak">Unit Price</div>
                                 <div class="slds-text-heading_small">{unitPriceDisplay}</div>
