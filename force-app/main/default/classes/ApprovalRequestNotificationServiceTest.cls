@@ -309,13 +309,14 @@ private class ApprovalRequestNotificationServiceTest {
             Related_Object_Type__c = 'Unit__c',
             Field_To_Update__c = 'Cost_AED__c',
             Current_Value__c = 'AED 1,000,000',
+            Discount_Percent__c = 5,
             Requested_Value__c = 'AED 950,000',
             Justification__c = 'Client negotiation',
             Status__c = 'Rejected'
         );
         insert r;
-        r = [SELECT Id, Request_Type__c, Status__c, Current_Value__c, Requested_Value__c,
-                    Field_To_Update__c, Justification__c, Requester__r.Name
+        r = [SELECT Id, Request_Type__c, Status__c, Current_Value__c, Discount_Percent__c,
+                    Requested_Value__c, Field_To_Update__c, Justification__c, Requester__r.Name
              FROM Approval_Request__c WHERE Id = :r.Id];
 
         String body = ApprovalRequestNotificationService.opsBodyFor(
@@ -324,6 +325,13 @@ private class ApprovalRequestNotificationServiceTest {
         System.assert(body.contains('A-211'), 'unit label shown');
         System.assert(body.contains('MIRA Project'), 'project name shown');
         System.assert(!body.contains('Cost_AED__c'), 'field name (Cost_AED__c) no longer shown');
+        System.assert(body.contains('Requested Percentage'), 'percentage label shown');
+        System.assert(body.contains('5%'), 'percentage value shown');
+        Integer currentIdx = body.indexOf('Current value');
+        Integer percentIdx = body.indexOf('Requested Percentage');
+        Integer requestedIdx = body.indexOf('Requested value');
+        System.assert(currentIdx >= 0 && percentIdx > currentIdx && requestedIdx > percentIdx,
+            'percentage appears after current value and before requested value');
         System.assert(body.contains('Approver comment'), 'comment heading shown');
         System.assert(body.contains('Price too low &lt;b&gt;no&lt;/b&gt;'), 'comment HTML-escaped');
         System.assert(body.contains('/lightning/r/Approval_Request__c/'), 'record link present');

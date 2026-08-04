@@ -262,8 +262,8 @@ public without sharing class ApprovalRequestNotificationService {
 
         List<Approval_Request__c> reqs = [
             SELECT Id, Name, Request_Type__c, Status__c, Current_Value__c, Requested_Value__c,
-                   Field_To_Update__c, Justification__c, Parent_Object__c, Parent_Record_Id__c,
-                   Unit__c, Opportunity__c, Opportunity__r.Name, Requester__r.Name
+                   Discount_Percent__c, Field_To_Update__c, Justification__c, Parent_Object__c,
+                   Parent_Record_Id__c, Unit__c, Opportunity__c, Opportunity__r.Name, Requester__r.Name
             FROM Approval_Request__c
             WHERE Id IN :requestIds AND Request_Type__c IN :OPS_TYPES
         ];
@@ -423,6 +423,9 @@ public without sharing class ApprovalRequestNotificationService {
             (String.isBlank(projectName) ? '' : opsRow('Project', projectName)) +
             (String.isBlank(unitName) ? '' : opsRow('Unit', unitName)) +
             opsRow('Current value', r.Current_Value__c) +
+            (r.Request_Type__c == 'Unit Price Change'
+                ? opsRow('Requested Percentage', formatRequestedPercentage(r.Discount_Percent__c))
+                : '') +
             opsRow('Requested value', r.Requested_Value__c) +
             opsRow('Requested by', requester) +
             opsRow('Status', r.Status__c) +
@@ -440,5 +443,12 @@ public without sharing class ApprovalRequestNotificationService {
         return '<tr><td style="padding:4px 12px 4px 0;color:#666;">' + label + '</td>' +
                '<td style="padding:4px 0;"><strong>' +
                (String.isBlank(value) ? '—' : value.escapeHtml4()) + '</strong></td></tr>';
+    }
+
+    private static String formatRequestedPercentage(Decimal percent) {
+        if (percent == null) {
+            return null;
+        }
+        return String.valueOf(percent.intValue()) + '%';
     }
 }
