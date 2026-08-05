@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>MonthlySalesReportModels</members>
+        <members>MonthlySalesReportService</members>
+        <members>MonthlySalesReportController</members>
+        <members>MonthlySalesReportPDFController</members>
+        <members>MonthlySalesReportServiceTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>MonthlySalesReportPDF</members>
+        <members>MonthlySalesReportPrint</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>monthlySalesReport</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <members>Monthly_Sales_Report</members>
+        <name>FlexiPage</name>
+    </types>
+    <types>
+        <members>Monthly_Sales_Report</members>
+        <name>CustomTab</name>
+    </types>
+    <version>66.0</version>
+</Package>

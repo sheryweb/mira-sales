@@ -1,0 +1,12 @@
+<apex:page
+    controller="MonthlySalesReportPDFController"
+    applyHtmlTag="false"
+    showHeader="false"
+    sidebar="false"
+    standardStylesheets="false"
+    docType="html-5.0"
+    cache="false"
+    applyBodyTag="false">
+    <!-- Browser HTML (no renderAs=pdf). CSS3 border-radius works; window.print → Save as PDF. -->
+    <apex:outputText value="{!htmlContent}" escape="false"/>
+</apex:page>

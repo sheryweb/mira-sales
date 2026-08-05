@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>MIRA Monthly Sales Report PDF</description>
+    <flexiPage>Monthly_Sales_Report</flexiPage>
+    <label>Sales Report</label>
+    <motif>Custom53: Report</motif>
+</CustomTab>

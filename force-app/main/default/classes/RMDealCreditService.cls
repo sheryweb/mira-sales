@@ -152,6 +152,14 @@ public without sharing class RMDealCreditService {
     }
 
     /**
+     * Public accessor for monthly sales report / leaderboard aggregation.
+     * Mirrors Opportunity.Manager_Name__c role-to-manager mapping.
+     */
+    public static String getManagerNameForRole(String roleName) {
+        return managerNameForRole(roleName);
+    }
+
+    /**
      * Mirrors Opportunity.Manager_Name__c role-to-manager mapping.
      */
     @TestVisible

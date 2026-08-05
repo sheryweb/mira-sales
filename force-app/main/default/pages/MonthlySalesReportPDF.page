@@ -1,0 +1,11 @@
+<apex:page
+    controller="MonthlySalesReportPDFController"
+    renderAs="pdf"
+    applyHtmlTag="false"
+    showHeader="false"
+    standardStylesheets="false"
+    docType="html-5.0"
+    cache="false"
+    applyBodyTag="false">
+    <apex:outputText value="{!htmlContent}" escape="false"/>
+</apex:page>
