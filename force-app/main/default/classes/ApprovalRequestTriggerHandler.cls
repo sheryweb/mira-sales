@@ -98,6 +98,12 @@ public class ApprovalRequestTriggerHandler {
                 && oldReq.Opportunity__c != null) {
                 req.addError('Opportunity cannot be changed once set on a Share Deal approval request.');
             }
+
+            if (req.Request_Type__c == InvoiceReceiptTransferService.REQUEST_TYPE
+                && req.Unit__c != oldReq.Unit__c
+                && oldReq.Unit__c != null) {
+                req.addError('Unit cannot be changed once set on an Invoice Receipt Transfer request.');
+            }
         }
     }
 
@@ -157,6 +163,8 @@ public class ApprovalRequestTriggerHandler {
                 UnitPriceApprovalService.applyApprovedChanges(req.Id);
             } else if (req.Request_Type__c == ShareDealApprovalService.REQUEST_TYPE_SHARE_DEAL) {
                 ShareDealApprovalService.applyApprovedChanges(req.Id);
+            } else if (req.Request_Type__c == InvoiceReceiptTransferService.REQUEST_TYPE) {
+                InvoiceReceiptTransferService.applyApprovedChanges(req.Id);
             }
         }
         if (!notifyIds.isEmpty()) {

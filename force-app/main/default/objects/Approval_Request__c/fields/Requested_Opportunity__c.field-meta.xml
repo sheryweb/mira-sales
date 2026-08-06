@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Requested_Opportunity__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Target Opportunity for an Invoice Receipt Transfer approval request.</description>
+    <label>Requested Opportunity</label>
+    <referenceTo>Opportunity</referenceTo>
+    <relationshipLabel>Invoice Receipt Transfer Requests</relationshipLabel>
+    <relationshipName>Invoice_Receipt_Transfer_Requests</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

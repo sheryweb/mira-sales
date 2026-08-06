@@ -190,4 +190,34 @@
         <protected>false</protected>
         <reevaluateOnChange>false</reevaluateOnChange>
     </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Invoice_Receipt_Transfer_Approved</fullName>
+        <field>Status__c</field>
+        <literalValue>Approved</literalValue>
+        <name>Invoice Receipt Transfer Approved</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Invoice_Receipt_Transfer_Pending</fullName>
+        <field>Status__c</field>
+        <literalValue>Pending</literalValue>
+        <name>Invoice Receipt Transfer Pending</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Invoice_Receipt_Transfer_Rejected</fullName>
+        <field>Status__c</field>
+        <literalValue>Rejected</literalValue>
+        <name>Invoice Receipt Transfer Rejected</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
 </Workflow>

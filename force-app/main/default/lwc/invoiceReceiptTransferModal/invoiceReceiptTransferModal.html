@@ -1,0 +1,89 @@
+<template>
+    <div class="slds-p-around_medium">
+        <template if:true={isLoading}>
+            <div class="slds-align_absolute-center slds-p-around_large">
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:false={isLoading}>
+            <template if:true={showInlineError}>
+                <div class="slds-text-color_error slds-m-bottom_small">{error}</div>
+            </template>
+
+            <template if:true={isBlocked}>
+                <div class="slds-text-align_center slds-p-around_medium">
+                    <lightning-icon icon-name="utility:warning" variant="warning" size="small"></lightning-icon>
+                    <p class="slds-m-top_small">{blockReason}</p>
+                    <div class="slds-m-top_medium">
+                        <lightning-button label="Close" onclick={handleCancel}></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <template if:false={isBlocked}>
+                <p class="slds-text-body_small slds-m-bottom_small">
+                    Transfer all invoices ({invoiceCount}) and receipts ({receiptCount}) on
+                    <strong>{unitTitle}</strong> to the selected Opportunity and Account.
+                </p>
+
+                <lightning-combobox
+                    name="opportunity"
+                    label="Opportunity"
+                    value={selectedOpportunityId}
+                    placeholder="Select an Opportunity on this Unit"
+                    options={opportunityOptions}
+                    onchange={handleOpportunityChange}
+                    required
+                ></lightning-combobox>
+
+                <template if:true={hasSelection}>
+                    <div class="slds-box slds-box_x-small slds-m-top_medium slds-m-bottom_medium">
+                        <p class="slds-text-title_caps slds-m-bottom_x-small">Verify Account</p>
+                        <dl class="slds-dl_horizontal">
+                            <dt class="slds-dl_horizontal__label">Account Name</dt>
+                            <dd class="slds-dl_horizontal__detail">{selectedAccount.accountName}</dd>
+                            <dt class="slds-dl_horizontal__label">Email</dt>
+                            <dd class="slds-dl_horizontal__detail">{selectedAccount.email}</dd>
+                            <dt class="slds-dl_horizontal__label">Phone</dt>
+                            <dd class="slds-dl_horizontal__detail">{selectedAccount.phone}</dd>
+                            <dt class="slds-dl_horizontal__label">Financial Id</dt>
+                            <dd class="slds-dl_horizontal__detail">{selectedAccount.financialNumber}</dd>
+                        </dl>
+                    </div>
+                </template>
+
+                <lightning-textarea
+                    label="Justification"
+                    value={justification}
+                    onchange={handleJustificationChange}
+                    required
+                    max-length="255"
+                    class="slds-m-top_small"
+                ></lightning-textarea>
+                <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_medium">
+                    Minimum 10 characters.
+                </p>
+
+                <div class="slds-grid slds-grid_align-end">
+                    <lightning-button
+                        label="Cancel"
+                        onclick={handleCancel}
+                        class="slds-m-right_small"
+                        disabled={working}
+                    ></lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        label="Request for Transfer"
+                        onclick={handleSubmit}
+                        disabled={disableRequest}
+                    ></lightning-button>
+                </div>
+
+                <template if:true={working}>
+                    <lightning-spinner alternative-text="Submitting" size="small"></lightning-spinner>
+                </template>
+            </template>
+        </template>
+    </div>
+</template>

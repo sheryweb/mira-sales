@@ -61,6 +61,11 @@
                 <label>Document Re-upload</label>
             </value>
             <value>
+                <fullName>Invoice Receipt Transfer</fullName>
+                <default>false</default>
+                <label>Invoice Receipt Transfer</label>
+            </value>
+            <value>
                 <fullName>DLD Waver Request</fullName>
                 <default>false</default>
                 <isActive>false</isActive>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApprovalProcess xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>false</active>
+    <allowRecall>false</allowRecall>
+    <allowedSubmitters>
+        <type>owner</type>
+    </allowedSubmitters>
+    <allowedSubmitters>
+        <type>creator</type>
+    </allowedSubmitters>
+    <approvalPageFields>
+        <field>Name</field>
+        <field>Owner</field>
+        <field>Unit__c</field>
+        <field>Requested_Opportunity__c</field>
+        <field>Current_Value__c</field>
+        <field>Requested_Value__c</field>
+        <field>Justification__c</field>
+    </approvalPageFields>
+    <approvalStep>
+        <allowDelegate>false</allowDelegate>
+        <assignedApprover>
+            <approver>
+                <type>userHierarchyField</type>
+            </approver>
+        </assignedApprover>
+        <label>Approve Transfer</label>
+        <name>Approve_Transfer</name>
+    </approvalStep>
+    <description>Invoice Receipt Transfer — reassigns Unit invoices/receipts to a target Opportunity/Account. Reconfigure approver assignment in Setup as needed.</description>
+    <enableMobileDeviceAccess>false</enableMobileDeviceAccess>
+    <entryCriteria>
+        <criteriaItems>
+            <field>Approval_Request__c.Request_Type__c</field>
+            <operation>equals</operation>
+            <value>Invoice Receipt Transfer</value>
+        </criteriaItems>
+    </entryCriteria>
+    <finalApprovalActions>
+        <action>
+            <name>Invoice_Receipt_Transfer_Approved</name>
+            <type>FieldUpdate</type>
+        </action>
+    </finalApprovalActions>
+    <finalApprovalRecordLock>true</finalApprovalRecordLock>
+    <finalRejectionActions>
+        <action>
+            <name>Invoice_Receipt_Transfer_Rejected</name>
+            <type>FieldUpdate</type>
+        </action>
+    </finalRejectionActions>
+    <finalRejectionRecordLock>false</finalRejectionRecordLock>
+    <initialSubmissionActions>
+        <action>
+            <name>Invoice_Receipt_Transfer_Pending</name>
+            <type>FieldUpdate</type>
+        </action>
+    </initialSubmissionActions>
+    <label>Invoice Receipt Transfer</label>
+    <nextAutomatedApprover>
+        <useApproverFieldOfRecordOwner>false</useApproverFieldOfRecordOwner>
+        <userHierarchyField>Manager</userHierarchyField>
+    </nextAutomatedApprover>
+    <processOrder>7</processOrder>
+    <recordEditability>AdminOrCurrentApprover</recordEditability>
+    <showApprovalHistory>true</showApprovalHistory>
+</ApprovalProcess>
