@@ -254,6 +254,100 @@ private class MonthlySalesReportServiceTest {
     }
 
     @IsTest
+    static void testBuildDateRangeReport() {
+        Date startDate = Date.newInstance(2026, 7, 10);
+        Date endDate = Date.newInstance(2026, 7, 20);
+
+        Test.startTest();
+        MonthlySalesReportModels.MonthlyReportDTO report =
+            MonthlySalesReportService.buildDateRangeReport(startDate, endDate);
+        String html = MonthlySalesReportService.buildReportHtml(
+            MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE,
+            startDate,
+            endDate
+        );
+        MonthlySalesReportModels.MonthlyReportDTO viaController =
+            MonthlySalesReportController.getReportData(
+                MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE,
+                null,
+                null,
+                null,
+                '2026-07-10',
+                '2026-07-20'
+            );
+        String rangeHtml = MonthlySalesReportController.getReportHtml(
+            MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE,
+            null,
+            null,
+            null,
+            '2026-07-10',
+            '2026-07-20'
+        );
+        String rangePdf = MonthlySalesReportController.generatePdf(
+            MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE,
+            null,
+            null,
+            null,
+            '2026-07-10',
+            '2026-07-20'
+        );
+
+        PageReference printRef = Page.MonthlySalesReportPrint;
+        printRef.getParameters().put('reportType', MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE);
+        printRef.getParameters().put('startDate', '2026-07-10');
+        printRef.getParameters().put('endDate', '2026-07-20');
+        Test.setCurrentPage(printRef);
+        MonthlySalesReportPDFController printCtrl = new MonthlySalesReportPDFController();
+        Test.stopTest();
+
+        System.assertEquals(MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE, report.reportType);
+        System.assertEquals('Sales Date Range Report', report.reportTitle);
+        System.assertEquals('Period Performance', report.performanceTitle);
+        System.assertEquals('OF THE PERIOD', report.periodGrainLabel);
+        System.assertEquals(startDate, report.startDate);
+        System.assertEquals(endDate, report.endDate);
+        System.assert(
+            report.periodLabel.contains('10 July 2026') && report.periodLabel.contains('20 July 2026'),
+            'Date range period label: ' + report.periodLabel
+        );
+        System.assertEquals(viaController.transactionCount, report.transactionCount);
+        System.assert(String.isNotBlank(rangeHtml), 'Date range controller HTML');
+        System.assert(String.isNotBlank(rangePdf), 'Date range controller PDF');
+        System.assert(html.contains('Sales Date Range Report'), 'Date range HTML header');
+        System.assert(html.contains('TOP TEAM OF THE PERIOD'), 'Date range grain labels');
+        System.assert(html.contains('TRANSACTION DETAILS'), 'Date range uses paginated layout');
+        System.assert(
+            printCtrl.htmlContent.contains('Sales Date Range Report')
+                || printCtrl.htmlContent.contains('TRANSACTION'),
+            'Date range print HTML expected'
+        );
+        System.assert(printCtrl.htmlContent.contains('window.print'), 'Date range print script');
+
+        Boolean missingRangeThrew = false;
+        try {
+            MonthlySalesReportController.getReportData(
+                MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE,
+                null,
+                null,
+                null,
+                null,
+                '2026-07-20'
+            );
+        } catch (AuraHandledException e) {
+            missingRangeThrew = true;
+        }
+        System.assertEquals(true, missingRangeThrew, 'Date Range without start should fail');
+
+        Boolean invertedThrew = false;
+        try {
+            MonthlySalesReportService.buildDateRangeReport(endDate, startDate);
+        } catch (MonthlySalesReportService.MonthlySalesReportException e) {
+            invertedThrew = true;
+        }
+        System.assertEquals(true, invertedThrew, 'Inverted date range should fail');
+    }
+
+    @IsTest
     static void testPrintPageInjectsWindowPrint() {
         PageReference printRef = Page.MonthlySalesReportPrint;
         printRef.getParameters().put('year', '2026');
@@ -284,14 +378,14 @@ private class MonthlySalesReportServiceTest {
     static void testBuildReportHtmlAndController() {
         Test.startTest();
         String html = MonthlySalesReportController.getReportHtml(
-            MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 7, null
+            MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 7, null, null, null
         );
         MonthlySalesReportModels.MonthlyReportDTO data =
             MonthlySalesReportController.getReportData(
-                MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 7, null
+                MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 7, null, null, null
             );
         String pdfBase64 = MonthlySalesReportController.generatePdf(
-            MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 7, null
+            MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 7, null, null, null
         );
         String pdfFromHtml = MonthlySalesReportController.generatePdfFromHtml(html);
         Id pdfDocId = MonthlySalesReportController.savePdfDocument(
@@ -305,10 +399,10 @@ private class MonthlySalesReportServiceTest {
         // Weekly controller path
         MonthlySalesReportModels.MonthlyReportDTO weekly =
             MonthlySalesReportController.getReportData(
-                MonthlySalesReportModels.REPORT_TYPE_WEEKLY, null, null, '2026-07-15'
+                MonthlySalesReportModels.REPORT_TYPE_WEEKLY, null, null, '2026-07-15', null, null
             );
         String weeklyPdf = MonthlySalesReportController.generatePdf(
-            MonthlySalesReportModels.REPORT_TYPE_WEEKLY, null, null, '2026-07-15'
+            MonthlySalesReportModels.REPORT_TYPE_WEEKLY, null, null, '2026-07-15', null, null
         );
         Test.stopTest();
 
@@ -381,7 +475,7 @@ private class MonthlySalesReportServiceTest {
         Boolean invalidThrew = false;
         try {
             MonthlySalesReportController.getReportData(
-                MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 0, null
+                MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 0, null, null, null
             );
         } catch (AuraHandledException e) {
             invalidThrew = true;
@@ -399,7 +493,7 @@ private class MonthlySalesReportServiceTest {
         Boolean weeklyMissingThrew = false;
         try {
             MonthlySalesReportController.getReportData(
-                MonthlySalesReportModels.REPORT_TYPE_WEEKLY, null, null, null
+                MonthlySalesReportModels.REPORT_TYPE_WEEKLY, null, null, null, null, null
             );
         } catch (AuraHandledException e) {
             weeklyMissingThrew = true;

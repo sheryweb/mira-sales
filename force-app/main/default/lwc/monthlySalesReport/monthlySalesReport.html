@@ -52,6 +52,27 @@
                 ></lightning-input>
             </template>
 
+            <template if:true={isDateRange}>
+                <lightning-input
+                    class="period-field week-field"
+                    type="date"
+                    name="rangeStart"
+                    label="From"
+                    value={selectedRangeStart}
+                    onchange={handleRangeStartChange}
+                    variant="label-hidden"
+                ></lightning-input>
+                <lightning-input
+                    class="period-field week-field"
+                    type="date"
+                    name="rangeEnd"
+                    label="To"
+                    value={selectedRangeEnd}
+                    onchange={handleRangeEndChange}
+                    variant="label-hidden"
+                ></lightning-input>
+            </template>
+
             <lightning-button
                 label="Refresh"
                 onclick={handleRefresh}

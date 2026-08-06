@@ -1,23 +1,26 @@
 /**
- * Aura-enabled entry points for the MIRA Sales Report LWC (Monthly + Weekly).
- * Working-org only until validated — do not deploy to production without sign-off.
+ * Aura-enabled entry points for the MIRA Sales Report LWC (Monthly + Weekly + Date Range).
  */
 public with sharing class MonthlySalesReportController {
     /**
-     * @param reportType Monthly or Weekly (blank defaults to Monthly)
+     * @param reportType Monthly, Weekly, or Date Range (blank defaults to Monthly)
      * @param year month/year for Monthly
      * @param month month/year for Monthly
-     * @param weekStartIso yyyy-MM-dd any date in the week (Weekly); blank for Monthly
+     * @param weekStartIso yyyy-MM-dd any date in the week (Weekly)
+     * @param startDateIso yyyy-MM-dd range start (Date Range)
+     * @param endDateIso yyyy-MM-dd range end (Date Range)
      */
     @AuraEnabled(cacheable=true)
     public static MonthlySalesReportModels.MonthlyReportDTO getReportData(
         String reportType,
         Integer year,
         Integer month,
-        String weekStartIso
+        String weekStartIso,
+        String startDateIso,
+        String endDateIso
     ) {
         try {
-            return resolveReport(reportType, year, month, weekStartIso);
+            return resolveReport(reportType, year, month, weekStartIso, startDateIso, endDateIso);
         } catch (Exception e) {
             throw auraError(e, 'Failed to build sales report');
         }
@@ -28,11 +31,13 @@ public with sharing class MonthlySalesReportController {
         String reportType,
         Integer year,
         Integer month,
-        String weekStartIso
+        String weekStartIso,
+        String startDateIso,
+        String endDateIso
     ) {
         try {
             return MonthlySalesReportService.renderHtml(
-                resolveReport(reportType, year, month, weekStartIso)
+                resolveReport(reportType, year, month, weekStartIso, startDateIso, endDateIso)
             );
         } catch (Exception e) {
             throw auraError(e, 'Failed to render sales report HTML');
@@ -48,14 +53,16 @@ public with sharing class MonthlySalesReportController {
         String reportType,
         Integer year,
         Integer month,
-        String weekStartIso
+        String weekStartIso,
+        String startDateIso,
+        String endDateIso
     ) {
         try {
             String normalized = String.isBlank(reportType)
                 ? MonthlySalesReportModels.REPORT_TYPE_MONTHLY
                 : reportType;
             if (normalized.equalsIgnoreCase(MonthlySalesReportModels.REPORT_TYPE_WEEKLY)) {
-                Date anyDate = parseIsoDate(weekStartIso);
+                Date anyDate = parseIsoDate(weekStartIso, 'weekStartIso');
                 if (anyDate == null) {
                     throw new MonthlySalesReportService.MonthlySalesReportException(
                         'weekStartIso (yyyy-MM-dd) is required for weekly reports.'
@@ -67,6 +74,20 @@ public with sharing class MonthlySalesReportController {
                     MonthlySalesReportModels.REPORT_TYPE_WEEKLY,
                     report.startDate,
                     report.endDate
+                );
+            }
+            if (normalized.equalsIgnoreCase(MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE)) {
+                Date startDate = parseIsoDate(startDateIso, 'startDateIso');
+                Date endDate = parseIsoDate(endDateIso, 'endDateIso');
+                if (startDate == null || endDate == null) {
+                    throw new MonthlySalesReportService.MonthlySalesReportException(
+                        'startDateIso and endDateIso (yyyy-MM-dd) are required for date range reports.'
+                    );
+                }
+                return MonthlySalesReportService.generatePdf(
+                    MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE,
+                    startDate,
+                    endDate
                 );
             }
             return MonthlySalesReportService.generatePdf(year, month);
@@ -130,14 +151,16 @@ public with sharing class MonthlySalesReportController {
         String reportType,
         Integer year,
         Integer month,
-        String weekStartIso
+        String weekStartIso,
+        String startDateIso,
+        String endDateIso
     ) {
         String normalized = String.isBlank(reportType)
             ? MonthlySalesReportModels.REPORT_TYPE_MONTHLY
             : reportType;
 
         if (normalized.equalsIgnoreCase(MonthlySalesReportModels.REPORT_TYPE_WEEKLY)) {
-            Date anyDate = parseIsoDate(weekStartIso);
+            Date anyDate = parseIsoDate(weekStartIso, 'weekStartIso');
             if (anyDate == null) {
                 throw new MonthlySalesReportService.MonthlySalesReportException(
                     'weekStartIso (yyyy-MM-dd) is required for weekly reports.'
@@ -146,10 +169,21 @@ public with sharing class MonthlySalesReportController {
             return MonthlySalesReportService.buildWeeklyReport(anyDate);
         }
 
+        if (normalized.equalsIgnoreCase(MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE)) {
+            Date startDate = parseIsoDate(startDateIso, 'startDateIso');
+            Date endDate = parseIsoDate(endDateIso, 'endDateIso');
+            if (startDate == null || endDate == null) {
+                throw new MonthlySalesReportService.MonthlySalesReportException(
+                    'startDateIso and endDateIso (yyyy-MM-dd) are required for date range reports.'
+                );
+            }
+            return MonthlySalesReportService.buildDateRangeReport(startDate, endDate);
+        }
+
         return MonthlySalesReportService.buildReport(year, month);
     }
 
-    private static Date parseIsoDate(String iso) {
+    private static Date parseIsoDate(String iso, String fieldLabel) {
         if (String.isBlank(iso)) {
             return null;
         }
@@ -158,7 +192,7 @@ public with sharing class MonthlySalesReportController {
             return Date.valueOf(iso.trim());
         } catch (Exception e) {
             throw new MonthlySalesReportService.MonthlySalesReportException(
-                'weekStartIso must be yyyy-MM-dd. Received: ' + iso
+                fieldLabel + ' must be yyyy-MM-dd. Received: ' + iso
             );
         }
     }

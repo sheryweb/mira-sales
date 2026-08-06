@@ -1,10 +1,11 @@
 /**
- * DTOs for the MIRA Sales Report (Monthly + Weekly).
+ * DTOs for the MIRA Sales Report (Monthly + Weekly + Date Range).
  * Mirrors July 2026 monthly / 20–26 July weekly report structures.
  */
 public with sharing class MonthlySalesReportModels {
     public static final String REPORT_TYPE_MONTHLY = 'Monthly';
     public static final String REPORT_TYPE_WEEKLY = 'Weekly';
+    public static final String REPORT_TYPE_DATE_RANGE = 'Date Range';
 
     public class TransactionDTO {
         @AuraEnabled public Id opportunityId;

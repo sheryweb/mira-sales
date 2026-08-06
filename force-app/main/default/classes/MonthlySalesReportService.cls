@@ -1,5 +1,5 @@
 /**
- * Builds the MIRA Sales Report (Monthly + Weekly): queries booked/sold/reserved
+ * Builds the MIRA Sales Report (Monthly + Weekly + Date Range): queries booked/sold/reserved
  * Opportunities for a period, applies shared-deal 50/50 splits (including
  * same-manager full credit), aggregates leaderboards, and renders dark-theme
  * HTML for Visualforce PDF generation.
@@ -35,6 +35,13 @@ public with sharing class MonthlySalesReportService {
         Date startDate = weekStartMonday(anyDateInWeek);
         Date endDate = startDate.addDays(6);
         return buildReport(MonthlySalesReportModels.REPORT_TYPE_WEEKLY, startDate, endDate);
+    }
+
+    public static MonthlySalesReportModels.MonthlyReportDTO buildDateRangeReport(
+        Date startDate,
+        Date endDate
+    ) {
+        return buildReport(MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE, startDate, endDate);
     }
 
     public static MonthlySalesReportModels.MonthlyReportDTO buildReport(
@@ -319,18 +326,29 @@ public with sharing class MonthlySalesReportService {
     ) {
         MonthlySalesReportModels.MonthlyReportDTO report = new MonthlySalesReportModels.MonthlyReportDTO();
         Boolean isWeekly = reportType == MonthlySalesReportModels.REPORT_TYPE_WEEKLY;
+        Boolean isDateRange = reportType == MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE;
 
         report.reportType = reportType;
-        report.reportTitle = isWeekly ? 'Sales Weekly Report' : 'Sales Monthly Report';
-        report.performanceTitle = isWeekly ? 'Weekly Performance' : 'Monthly Performance';
-        report.periodGrainLabel = isWeekly ? 'OF THE WEEK' : 'OF THE MONTH';
+        if (isWeekly) {
+            report.reportTitle = 'Sales Weekly Report';
+            report.performanceTitle = 'Weekly Performance';
+            report.periodGrainLabel = 'OF THE WEEK';
+            report.periodLabel = weekPeriodLabel(startDate, endDate);
+        } else if (isDateRange) {
+            report.reportTitle = 'Sales Date Range Report';
+            report.performanceTitle = 'Period Performance';
+            report.periodGrainLabel = 'OF THE PERIOD';
+            report.periodLabel = weekPeriodLabel(startDate, endDate);
+        } else {
+            report.reportTitle = 'Sales Monthly Report';
+            report.performanceTitle = 'Monthly Performance';
+            report.periodGrainLabel = 'OF THE MONTH';
+            report.periodLabel = periodLabel(startDate.year(), startDate.month());
+        }
         report.startDate = startDate;
         report.endDate = endDate;
         report.year = startDate.year();
         report.month = startDate.month();
-        report.periodLabel = isWeekly
-            ? weekPeriodLabel(startDate, endDate)
-            : periodLabel(startDate.year(), startDate.month());
         report.generatedDate = Date.today();
         report.generatedDateDisplay = formatLongDate(Date.today());
         report.page1TransactionCount = PAGE_1_TRANSACTION_COUNT;
@@ -929,7 +947,9 @@ public with sharing class MonthlySalesReportService {
     ) {
         String emptyShared = report.reportType == MonthlySalesReportModels.REPORT_TYPE_WEEKLY
             ? 'No shared deals this week'
-            : 'No shared deals this month';
+            : (report.reportType == MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE
+                ? 'No shared deals in this period'
+                : 'No shared deals this month');
 
         List<String> parts = new List<String>();
         parts.add('<div class="page page-last">');
@@ -1275,8 +1295,11 @@ public with sharing class MonthlySalesReportService {
         if (reportType.equalsIgnoreCase(MonthlySalesReportModels.REPORT_TYPE_WEEKLY)) {
             return MonthlySalesReportModels.REPORT_TYPE_WEEKLY;
         }
+        if (reportType.equalsIgnoreCase(MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE)) {
+            return MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE;
+        }
         throw new MonthlySalesReportException(
-            'Report type must be Monthly or Weekly. Received: ' + reportType
+            'Report type must be Monthly, Weekly, or Date Range. Received: ' + reportType
         );
     }
 

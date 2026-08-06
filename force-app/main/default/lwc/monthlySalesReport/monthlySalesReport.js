@@ -20,7 +20,8 @@ const MONTH_OPTIONS = [
 
 const REPORT_TYPE_OPTIONS = [
     { label: 'Monthly', value: 'Monthly' },
-    { label: 'Weekly', value: 'Weekly' }
+    { label: 'Weekly', value: 'Weekly' },
+    { label: 'Date Range', value: 'Date Range' }
 ];
 
 export default class MonthlySalesReport extends LightningElement {
@@ -34,6 +35,8 @@ export default class MonthlySalesReport extends LightningElement {
     selectedYear;
     selectedMonth;
     selectedWeekDate;
+    selectedRangeStart;
+    selectedRangeEnd;
 
     reportTypeOptions = REPORT_TYPE_OPTIONS;
     monthOptions = MONTH_OPTIONS;
@@ -41,9 +44,12 @@ export default class MonthlySalesReport extends LightningElement {
     connectedCallback() {
         const today = new Date();
         const previous = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const previousEnd = new Date(today.getFullYear(), today.getMonth(), 0);
         this.selectedYear = String(previous.getFullYear());
         this.selectedMonth = String(previous.getMonth() + 1);
         this.selectedWeekDate = this.toIsoDate(this.mondayOf(today));
+        this.selectedRangeStart = this.toIsoDate(previous);
+        this.selectedRangeEnd = this.toIsoDate(previousEnd);
         this.loadReport();
     }
 
@@ -64,6 +70,10 @@ export default class MonthlySalesReport extends LightningElement {
         return this.selectedReportType === 'Weekly';
     }
 
+    get isDateRange() {
+        return this.selectedReportType === 'Date Range';
+    }
+
     get hasReport() {
         return this.report != null && !this.errorMessage;
     }
@@ -73,25 +83,53 @@ export default class MonthlySalesReport extends LightningElement {
     }
 
     get cardTitle() {
-        return this.isWeekly ? 'MIRA Weekly Sales Report' : 'MIRA Monthly Sales Report';
+        if (this.isWeekly) {
+            return 'MIRA Weekly Sales Report';
+        }
+        if (this.isDateRange) {
+            return 'MIRA Date Range Sales Report';
+        }
+        return 'MIRA Monthly Sales Report';
     }
 
     get downloadButtonLabel() {
-        return this.isWeekly
-            ? 'Print / Save Weekly Sales Report PDF'
-            : 'Print / Save Monthly Sales Report PDF';
+        if (this.isWeekly) {
+            return 'Print / Save Weekly Sales Report PDF';
+        }
+        if (this.isDateRange) {
+            return 'Print / Save Date Range Sales Report PDF';
+        }
+        return 'Print / Save Monthly Sales Report PDF';
     }
 
     get topTeamHeading() {
-        return this.isWeekly ? 'Top Team of the Week' : 'Top Team of the Month';
+        if (this.isWeekly) {
+            return 'Top Team of the Week';
+        }
+        if (this.isDateRange) {
+            return 'Top Team of the Period';
+        }
+        return 'Top Team of the Month';
     }
 
     get topRmHeading() {
-        return this.isWeekly ? 'Top RM of the Week' : 'Top RM of the Month';
+        if (this.isWeekly) {
+            return 'Top RM of the Week';
+        }
+        if (this.isDateRange) {
+            return 'Top RM of the Period';
+        }
+        return 'Top RM of the Month';
     }
 
     get topBrokerHeading() {
-        return this.isWeekly ? 'Top Broker of the Week' : 'Top Broker of the Month';
+        if (this.isWeekly) {
+            return 'Top Broker of the Week';
+        }
+        if (this.isDateRange) {
+            return 'Top Broker of the Period';
+        }
+        return 'Top Broker of the Month';
     }
 
     get transactions() {
@@ -215,6 +253,14 @@ export default class MonthlySalesReport extends LightningElement {
         this.selectedWeekDate = this.toIsoDate(this.mondayOf(d));
     }
 
+    handleRangeStartChange(event) {
+        this.selectedRangeStart = event.detail.value;
+    }
+
+    handleRangeEndChange(event) {
+        this.selectedRangeEnd = event.detail.value;
+    }
+
     handleRefresh() {
         this.loadReport();
     }
@@ -225,18 +271,55 @@ export default class MonthlySalesReport extends LightningElement {
                 reportType: 'Weekly',
                 year: null,
                 month: null,
-                weekStartIso: this.selectedWeekDate
+                weekStartIso: this.selectedWeekDate,
+                startDateIso: null,
+                endDateIso: null
+            };
+        }
+        if (this.isDateRange) {
+            return {
+                reportType: 'Date Range',
+                year: null,
+                month: null,
+                weekStartIso: null,
+                startDateIso: this.selectedRangeStart,
+                endDateIso: this.selectedRangeEnd
             };
         }
         return {
             reportType: 'Monthly',
             year: parseInt(this.selectedYear, 10),
             month: parseInt(this.selectedMonth, 10),
-            weekStartIso: null
+            weekStartIso: null,
+            startDateIso: null,
+            endDateIso: null
         };
     }
 
     async loadReport() {
+        if (this.isDateRange) {
+            if (!this.selectedRangeStart || !this.selectedRangeEnd) {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Date range required',
+                        message: 'Select both From and To dates.',
+                        variant: 'warning'
+                    })
+                );
+                return;
+            }
+            if (this.selectedRangeEnd < this.selectedRangeStart) {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Invalid date range',
+                        message: 'To date must be on or after From date.',
+                        variant: 'warning'
+                    })
+                );
+                return;
+            }
+        }
+
         this.isLoading = true;
         this.errorMessage = undefined;
         try {
@@ -274,6 +357,9 @@ export default class MonthlySalesReport extends LightningElement {
             qs.set('reportType', params.reportType || 'Monthly');
             if (this.isWeekly) {
                 qs.set('weekStartIso', params.weekStartIso || this.selectedWeekDate);
+            } else if (this.isDateRange) {
+                qs.set('startDate', params.startDateIso || this.selectedRangeStart);
+                qs.set('endDate', params.endDateIso || this.selectedRangeEnd);
             } else {
                 qs.set('year', String(params.year));
                 qs.set('month', String(params.month));

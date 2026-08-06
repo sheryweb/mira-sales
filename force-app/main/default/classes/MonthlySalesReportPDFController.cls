@@ -1,6 +1,6 @@
 /**
  * Visualforce controller for Sales Report printable HTML / legacy PDF page.
- * Supports year/month, reportType + startDate/endDate, weekStartIso (Weekly),
+ * Supports year/month, reportType + startDate/endDate (Date Range), weekStartIso (Weekly),
  * or HTML from ContentDocument (legacy path).
  *
  * MonthlySalesReportPrint (no renderAs) injects a print toolbar + window.print().
