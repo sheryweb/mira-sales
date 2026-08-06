@@ -7,10 +7,16 @@
     <label>Shared RM</label>
     <lookupFilter>
         <active>true</active>
+        <booleanFilter>1 OR 2</booleanFilter>
         <filterItems>
             <field>User.Profile.Name</field>
             <operation>equals</operation>
             <value>Sales Manager MIRA</value>
+        </filterItems>
+        <filterItems>
+            <field>User.Profile.Name</field>
+            <operation>equals</operation>
+            <value>Sales Manager Georgia</value>
         </filterItems>
         <isOptional>false</isOptional>
     </lookupFilter>

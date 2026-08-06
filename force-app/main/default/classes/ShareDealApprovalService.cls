@@ -9,9 +9,16 @@ public with sharing class ShareDealApprovalService {
     public static final String REQUEST_TYPE_SHARE_DEAL = 'Share Deal';
     public static final String SHARE_DEAL_APPROVAL_PROCESS = 'Share_Deal';
     public static final String SALES_MANAGER_MIRA_PROFILE = 'Sales Manager MIRA';
+    public static final String SALES_MANAGER_GEORGIA_PROFILE = 'Sales Manager Georgia';
     public static final String SALES_ADMIN_PROFILE = 'Sales Admin';
     // Same profile pool as Payment Plan approvers — first approval step for Sales Admin.
     public static final String LINE_MANAGER_PROFILE = 'Sales Director MIRA';
+    // Profiles eligible to be selected as Shared RM on a Share Deal.
+    @TestVisible
+    private static final Set<String> SHARED_RM_PROFILES = new Set<String>{
+        SALES_MANAGER_MIRA_PROFILE,
+        SALES_MANAGER_GEORGIA_PROFILE
+    };
     private static final Integer MIN_JUSTIFICATION_LENGTH = 10;
     private static final Integer HEADER_FIELD_MAX_LENGTH = 255;
     // Opportunity.Agency__c required lookup: Agency Record Type + Status = Completed.
@@ -126,7 +133,7 @@ public with sharing class ShareDealApprovalService {
             SELECT Id, Name
             FROM User
             WHERE IsActive = true
-              AND Profile.Name = :SALES_MANAGER_MIRA_PROFILE
+              AND Profile.Name IN :SHARED_RM_PROFILES
               AND Id != :opp.OwnerId
             ORDER BY Name
             LIMIT 200
@@ -716,9 +723,12 @@ public with sharing class ShareDealApprovalService {
         if (!users[0].IsActive) {
             throw auraError('Selected Shared RM must be an active user.');
         }
-        if (users[0].Profile == null || users[0].Profile.Name != SALES_MANAGER_MIRA_PROFILE) {
+        if (
+            users[0].Profile == null ||
+            !SHARED_RM_PROFILES.contains(users[0].Profile.Name)
+        ) {
             throw auraError(
-                'Shared RM must have the Sales Manager MIRA profile.'
+                'Shared RM must have the Sales Manager MIRA or Sales Manager Georgia profile.'
             );
         }
     }

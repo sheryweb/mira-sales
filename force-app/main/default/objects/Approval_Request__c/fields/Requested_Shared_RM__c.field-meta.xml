@@ -6,7 +6,7 @@
     <label>Requested Shared RM</label>
     <!-- No lookup filter: Profile.Name filters fail for Sales Admin (no Profile visibility)
          and surface as "Value does not exist or does not match filter criteria".
-         Apex ShareDealApprovalService still enforces Sales Manager MIRA. -->
+         Apex ShareDealApprovalService enforces Sales Manager MIRA / Georgia. -->
     <referenceTo>User</referenceTo>
     <relationshipLabel>Share Deal Approval Requests</relationshipLabel>
     <relationshipName>Share_Deal_Approval_Requests</relationshipName>
