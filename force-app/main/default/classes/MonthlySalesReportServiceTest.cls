@@ -150,34 +150,12 @@ private class MonthlySalesReportServiceTest {
         );
     }
 
-    private static Map<Id, String> managerOverrides() {
-        Map<Id, String> overrides = new Map<Id, String>();
-        for (User u : [
-            SELECT Id, LastName
-            FROM User
-            WHERE LastName IN ('OwnerA', 'OwnerB', 'OwnerC', 'SharedSame')
-        ]) {
-            if (u.LastName == 'OwnerA') {
-                overrides.put(u.Id, 'Aiham Alkeilani');
-            } else if (u.LastName == 'OwnerB') {
-                overrides.put(u.Id, 'Vijendra Singh');
-            } else {
-                overrides.put(u.Id, 'Honghao Cheng');
-            }
-        }
-        return overrides;
-    }
-
     @IsTest
     static void testBuildReportSharedDealSplits() {
-        MonthlySalesReportService.managerNameByUserIdOverride = managerOverrides();
-
         Test.startTest();
         MonthlySalesReportModels.MonthlyReportDTO report =
             MonthlySalesReportService.buildReport(2026, 7);
         Test.stopTest();
-
-        MonthlySalesReportService.managerNameByUserIdOverride = null;
 
         System.assertEquals(MonthlySalesReportModels.REPORT_TYPE_MONTHLY, report.reportType);
         System.assertEquals('Sales Monthly Report', report.reportTitle);
@@ -214,8 +192,6 @@ private class MonthlySalesReportServiceTest {
 
     @IsTest
     static void testBuildWeeklyReport() {
-        MonthlySalesReportService.managerNameByUserIdOverride = managerOverrides();
-
         // 15 Jul 2026 is a Wednesday → week Mon 13 Jul — Sun 19 Jul 2026
         Date anyDateInWeek = Date.newInstance(2026, 7, 15);
 
@@ -224,8 +200,6 @@ private class MonthlySalesReportServiceTest {
             MonthlySalesReportService.buildWeeklyReport(anyDateInWeek);
         String html = MonthlySalesReportService.buildReportHtml(anyDateInWeek);
         Test.stopTest();
-
-        MonthlySalesReportService.managerNameByUserIdOverride = null;
 
         System.assertEquals(MonthlySalesReportModels.REPORT_TYPE_WEEKLY, report.reportType);
         System.assertEquals('Sales Weekly Report', report.reportTitle);

@@ -6,7 +6,12 @@
         <members>MonthlySalesReportController</members>
         <members>MonthlySalesReportPDFController</members>
         <members>MonthlySalesReportServiceTest</members>
+        <members>RMDealCreditService</members>
         <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Opportunity.Manager_Name__c</members>
+        <name>CustomField</name>
     </types>
     <types>
         <members>MonthlySalesReportPDF</members>

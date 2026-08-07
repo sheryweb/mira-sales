@@ -167,16 +167,16 @@ public without sharing class RMDealCreditService {
         if (String.isBlank(roleName)) {
             return 'Not Assigned';
         }
-        if (roleName == 'Sales Manager 1') {
+        if (roleName == 'Sales Manager 1' || roleName == 'Sales Manager Georgia 1') {
             return 'Vijendra Singh';
         }
-        if (roleName == 'Sales Manager 2') {
+        if (roleName == 'Sales Manager 2' || roleName == 'Sales Manager Georgia 2') {
             return 'Aiham Alkeilani';
         }
-        if (roleName == 'Sales Manager 3') {
+        if (roleName == 'Sales Manager 3' || roleName == 'Sales Manager Georgia 3') {
             return 'Khalid Samir';
         }
-        if (roleName == 'Sales Manager 4') {
+        if (roleName == 'Sales Manager 4' || roleName == 'Sales Manager Georgia 4') {
             return 'Honghao Cheng';
         }
         return 'Not Assigned';
