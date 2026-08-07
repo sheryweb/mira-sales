@@ -794,7 +794,7 @@ public with sharing class MonthlySalesReportService {
         parts.add('<th class="col-price">UNIT PRICE<br/>(AED)</th>');
         parts.add('<th class="col-project">PROJECT</th>');
         parts.add('<th class="col-agency">AGENCY</th>');
-        parts.add('<th class="col-owner">OWNER</th>');
+        parts.add('<th class="col-owner">OWNER (RM)</th>');
         parts.add('<th class="col-date">BOOKED<br/>DATE</th>');
         parts.add('<th class="col-manager">MANAGER</th>');
         parts.add('<th class="col-stage">STAGE</th>');
