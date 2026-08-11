@@ -135,8 +135,23 @@ export default class MonthlySalesReport extends LightningElement {
     get transactions() {
         return (this.report?.transactions || []).map((txn) => ({
             ...txn,
-            unitPriceDisplay: this.formatAmount(txn.unitPrice)
+            unitPriceDisplay: this.formatAmount(txn.unitPrice),
+            stagePillClass: this.stagePillClass(txn.stageName)
         }));
+    }
+
+    stagePillClass(stageName) {
+        const stage = (stageName || '').toUpperCase();
+        if (stage === 'BOOKED') {
+            return 'stage-pill stage-pill-booked';
+        }
+        if (stage === 'SOLD') {
+            return 'stage-pill stage-pill-sold';
+        }
+        if (stage === 'RESERVED') {
+            return 'stage-pill stage-pill-reserved';
+        }
+        return 'stage-pill';
     }
 
     get sharedDeals() {

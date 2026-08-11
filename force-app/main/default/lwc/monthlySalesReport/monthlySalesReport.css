@@ -241,6 +241,40 @@
     border-radius: 999px;
 }
 
+.stage-cell {
+    width: 5.5rem;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.stage-pill {
+    display: inline-block;
+    width: 4.75rem;
+    min-width: 4.75rem;
+    max-width: 4.75rem;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 0.2rem 0;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    border-radius: 999px;
+    color: #e5e7eb;
+    background: #1f2937;
+}
+
+.stage-pill-booked,
+.stage-pill-sold {
+    color: #34d399;
+    background: #064e3b;
+}
+
+.stage-pill-reserved {
+    color: #fbbf24;
+    background: #78350f;
+}
+
 .leader-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

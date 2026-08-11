@@ -162,7 +162,9 @@
                                         <td>{txn.ownerDisplay}</td>
                                         <td>{txn.bookedDateDisplay}</td>
                                         <td>{txn.managerDisplay}</td>
-                                        <td>{txn.stageName}</td>
+                                        <td class="stage-cell">
+                                            <span class={txn.stagePillClass}>{txn.stageName}</span>
+                                        </td>
                                     </tr>
                                 </template>
                             </tbody>

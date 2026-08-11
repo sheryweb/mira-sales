@@ -840,9 +840,14 @@ public with sharing class MonthlySalesReportService {
     private static String roundedPill(String label, String bgColor, String textColor) {
         return '<span class="stage-pill" style="'
             + 'display:inline-block;'
+            + 'width:72px;'
+            + 'min-width:72px;'
+            + 'max-width:72px;'
+            + 'box-sizing:border-box;'
+            + 'text-align:center;'
             + 'background-color:' + bgColor + ';'
             + 'color:' + textColor + ';'
-            + 'padding:3px 10px;'
+            + 'padding:3px 0;'
             + 'font-size:7px;'
             + 'font-weight:700;'
             + 'letter-spacing:0.6px;'
@@ -1189,7 +1194,8 @@ public with sharing class MonthlySalesReportService {
         css.add('.period-label { font-size: 7px; letter-spacing: 1.8px; color: #9CA3AF;');
         css.add(' text-transform: uppercase; margin-bottom: 2px; }');
         css.add('.period-value { font-size: 13px; font-weight: 700; color: #FFFFFF; }');
-        css.add('.stage-pill { display: inline-block; padding: 3px 10px; font-size: 7px;');
+        css.add('.stage-pill { display: inline-block; width: 72px; min-width: 72px; max-width: 72px;');
+        css.add(' box-sizing: border-box; text-align: center; padding: 3px 0; font-size: 7px;');
         css.add(' font-weight: 700; letter-spacing: 0.6px; white-space: nowrap;');
         css.add(' border-radius: 10px; -webkit-border-radius: 10px; }');
         css.add('.accent-line { width: 100%; border-collapse: collapse; margin: 8px 0 10px;');
@@ -1239,7 +1245,7 @@ public with sharing class MonthlySalesReportService {
         css.add('.prop-code-cell { display: block; }');
         css.add('.col-code { width: 11%; } .col-price { width: 10%; } .col-project { width: 15%; }');
         css.add('.col-agency { width: 15%; } .col-owner { width: 15%; } .col-date { width: 9%; }');
-        css.add('.col-manager { width: 14%; } .col-stage { width: 11%; }');
+        css.add('.col-manager { width: 14%; } .col-stage { width: 11%; text-align: center; }');
         css.add('.kpi-table { width: 100%; table-layout: fixed; border-collapse: collapse;');
         css.add(' margin: 6px 0 10px; }');
         css.add('.kpi-gap { width: 8px; background-color: #0A1625; border: none; padding: 0; }');
