@@ -290,7 +290,7 @@ public with sharing class MonthlySalesReportService {
             0
         );
         return [
-            SELECT Id, Name, StageName, Unit_Price__c, Property_Code__c, Project_Name__c,
+            SELECT Id, Name, StageName, Unit_Price__c, Unit__r.Cost_AED__c, Property_Code__c, Project_Name__c,
                    Agency_Name__c, Agency__c, Agency__r.Name,
                    OwnerId, Owner.Name, Owner.FirstName, Owner.LastName, Owner.UserRole.Name,
                    Manager_Name__c, Manager__c, Manager__r.Name,
@@ -379,7 +379,7 @@ public with sharing class MonthlySalesReportService {
         Set<String> projectNames = new Set<String>();
 
         for (Opportunity opp : opportunities) {
-            Decimal unitPrice = nullToZero(opp.Unit_Price__c);
+            Decimal unitPrice = resolveDealValue(opp);
             totalValue += unitPrice;
 
             String stage = opp.StageName == null ? '' : opp.StageName;
@@ -475,7 +475,7 @@ public with sharing class MonthlySalesReportService {
         MonthlySalesReportModels.TransactionDTO txn = new MonthlySalesReportModels.TransactionDTO();
         txn.opportunityId = opp.Id;
         txn.propertyCode = blankToDash(opp.Property_Code__c);
-        txn.unitPrice = nullToZero(opp.Unit_Price__c).setScale(0, System.RoundingMode.HALF_UP);
+        txn.unitPrice = resolveDealValue(opp).setScale(0, System.RoundingMode.HALF_UP);
         txn.projectName = blankToDash(opp.Project_Name__c);
         txn.agencyName = resolveAgencyName(opp);
         txn.ownerDisplay = formatUserName(opp.Owner);
@@ -499,7 +499,7 @@ public with sharing class MonthlySalesReportService {
         Opportunity opp,
         String marker
     ) {
-        Decimal unitPrice = nullToZero(opp.Unit_Price__c);
+        Decimal unitPrice = resolveDealValue(opp);
         Decimal halfValue = (unitPrice * 0.5).setScale(0, System.RoundingMode.HALF_UP);
 
         String ownerName = formatUserName(opp.Owner);
@@ -1427,6 +1427,17 @@ public with sharing class MonthlySalesReportService {
             return opp.Agency_Name__c;
         }
         return '—';
+    }
+
+    /**
+     * Sales report values are always AED via Unit.Cost_AED__c for every project
+     * (including POST / MIRA VERDE, whose Opportunity.Unit_Price__c may be CHF/USD).
+     */
+    private static Decimal resolveDealValue(Opportunity opp) {
+        if (opp == null || opp.Unit__r == null) {
+            return 0;
+        }
+        return nullToZero(opp.Unit__r.Cost_AED__c);
     }
 
     private static String resolveManagerName(Opportunity opp) {
