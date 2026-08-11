@@ -383,6 +383,7 @@ public without sharing class BookingFormPDFController {
                 toLabel(Account.Currency__pc),
                 toLabel(Account.Payment_methods__pc),
                 Account.Trade_License_Number__c,
+                Account.Trade_License_Expiry_Date__c,
                 Assisted_by_agent__c,
                 Agency__r.Name,
                 Agency__r.Account_Name_Arabic__c,
@@ -560,6 +561,7 @@ public without sharing class BookingFormPDFController {
                 dueDeligenceMap.put('contactCurrencyOther', removeNull(opportunity.Account.Currency_Other__pc));
                 dueDeligenceMap.put('contactCurrencyOtherArabic', removeNull(opportunity.Account.Currency_Other_Arabic__pc));
                 objectValues.put('licenseNumberValue', 'N/A');
+                objectValues.put('licenseExpiryDate', 'N/A');
                 objectValues.put('incorporationCountry', 'N/A');
                 objectValues.put('incorporationCountryArabic', 'N/A');
                 objectValues.put('sourceOfFundArabic', arabicConversionFundSource(opportunity.Account.Source_of_Funds__pc));
@@ -654,6 +656,16 @@ public without sharing class BookingFormPDFController {
                 dueDeligenceMap.put('contactCurrencyOther', removeNull(relatedContact.Currency_Other__c));
                 dueDeligenceMap.put('contactCurrencyOtherArabic', removeNull(relatedContact.Currency_Other_Arabic__c));
                 objectValues.put('licenseNumberValue', addNotReceived(opportunity.Account.Trade_License_Number__c));
+                objectValues.put(
+                    'licenseExpiryDate',
+                    opportunity.Account.Trade_License_Expiry_Date__c == null
+                        ? 'Not Received'
+                        : DateTime.newInstance(
+                            opportunity.Account.Trade_License_Expiry_Date__c.year(),
+                            opportunity.Account.Trade_License_Expiry_Date__c.month(),
+                            opportunity.Account.Trade_License_Expiry_Date__c.day()
+                        ).format('dd-MMM-yyyy')
+                );
                 objectValues.put('incorporationCountry', addNotReceived(opportunity.Account.Country_of_Incorporation__c));
                 objectValues.put('incorporationCountryArabic', addNotReceived(opportunity.Account.Country_of_Incorporation_Arabic__c));
                 objectValues.put('sourceOfFundArabic', arabicConversionFundSource(relatedContact.Source_of_Funds__c));

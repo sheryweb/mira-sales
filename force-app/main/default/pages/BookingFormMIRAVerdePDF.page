@@ -195,20 +195,32 @@
                     <div class="column-div" style="width: 50%;">Personal Number (if any): {!oppData['personInformation']['personMobile']}</div>
                   </div>
                   <div class="row-div">
-                    <div class="column-div" style="width: 50%;">გაცემის ადგილი: {!oppData['Opportunity'].Account.Passport_Place_of_Issue__pc}</div>
-                    <div class="column-div" style="width: 50%;">Place of Issue: {!oppData['Opportunity'].Account.Passport_Place_of_Issue__pc}</div>
+                    <div class="column-div" style="width: 50%;  display: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], '', 'none')}">
+                        გაცემის ადგილი: {!oppData['Opportunity'].Account.Passport_Place_of_Issue__pc}
+                        <!--<span style="display: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'none', '')}">რეგისტრაციის ქვეყანა: {!oppData['incorporationCountry']}</span>-->
+                    </div>
+                    <div class="column-div" style="width: 50%; display: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], '', 'none')}">
+                        Place of Issue: {!oppData['Opportunity'].Account.Passport_Place_of_Issue__pc}
+                        <!--<span style="display: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'none', '')}">Country of Incormporation: {!oppData['incorporationCountry']}</span>-->
+                    </div>
                   </div>
                   <div class="row-div">
-                    <div class="column-div" style="width: 50%;">გაცემის თარიღი: {!oppData['PassportIssueDate']}</div>
-                    <div class="column-div" style="width: 50%;">Date of Issue: {!oppData['PassportIssueDate']}</div>
+                    <div class="column-div" style="width: 50%;">
+                        <span style="display: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'none', '')}">გაცემის თარიღი: {!oppData['PassportIssueDate']}</span>
+                        <span style="display: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'none', '')}">მოქმედების ვადა: {!oppData['licenseExpiryDate']}</span>
+                    </div>
+                    <div class="column-div" style="width: 50%;">
+                        <span style="display: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], '', 'none')}">Date of Issue: {!oppData['PassportIssueDate']}</span>
+                        <span style="display: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'none', '')}">License Expiry Date: {!oppData['licenseExpiryDate']}</span>
+                    </div>
                   </div>
                   <div class="row-div">
-                    <div class="column-div" style="width: 50%;">რეგისტრაციის მისამართი: {!oppData['Opportunity'].Account.BillingStreet}</div>
-                    <div class="column-div" style="width: 50%;">Registered Address: {!oppData['Opportunity'].Account.BillingStreet}</div>
+                    <div class="column-div" style="width: 50%;">რეგისტრაციის მისამართი: {!oppData['Opportunity'].Account.BillingStreet}, {!oppData['Opportunity'].Account.BillingCity}, {!oppData['Opportunity'].Account.BillingCountry}</div>
+                    <div class="column-div" style="width: 50%;">Registered Address: {!oppData['Opportunity'].Account.BillingStreet}, {!oppData['Opportunity'].Account.BillingCity}, {!oppData['Opportunity'].Account.BillingCountry}</div>
                   </div>
                   <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ფაქტობრივი მისამართი: {!oppData['Opportunity'].Account.BillingStreet}</div>
-                    <div class="column-div" style="width: 50%;">Actual Address: {!oppData['Opportunity'].Account.BillingStreet}</div>
+                    <div class="column-div" style="width: 50%;">ფაქტობრივი მისამართი: {!oppData['Opportunity'].Account.BillingStreet}, {!oppData['Opportunity'].Account.BillingCity}, {!oppData['Opportunity'].Account.BillingCountry}</div>
+                    <div class="column-div" style="width: 50%;">Actual Address: {!oppData['Opportunity'].Account.BillingStreet}, {!oppData['Opportunity'].Account.BillingCity}, {!oppData['Opportunity'].Account.BillingCountry}</div>
                   </div>
                   <div class="row-div">
                     <div class="column-div" style="width: 50%;">ელ. ფოსტა: {!oppData['personInformation']['personEmail']}</div>
@@ -241,14 +253,14 @@
                       <div class="column-div" style="width: 50%;">საკუთრების წილი: {!oppData['jointOwnersOwnership'][jOwner.Id]}%</div>
                       <div class="column-div" style="width: 50%;">Ownership Share: {!oppData['jointOwnersOwnership'][jOwner.Id]}%</div>
                   </div>
-                  <div class="row-div" style="display: {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), '', 'none')}">
+                  <!--<div class="row-div" style="display: {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), '', 'none')}">
                       <div class="column-div" style="width: 50%;">ლიცენზიის ნომერი. (For legal entities): {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), oppData['jointOwnersLicenseValues'][jOwner.Id], '')}</div>
                       <div class="column-div" style="width: 50%;">License No. (For legal entities): {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), oppData['jointOwnersLicenseValues'][jOwner.Id], '')}</div>
                   </div>
                   <div class="row-div" style="display: {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), '', 'none')}">
                       <div class="column-div" style="width: 50%;">რეგისტრაციის ქვეყანა: {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), oppData['jointOwnersIncorporationValues'][jOwner.Id], '')}</div>
                       <div class="column-div" style="width: 50%;">Country of Incorporation: {!IF(AND(oppData['personAccountRecordType'] == oppData['accountRecordType'], jOwner.RecordTypeId <> '012Hp000001yUTFIA2'), oppData['jointOwnersIncorporationValues'][jOwner.Id], '')}</div>
-                  </div>
+                  </div>-->
                   <div class="row-div">
                       <div class="column-div" style="width: 50%;">მოქალაქეობა: {!jOwner.Nationality__c}</div>
                       <div class="column-div" style="width: 50%;">Citizenship: {!jOwner.Nationality__c}</div>
@@ -444,8 +456,8 @@
                     <div class="column-div" style="width: 50%; font-weight: bold;">1.2. Purchase Price of the Immovable Property</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">შესყიდვის ფასი: {!oppData['formattedNumbers'].formattedUnitCostGEL} ლარი ({!oppData['formattedNumbers'].formattedUnitCostUSD} აშშ დოლარის ეკვივალენტი)</div>
-                    <div class="column-div" style="width: 50%;">Purchase Price: {!oppData['formattedNumbers'].formattedUnitCostGEL} GEL  (equivalent of {!oppData['formattedNumbers'].formattedUnitCostUSD} USD)</div>
+                    <div class="column-div" style="width: 50%;">შესყიდვის ფასი: {!oppData['formattedNumbers'].formattedUnitCostUSD} აშშ დოლარის ექვივალენტი ლარში</div>
+                    <div class="column-div" style="width: 50%;">Purchase Price: {!oppData['formattedNumbers'].formattedUnitCostUSD} USD  equivalent in GEL</div>
                 </div>
             </div>
             <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
@@ -455,8 +467,8 @@
                     <div class="column-div" style="width: 50%; font-weight: bold;">1.3. Reservation Fee for the Residential Immovable Property</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">საცხოვრებელი უძრავი ქონების დაჯავშნის საფასური: {!oppData['paymentPlans'][0]['amountGEL']} ლარი ({!oppData['paymentPlans'][0]['amount']} აშშ დოლარის ეკვივალენტი)</div>
-                    <div class="column-div" style="width: 50%;">Reservation Fee for the Residential Immovable Property: {!oppData['paymentPlans'][0]['amountGEL']} GEL (equivalent of {!oppData['paymentPlans'][0]['amount']} USD)</div>
+                    <div class="column-div" style="width: 50%;">საცხოვრებელი უძრავი ქონების დაჯავშნის საფასური: {!oppData['formattedNumbers'].firstInstallment} აშშ დოლარის ექვივალენტი ლარში</div>
+                    <div class="column-div" style="width: 50%;">Reservation Fee for the Residential Immovable Property: {!oppData['formattedNumbers'].firstInstallment} USD  equivalent in GEL</div>
                 </div>
                 <div class="row-div">
                     <div class="column-div" style="width: 50%; font-weight: bold;">1.4. ნასყიდობის ღირებულების გადახდის გრაფიკი - განსაზღვრულია დანართი №3-ით</div>
@@ -478,28 +490,62 @@
                     <div class="column-div" style="width: 50%; font-weight: bold;">1.6. Bank Account Details</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ბანკის დასახელება: Emirates Islamic Bank</div>
-                    <div class="column-div" style="width: 50%;">Bank Name: Emirates Islamic Bank</div>
+                    <div class="column-div" style="width: 50%;"><strong>ბანკი №1</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>Bank №1</strong></div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ანგარიშის სახელი: M I R A DEVELOPMENTS LLC </div>
-                    <div class="column-div" style="width: 50%;">Account Name: M I R A DEVELOPMENTS LLC </div>
+                    <div class="column-div" style="width: 50%;">მიმღები ბანკი: The Bank of New York Mellon, New York, USA SWIFT: IRVTUS3N, ABA: 021000018</div>
+                    <div class="column-div" style="width: 50%;">Intermediary Bank: The Bank of New York Mellon, New York, USA SWIFT: IRVTUS3N, ABA: 021000018</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ანგარიშის ნომერი: 3708470562408</div>
-                    <div class="column-div" style="width: 50%;">Account Number: 3708470562408</div>
+                    <div class="column-div" style="width: 50%;">მიმღების დასახელება: შპს მირა დეველოპმენტს</div>
+                    <div class="column-div" style="width: 50%;">Beneficiary: MIRA DEVELOPMENTS LLC</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">IBAN: AE830340003708470562408</div>
-                    <div class="column-div" style="width: 50%;">IBAN: AE830340003708470562408</div>
+                    <div class="column-div" style="width: 50%;">მიმღების ბანკი: ბანკის კოდი</div>
+                    <div class="column-div" style="width: 50%;">Beneficiary Bank: Basisbank JSC</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">ფილიალი: EI Health Care City</div>
-                    <div class="column-div" style="width: 50%;">Branch: EI Health Care City</div>
+                    <div class="column-div" style="width: 50%;">ანგარიშის ნომერი (IBAN): GE16BS0000099881536001</div>
+                    <div class="column-div" style="width: 50%;">Account Number (IBAN): GE16BS0000099881536001</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">BIC კოდი: MEBLAEADXXX</div>
-                    <div class="column-div" style="width: 50%;">BIC Code: MEBLAEADXXX</div>
+                    <div class="column-div" style="width: 50%;">სვიფტ კოდი:  CBASGE22</div>
+                    <div class="column-div" style="width: 50%;">SWIFT Code:  CBASGE22</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">მისამართი: თბილისი, საქართველო</div>
+                    <div class="column-div" style="width: 50%;">Address: Tbilisi, Georgia</div>
+                </div>
+            </div><br/>
+            <div class="table-div" style="text-align: justify;">
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;"><strong>ბანკი №2</strong></div>
+                    <div class="column-div" style="width: 50%;"><strong>Bank №2</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">მიმღების დასახელება: შპს მირა დეველოპმენტს</div>
+                    <div class="column-div" style="width: 50%;">Beneficiary: M I R A DEVELOPMENTS LLC</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">მიმღების ბანკი: Emirates Islamic Bank </div>
+                    <div class="column-div" style="width: 50%;">Beneficiary Bank: Emirates Islamic Bank</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">ანგარიშის ნომერი: 3708470562406</div>
+                    <div class="column-div" style="width: 50%;">Account Number: 3708470562406</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">IBAN: AE400340003708470562406</div>
+                    <div class="column-div" style="width: 50%;">IBAN: AE400340003708470562406</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">სვიფტ კოდი: MEBLAEADXXX</div>
+                    <div class="column-div" style="width: 50%;">SWIFT Code: MEBLAEADXXX</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div" style="width: 50%;">მისამართი: დუბაის ჯანდაცვის ქალაქი, დუბაი, არაბთა გაერთიანებული საამიროები</div>
+                    <div class="column-div" style="width: 50%;">Address: EI Health Care City, Dubai, UAE</div>
                 </div>
             </div>
             <br />
@@ -522,6 +568,9 @@
                     <div class="column-div" style="width: 50%;">2.1.2. გამყიდველი აცხადებს, რომ წინამდებარე ხელშეკრულების 1.1 პუნქტით განსაზღვრული უძრავი ქონება წარმოადგენს სამომავლო ქონებას, რომლის მშენებლობა დამოკიდებულია მიწის ნაკვეთის განაშენიანებასთან დაკავშირებული სანებართვო დოკუმენტაციის შესაბამისი ადმინისტრაციული ორგანოების მიერ დამტკიცებაზე. შესაბამისად, შესაძლებელია, რომ განხორციელდეს ცვლილებები მყიდველისათვის გაცნობილ საპროექტო დოკუმენტაციაში.</div>
                     <div class="column-div" style="width: 50%;">2.1.2. The Seller represents that the immovable property specified in Clause 1.1 of this Agreement constitutes future property, the construction of which is subject to approval by the relevant administrative authorities of the permitting documentation related to the development of the land plot. Accordingly, it is possible that changes may be made to the project documentation made available to the Buyer.</div>
                 </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">2.1.3. გამყიდველი მიიღებს ყველა გონივრულ ზომას, რაც საჭიროა წინამდებარე ხელშეკრულებით გათვალისწინებული პირობების სრულყოფილად შესრულებისათვის. წინამდებარე განცხადება არ წარმოადგენს მყიდველისათვის რაიმე სახის გარანტიას და ვალდებულების შეუსრულებლობის შემთხვევაში, გამყიდველს არ დაეკისრება პასუხისმგებლობა ადმინისტრაციული ორგანოების მიერ საპროექტო დოკუმენტაციაში რაიმე ცვლილების მოთხოვნისას.</div>
                     <div class="column-div" style="width: 50%;">2.1.3. The Seller shall take all reasonable measures necessary to fully perform its obligations under this Agreement. This representation shall not constitute any form of warranty to the Buyer, and the Seller shall not be held liable for any failure to fulfill obligations resulting from any request by the administrative authorities to make changes to the project documentation.</div>
@@ -536,9 +585,6 @@
                     <div class="column-div" style="width: 50%;">2.2.1. მყიდველი აცხადებს და ადასტურებს, რომ ქონების დაჯავშნის გადაწყვეტილება მიღებულია მხოლოდ წინამდებარე დოკუმენტით განსაზღვრული პირობების საფუძველზე და რომ მისთვის არ არსებობს რაიმე სახის სხვა განცხადებები, რომელიც მყიდველისათვის შეიძლება ყოფილიყო მიწოდებული გამყიდველის ან მისი  უფლებამოსილი წარმომადგენლების მიერ.</div>
                     <div class="column-div" style="width: 50%;">2.2.1. The Buyer represents and warrants that the decision to reserve the property has been made solely on the basis of the terms and conditions set forth in this Agreement, and that no other representations have been made to the Buyer by the Seller or its authorized representatives.</div>
                 </div>
-            </div>
-            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
-            <div class="table-div" style="text-align: justify;">
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">2.2.2. მყიდველი ადასტურებს, რომ წინამდებარე ხელშეკრულების დადების მიზნით, იგი არ ეყრდნობა და არ განიხილავს სავალდებულოდ არცერთ ინფორმაციას ან მასალას, რომელიც შეიძლება ყოფილიყო მიწოდებული ან ხელმისაწვდომი სარეკლამო, საინფორმაციო ან პრეზენტაციული მიზნებით, მათ შორის, მაგრამ არა მხოლოდ - გაყიდვების ბროშურებს, გრაფიკულ ნამუშევრებს, პრეზენტაციაზე წარმოდგენილ ფოტო და ვიდეომასალებს ან საპროგნოზო ფინანსურ მონაცემებს/გათვლებს.</div>
                     <div class="column-div" style="width: 50%;">2.2.2. The Buyer acknowledges that, for the purposes of entering into this Agreement, it does not rely on and does not consider any information or materials that may have been provided or made available for advertising, informational, or presentation purposes, including, without limitation, sales brochures, graphic materials, photos or videos presented at presentations, or forecasted financial data/calculations.</div>
@@ -564,6 +610,9 @@
                     <div class="column-div" style="width: 50%;">3.2. მყიდველის მიერ დაჯავშნის თანხის გადახდისთანავე გამყიდველი დაჯავშნის ხელშეკრულების 1.1 პუნქტით განსაზღვრულ უძრავ ქონებას, რაც ნიშნავს, რომ იგი აღარ შესთავაზებს ქონებას პოტენციურ კლიენტებს ან მიჰყიდის ქონებას სხვა პირებს.</div>
                     <div class="column-div" style="width: 50%;">3.2. Upon receipt of the reservation fee from the Buyer, the Seller shall reserve the immovable property specified in Clause 1.1, which means that the Seller shall no longer offer the property to other potential clients or sell it to any third parties.</div>
                 </div>
+            </div>
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
+            <div class="table-div" style="text-align: justify;">
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">3.3. მყიდველის მიერ ხელშეკრულების 4.1 პუნქტით განსაზღვრულ ვადაში დაჯავშნის თანხის გამყიდველისათვის გადაუხდელობის შემთხვევაში, ჯავშანი ავტომატურად, დაუყოვნებლივ გაუქმდება და გამყიდველს აღარ ექნება მყიდველისათვის ვალდებულების შესრულებისათვის დამატებითი ვადის დაწესების ვალდებულება და გამყიდველი უფლებამოსილი იქნება, შესთავაზოს და მიჰყიდოს ქონება სხვა პირებს.</div>
                     <div class="column-div" style="width: 50%;">3.3. In the event the Buyer fails to pay the reservation fee within the period specified in Clause 4.1 of this Agreement, the reservation shall be automatically and immediately canceled, and the Seller shall have no obligation to provide the Buyer with any additional period to fulfill its obligations. The Seller shall be entitled to offer and sell the property to other persons.</div>
@@ -576,9 +625,6 @@
                     <div class="column-div" style="width: 50%;">3.5. დაჯავშნის თანხა წარმოადგენს მხოლოდ უძრავი ქონების შეძენის ინტერესის გამოხატვის ფინანსურ გამოხატულებას, არ ექვემდებარება მყიდველისათვის დაბრუნებას და არ შეიძლება ჩაითვალოს საქართველოს კანონმდებლობით განსაზღვრულ „ბეს“ თანხად.</div>
                     <div class="column-div" style="width: 50%;">3.5. The reservation fee constitutes solely the financial expression of the intent to purchase the immovable property, is non-refundable to the Buyer, and shall not be construed as “earnest money” under the legislation of Georgia.</div>
                 </div>
-            </div>
-            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
-            <div class="table-div" style="text-align: justify;">
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">3.6. მყიდველის მიერ გამყიდველისათვის გადახდილი დაჯავშნის თანხა ჩაითვლება უძრავი ქონების ნასყიდობის ღირებულების ანგარიშში მყიდველის მიერ წინარე ნასყიდობის ხელშეკრულების საფუძველზე უძრავი ქონების ღირებულების სრულად გადახდის მომენტიდან.</div>
                     <div class="column-div" style="width: 50%;">3.6. The reservation fee paid by the Buyer to the Seller shall be credited toward the purchase price of the immovable property from the moment the Buyer pays the full purchase price of the immovable property in accordance with the Preliminary Sale and Purchase Agreement.</div>
@@ -592,7 +638,7 @@
                     <div class="column-div" style="width: 50%;">3.8. The execution of this Agreement and/or the payment of the reservation fee shall not entitle the Buyer to require the Seller to make any changes to the project documentation, design, construction stages or any architectural, structural, engineering or design decisions. The matters listed above shall remain the exclusive and unrestricted prerogative of the Seller.</div>
                 </div>
             </div>
-            <br />
+            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 30px; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MIRAVERDE}" height="20" /></div><br />
             <div class="table-div">
                 <div class="row-div">
                     <div class="column-div table-title" style="border-right: none;"><strong>4. დაჯავშნის ღირებულების გადახდის წესი</strong></div>
