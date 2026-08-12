@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Project_Remaining_Value__c</fullName>
-    <formula>Project_Total_Value__c - Project_Received_Value__c</formula>
+    <fullName>Project_Total_Value__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(TEXT(Project_Currency__c),
+&quot;USD&quot;, Project_Value_USD__c,
+&quot;CHF&quot;, Project_Value_Post__c,
+Project_Value__c
+)</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
-    <label>Project Remaining Value</label>
+    <label>Project Total Value</label>
     <precision>18</precision>
     <required>false</required>
     <scale>2</scale>
     <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
-    <type>Currency</type>
+    <type>Number</type>
+    <unique>false</unique>
 </CustomField>

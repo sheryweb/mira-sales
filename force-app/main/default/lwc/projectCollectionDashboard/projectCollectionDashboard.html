@@ -1,0 +1,43 @@
+<template>
+    <div class="dashboard">
+        <header class="panel header">
+            <div class="header-text">
+                <h1 class="title">Project Collection Dashboard</h1>
+                <p class="subtitle">{currencyDescription}</p>
+            </div>
+            <div class="header-controls">
+                <lightning-combobox
+                    name="currency"
+                    label="Currency"
+                    variant="label-hidden"
+                    value={selectedCurrency}
+                    options={currencyOptions}
+                    onchange={handleCurrencyChange}
+                    class="currency-picker"
+                ></lightning-combobox>
+            </div>
+        </header>
+
+        <template lwc:if={hasError}>
+            <div class="panel error" role="alert">
+                <lightning-icon icon-name="utility:error" size="x-small" variant="error"></lightning-icon>
+                <span class="error-text">{errorMessage}</span>
+            </div>
+        </template>
+
+        <div class="tile-grid">
+            <template for:each={tiles} for:item="tile">
+                <article key={tile.key} class={tile.cardClass}>
+                    <p class="tile-label">{tile.label}</p>
+                    <span class="tile-scope">{tile.scope}</span>
+                    <p class="tile-hero" title={tile.full}>{tile.compact}</p>
+                    <p class="tile-full">{tile.full}</p>
+                </article>
+            </template>
+        </div>
+
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading dashboard" size="medium"></lightning-spinner>
+        </template>
+    </div>
+</template>

@@ -1690,6 +1690,7 @@
     <tabs>Sales_Activity_Tracker__c</tabs>
     <tabs>Commission__c</tabs>
     <tabs>Approval_Request__c</tabs>
+    <tabs>Project_Collection_Dashboard</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>LightningSales_UtilityBar</utilityBar>
 </CustomApplication>
