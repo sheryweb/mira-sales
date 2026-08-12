@@ -1,0 +1,398 @@
+<apex:page controller="SOAPDFController" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Statement of Account</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      color: #000;
+      margin: 20px;
+    }
+    h1, h2, h3 {
+      margin: 20px 0 10px;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      max-width: 100%;
+    }
+    th, td {
+      border: 1px solid #000;
+      padding: 5px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .section {
+      margin-top: 20px;
+    }
+    .flex-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .half-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    .half-table th, .half-table td {
+      border: 1px solid #000;
+      padding: 5px 6px;
+      text-align: left;
+    }
+    .half-columns {
+      width: 50%;
+    }
+    .bold {
+      font-weight: bold;
+    }
+    .total-row {
+      background-color: #e0e0e0;
+      font-weight: bold;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+    .amount-cell {
+      text-align: center;
+    }
+    .date-cell {
+      text-align: center;
+    }
+    @page {
+      margin: 15px;
+      size: letter;
+    }
+  </style>
+</head>
+<body>
+
+<apex:pageMessages />
+<div class="page" style="text-align: right;"><apex:image value="{!$Resource.MiraDocLogo}" alt="Logo" width="18%;"/></div><br />
+
+<h1 style="text-align:center">CUSTOMER STATEMENT OF ACCOUNT</h1>
+
+<!-- Property Details & Customer Details -->
+<h2>PROPERTY DETAILS</h2>
+<div class="flex-container">
+  <table class="half-table">
+    <tr><th class="half-columns">Unit No.</th><td>{!propertyDetails.Title__c}</td></tr>
+    <tr><th class="half-columns">Tower</th><td>{!propertyDetails.Building__c}</td></tr>
+    <tr><th class="half-columns">Project</th><td>{!propertyDetails.Project_Name_F__c}</td></tr>
+    <tr><th class="half-columns">Unit Type</th><td>{!IF(propertyDetails.Number_of_Bedrooms__c == 0, 'Studio', propertyDetails.Number_of_Bedrooms__c)} {!IF(propertyDetails.Number_of_Bedrooms__c == 0, '', 'Bedroom')} - {!propertyDetails.Type__c}</td></tr>
+    <tr><th class="half-columns">Purchase Price (Incl. VAT*)</th><td class="amount-cell">
+      <apex:outputText value="{!currencyCode} {0, number, ###,##0.00}">
+        <apex:param value="{!unitCost}"/>
+      </apex:outputText>
+    </td></tr>
+    <tr><th class="half-columns">Purchase Date</th><td class="date-cell">
+      <apex:outputText value="{0,date,dd-MMM-yyyy}" rendered="{!propertyDetails.Booking_Date_Time__c != null}">
+        <apex:param value="{!propertyDetails.Booking_Date_Time__c}"/>
+      </apex:outputText>
+    </td></tr>
+    <tr><th class="half-columns">SOA as of</th><td class="date-cell">
+      <apex:outputText value="{0,date,dd-MMM-yyyy}">
+        <apex:param value="{!soaDate}"/>
+      </apex:outputText>
+    </td></tr>
+  </table>
+
+  <h2>CUSTOMER DETAILS</h2>
+  <table class="half-table">
+    <tr><th class="half-columns">Customer Name</th><td>{!customerDetails.Name}</td></tr>
+    <tr><th class="half-columns">Customer No.</th><td>{!customerDetails.Financial_Number__c}</td></tr>
+  </table>
+</div>
+
+<!-- Joint Owners Section (Only shows if joint owners exist) -->
+<apex:outputPanel rendered="{!hasJointOwners}">
+  <h2>JOINT OWNERS</h2>
+  <table class="half-table">
+    <apex:repeat value="{!jointOwners}" var="jointOwner">
+      <tr>
+        <th class="half-columns">Name</th>
+        <td>{!jointOwner.Name}</td>
+      </tr>
+    </apex:repeat>
+  </table>
+</apex:outputPanel>
+
+<!-- Current Amounts Due Summary -->
+<table>
+  <tr>
+    <td colspan="3"><h2>CURRENT AMOUNTS DUE SUMMARY</h2></td>
+  </tr>
+  <tr>
+    <th class="amount-cell">PROPERTY REGISTRATION / OTHER CHARGES</th>
+    <th class="amount-cell">INSTALMENTS</th>
+    <th class="amount-cell bold">TOTAL</th>
+  </tr>
+  <tr>
+    <td class="amount-cell">{!formattedTotalDueRegistrationAmount}</td>
+    <td class="amount-cell">{!formattedTotalDueInstalmentsAmount}</td>
+    <td class="amount-cell bold">{!formattedTotalDueAmount}</td>
+  </tr>
+</table>
+
+<!-- Paid Summary -->
+<table>
+  <tr>
+    <td colspan="3"><h2>PAID SUMMARY</h2></td>
+  </tr>
+  <tr>
+    <th class="amount-cell">Installments Paid</th>
+    <th class="amount-cell">Percentage</th>
+  </tr>
+  <tr>
+    <td class="amount-cell">{!formattedInstallmentsPaid}</td>
+    <td class="amount-cell">{!percentagePaid}%</td>
+  </tr>
+</table>
+
+<!-- Page break to next page -->
+<div class="page-break"></div>
+<div class="page" style="text-align: right;"><apex:image value="{!$Resource.MiraDocLogo}" alt="Logo" width="18%;"/></div><br />
+
+<!-- Property Registration / Other Charges -->
+<table>
+  <tr>
+    <td colspan="5"><h2>PROPERTY REGISTRATION / OTHER CHARGES</h2></td>
+  </tr>
+  <tr>
+    <th>Description</th>
+    <th class="date-cell">Due Date</th>
+    <th class="amount-cell">Installment Amount ({!currencyCode})</th>
+    <th class="amount-cell">Payment Received ({!currencyCode})</th>
+    <th class="amount-cell">Total Balance ({!currencyCode})</th>
+  </tr>
+  
+  <apex:repeat value="{!registrationItems}" var="regItem">
+    <tr>
+      <td>{!regItem.Payment_Plan_Name__c}</td>
+      <td class="date-cell">
+        <apex:outputText value="{0,date,dd-MMM-yyyy}" rendered="{!regItem.Date__c != null}">
+          <apex:param value="{!regItem.Date__c}" />
+        </apex:outputText>
+      </td>
+      <td class="amount-cell">
+        <apex:outputText value="{0, number, ###,##0.00}" rendered="{!regItem.Price_Formula__c != null || regItem.Price_CHF__c != null}">
+          <apex:param value="{!IF(isElieSaab, regItem.Price_CHF__c, regItem.Price_Formula__c)}" />
+        </apex:outputText>
+      </td>
+      <td class="amount-cell">
+        <apex:outputText value="{0, number, ###,##0.00}" rendered="{!regItem.Received_Amount__c != null}">
+          <apex:param value="{!regItem.Received_Amount__c}" />
+        </apex:outputText>
+      </td>
+      <td class="amount-cell">
+        <apex:outputText value="{0, number, ###,##0.00}" rendered="{!regItem.Remaining_Amount__c != null}">
+          <apex:param value="{!regItem.Remaining_Amount__c}" />
+        </apex:outputText>
+      </td>
+    </tr>
+  </apex:repeat>
+  
+  <tr class="total-row">
+    <td>Total</td>
+    <td class="date-cell">-</td>
+    <td class="amount-cell">
+      <apex:outputText value="{0, number, ###,##0.00}">
+        <apex:param value="{!totalRegistrationAmount}" />
+      </apex:outputText>
+    </td>
+    <td class="amount-cell">
+      <apex:outputText value="{0, number, ###,##0.00}">
+        <apex:param value="{!totalRegistrationReceivedAmount}" />
+      </apex:outputText>
+    </td>
+    <td class="amount-cell">
+      <apex:outputText value="{0, number, ###,##0.00}">
+        <apex:param value="{!totalRegistrationBalanceAmount}" />
+      </apex:outputText>
+    </td>
+  </tr>
+</table>
+
+<!-- Installments section -->
+<apex:outputPanel rendered="{!cashFlowItems.size > 0}" layout="block" styleClass="section">
+    <div class="section-header">
+        <h2>INSTALLMENTS</h2>
+    </div>
+    
+    <!-- First Table of Installments -->
+    <table class="data-table" width="100%">
+        <tr>
+            <th>Description</th>
+            <th class="date-cell">Due Date</th>
+            <th class="amount-cell">Amount ({!currencyCode})</th>
+            <th class="amount-cell">Received ({!currencyCode})</th>
+            <th class="amount-cell">Balance ({!currencyCode})</th>
+        </tr>
+        <apex:repeat value="{!firstTableDisplayRows}" var="row">
+            <tr>
+                <td>{!row.cf.Installment_Milestone__c}</td>
+                <td class="date-cell">
+                    <apex:outputText value="{0,date,dd-MMM-yyyy}" rendered="{!row.cf.Date__c != null}">
+                        <apex:param value="{!row.cf.Date__c}" />
+                    </apex:outputText>
+                </td>
+                <td class="amount-cell">
+                    <apex:outputText value="{0, number, ###,##0.00}" rendered="{!row.amount != null}">
+                        <apex:param value="{!row.amount}" />
+                    </apex:outputText>
+                </td>
+                <td class="amount-cell">
+                    <apex:outputText value="{0, number, ###,##0.00}" rendered="{!row.cf.Received_Amount__c != null}">
+                        <apex:param value="{!row.cf.Received_Amount__c}" />
+                    </apex:outputText>
+                </td>
+                <td class="amount-cell">
+                    <apex:outputText value="{0, number, ###,##0.00}">
+                        <apex:param value="{!row.amount - BLANKVALUE(row.cf.Received_Amount__c, 0)}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+        </apex:repeat>
+        
+        <!-- Only show totals here if there's no second table -->
+        <apex:outputPanel rendered="{!!hasSecondTableItems}" layout="none">
+            <tr class="total-row">
+                <td class="right-align">Totals</td>
+                <td></td>
+                <td class="amount-cell">
+                  <apex:outputText value="{0, number, ###,##0.00}">
+                      <apex:param value="{!totalFirstTableAmount}" />
+                  </apex:outputText>
+                </td>
+                <td class="amount-cell">
+                    <apex:outputText value="{0, number, ###,##0.00}">
+                        <apex:param value="{!totalReceivedAmount}" />
+                    </apex:outputText>
+                </td>
+                <td class="amount-cell">
+                    <apex:outputText value="{0, number, ###,##0.00}">
+                        <apex:param value="{!totalFirstTableBalance}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+        </apex:outputPanel>
+    </table>
+    
+    <!-- Second Table of Installments (if needed) -->
+    <apex:outputPanel rendered="{!hasSecondTableItems}" layout="block" styleClass="page-break">
+        <!-- Header with logo for continuation page -->
+        <div class="page" style="text-align: right;"><apex:image value="{!$Resource.MiraDocLogo}" alt="Logo" width="18%;"/></div>
+        <div style="text-align: center; margin: 20px 0;">
+            <h2>STATEMENT OF ACCOUNT - INSTALLMENTS (CONTINUED)</h2>
+        </div>
+        
+        <table class="data-table" width="100%">
+            <tr>
+                <th>Description</th>
+                <th class="date-cell">Due Date</th>
+                            <th class="amount-cell">Amount ({!currencyCode})</th>
+            <th class="amount-cell">Received ({!currencyCode})</th>
+            <th class="amount-cell">Balance ({!currencyCode})</th>
+            </tr>
+            <apex:repeat value="{!secondTableCashFlowItems}" var="item">
+                <tr>
+                    <td>{!item.Installment_Milestone__c}</td>
+                    <td class="date-cell">
+                        <apex:outputText value="{0,date,dd-MMM-yyyy}" rendered="{!item.Date__c != null}">
+                            <apex:param value="{!item.Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td class="amount-cell">
+                        <apex:outputText value="{0, number, ###,##0.00}" rendered="{!item.Price_Formula__c != null || item.Price_CHF__c != null}">
+                            <apex:param value="{!IF(isElieSaab, item.Price_CHF__c, item.Price_Formula__c)}" />
+                        </apex:outputText>
+                    </td>
+                    <td class="amount-cell">
+                        <apex:outputText value="{0, number, ###,##0.00}" rendered="{!item.Received_Amount__c != null}">
+                            <apex:param value="{!item.Received_Amount__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td class="amount-cell">
+                        <apex:outputText value="{0, number, ###,##0.00}" rendered="{!item.Remaining_Amount__c != null}">
+                            <apex:param value="{!item.Remaining_Amount__c}" />
+                        </apex:outputText>
+                    </td>
+                </tr>
+            </apex:repeat>
+            
+            <!-- Always show totals in the second table -->
+            <tr class="total-row">
+                <td class="right-align">Totals</td>
+                <td></td>
+                <td class="amount-cell">
+                  <apex:outputText value="{0, number, ###,##0.00}">
+                      <apex:param value="{!totalInstalmentAmountWithFirstTableVAT}" />
+                  </apex:outputText>
+                </td>
+                <td class="amount-cell">
+                    <apex:outputText value="{0, number, ###,##0.00}">
+                        <apex:param value="{!totalReceivedAmount}" />
+                    </apex:outputText>
+                </td>
+                <td class="amount-cell">
+                    <apex:outputText value="{0, number, ###,##0.00}">
+                        <apex:param value="{!totalBalanceWithFirstTableVAT}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+        </table>
+    </apex:outputPanel>
+</apex:outputPanel>
+
+<!-- Receipts list (last page) -->
+<apex:outputPanel rendered="{!hasReceipts}" layout="block" styleClass="page-break">
+    <div class="page" style="text-align: right;"><apex:image value="{!$Resource.MiraDocLogo}" alt="Logo" width="18%;"/></div>
+    <div style="text-align: center; margin: 20px 0;">
+        <h2>STATEMENT OF ACCOUNT - RECEIPTS</h2>
+    </div>
+
+    <table class="data-table" width="100%">
+        <tr>
+            <th>Voucher #</th>
+            <th>Status</th>
+            <th class="date-cell">Payment Date</th>
+            <th class="amount-cell">Received Amount</th>
+        </tr>
+        <apex:repeat value="{!receipts}" var="rcpt">
+            <tr>
+                <td>{!rcpt.Voucher_Number_Retail__c}</td>
+                <td>{!rcpt.Status__c}</td>
+                <td class="date-cell">
+                    <apex:outputText value="{0,date,dd-MMM-yyyy}" rendered="{!rcpt.Payment_Date__c != null}">
+                        <apex:param value="{!rcpt.Payment_Date__c}" />
+                    </apex:outputText>
+                </td>
+                <td class="amount-cell">
+                    <apex:outputText value="{0, number, ###,##0.00}" rendered="{!rcpt.Received_Amount__c != null}">
+                        <apex:param value="{!rcpt.Received_Amount__c}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+        </apex:repeat>
+        <tr class="total-row">
+            <td class="right-align">Total</td>
+            <td></td>
+            <td></td>
+            <td class="amount-cell">
+                <apex:outputText value="{0, number, ###,##0.00}">
+                    <apex:param value="{!totalReceiptsReceived}" />
+                </apex:outputText>
+            </td>
+        </tr>
+    </table>
+</apex:outputPanel>
+</body>
+</html>
+</apex:page>

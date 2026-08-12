@@ -1,0 +1,91 @@
+﻿sf :  ┬╗   Warning: @salesforce/cli update available from 2.139.6 to 2.145.6.
+At C:\Users\shera\AppData\Local\Temp\ps-script-02bae982-0f29-427e-b860-7665ee0c5493.ps1:111 char:1
++ sf data query --query "SELECT Id, DeveloperName, Metadata FROM Lightn ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( ┬╗   Warning: ...9.6 to 2.145.6.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+{
+  "status": 0,
+  "result": {
+    "records": [
+      {
+        "attributes": {
+          "type": "LightningComponentBundle",
+          "url": "/services/data/v67.0/tooling/sobjects/LightningComponentBundle/0RbU9000000cQUXKA2"
+        },
+        "Id": "0RbU9000000cQUXKA2",
+        "DeveloperName": "monthlySalesReport",
+        "Metadata": {
+          "ai": null,
+          "apiVersion": 66,
+          "capabilities": {
+            "capability": []
+          },
+          "description": "MIRA Developments Monthly Sales Report with PDF download",
+          "isExplicitImport": false,
+          "isExposed": true,
+          "lwcResources": {
+            "lwcResource": [
+              {
+                "filePath": "lwc/monthlySalesReport/monthlySalesReport.js-meta.xml",
+                "source": {
+                  "asByteArray": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPExpZ2h0bmluZ0NvbXBvbmVudEJ1bmRsZSB4bWxucz0iaHR0cDovL3NvYXAuc2ZvcmNlLmNvbS8yMDA2LzA0L21ldGFkYXRhIj4KICAgIDxhcGlWZXJzaW9uPjY2LjA8L2FwaVZlcnNpb24+CiAgICA8aXNFeHBvc2VkPnRydWU8L2lzRXhwb3NlZD4KICAgIDxtYXN0ZXJMYWJlbD5Nb250aGx5IFNhbGVzIFJlcG9ydDwvbWFzdGVyTGFiZWw+CiAgICA8ZGVzY3JpcHRpb24+TUlSQSBE",
+                  "inputStream": {},
+                  "length": 255,
+                  "maxToKeep": 256
+                }
+              },
+              {
+                "filePath": "lwc/monthlySalesReport/monthlySalesReport.js",
+                "source": {
+                  "asByteArray": "aW1wb3J0IHsgTGlnaHRuaW5nRWxlbWVudCwgdHJhY2sgfSBmcm9tICdsd2MnOwppbXBvcnQgeyBTaG93VG9hc3RFdmVudCB9IGZyb20gJ2xpZ2h0bmluZy9wbGF0Zm9ybVNob3dUb2FzdEV2ZW50JzsKaW1wb3J0IGdldFJlcG9ydERhdGEgZnJvbSAnQHNhbGVzZm9yY2UvYXBleC97IUlEOkBAQHNmZGM9MDFwVTkwMDAwMDYyVHZKPXNmZGNAQEB9LmdldFJlcG9ydERhdGEnOwppbXBvcnQgZ2V0UmVwb3J0SHRtbCBmcm9tICdAc2FsZXNmb3JjZS9hcGV4",
+                  "inputStream": {},
+                  "length": 255,
+                  "maxToKeep": 256
+                }
+              },
+              {
+                "filePath": "lwc/monthlySalesReport/monthlySalesReport.html",
+                "source": {
+                  "asByteArray": "PHRlbXBsYXRlPgogICAgPGxpZ2h0bmluZy1jYXJkIHRpdGxlPSJNSVJBIE1vbnRobHkgU2FsZXMgUmVwb3J0IiBpY29uLW5hbWU9InN0YW5kYXJkOnJlcG9ydCI+CiAgICAgICAgPGRpdiBzbG90PSJhY3Rpb25zIiBjbGFzcz0idG9vbGJhciI+CiAgICAgICAgICAgIDxsaWdodG5pbmctY29tYm9ib3gKICAgICAgICAgICAgICAgIGNsYXNzPSJwZXJpb2QtZmllbGQiCiAgICAgICAgICAgICAgICBuYW1lPSJ5ZWFyIgogICAgICAgICAgICAgICAgbGFi",
+                  "inputStream": {},
+                  "length": 255,
+                  "maxToKeep": 256
+                }
+              },
+              {
+                "filePath": "lwc/monthlySalesReport/monthlySalesReport.css",
+                "source": {
+                  "asByteArray": "LnRvb2xiYXIgewogICAgZGlzcGxheTogZmxleDsKICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICBnYXA6IDAuNXJlbTsKICAgIGZsZXgtd3JhcDogd3JhcDsKfQoKLnBlcmlvZC1maWVsZCB7CiAgICBtaW4td2lkdGg6IDcuNXJlbTsKfQoKLmRvd25sb2FkLWJ0biB7CiAgICBtYXJnaW4tbGVmdDogMC4yNXJlbTsKfQoKLnN1bW1hcnktc3RyaXAgewogICAgZGlzcGxheTogZ3JpZDsKICAgIGdyaWQtdGVtcGxhdGUtY29sdW1uczogcmVwZWF0KGF1",
+                  "inputStream": {},
+                  "length": 255,
+                  "maxToKeep": 256
+                }
+              }
+            ]
+          },
+          "masterLabel": "Monthly Sales Report",
+          "runtimeNamespace": null,
+          "targetConfigs": {
+            "asByteArray": "PHRhcmdldENvbmZpZyB0YXJnZXRzPSJsaWdodG5pbmdfX0FwcFBhZ2UsbGlnaHRuaW5nX19Ib21lUGFnZSI+CiAgICAgICAgICAgIDxzdXBwb3J0ZWRGb3JtRmFjdG9ycz4KICAgICAgICAgICAgICAgIDxzdXBwb3J0ZWRGb3JtRmFjdG9yIHR5cGU9IlNtYWxsIj48L3N1cHBvcnRlZEZvcm1GYWN0b3I+CiAgICAgICAgICAgICAgICA8c3VwcG9ydGVkRm9ybUZhY3RvciB0eXBlPSJMYXJnZSI+PC9zdXBwb3J0ZWRGb3JtRmFjdG9yPgogICAgICAgICAgICA8L3N1cHBvcnRlZEZvcm1GYWN0b3JzPgogICAgICAgIDwvdGFyZ2V0Q29uZmlnPg==",
+            "inputStream": {},
+            "length": 304,
+            "maxToKeep": 305
+          },
+          "targets": {
+            "target": [
+              "lightning__Tab",
+              "lightning__AppPage",
+              "lightning__HomePage"
+            ]
+          },
+          "urls": null
+        }
+      }
+    ],
+    "totalSize": 1,
+    "done": true
+  },
+  "warnings": []
+}

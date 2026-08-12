@@ -1,0 +1,167 @@
+<template>
+    <div class="slds-p-around_medium wizard">
+        <template if:true={isLoading}>
+            <div class="slds-align_absolute-center slds-p-around_large">
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:false={isLoading}>
+            <template if:true={error}>
+                <div class="slds-text-color_error slds-p-around_x-small slds-m-bottom_small">{error}</div>
+            </template>
+
+            <!-- Blocked by a guard (or a load error) -->
+            <template if:true={isBlocked}>
+                <div class="slds-text-color_error slds-p-around_small">{blockReason}</div>
+            </template>
+
+            <!-- Step 1: select installments -->
+            <template if:true={isSelect}>
+                <p class="slds-text-title_caps slds-m-bottom_x-small">
+                    Installments for {unitName}
+                </p>
+                <template if:false={installments.length}>
+                    <div class="slds-box slds-box_x-small slds-text-align_center slds-text-color_weak">
+                        This unit has no un-invoiced installments to bill.
+                    </div>
+                </template>
+                <template if:true={installments.length}>
+                    <lightning-datatable
+                        key-field="cashFlowId"
+                        data={installments}
+                        columns={columns}
+                        selected-rows={selectedIds}
+                        onrowselection={handleRowSelection}>
+                    </lightning-datatable>
+                    <div class="slds-grid slds-grid_align-end slds-m-top_small totals">
+                        <div class="slds-text-align_right">
+                            <p>Sub-Total: <lightning-formatted-number value={subTotal} format-style="currency" currency-code="AED"></lightning-formatted-number></p>
+                            <p>VAT: <lightning-formatted-number value={vat} format-style="currency" currency-code="AED"></lightning-formatted-number></p>
+                            <p><strong>Grand Total: <lightning-formatted-number value={grandTotal} format-style="currency" currency-code="AED"></lightning-formatted-number></strong></p>
+                        </div>
+                    </div>
+                </template>
+            </template>
+
+            <!-- Step 2: details -->
+            <template if:true={isDetails}>
+                <!-- Recap of the installments selected on step 1 -->
+                <p class="slds-text-title_caps slds-m-bottom_x-small">Selected installments</p>
+                <table class="slds-table slds-table_bordered slds-table_fixed-layout slds-m-bottom_medium">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col"><div class="slds-truncate" title="Installment">Installment</div></th>
+                            <th scope="col"><div class="slds-truncate slds-text-align_right" title="%">%</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Date">Date</div></th>
+                            <th scope="col"><div class="slds-truncate slds-text-align_right" title="Price">Price</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={selectedInstallments} for:item="i">
+                            <tr key={i.cashFlowId}>
+                                <td><div class="slds-truncate" title={i.milestone}>{i.milestone}</div></td>
+                                <td class="slds-text-align_right">
+                                    <lightning-formatted-number value={i.percent} format-style="percent"></lightning-formatted-number>
+                                </td>
+                                <td>
+                                    <lightning-formatted-date-time value={i.installmentDate} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                                </td>
+                                <td class="slds-text-align_right">
+                                    <lightning-formatted-number value={i.amount} format-style="currency" currency-code="AED"></lightning-formatted-number>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+
+                <div class="slds-grid slds-gutters_x-small slds-wrap">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input type="date" label="Invoice Date" value={invoiceDate}
+                            onchange={handleInvoiceDate} required></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input type="date" label="Due Date" value={dueDate}
+                            onchange={handleDueDate} required></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-m-top_x-small">
+                        <lightning-record-picker label="Financial Details"
+                            placeholder="Search financial details…"
+                            object-api-name="Financial_Detail__c"
+                            value={financialDetailId}
+                            onchange={handleFinancialDetail}>
+                        </lightning-record-picker>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-m-top_x-small">
+                        <lightning-textarea label="Description" value={description}
+                            onchange={handleDescription} required></lightning-textarea>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-m-top_x-small">
+                        <lightning-input type="toggle" label="Other currency"
+                            message-toggle-active="On" message-toggle-inactive="Off"
+                            checked={otherCurrency} onchange={handleOtherCurrency}></lightning-input>
+                    </div>
+                    <template if:true={otherCurrency}>
+                        <div class="slds-col slds-size_1-of-2 slds-m-top_x-small">
+                            <lightning-combobox label="Secondary Currency" value={secondaryCurrency}
+                                options={currencyOptions} placeholder="Select…"
+                                onchange={handleSecondaryCurrency}></lightning-combobox>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-m-top_x-small">
+                            <lightning-input type="number" label="Conversion Rate" step="0.01" min="0"
+                                value={conversionRate} onchange={handleConversionRate}></lightning-input>
+                        </div>
+                    </template>
+                </div>
+                <div class="slds-text-align_right slds-m-top_small">
+                    <p><strong>Grand Total: <lightning-formatted-number value={grandTotal} format-style="currency" currency-code="AED"></lightning-formatted-number></strong></p>
+                </div>
+            </template>
+
+            <!-- Step 3: preview -->
+            <template if:true={isPreview}>
+                <c-invoice-preview-l-w-c
+                    invoices-json={invoicesJson}
+                    line-items-json={lineItemsJson}
+                    project-name-from-flow={projectName}
+                    property-details-from-flow={propertyDetails}
+                    sale-price-from-flow={salePriceString}
+                    unit-name-from-flow={unitName}
+                    unit-id={previewUnitId}>
+                </c-invoice-preview-l-w-c>
+            </template>
+
+            <!-- Step 4: done -->
+            <template if:true={isDone}>
+                <div class="slds-p-around_small slds-text-align_center">
+                    <lightning-icon icon-name="utility:success" variant="success" size="small"
+                        class="slds-m-bottom_x-small"></lightning-icon>
+                    <p class="slds-text-heading_small slds-m-bottom_x-small">Invoice created successfully.</p>
+                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer">Open the invoice PDF</a>
+                </div>
+            </template>
+
+            <!-- Footer buttons -->
+            <div class="slds-m-top_medium slds-grid slds-grid_align-end footer-bar">
+                <template if:true={isBlocked}>
+                    <lightning-button label="Close" onclick={handleCancel}></lightning-button>
+                </template>
+                <template if:true={isSelect}>
+                    <lightning-button label="Cancel" onclick={handleCancel} class="slds-m-right_x-small"></lightning-button>
+                    <lightning-button label="Next" variant="brand" onclick={goToDetails} disabled={hasNoSelection}></lightning-button>
+                </template>
+                <template if:true={isDetails}>
+                    <lightning-button label="Back" onclick={backToSelect} class="slds-m-right_x-small"></lightning-button>
+                    <lightning-button label="Next" variant="brand" onclick={goToPreview}></lightning-button>
+                </template>
+                <template if:true={isPreview}>
+                    <lightning-button label="Back" onclick={backToDetails} class="slds-m-right_x-small" disabled={working}></lightning-button>
+                    <lightning-button label="Create Invoice" variant="brand" onclick={handleCreate} disabled={working}></lightning-button>
+                </template>
+                <template if:true={isDone}>
+                    <lightning-button label="Done" variant="brand" onclick={handleFinish}></lightning-button>
+                </template>
+            </div>
+        </template>
+    </div>
+</template>

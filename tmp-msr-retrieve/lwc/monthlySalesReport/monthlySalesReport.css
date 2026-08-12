@@ -1,0 +1,165 @@
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.period-field {
+    min-width: 7.5rem;
+}
+
+.download-btn {
+    margin-left: 0.25rem;
+}
+
+.summary-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 0.75rem;
+}
+
+.summary-item {
+    border: 1px solid #c9c9c9;
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    background: #fafaf9;
+}
+
+.summary-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #706e6b;
+    margin-bottom: 0.25rem;
+}
+
+.summary-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.summary-value-sm {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.report-preview-wrapper {
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    background: #fff;
+}
+
+.preview-caption {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #dddbda;
+    font-size: 0.75rem;
+    color: #706e6b;
+    background: #f3f2f2;
+}
+
+.report-preview {
+    padding: 1rem;
+    overflow: auto;
+    max-height: 42rem;
+    background: #ecebea;
+}
+
+/* Soften page breaks in on-screen preview */
+.report-preview :global(.page) {
+    background: #fff;
+    margin: 0 auto 1rem;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    page-break-after: always;
+}
+
+.section-heading {
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 0.5rem;
+}
+
+.structured-section {
+    margin-top: 1.25rem;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+.report-table th,
+.report-table td {
+    border: 1px solid #222;
+    padding: 0.35rem 0.45rem;
+    vertical-align: top;
+}
+
+.report-table th {
+    background: #f2f2f2;
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+}
+
+.report-table.narrow {
+    width: min(100%, 28rem);
+}
+
+.num {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.strong {
+    font-weight: 700;
+}
+
+.shared-pill {
+    margin-top: 0.15rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #444;
+}
+
+.leader-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1rem;
+}
+
+.spotlight-card {
+    border: 1px solid #222;
+    padding: 0.85rem;
+}
+
+.spotlight-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.spotlight-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    margin-bottom: 0.35rem;
+}
+
+.spotlight-caption {
+    font-size: 0.75rem;
+    color: #706e6b;
+}
+
+.empty {
+    color: #706e6b;
+    font-style: italic;
+}

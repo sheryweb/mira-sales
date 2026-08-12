@@ -1,0 +1,241 @@
+<template>
+    <lightning-card title="MIRA Monthly Sales Report" icon-name="standard:report">
+        <div slot="actions" class="toolbar">
+            <lightning-combobox
+                class="period-field"
+                name="year"
+                label="Year"
+                value={selectedYear}
+                options={yearOptions}
+                onchange={handleYearChange}
+                variant="label-hidden"
+                placeholder="Year"
+            ></lightning-combobox>
+            <lightning-combobox
+                class="period-field"
+                name="month"
+                label="Month"
+                value={selectedMonth}
+                options={monthOptions}
+                onchange={handleMonthChange}
+                variant="label-hidden"
+                placeholder="Month"
+            ></lightning-combobox>
+            <lightning-button
+                label="Refresh"
+                onclick={handleRefresh}
+                disabled={isLoading}
+            ></lightning-button>
+            <lightning-button
+                variant="brand"
+                label="Download Monthly Sales Report PDF"
+                onclick={handleDownloadPdf}
+                disabled={downloadDisabled}
+                class="download-btn"
+            ></lightning-button>
+        </div>
+
+        <div class="slds-p-around_medium">
+            <template if:true={isLoading}>
+                <div class="slds-align_absolute-center slds-p-around_large">
+                    <lightning-spinner alternative-text="Loading report" size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:true={errorMessage}>
+                <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                    <span>{errorMessage}</span>
+                </div>
+            </template>
+
+            <template if:true={hasReport}>
+                <div class="summary-strip slds-m-bottom_medium">
+                    <div class="summary-item">
+                        <div class="summary-label">Reporting Period</div>
+                        <div class="summary-value">{periodLabel}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Total Sales Value</div>
+                        <div class="summary-value">AED {report.totalSalesValue}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Units Booked</div>
+                        <div class="summary-value">{report.unitsBooked}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Projects</div>
+                        <div class="summary-value">{report.projectCount}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Booking Status</div>
+                        <div class="summary-value-sm">
+                            {report.bookedCount} Booked · {report.soldCount} Sold · {report.reservedCount} Reserved
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full HTML report (source of truth for PDF layout) -->
+                <div class="report-preview-wrapper">
+                    <div class="preview-caption">Report preview (PDF layout)</div>
+                    <div class="report-preview" lwc:dom="manual" data-id="htmlPreview"></div>
+                </div>
+
+                <!-- Structured sections for on-screen browsing -->
+                <div class="structured-section slds-m-top_large">
+                    <h2 class="section-heading">Transaction Details</h2>
+                    <div class="table-scroll">
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Property Code</th>
+                                    <th>Unit Price (AED)</th>
+                                    <th>Project</th>
+                                    <th>Agency</th>
+                                    <th>Owner</th>
+                                    <th>Booked Date</th>
+                                    <th>Manager</th>
+                                    <th>Stage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={transactions} for:item="txn">
+                                    <tr key={txn.opportunityId}>
+                                        <td>
+                                            {txn.propertyCode}
+                                            <template if:true={txn.isSharedDeal}>
+                                                <div class="shared-pill">SHARED DEAL</div>
+                                            </template>
+                                        </td>
+                                        <td class="num">{txn.unitPrice}</td>
+                                        <td>{txn.projectName}</td>
+                                        <td>{txn.agencyName}</td>
+                                        <td>{txn.ownerDisplay}</td>
+                                        <td>{txn.bookedDateDisplay}</td>
+                                        <td>{txn.managerDisplay}</td>
+                                        <td>{txn.stageName}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="structured-section">
+                    <h2 class="section-heading">Sales by Project</h2>
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Units</th>
+                                <th>Total Value (AED)</th>
+                                <th>Share of Sales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={salesByProject} for:item="row">
+                                <tr key={row.projectName}>
+                                    <td>{row.projectName}</td>
+                                    <td class="num">{row.units}</td>
+                                    <td class="num">{row.totalValue}</td>
+                                    <td class="num">{row.shareOfSalesPercent}%</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="structured-section">
+                    <h2 class="section-heading">Target Split — Shared Deals</h2>
+                    <template if:true={hasSharedDeals}>
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Deal</th>
+                                    <th>Value (AED)</th>
+                                    <th>Owner Credit</th>
+                                    <th>Manager Credit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={sharedDeals} for:item="deal">
+                                    <tr key={deal.opportunityId}>
+                                        <td>{deal.propertyCode}</td>
+                                        <td class="num">{deal.dealValue}</td>
+                                        <td>
+                                            <template for:each={deal.ownerCredits} for:item="credit">
+                                                <div key={credit.name}>
+                                                    {credit.name}: {credit.creditAmount}
+                                                    ({credit.unitCredit} unit)
+                                                </div>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            <template for:each={deal.managerCredits} for:item="credit">
+                                                <div key={credit.name}>
+                                                    {credit.name}: {credit.creditAmount}
+                                                    ({credit.unitCredit} unit
+                                                    <template if:true={credit.note}> — {credit.note}</template>)
+                                                </div>
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:false={hasSharedDeals}>
+                        <p class="empty">No shared deals this month.</p>
+                    </template>
+                </div>
+
+                <div class="structured-section">
+                    <h2 class="section-heading">Top Team of the Month</h2>
+                    <table class="report-table narrow">
+                        <tbody>
+                            <template for:each={topTeams} for:item="team">
+                                <tr key={team.managerName}>
+                                    <td class="strong">{team.managerName}</td>
+                                    <td class="num">{team.units}</td>
+                                    <td class="num">{team.totalValue}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="leader-grid">
+                    <div class="structured-section">
+                        <h2 class="section-heading">Top RM of the Month</h2>
+                        <template if:true={topRm}>
+                            <div class="spotlight-card">
+                                <div class="spotlight-name">{topRm.rmName}</div>
+                                <div class="spotlight-stats">
+                                    <span>Units: {topRm.units}</span>
+                                    <span>Value: {topRm.totalValue}</span>
+                                </div>
+                                <div class="spotlight-caption">Manager {topRm.managerName}</div>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="structured-section">
+                        <h2 class="section-heading">Top Broker of the Month</h2>
+                        <template if:true={topBroker}>
+                            <div class="spotlight-card">
+                                <div class="spotlight-name">{topBroker.agencyName}</div>
+                                <div class="spotlight-stats">
+                                    <span>Units: {topBroker.units}</span>
+                                    <span>Value: {topBroker.totalValue}</span>
+                                </div>
+                                <div class="spotlight-caption">Leading agency by total sales value</div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <template if:true={isDownloading}>
+            <lightning-spinner alternative-text="Generating PDF" size="small"></lightning-spinner>
+        </template>
+    </lightning-card>
+</template>

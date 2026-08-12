@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Approval_Request__c.Requested_Shared_RM__c</members>
+        <members>Approval_Request__c.Opportunity__c</members>
+        <members>Approval_Request__c.Unit__c</members>
+        <members>Approval_Request__c.Approver__c</members>
+        <members>Approval_Request__c.Requester__c</members>
+        <name>CustomField</name>
+    </types>
+    <version>66.0</version>
+</Package>
