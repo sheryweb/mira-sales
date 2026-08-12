@@ -220,7 +220,7 @@
                       <div class="column-div ar-lang" style="width: 50%;">عنوان تسليم الاتفاقية البيع والشراء: سيتم استخدام العنوان التالي فقط لتسليم اتفاقية البيع والشراء الخاصة بالبائع. وسيتم إرسال / تسليم جميع المراسلات والإخطارات والإشعارات الأخرى إلى العنوان الأساسي المذكور أعلاه.</div>
                   </div>
               </div>
-            <div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
+            <!--<div class='col size-1-of-2 page' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />-->
            <apex:variable value="{!1}" var="count" />
            <apex:outputPanel rendered="{!hasJointOwners}">
            <apex:repeat value="{!jointOwnerAccounts}" var="jOwner">
@@ -379,7 +379,7 @@
               </div>
            <apex:variable value="{!1}" var="countdue" />
            <apex:outputPanel rendered="{!hasJointOwners}">
-           <div style="page-break-before: always; margin-top: 2%; text-align: right;"></div>
+           <!--<div style="page-break-before: always; margin-top: 2%; text-align: right;"></div>-->
            <apex:repeat value="{!jointOwnerAccounts}" var="jOwn">
               <apex:variable value="{!countdue+1}" var="countdue" />
                   
