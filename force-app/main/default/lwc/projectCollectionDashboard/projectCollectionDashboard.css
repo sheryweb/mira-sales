@@ -57,9 +57,16 @@
     color: var(--pcd-ink-secondary);
 }
 
-.currency-picker {
-    min-width: 13rem;
-    display: block;
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.updated-label {
+    font-size: 0.75rem;
+    color: var(--pcd-ink-muted);
+    white-space: nowrap;
 }
 
 /* ---------- error ---------- */
@@ -160,6 +167,226 @@
     color: var(--pcd-ink-muted);
 }
 
+/* ---------- charts ---------- */
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.75rem;
+}
+
+.chart-card {
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.chart-card-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+}
+
+.chart-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--pcd-ink);
+}
+
+.chart-scope {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--pcd-ink-muted);
+    white-space: nowrap;
+}
+
+.donut-wrap {
+    position: relative;
+    height: 13.5rem;
+}
+
+.donut-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.donut-center-value {
+    font-size: 1.5rem;
+    font-weight: 650;
+    line-height: 1.1;
+    color: var(--pcd-ink);
+}
+
+.donut-center-pct {
+    margin-top: 0.1875rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--pcd-ink-secondary);
+}
+
+.donut-center-label {
+    margin-top: 0.125rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pcd-ink-muted);
+}
+
+.chart-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--pcd-ink-muted);
+}
+
+/* shared project → hue legend for the three donuts */
+.legend-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem 1.25rem;
+    padding: 0.625rem 1.25rem;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    font-size: 0.75rem;
+    color: var(--pcd-ink-secondary);
+}
+
+.legend-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.bar-panel {
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.bar-wrap {
+    position: relative;
+    height: 20rem;
+}
+
+/* ---------- comparison table ---------- */
+
+.table-panel {
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+.cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+}
+
+.cmp-table th,
+.cmp-table td {
+    padding: 0.5625rem 0.75rem;
+    border-bottom: 1px solid #e1e0d9;
+    text-align: left;
+    font-weight: 400;
+    color: var(--pcd-ink);
+    white-space: nowrap;
+}
+
+.cmp-table thead th {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pcd-ink-muted);
+    border-bottom: 1px solid #c3c2b7;
+}
+
+.cmp-table tbody tr:hover {
+    background: #f9f9f7;
+}
+
+.cmp-table .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.cmp-table .col-project {
+    font-weight: 600;
+}
+
+.cmp-table tbody .col-project .legend-dot,
+.cmp-table tfoot .col-project .legend-dot {
+    margin-right: 0.4375rem;
+}
+
+.cmp-table tfoot th,
+.cmp-table tfoot td {
+    border-bottom: none;
+    border-top: 2px solid #c3c2b7;
+    font-weight: 700;
+}
+
+.col-progress {
+    min-width: 10rem;
+}
+
+.progress-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.progress-track {
+    flex: 1;
+    height: 0.375rem;
+    border-radius: 999px;
+    background: #f0efec;
+    overflow: hidden;
+}
+
+.progress-fill {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: #1baf7a;
+}
+
+.progress-pct {
+    min-width: 2.5rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--pcd-ink-secondary);
+}
+
+.table-empty {
+    margin: 0;
+    padding: 1.5rem 0 0.5rem;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--pcd-ink-muted);
+}
+
 /* ---------- responsive ---------- */
 
 @media (max-width: 48rem) {
@@ -169,13 +396,14 @@
 
     .header-controls {
         width: 100%;
-    }
-
-    .currency-picker {
-        min-width: 100%;
+        flex-wrap: wrap;
     }
 
     .tile-hero {
         font-size: 2.125rem;
+    }
+
+    .bar-wrap {
+        height: 16rem;
     }
 }

@@ -6,15 +6,14 @@
                 <p class="subtitle">{currencyDescription}</p>
             </div>
             <div class="header-controls">
-                <lightning-combobox
-                    name="currency"
-                    label="Currency"
-                    variant="label-hidden"
-                    value={selectedCurrency}
-                    options={currencyOptions}
-                    onchange={handleCurrencyChange}
-                    class="currency-picker"
-                ></lightning-combobox>
+                <span class="updated-label">{lastUpdatedLabel}</span>
+                <lightning-button-icon
+                    icon-name="utility:refresh"
+                    variant="border-filled"
+                    alternative-text="Refresh dashboard"
+                    title="Refresh"
+                    onclick={handleRefresh}
+                ></lightning-button-icon>
             </div>
         </header>
 
@@ -35,6 +34,114 @@
                 </article>
             </template>
         </div>
+
+        <div class="chart-grid">
+            <template for:each={donutCards} for:item="card">
+                <article key={card.metric} class="panel chart-card">
+                    <header class="chart-card-header">
+                        <h2 class="chart-title">{card.title}</h2>
+                        <span class="chart-scope">Booked / Reserved / Sold</span>
+                    </header>
+                    <div class="donut-wrap">
+                        <canvas class="donut-canvas" data-metric={card.metric}></canvas>
+                        <template lwc:if={card.isEmpty}>
+                            <p class="chart-empty">No deals in this scope yet</p>
+                        </template>
+                        <template lwc:else>
+                            <div class="donut-center" aria-hidden="true">
+                                <span class="donut-center-value" title={card.centerFull}>{card.centerCompact}</span>
+                                <span class="donut-center-pct">{card.centerPct}</span>
+                                <span class="donut-center-label">{card.centerLabel}</span>
+                            </div>
+                        </template>
+                    </div>
+                </article>
+            </template>
+        </div>
+
+        <template lwc:if={hasProjects}>
+            <div class="panel legend-strip" role="list" aria-label="Projects">
+                <template for:each={projectLegend} for:item="item">
+                    <span key={item.name} class="legend-item" role="listitem">
+                        <span class="legend-dot" style={item.swatch}></span>{item.name}
+                    </span>
+                </template>
+            </div>
+        </template>
+
+        <section class="panel bar-panel">
+            <header class="chart-card-header">
+                <h2 class="chart-title">Project Value vs Received vs Remaining</h2>
+                <span class="chart-scope">All stages</span>
+            </header>
+            <div class="bar-wrap">
+                <canvas class="bar-canvas"></canvas>
+                <template lwc:if={hasNoProjects}>
+                    <p class="chart-empty">No projects for this currency</p>
+                </template>
+            </div>
+        </section>
+
+        <section class="panel table-panel">
+            <header class="chart-card-header">
+                <h2 class="chart-title">Project Comparison</h2>
+                <span class="chart-scope">All stages</span>
+            </header>
+            <template lwc:if={hasProjects}>
+                <div class="table-scroll">
+                    <table class="cmp-table">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="col-project">Project</th>
+                                <th scope="col" class="num">Total Value</th>
+                                <th scope="col" class="num">Received</th>
+                                <th scope="col" class="num">Remaining</th>
+                                <th scope="col" class="col-progress">% Collected</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={tableRows} for:item="row">
+                                <tr key={row.projectId}>
+                                    <th scope="row" class="col-project">
+                                        <span class="legend-dot" style={row.swatch}></span>{row.name}
+                                    </th>
+                                    <td class="num">{row.totalValue}</td>
+                                    <td class="num">{row.totalReceived}</td>
+                                    <td class="num">{row.totalRemaining}</td>
+                                    <td class="col-progress">
+                                        <div class="progress-cell">
+                                            <span class="progress-track">
+                                                <span class="progress-fill" style={row.barStyle}></span>
+                                            </span>
+                                            <span class="progress-pct">{row.pct}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th scope="row" class="col-project">All projects</th>
+                                <td class="num">{tableTotals.totalValue}</td>
+                                <td class="num">{tableTotals.totalReceived}</td>
+                                <td class="num">{tableTotals.totalRemaining}</td>
+                                <td class="col-progress">
+                                    <div class="progress-cell">
+                                        <span class="progress-track">
+                                            <span class="progress-fill" style={tableTotals.barStyle}></span>
+                                        </span>
+                                        <span class="progress-pct">{tableTotals.pct}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </template>
+            <template lwc:else>
+                <p class="table-empty">No projects for this currency</p>
+            </template>
+        </section>
 
         <template lwc:if={isLoading}>
             <lightning-spinner alternative-text="Loading dashboard" size="medium"></lightning-spinner>
