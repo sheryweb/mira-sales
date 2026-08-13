@@ -89,6 +89,117 @@
     color: var(--pcd-ink);
 }
 
+/* ---------- charts ---------- */
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 0.75rem;
+}
+
+.chart-card {
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.chart-card-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+}
+
+.chart-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--pcd-ink);
+}
+
+.chart-scope {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--pcd-ink-muted);
+    white-space: nowrap;
+}
+
+.chart-wrap {
+    position: relative;
+    height: 14rem;
+}
+
+.gauge-wrap {
+    position: relative;
+    height: 14rem;
+}
+
+.gauge-value {
+    position: absolute;
+    inset: auto 0 0.25rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+}
+
+.gauge-value-main {
+    font-size: 1.75rem;
+    font-weight: 650;
+    line-height: 1.1;
+    color: var(--pcd-ink);
+}
+
+.gauge-value-sub {
+    margin-top: 0.125rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--pcd-ink-muted);
+}
+
+.donut-wrap {
+    position: relative;
+    height: 14rem;
+}
+
+.donut-center {
+    position: absolute;
+    inset: 0 0 25% 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.donut-center-value {
+    font-size: 1.375rem;
+    font-weight: 650;
+    line-height: 1.1;
+    color: var(--pcd-ink);
+}
+
+.donut-center-label {
+    margin-top: 0.125rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pcd-ink-muted);
+}
+
+.chart-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--pcd-ink-muted);
+}
+
 /* ---------- KPI tiles ---------- */
 
 .tile-grid {

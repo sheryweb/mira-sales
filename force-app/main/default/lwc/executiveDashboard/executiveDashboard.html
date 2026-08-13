@@ -33,13 +33,68 @@
             </div>
         </template>
 
-        <div class="tile-grid">
-            <article class={gaugeTile.cardClass}>
-                <p class="tile-label">YTD Sales vs Target</p>
-                <span class="tile-scope">Sold</span>
-                <p class="tile-hero" title={gaugeTile.full}>{gaugeTile.compact}</p>
-                <p class="tile-full">{gaugeTile.target}</p>
+        <div class="chart-grid">
+            <article class="panel chart-card">
+                <header class="chart-card-header">
+                    <h2 class="chart-title">YTD Sales vs Target</h2>
+                    <span class="chart-scope">Sold</span>
+                </header>
+                <div class="gauge-wrap">
+                    <canvas class="gauge-canvas"></canvas>
+                    <div class="gauge-value" aria-hidden="true">
+                        <span class="gauge-value-main" title={gaugeTile.full}>{gaugeTile.compact}</span>
+                        <span class="gauge-value-sub">{gaugeTile.target}</span>
+                    </div>
+                </div>
             </article>
+
+            <article class="panel chart-card">
+                <header class="chart-card-header">
+                    <h2 class="chart-title">Monthly Sold Value</h2>
+                    <span class="chart-scope">Sold · by sold month</span>
+                </header>
+                <div class="chart-wrap">
+                    <canvas class="monthly-canvas"></canvas>
+                    <template lwc:if={hasNoMonthly}>
+                        <p class="chart-empty">No sold deals in this cohort yet</p>
+                    </template>
+                </div>
+            </article>
+
+            <article class="panel chart-card">
+                <header class="chart-card-header">
+                    <h2 class="chart-title">Quarterly Sold Value</h2>
+                    <span class="chart-scope">Sold · by booking quarter</span>
+                </header>
+                <div class="chart-wrap">
+                    <canvas class="quarterly-canvas"></canvas>
+                    <template lwc:if={hasNoQuarterly}>
+                        <p class="chart-empty">No sold deals in this cohort yet</p>
+                    </template>
+                </div>
+            </article>
+
+            <article class="panel chart-card">
+                <header class="chart-card-header">
+                    <h2 class="chart-title">Project Sold Value</h2>
+                    <span class="chart-scope">Sold · by project</span>
+                </header>
+                <div class="donut-wrap">
+                    <canvas class="project-canvas"></canvas>
+                    <template lwc:if={hasNoProjects}>
+                        <p class="chart-empty">No sold deals in this cohort yet</p>
+                    </template>
+                    <template lwc:else>
+                        <div class="donut-center" aria-hidden="true">
+                            <span class="donut-center-value">{donutCenter}</span>
+                            <span class="donut-center-label">Sold</span>
+                        </div>
+                    </template>
+                </div>
+            </article>
+        </div>
+
+        <div class="tile-grid">
             <article class={unitsTile.cardClass}>
                 <p class="tile-label">Total Units</p>
                 <span class="tile-scope">Booked / Reserved / Sold</span>
