@@ -159,14 +159,14 @@ export default class ExecutiveDashboard extends LightningElement {
                 ctx.rotate(angle);
                 ctx.beginPath();
                 ctx.moveTo(0, -3);
-                ctx.lineTo(midRadius - 4, 0);
+                ctx.lineTo(props.innerRadius - 4, 0);
                 ctx.lineTo(0, 3);
                 ctx.closePath();
                 ctx.fillStyle = INK.primary;
                 ctx.fill();
                 ctx.rotate(-angle);
                 ctx.beginPath();
-                ctx.arc(0, 0, 5.5, 0, 2 * Math.PI);
+                ctx.arc(0, 0, 5, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.restore();
             }
@@ -178,13 +178,13 @@ export default class ExecutiveDashboard extends LightningElement {
                 labels: ['Low', 'Mid', 'High'],
                 datasets: [
                     {
-                        // continuous slim band like the standard SF gauge:
-                        // no gaps, no rounded segment ends
+                        // slim tube in rounded segments (user-picked variant D
+                        // from the gauge lineup)
                         data: [bp1, bp2 - bp1, max - bp2],
                         backgroundColor: GAUGE_COLORS,
                         borderWidth: 0,
-                        spacing: 0,
-                        borderRadius: 0
+                        spacing: 3,
+                        borderRadius: 12
                     }
                 ]
             },
@@ -193,7 +193,7 @@ export default class ExecutiveDashboard extends LightningElement {
                 maintainAspectRatio: false,
                 rotation: -90,
                 circumference: 180,
-                cutout: '78%',
+                cutout: '85%',
                 layout: { padding: { top: 16, left: 52, right: 52, bottom: 4 } },
                 plugins: {
                     legend: { display: false },
