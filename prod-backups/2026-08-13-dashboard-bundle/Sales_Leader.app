@@ -17,7 +17,6 @@
     <navType>Standard</navType>
     <setupExperience>all</setupExperience>
     <tabs>standard-home</tabs>
-    <tabs>Project_Collection_Dashboard</tabs>
     <tabs>standard-Forecasting3</tabs>
     <tabs>standard-Dashboard</tabs>
     <tabs>standard-report</tabs>
