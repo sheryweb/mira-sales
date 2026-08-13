@@ -7,14 +7,17 @@ import getDashboardData from '@salesforce/apex/ProjectCollectionDashboardControl
 /** All figures are AED; non-AED received amounts are converted server-side. */
 const CURRENCY = 'AED';
 
-/** Tile metadata: metric key on DashboardData + display label + scope + color theme. */
+/**
+ * Tile metadata: metric key on DashboardData + display label + scope + color
+ * theme. Tiles are themed by scope row: all-stage cards blue, Sold cards violet.
+ */
 const TILE_DEFS = [
-    { key: 'totalValue', label: 'Project Total Value', scope: 'All stages', theme: 'value' },
-    { key: 'totalReceived', label: 'Projects Received Value', scope: 'All stages', theme: 'received' },
-    { key: 'totalRemaining', label: 'Projects Remaining Value', scope: 'All stages', theme: 'remaining' },
-    { key: 'soldValue', label: 'Projects Sold Value', scope: 'Reserved / Sold', theme: 'value' },
-    { key: 'soldReceived', label: 'Projects Sold Received Value', scope: 'Reserved / Sold', theme: 'received' },
-    { key: 'soldRemaining', label: 'Projects Sold Remaining Value', scope: 'Reserved / Sold', theme: 'remaining' }
+    { key: 'totalValue', label: 'Project Total Value', scope: 'All stages', theme: 'all' },
+    { key: 'totalReceived', label: 'Projects Received Value', scope: 'All stages', theme: 'all' },
+    { key: 'totalRemaining', label: 'Projects Remaining Value', scope: 'All stages', theme: 'all' },
+    { key: 'soldValue', label: 'Projects Sold Value', scope: 'Reserved / Sold', theme: 'sold' },
+    { key: 'soldReceived', label: 'Projects Sold Received Value', scope: 'Reserved / Sold', theme: 'sold' },
+    { key: 'soldRemaining', label: 'Projects Sold Remaining Value', scope: 'Reserved / Sold', theme: 'sold' }
 ];
 
 /** Donut metadata: ProjectRow metric powering each donut (Booked/Reserved/Sold deal scope). */

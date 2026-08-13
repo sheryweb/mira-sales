@@ -111,19 +111,15 @@
     background: var(--tile-accent);
 }
 
-.theme-value {
+/* all-stage row: blue */
+.theme-all {
     --tile-accent: #2a78d6;
     --tile-hero: #1c5cab;
     --tile-wash: #eaf2fc;
 }
 
-.theme-received {
-    --tile-accent: #1baf7a;
-    --tile-hero: #006300;
-    --tile-wash: #e6f6ef;
-}
-
-.theme-remaining {
+/* Reserved/Sold row: violet */
+.theme-sold {
     --tile-accent: #7a6ad8;
     --tile-hero: #4a3aa7;
     --tile-wash: #efecfa;
