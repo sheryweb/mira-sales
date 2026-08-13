@@ -146,6 +146,10 @@
                     <div class="column-div">Trussardi Residences MIRA VERDE</div>
                     <div class="column-div">Tblisi, Georgia</div>
                 </div>
+                <div class="row-div">
+                    <div class="column-div">Trussardi Residences 2 - Offices</div>
+                    <div class="column-div">Dubai, United Arab Emirates</div>
+                </div>
             </div>
 
             <div class="table-div" style="display: {!IF(agencyInfo['agencyCategory'] == 'Georgian', '', 'none')}">
@@ -199,10 +203,6 @@
                     <div class="column-div">Gianfranco Ferre Residences</div>
                     <div class="column-div">6%</div>
                 </div>
-                <div class="row-div">
-                    <div class="column-div">Trussardi Residences MIRA VERDE</div>
-                    <div class="column-div">6%</div>
-                </div>
             </div>
 
             <div class="table-div" style="display: {!IF(agencyInfo['agencyCategory'] == 'Georgian', '', 'none')}">
@@ -218,6 +218,21 @@
     
             <div class='col size-1-of-2' style="page-break-before: always; margin-top: 2%; text-align: right;"><apex:image styleClass="float-right" url="{!$Resource.MiraDocLogo}" height="40" /></div><br />
     
+            <div class="table-div" style="display: {!IF(agencyInfo['agencyCategory'] == 'Georgian', 'none', '')}">
+                <div class="row-div">
+                    <div class="column-div"><strong>Project Name</strong></div>
+                    <div class="column-div"><strong>Commission Rate</strong></div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Trussardi Residences MIRA VERDE</div>
+                    <div class="column-div">6%</div>
+                </div>
+                <div class="row-div">
+                    <div class="column-div">Trussardi Residences 2 - Offices</div>
+                    <div class="column-div">5%</div>
+                </div>
+            </div>
+            
             <h2>3. Special Terms and Conditions / Project-Specific Procedures</h2>
             <div class="content-div">
                 <p><strong>3.1</strong> The Agent shall strictly adhere to any specific procedures, guidelines, and additional terms governing the marketing and sale of properties within the Project referenced in this Project Notification. These project-specific requirements shall be notified in written to the Agent if necessary.</p>
