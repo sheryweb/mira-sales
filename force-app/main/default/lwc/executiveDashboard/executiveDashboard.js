@@ -180,8 +180,9 @@ export default class ExecutiveDashboard extends LightningElement {
                     {
                         data: [bp1, bp2 - bp1, max - bp2],
                         backgroundColor: GAUGE_COLORS,
-                        borderColor: INK.surface,
-                        borderWidth: 2
+                        borderWidth: 0,
+                        spacing: 3,
+                        borderRadius: 12
                     }
                 ]
             },
@@ -190,7 +191,7 @@ export default class ExecutiveDashboard extends LightningElement {
                 maintainAspectRatio: false,
                 rotation: -90,
                 circumference: 180,
-                cutout: '72%',
+                cutout: '84%',
                 layout: { padding: { top: 16, left: 40, right: 40, bottom: 4 } },
                 plugins: {
                     legend: { display: false },
