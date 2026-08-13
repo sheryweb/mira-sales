@@ -1,0 +1,61 @@
+<template>
+    <div class="dashboard">
+        <header class="panel header">
+            <div class="header-text">
+                <h1 class="title">Executive Management Dashboard</h1>
+                <p class="subtitle">{subtitle}</p>
+            </div>
+            <div class="header-controls">
+                <span class="updated-label">{lastUpdatedLabel}</span>
+                <lightning-button-icon
+                    icon-name="utility:refresh"
+                    variant="border-filled"
+                    alternative-text="Refresh dashboard"
+                    title="Refresh"
+                    onclick={handleRefresh}
+                ></lightning-button-icon>
+                <lightning-combobox
+                    name="targetYear"
+                    label="Target Year"
+                    variant="label-hidden"
+                    value={selectedYear}
+                    options={yearOptions}
+                    onchange={handleYearChange}
+                    class="year-picker"
+                ></lightning-combobox>
+            </div>
+        </header>
+
+        <template lwc:if={hasError}>
+            <div class="panel error" role="alert">
+                <lightning-icon icon-name="utility:error" size="x-small" variant="error"></lightning-icon>
+                <span class="error-text">{errorMessage}</span>
+            </div>
+        </template>
+
+        <div class="tile-grid">
+            <article class={gaugeTile.cardClass}>
+                <p class="tile-label">YTD Sales vs Target</p>
+                <span class="tile-scope">Sold</span>
+                <p class="tile-hero" title={gaugeTile.full}>{gaugeTile.compact}</p>
+                <p class="tile-full">{gaugeTile.target}</p>
+            </article>
+            <article class={unitsTile.cardClass}>
+                <p class="tile-label">Total Units</p>
+                <span class="tile-scope">Booked / Reserved / Sold</span>
+                <p class="tile-hero">{unitsTile.display}</p>
+                <p class="tile-full">deals in the cohort</p>
+            </article>
+            <article class={valueTile.cardClass}>
+                <p class="tile-label">Total Value</p>
+                <span class="tile-scope">Reserved / Sold</span>
+                <p class="tile-hero" title={valueTile.full}>{valueTile.compact}</p>
+                <p class="tile-full">{valueTile.full}</p>
+            </article>
+        </div>
+
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading dashboard" size="medium"></lightning-spinner>
+        </template>
+    </div>
+</template>

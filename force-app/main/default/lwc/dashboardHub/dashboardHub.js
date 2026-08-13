@@ -17,6 +17,13 @@ const DASHBOARDS = [
         loader: () => import('c/projectCollectionDashboard')
     },
     {
+        id: 'executiveManagement',
+        label: 'Executive Management',
+        description: 'Booking-year executive KPIs: sales vs target, pipeline, teams and agencies',
+        icon: 'utility:metrics',
+        loader: () => import('c/executiveDashboard')
+    },
+    {
         id: 'monthlySalesReport',
         label: 'Monthly Sales Report',
         description: 'Monthly / weekly sales report with PDF download',

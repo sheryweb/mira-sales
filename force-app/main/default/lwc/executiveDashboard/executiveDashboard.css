@@ -1,0 +1,194 @@
+/*
+ * Theme tokens shared with projectCollectionDashboard (light surface).
+ * Tile bands mimic the standard dashboard indicator colors:
+ * low #F9B92F / mid #26A4F2 / high #49B800 — hero ink uses darker steps of
+ * the same hues so the numbers stay legible on white.
+ */
+:host {
+    --pcd-surface: #ffffff;
+    --pcd-ink: #0b0b0b;
+    --pcd-ink-secondary: #52514e;
+    --pcd-ink-muted: #898781;
+    --pcd-border: rgba(11, 11, 11, 0.1);
+    --pcd-radius: 10px;
+    --pcd-shadow: 0 1px 3px rgba(21, 21, 21, 0.08);
+
+    display: block;
+    position: relative;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color: var(--pcd-ink);
+}
+
+.dashboard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.panel {
+    background: var(--pcd-surface);
+    border: 1px solid var(--pcd-border);
+    border-radius: var(--pcd-radius);
+    box-shadow: var(--pcd-shadow);
+}
+
+/* ---------- header ---------- */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 1rem 1.25rem;
+}
+
+.title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.subtitle {
+    margin: 0.125rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--pcd-ink-secondary);
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.updated-label {
+    font-size: 0.75rem;
+    color: var(--pcd-ink-muted);
+    white-space: nowrap;
+}
+
+.year-picker {
+    min-width: 9rem;
+    display: block;
+}
+
+/* ---------- error ---------- */
+
+.error {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid #d03b3b;
+}
+
+.error-text {
+    font-size: 0.8125rem;
+    color: var(--pcd-ink);
+}
+
+/* ---------- KPI tiles ---------- */
+
+.tile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 0.75rem;
+}
+
+.tile {
+    position: relative;
+    background: var(--pcd-surface);
+    border: 1px solid var(--pcd-border);
+    border-radius: var(--pcd-radius);
+    box-shadow: var(--pcd-shadow);
+    padding: 1rem 1.25rem 1.125rem;
+    overflow: hidden;
+}
+
+.tile::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: var(--tile-accent);
+}
+
+/* indicator bands (standard dashboard colors; darker ink for legibility) */
+.band-low {
+    --tile-accent: #f9b92f;
+    --tile-hero: #a36f00;
+    --tile-wash: #fdf3dc;
+}
+
+.band-mid {
+    --tile-accent: #26a4f2;
+    --tile-hero: #0b5cab;
+    --tile-wash: #e5f3fd;
+}
+
+.band-high {
+    --tile-accent: #49b800;
+    --tile-hero: #2e7d00;
+    --tile-wash: #e9f7de;
+}
+
+.tile-label {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--pcd-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tile-scope {
+    display: inline-block;
+    margin-top: 0.375rem;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--tile-hero);
+    background: var(--tile-wash);
+}
+
+.tile-hero {
+    margin: 0.5rem 0 0;
+    font-size: 2.625rem;
+    font-weight: 650;
+    line-height: 1.05;
+    color: var(--tile-hero);
+    font-variant-numeric: normal;
+}
+
+.tile-full {
+    margin: 0.25rem 0 0;
+    font-size: 0.75rem;
+    color: var(--pcd-ink-muted);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 48rem) {
+    .header {
+        align-items: flex-start;
+    }
+
+    .header-controls {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .year-picker {
+        flex: 1;
+        min-width: 8rem;
+    }
+
+    .tile-hero {
+        font-size: 2.125rem;
+    }
+}
