@@ -148,7 +148,7 @@ export default class ExecutiveDashboard extends LightningElement {
                     ctx.textAlign = cos < -0.25 ? 'right' : cos > 0.25 ? 'left' : 'center';
                     ctx.textBaseline = Math.abs(cos) > 0.9 ? 'middle' : 'bottom';
                     ctx.fillText(
-                        formatCompact((max * i) / GAUGE_TICKS),
+                        'AED ' + formatCompact((max * i) / GAUGE_TICKS),
                         cos * (props.outerRadius + 7),
                         sin * (props.outerRadius + 7)
                     );
@@ -178,11 +178,13 @@ export default class ExecutiveDashboard extends LightningElement {
                 labels: ['Low', 'Mid', 'High'],
                 datasets: [
                     {
+                        // continuous slim band like the standard SF gauge:
+                        // no gaps, no rounded segment ends
                         data: [bp1, bp2 - bp1, max - bp2],
                         backgroundColor: GAUGE_COLORS,
                         borderWidth: 0,
-                        spacing: 3,
-                        borderRadius: 12
+                        spacing: 0,
+                        borderRadius: 0
                     }
                 ]
             },
@@ -191,8 +193,8 @@ export default class ExecutiveDashboard extends LightningElement {
                 maintainAspectRatio: false,
                 rotation: -90,
                 circumference: 180,
-                cutout: '84%',
-                layout: { padding: { top: 16, left: 40, right: 40, bottom: 4 } },
+                cutout: '78%',
+                layout: { padding: { top: 16, left: 52, right: 52, bottom: 4 } },
                 plugins: {
                     legend: { display: false },
                     tooltip: { enabled: false }
@@ -425,9 +427,11 @@ export default class ExecutiveDashboard extends LightningElement {
         const max = data?.gaugeMax || 0;
         const pct = data && max > 0 ? Math.min(100, Math.round((data.soldValue / max) * 100)) : 0;
         return {
-            compact: value === null ? '—' : this.formatCompact(value),
+            compact: value === null ? '—' : this.formatFull(value),
             full: value === null ? '' : this.formatFull(value),
-            target: data ? `${pct}% of ${this.formatCompact(max)} target` : ''
+            target: data ? `${pct}% of ${this.formatCompact(max)} target` : '',
+            // value text wears its band color, like the standard gauge
+            valueClass: `gauge-value-main ${data ? this.bandClass(data.soldValue, data.gaugeBreakpoint1, data.gaugeBreakpoint2) : 'band-low'}`
         };
     }
 

@@ -151,10 +151,23 @@
 }
 
 .gauge-value-main {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 650;
     line-height: 1.1;
     color: var(--pcd-ink);
+}
+
+/* value wears the band color, like the standard gauge */
+.gauge-value-main.band-low {
+    color: #a36f00;
+}
+
+.gauge-value-main.band-mid {
+    color: #0b5cab;
+}
+
+.gauge-value-main.band-high {
+    color: #2e7d00;
 }
 
 .gauge-value-sub {
