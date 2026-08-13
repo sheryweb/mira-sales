@@ -301,6 +301,103 @@
     color: var(--pcd-ink-muted);
 }
 
+/* ---------- tables ---------- */
+
+.table-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+    gap: 0.75rem;
+    align-items: start;
+}
+
+.table-card {
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.table-scroll {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 20rem;
+}
+
+.cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+}
+
+.cmp-table th,
+.cmp-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #e1e0d9;
+    text-align: left;
+    font-weight: 400;
+    color: var(--pcd-ink);
+    white-space: nowrap;
+}
+
+.cmp-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--pcd-surface);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pcd-ink-muted);
+    border-bottom: 1px solid #c3c2b7;
+}
+
+.cmp-table tbody tr:hover {
+    background: #f9f9f7;
+}
+
+.cmp-table .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.cmp-table .name-cell {
+    font-weight: 600;
+}
+
+.cmp-table tfoot th,
+.cmp-table tfoot td {
+    border-bottom: none;
+    border-top: 2px solid #c3c2b7;
+    font-weight: 700;
+}
+
+/* teal value chips, like the standard reports' conditional formatting */
+.val-chip {
+    display: inline-block;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 4px;
+    background: #00716b;
+    color: #ffffff;
+    font-variant-numeric: tabular-nums;
+}
+
+.subtotal-row td,
+.subtotal-row th {
+    font-weight: 700;
+    background: #f9f9f7;
+}
+
+.subtotal-row .val-chip {
+    background: transparent;
+    color: var(--pcd-ink);
+    padding: 0;
+}
+
+.table-empty {
+    margin: 0;
+    padding: 1.5rem 0 0.5rem;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--pcd-ink-muted);
+}
+
 /* ---------- responsive ---------- */
 
 @media (max-width: 48rem) {

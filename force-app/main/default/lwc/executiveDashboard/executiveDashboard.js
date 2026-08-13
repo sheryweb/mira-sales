@@ -470,6 +470,77 @@ export default class ExecutiveDashboard extends LightningElement {
         return !this.projectSegments().length;
     }
 
+    /* ---------- tables ---------- */
+
+    get pipelineTable() {
+        return this.listTable(this.dashboard?.pipeline, true);
+    }
+
+    get monthlyBookedTable() {
+        return this.listTable(this.dashboard?.monthlyBooked, true);
+    }
+
+    get monthlySoldTable() {
+        return this.listTable(this.dashboard?.monthlySold, true);
+    }
+
+    get nationalityTable() {
+        return this.listTable(this.dashboard?.topNationalities, false);
+    }
+
+    get agencyTable() {
+        return this.listTable(this.dashboard?.topAgencies, false);
+    }
+
+    get salesTeamTable() {
+        return this.listTable(this.dashboard?.salesTeam, false);
+    }
+
+    get managerTable() {
+        return this.listTable(this.dashboard?.managers, false);
+    }
+
+    /** Project Breakdown: stage rows per project with a bold subtotal row. */
+    get breakdownTable() {
+        const groups = this.dashboard?.projectBreakdown || [];
+        const rows = [];
+        groups.forEach((group) => {
+            group.rows.forEach((row, index) => {
+                rows.push({
+                    key: `${group.projectName}|${row.name}`,
+                    project: index === 0 ? group.projectName : '',
+                    stage: row.name,
+                    value: this.formatFull(row.value),
+                    rowClass: ''
+                });
+            });
+            rows.push({
+                key: `${group.projectName}|subtotal`,
+                project: '',
+                stage: 'Subtotal',
+                value: this.formatFull(group.subtotal),
+                rowClass: 'subtotal-row'
+            });
+        });
+        return { rows, hasRows: rows.length > 0 };
+    }
+
+    listTable(source, withTotals) {
+        const list = source || [];
+        const rows = list.map((row) => ({
+            key: row.name,
+            name: row.name,
+            units: row.units,
+            value: this.formatFull(row.value)
+        }));
+        const table = { rows, hasRows: rows.length > 0 };
+        if (withTotals) {
+            table.totalUnits = list.reduce((sum, row) => sum + (row.units || 0), 0);
+            table.totalValue = this.formatFull(list.reduce((sum, row) => sum + (row.value || 0), 0));
+        }
+        return table;
+    }
+
     get hasError() {
         return Boolean(this.errorMessage);
     }

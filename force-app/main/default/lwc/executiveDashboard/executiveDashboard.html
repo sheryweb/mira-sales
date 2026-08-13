@@ -111,6 +111,269 @@
             </article>
         </div>
 
+        <div class="table-grid">
+            <article class="panel table-card">
+                <header class="chart-card-header">
+                    <h2 class="chart-title">Pipeline by Stage</h2>
+                    <span class="chart-scope">Booked / Reserved / Sold</span>
+                </header>
+                <template lwc:if={pipelineTable.hasRows}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Stage</th>
+                                    <th scope="col" class="num">Sum of Units</th>
+                                    <th scope="col" class="num">Unit Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={pipelineTable.rows} for:item="row">
+                                    <tr key={row.key}>
+                                        <th scope="row" class="name-cell">{row.name}</th>
+                                        <td class="num">{row.units}</td>
+                                        <td class="num"><span class="val-chip">{row.value}</span></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th scope="row">Total</th>
+                                    <td class="num">{pipelineTable.totalUnits}</td>
+                                    <td class="num">{pipelineTable.totalValue}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else><p class="table-empty">No deals in this cohort</p></template>
+            </article>
+
+            <article class="panel table-card">
+                <header class="chart-card-header">
+                    <h2 class="chart-title">Project Breakdown Report</h2>
+                    <span class="chart-scope">All stages · incl. resells</span>
+                </header>
+                <template lwc:if={breakdownTable.hasRows}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Project Name</th>
+                                    <th scope="col">Stage</th>
+                                    <th scope="col" class="num">Unit Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={breakdownTable.rows} for:item="row">
+                                    <tr key={row.key} class={row.rowClass}>
+                                        <th scope="row" class="name-cell">{row.project}</th>
+                                        <td>{row.stage}</td>
+                                        <td class="num"><span class="val-chip">{row.value}</span></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else><p class="table-empty">No deals in this cohort</p></template>
+            </article>
+
+            <article class="panel table-card">
+                <header class="chart-card-header">
+                    <h2 class="chart-title">Top Nationalities by Sold Value</h2>
+                    <span class="chart-scope">Sold</span>
+                </header>
+                <template lwc:if={nationalityTable.hasRows}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nationality</th>
+                                    <th scope="col" class="num">Sum of Units</th>
+                                    <th scope="col" class="num">Unit Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={nationalityTable.rows} for:item="row">
+                                    <tr key={row.key}>
+                                        <th scope="row" class="name-cell">{row.name}</th>
+                                        <td class="num">{row.units}</td>
+                                        <td class="num"><span class="val-chip">{row.value}</span></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else><p class="table-empty">No sold deals with nationality in this cohort</p></template>
+            </article>
+
+            <article class="panel table-card">
+                <header class="chart-card-header">
+                    <h2 class="chart-title">Top 10 Broker Agencies by Value</h2>
+                    <span class="chart-scope">Sold · agent-assisted</span>
+                </header>
+                <template lwc:if={agencyTable.hasRows}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Agency</th>
+                                    <th scope="col" class="num">Sum of Units</th>
+                                    <th scope="col" class="num">Unit Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={agencyTable.rows} for:item="row">
+                                    <tr key={row.key}>
+                                        <th scope="row" class="name-cell">{row.name}</th>
+                                        <td class="num">{row.units}</td>
+                                        <td class="num"><span class="val-chip">{row.value}</span></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else><p class="table-empty">No agency-assisted sold deals in this cohort</p></template>
+            </article>
+
+            <article class="panel table-card">
+                <header class="chart-card-header">
+                    <h2 class="chart-title">Sales Team Performance</h2>
+                    <span class="chart-scope">Sold</span>
+                </header>
+                <template lwc:if={salesTeamTable.hasRows}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Owner Name</th>
+                                    <th scope="col" class="num">Sum of Units</th>
+                                    <th scope="col" class="num">Unit Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={salesTeamTable.rows} for:item="row">
+                                    <tr key={row.key}>
+                                        <th scope="row" class="name-cell">{row.name}</th>
+                                        <td class="num">{row.units}</td>
+                                        <td class="num"><span class="val-chip">{row.value}</span></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else><p class="table-empty">No sold deals in this cohort</p></template>
+            </article>
+
+            <article class="panel table-card">
+                <header class="chart-card-header">
+                    <h2 class="chart-title">Managers Team Performance</h2>
+                    <span class="chart-scope">Sold</span>
+                </header>
+                <template lwc:if={managerTable.hasRows}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Manager</th>
+                                    <th scope="col" class="num">Sum of Units</th>
+                                    <th scope="col" class="num">Unit Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={managerTable.rows} for:item="row">
+                                    <tr key={row.key}>
+                                        <th scope="row" class="name-cell">{row.name}</th>
+                                        <td class="num">{row.units}</td>
+                                        <td class="num"><span class="val-chip">{row.value}</span></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else><p class="table-empty">No manager-assigned sold deals in this cohort</p></template>
+            </article>
+
+            <article class="panel table-card">
+                <header class="chart-card-header">
+                    <h2 class="chart-title">Monthly Booked Value</h2>
+                    <span class="chart-scope">Booked / Reserved / Sold</span>
+                </header>
+                <template lwc:if={monthlyBookedTable.hasRows}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Unit Booked Date</th>
+                                    <th scope="col" class="num">Sum of Units</th>
+                                    <th scope="col" class="num">Unit Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={monthlyBookedTable.rows} for:item="row">
+                                    <tr key={row.key}>
+                                        <th scope="row" class="name-cell">{row.name}</th>
+                                        <td class="num">{row.units}</td>
+                                        <td class="num"><span class="val-chip">{row.value}</span></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th scope="row">Total</th>
+                                    <td class="num">{monthlyBookedTable.totalUnits}</td>
+                                    <td class="num">{monthlyBookedTable.totalValue}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else><p class="table-empty">No deals in this cohort</p></template>
+            </article>
+
+            <article class="panel table-card">
+                <header class="chart-card-header">
+                    <h2 class="chart-title">Monthly Sold Value</h2>
+                    <span class="chart-scope">Sold only</span>
+                </header>
+                <template lwc:if={monthlySoldTable.hasRows}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Unit Sold Date</th>
+                                    <th scope="col" class="num">Sum of Units</th>
+                                    <th scope="col" class="num">Unit Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={monthlySoldTable.rows} for:item="row">
+                                    <tr key={row.key}>
+                                        <th scope="row" class="name-cell">{row.name}</th>
+                                        <td class="num">{row.units}</td>
+                                        <td class="num"><span class="val-chip">{row.value}</span></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th scope="row">Total</th>
+                                    <td class="num">{monthlySoldTable.totalUnits}</td>
+                                    <td class="num">{monthlySoldTable.totalValue}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else><p class="table-empty">No sold deals in this cohort</p></template>
+            </article>
+        </div>
+
         <template lwc:if={isLoading}>
             <lightning-spinner alternative-text="Loading dashboard" size="medium"></lightning-spinner>
         </template>
