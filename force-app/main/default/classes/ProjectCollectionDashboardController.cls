@@ -1,18 +1,21 @@
 /**
- * Backing controller for the multi-currency Project Collection Dashboard LWC.
+ * Backing controller for the Project Collection Dashboard LWC.
  *
- * Sources every figure from two objects (business decision 2026-08-12):
- *  - Project__c: Project_Total_Value__c / Project_Received_Value__c /
- *    Project_Remaining_Value__c power the all-stage KPIs, bar chart and table.
- *    Project_Total_Value__c switches on Project_Currency__c over the per-currency
- *    DLRS rollups (Project_Value__c, Project_Value_USD__c, Project_Value_Post__c),
- *    so each project reads in its native currency.
- *  - Opportunity: Unit_Price__c / Received_Amount__c are currency-aware formulas;
- *    StageName scopes the Booked/Reserved/Sold figures. Cross-object formula
- *    fields cannot be aggregated or grouped in SOQL, so opportunity rows are
- *    summed in Apex.
+ * Every figure is reported in AED (business decision 2026-08-13, replacing the
+ * earlier per-currency filter):
+ *  - Values are already AED at the source: Project__c.Project_Value__c is the
+ *    DLRS Sum of Unit__c.Cost_AED__c, and Opportunity.Unit_Price_Dashboard__c
+ *    is a formula on Unit__r.Cost_AED__c. No conversion applied.
+ *  - Received amounts are stored in the project's own currency
+ *    (Project_Received_Value__c / Opportunity.Received_Amount__c) and are
+ *    converted to AED at runtime through CurrencyService — the org's central
+ *    conversion facility (daily market rates, org-table fallback, unknown
+ *    currencies pass through unchanged).
+ *  - Remaining = Value - converted Received, at both levels.
  *
- * Projects with a blank Project_Currency__c are treated as AED (business default).
+ * Cross-object formula fields cannot be aggregated or grouped in SOQL, so
+ * opportunity rows are summed in Apex. StageName scopes the deal figures
+ * (Booked/Reserved/Sold; Reserved+Sold = the "Sold" tiles).
  *
  * Declared without sharing deliberately: Opportunity/Project OWDs are restricted
  * and this dashboard mirrors the org-wide standard dashboard, which runs as a
@@ -20,82 +23,32 @@
  */
 public without sharing class ProjectCollectionDashboardController {
 
-    @TestVisible
-    private static final String DEFAULT_CURRENCY = 'AED';
-
-    /** Currencies with a native project value source behind Project_Total_Value__c. */
-    private static final Set<String> SUPPORTED_CURRENCIES = new Set<String>{ 'AED', 'CHF', 'USD' };
-
     /** Donut scope: Booked / Reserved / Sold. */
     private static final Set<String> BRS_STAGES = new Set<String>{ 'Booked', 'Reserved', 'Sold' };
     /** "Sold" KPI tile scope: Reserved / Sold. */
     private static final Set<String> RS_STAGES = new Set<String>{ 'Reserved', 'Sold' };
 
-    /**
-     * Currencies offered in the dashboard dropdown: supported currencies that have
-     * at least one project. Blank project currency counts as AED. AED always first.
-     */
+    /** All dashboard figures, AED, in a single round trip. */
     @AuraEnabled(cacheable=true)
-    public static List<String> getAvailableCurrencies() {
+    public static DashboardData getDashboardData() {
         try {
-            Set<String> found = new Set<String>();
-            for (AggregateResult ar : [
-                SELECT Project_Currency__c cur
-                FROM Project__c
-                GROUP BY Project_Currency__c
-            ]) {
-                String cur = (String) ar.get('cur');
-                found.add(String.isBlank(cur) ? DEFAULT_CURRENCY : cur.toUpperCase());
-            }
-            List<String> result = new List<String>();
-            if (found.contains(DEFAULT_CURRENCY)) {
-                result.add(DEFAULT_CURRENCY);
-            }
-            List<String> others = new List<String>();
-            for (String cur : found) {
-                if (cur != DEFAULT_CURRENCY && SUPPORTED_CURRENCIES.contains(cur)) {
-                    others.add(cur);
-                }
-            }
-            others.sort();
-            result.addAll(others);
-            return result;
-        } catch (Exception e) {
-            throw auraError(e, 'Failed to load available currencies');
-        }
-    }
-
-    /**
-     * All dashboard figures for one currency in a single round trip.
-     * @param currencyIso ISO code from the dropdown; blank defaults to AED.
-     */
-    @AuraEnabled(cacheable=true)
-    public static DashboardData getDashboardData(String currencyIso) {
-        try {
-            String cur = String.isBlank(currencyIso) ? DEFAULT_CURRENCY : currencyIso.toUpperCase();
-            if (!SUPPORTED_CURRENCIES.contains(cur)) {
-                throw new DashboardException('Unsupported currency: ' + cur);
-            }
-            Boolean includeBlank = (cur == DEFAULT_CURRENCY);
-
             DashboardData data = new DashboardData();
-            data.currencyIso = cur;
+            data.ratesAsOf = CurrencyService.lastRefreshed();
 
-            // Project-level figures straight from the project fields; a row per
-            // project so projects without deals still appear with zeros.
+            // Project-level figures; a row per project so projects without
+            // deals still appear with zeros.
+            Map<Id, Project__c> projectsById = new Map<Id, Project__c>([
+                SELECT Id, Name, Project_Currency__c,
+                       Project_Value__c, Project_Received_Value__c
+                FROM Project__c
+            ]);
             Map<Id, ProjectRow> rowsByProject = new Map<Id, ProjectRow>();
-            List<Project__c> projects = includeBlank
-                ? [SELECT Id, Name, Project_Total_Value__c, Project_Received_Value__c, Project_Remaining_Value__c
-                   FROM Project__c
-                   WHERE Project_Currency__c = :cur OR Project_Currency__c = null]
-                : [SELECT Id, Name, Project_Total_Value__c, Project_Received_Value__c, Project_Remaining_Value__c
-                   FROM Project__c
-                   WHERE Project_Currency__c = :cur];
-            for (Project__c project : projects) {
+            for (Project__c project : projectsById.values()) {
                 ProjectRow row = new ProjectRow(project.Id, project.Name);
-                row.totalValue = nvl(project.Project_Total_Value__c);
-                row.totalReceived = nvl(project.Project_Received_Value__c);
-                row.totalRemaining = nvl(project.Project_Remaining_Value__c);
+                row.totalValue = nvl(project.Project_Value__c);
+                row.totalReceived = CurrencyService.convertToAed(
+                    nvl(project.Project_Received_Value__c), project.Project_Currency__c);
+                row.totalRemaining = row.totalValue - row.totalReceived;
                 rowsByProject.put(project.Id, row);
                 data.totalValue += row.totalValue;
                 data.totalReceived += row.totalReceived;
@@ -103,23 +56,19 @@ public without sharing class ProjectCollectionDashboardController {
             }
 
             // Stage-scoped figures from Opportunity rows, summed in Apex.
-            List<Opportunity> deals = includeBlank
-                ? [SELECT StageName, Unit_Price__c, Received_Amount__c, Unit__r.Project__c
-                   FROM Opportunity
-                   WHERE StageName IN :BRS_STAGES AND Unit__c != null
-                     AND (Unit__r.Project__r.Project_Currency__c = :cur
-                          OR Unit__r.Project__r.Project_Currency__c = null)]
-                : [SELECT StageName, Unit_Price__c, Received_Amount__c, Unit__r.Project__c
-                   FROM Opportunity
-                   WHERE StageName IN :BRS_STAGES AND Unit__c != null
-                     AND Unit__r.Project__r.Project_Currency__c = :cur];
-            for (Opportunity deal : deals) {
+            for (Opportunity deal : [
+                SELECT StageName, Unit_Price_Dashboard__c, Received_Amount__c, Unit__r.Project__c
+                FROM Opportunity
+                WHERE StageName IN :BRS_STAGES AND Unit__c != null
+            ]) {
+                Project__c project = projectsById.get(deal.Unit__r.Project__c);
                 ProjectRow row = rowsByProject.get(deal.Unit__r.Project__c);
-                if (row == null) {
+                if (project == null || row == null) {
                     continue; // deal whose project was deleted mid-flight; ignore
                 }
-                Decimal price = nvl(deal.Unit_Price__c);
-                Decimal received = nvl(deal.Received_Amount__c);
+                Decimal price = nvl(deal.Unit_Price_Dashboard__c); // already AED
+                Decimal received = CurrencyService.convertToAed(
+                    nvl(deal.Received_Amount__c), project.Project_Currency__c);
                 row.brsValue += price;
                 row.brsReceived += received;
                 if (RS_STAGES.contains(deal.StageName)) {
@@ -151,11 +100,10 @@ public without sharing class ProjectCollectionDashboardController {
         return aura;
     }
 
-    public class DashboardException extends Exception {}
-
-    /** Full dashboard payload for one currency. */
+    /** Full dashboard payload, all amounts AED. */
     public class DashboardData {
-        @AuraEnabled public String currencyIso;
+        /** Newest market-rate refresh stamp (null until the FX job first runs). */
+        @AuraEnabled public Datetime ratesAsOf;
         /** All-stage KPIs (tiles 1-3), from the Project__c value fields. */
         @AuraEnabled public Decimal totalValue = 0;
         @AuraEnabled public Decimal totalReceived = 0;

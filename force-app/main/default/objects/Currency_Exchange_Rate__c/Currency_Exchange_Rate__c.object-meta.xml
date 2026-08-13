@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>List</customSettingsType>
+    <description>Daily market FX rates maintained by CurrencyRatesRefreshJob; read only through CurrencyService. Name = ISO code, rate = units of that currency per 1 AED.</description>
+    <enableFeeds>false</enableFeeds>
+    <label>Currency Exchange Rate</label>
+    <visibility>Public</visibility>
+</CustomObject>
