@@ -153,9 +153,19 @@ public without sharing class ExecutiveDashboardController {
         }
     }
 
-    /** Distinct real booking years present in the data, newest first. */
+    /** First year the business tracks; the filter always starts here. */
+    private static final Integer FIRST_TARGET_YEAR = 2024;
+
+    /**
+     * Year filter options, ascending: the fixed 2024 → next-year range
+     * (so future planning years are selectable), merged with any booking
+     * years present in the data outside that range.
+     */
     private static List<String> collectYears(List<Opportunity> deals) {
         Set<String> years = new Set<String>();
+        for (Integer y = FIRST_TARGET_YEAR; y <= Date.today().year() + 1; y++) {
+            years.add(String.valueOf(y));
+        }
         for (Opportunity deal : deals) {
             if (String.isNotBlank(deal.Target_Year__c) && deal.Target_Year__c.isNumeric()) {
                 years.add(deal.Target_Year__c);
@@ -163,11 +173,7 @@ public without sharing class ExecutiveDashboardController {
         }
         List<String> sorted = new List<String>(years);
         sorted.sort();
-        List<String> newestFirst = new List<String>();
-        for (Integer i = sorted.size() - 1; i >= 0; i--) {
-            newestFirst.add(sorted[i]);
-        }
-        return newestFirst;
+        return sorted;
     }
 
     private static String resolveYear(String requested, List<String> options) {
@@ -178,7 +184,7 @@ public without sharing class ExecutiveDashboardController {
         if (options.contains(currentYear) || options.isEmpty()) {
             return currentYear;
         }
-        return options[0];
+        return options[options.size() - 1];
     }
 
     /** "2026-03" sort key for a date; null dates fold into a trailing bucket. */

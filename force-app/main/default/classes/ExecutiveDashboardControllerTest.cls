@@ -117,8 +117,12 @@ private class ExecutiveDashboardControllerTest {
             ExecutiveDashboardController.getDashboardData(String.valueOf(THIS_YEAR));
         Test.stopTest();
 
-        System.assertEquals(new List<String>{ String.valueOf(THIS_YEAR), String.valueOf(LAST_YEAR) },
-            data.yearOptions, 'Years newest first');
+        List<String> expectedYears = new List<String>();
+        for (Integer y = 2024; y <= THIS_YEAR + 1; y++) {
+            expectedYears.add(String.valueOf(y));
+        }
+        System.assertEquals(expectedYears, data.yearOptions,
+            'Fixed 2024 → next-year range, ascending');
 
         // Gauge: Sold non-resell booked this year = A 10M + B 6M
         System.assertEquals(16000000, data.soldValue);
