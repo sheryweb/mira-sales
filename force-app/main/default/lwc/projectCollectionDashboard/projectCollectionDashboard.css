@@ -118,11 +118,11 @@
     --tile-wash: #eaf2fc;
 }
 
-/* Reserved/Sold row: violet */
+/* Reserved/Sold row: green */
 .theme-sold {
-    --tile-accent: #7a6ad8;
-    --tile-hero: #4a3aa7;
-    --tile-wash: #efecfa;
+    --tile-accent: #1baf7a;
+    --tile-hero: #006300;
+    --tile-wash: #e6f6ef;
 }
 
 .tile-label {

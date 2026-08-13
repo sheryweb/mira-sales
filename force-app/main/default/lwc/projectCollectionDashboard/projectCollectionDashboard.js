@@ -9,7 +9,7 @@ const CURRENCY = 'AED';
 
 /**
  * Tile metadata: metric key on DashboardData + display label + scope + color
- * theme. Tiles are themed by scope row: all-stage cards blue, Sold cards violet.
+ * theme. Tiles are themed by scope row: all-stage cards blue, Sold cards green.
  */
 const TILE_DEFS = [
     { key: 'totalValue', label: 'Project Total Value', scope: 'All stages', theme: 'all' },
