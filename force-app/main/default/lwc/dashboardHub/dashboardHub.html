@@ -1,0 +1,33 @@
+<template>
+    <div class="hub">
+        <nav class="hub-nav" role="tablist" aria-label="Dashboards">
+            <template for:each={navItems} for:item="item">
+                <button
+                    key={item.id}
+                    class={item.cssClass}
+                    data-id={item.id}
+                    role="tab"
+                    aria-selected={item.selected}
+                    title={item.description}
+                    onclick={handleSelect}
+                >
+                    <lightning-icon icon-name={item.icon} size="x-small" class="hub-tab-icon"></lightning-icon>
+                    <span class="hub-tab-label">{item.label}</span>
+                </button>
+            </template>
+        </nav>
+        <div class="hub-body">
+            <template lwc:if={hasError}>
+                <p class="hub-error" role="alert">{errorMessage}</p>
+            </template>
+            <template lwc:elseif={isLoading}>
+                <div class="hub-loading">
+                    <lightning-spinner alternative-text="Loading dashboard" size="medium"></lightning-spinner>
+                </div>
+            </template>
+            <template lwc:else>
+                <lwc:component lwc:is={activeCtor}></lwc:component>
+            </template>
+        </div>
+    </div>
+</template>

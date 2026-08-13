@@ -1617,7 +1617,7 @@
         <profile>System Admin - Limited Data</profile>
     </profileActionOverrides>
     <tabs>standard-home</tabs>
-    <tabs>Monthly_Sales_Report</tabs>
+    <tabs>Project_Collection_Dashboard</tabs>
     <tabs>standard-Account</tabs>
     <tabs>standard-Contact</tabs>
     <tabs>Project__c</tabs>

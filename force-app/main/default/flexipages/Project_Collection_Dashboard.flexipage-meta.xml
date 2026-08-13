@@ -3,14 +3,14 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentName>projectCollectionDashboard</componentName>
-                <identifier>c_projectCollectionDashboard</identifier>
+                <componentName>dashboardHub</componentName>
+                <identifier>c_dashboardHub</identifier>
             </componentInstance>
         </itemInstances>
         <name>main</name>
         <type>Region</type>
     </flexiPageRegions>
-    <masterLabel>Project Collection Dashboard</masterLabel>
+    <masterLabel>Dashboards</masterLabel>
     <template>
         <name>flexipage:defaultAppHomeTemplate</name>
     </template>

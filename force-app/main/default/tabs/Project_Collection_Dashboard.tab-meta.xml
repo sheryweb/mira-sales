@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Multi-currency project collection dashboard (LWC)</description>
+    <description>Single point of access for all MIRA custom dashboards and reports</description>
     <flexiPage>Project_Collection_Dashboard</flexiPage>
-    <label>Project Collections</label>
-    <motif>Custom41: Stack of Cash</motif>
+    <label>Dashboards</label>
+    <motif>Custom53: Report</motif>
 </CustomTab>

@@ -1,0 +1,72 @@
+:host {
+    display: block;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.hub {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* pill switcher, styled like the dashboard panels */
+.hub-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: #ffffff;
+    border: 1px solid rgba(11, 11, 11, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(21, 21, 21, 0.08);
+}
+
+.hub-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    padding: 0.4375rem 0.875rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #52514e;
+    cursor: pointer;
+}
+
+.hub-tab:hover {
+    background: #f0efec;
+}
+
+.hub-tab.active {
+    background: #eaf2fc;
+    border-color: #2a78d6;
+    color: #1c5cab;
+}
+
+.hub-tab:focus-visible {
+    outline: 2px solid #2a78d6;
+    outline-offset: 1px;
+}
+
+.hub-tab-icon {
+    --sds-c-icon-color-foreground-default: currentColor;
+}
+
+.hub-loading {
+    position: relative;
+    min-height: 12rem;
+}
+
+.hub-error {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    background: #ffffff;
+    border: 1px solid rgba(11, 11, 11, 0.1);
+    border-left: 4px solid #d03b3b;
+    border-radius: 10px;
+    font-size: 0.8125rem;
+    color: #0b0b0b;
+}
