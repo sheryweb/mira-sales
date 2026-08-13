@@ -69,8 +69,9 @@ export default class ProjectCollectionDashboard extends LightningElement {
             this.errorMessage = undefined;
             this.isLoading = false;
             this.lastUpdatedLabel = `Updated ${new Intl.DateTimeFormat('en-GB', {
-                hour: '2-digit',
-                minute: '2-digit'
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
             }).format(new Date())}`;
         } else if (error) {
             this.errorMessage = this.reduceError(error);
@@ -396,8 +397,9 @@ export default class ProjectCollectionDashboard extends LightningElement {
         const formatted = new Intl.DateTimeFormat('en-GB', {
             day: 'numeric',
             month: 'short',
-            hour: '2-digit',
-            minute: '2-digit'
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
         }).format(stamp);
         return `${base} · rates as of ${formatted}`;
     }
