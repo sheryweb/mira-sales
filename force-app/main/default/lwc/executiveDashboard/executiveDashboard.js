@@ -117,6 +117,7 @@ export default class ExecutiveDashboard extends LightningElement {
         const bp2 = Number(data.gaugeBreakpoint2);
         const value = Math.max(0, Math.min(Number(data.soldValue), max));
         const formatCompact = (v) => this.formatCompact(v);
+        const GAUGE_TICKS = 5; // 0, 200M, 400M, 600M, 800M, 1B on the 1B scale
         const needle = {
             id: 'gaugeNeedle',
             afterDatasetsDraw(chart) {
@@ -126,27 +127,47 @@ export default class ExecutiveDashboard extends LightningElement {
                 }
                 const props = arc.getProps(['x', 'y', 'outerRadius', 'innerRadius'], true);
                 const midRadius = (props.outerRadius + props.innerRadius) / 2;
-                const angle = Math.PI * (1 + value / max);
                 const ctx = chart.ctx;
                 ctx.save();
                 ctx.translate(props.x, props.y);
+
+                // scale ticks + range labels around the outside of the arc
+                ctx.font = `10px ${CHART_FONT}`;
+                for (let i = 0; i <= GAUGE_TICKS; i++) {
+                    const t = i / GAUGE_TICKS;
+                    const tickAngle = Math.PI * (1 + t);
+                    const cos = Math.cos(tickAngle);
+                    const sin = Math.sin(tickAngle);
+                    ctx.strokeStyle = INK.baseline;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(cos * props.outerRadius, sin * props.outerRadius);
+                    ctx.lineTo(cos * (props.outerRadius + 4), sin * (props.outerRadius + 4));
+                    ctx.stroke();
+                    ctx.fillStyle = INK.muted;
+                    ctx.textAlign = cos < -0.25 ? 'right' : cos > 0.25 ? 'left' : 'center';
+                    ctx.textBaseline = Math.abs(cos) > 0.9 ? 'middle' : 'bottom';
+                    ctx.fillText(
+                        formatCompact((max * i) / GAUGE_TICKS),
+                        cos * (props.outerRadius + 7),
+                        sin * (props.outerRadius + 7)
+                    );
+                }
+
+                // needle + hub, drawn after the labels so it always reads on top
+                const angle = Math.PI * (1 + value / max);
                 ctx.rotate(angle);
                 ctx.beginPath();
-                ctx.moveTo(0, -3.5);
-                ctx.lineTo(midRadius, 0);
-                ctx.lineTo(0, 3.5);
+                ctx.moveTo(0, -3);
+                ctx.lineTo(midRadius - 4, 0);
+                ctx.lineTo(0, 3);
                 ctx.closePath();
                 ctx.fillStyle = INK.primary;
                 ctx.fill();
                 ctx.rotate(-angle);
                 ctx.beginPath();
-                ctx.arc(0, 0, 6, 0, 2 * Math.PI);
+                ctx.arc(0, 0, 5.5, 0, 2 * Math.PI);
                 ctx.fill();
-                ctx.fillStyle = INK.muted;
-                ctx.font = `11px ${CHART_FONT}`;
-                ctx.textAlign = 'center';
-                ctx.fillText('0', -midRadius, 16);
-                ctx.fillText(formatCompact(max), midRadius, 16);
                 ctx.restore();
             }
         };
@@ -170,7 +191,7 @@ export default class ExecutiveDashboard extends LightningElement {
                 rotation: -90,
                 circumference: 180,
                 cutout: '72%',
-                layout: { padding: { bottom: 18 } },
+                layout: { padding: { top: 16, left: 40, right: 40, bottom: 4 } },
                 plugins: {
                     legend: { display: false },
                     tooltip: { enabled: false }

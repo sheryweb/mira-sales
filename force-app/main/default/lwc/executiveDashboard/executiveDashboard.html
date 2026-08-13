@@ -40,8 +40,10 @@
                     <span class="chart-scope">Sold</span>
                 </header>
                 <div class="gauge-wrap">
-                    <canvas class="gauge-canvas"></canvas>
-                    <div class="gauge-value" aria-hidden="true">
+                    <div class="gauge-canvas-box">
+                        <canvas class="gauge-canvas"></canvas>
+                    </div>
+                    <div class="gauge-value">
                         <span class="gauge-value-main" title={gaugeTile.full}>{gaugeTile.compact}</span>
                         <span class="gauge-value-sub">{gaugeTile.target}</span>
                     </div>
