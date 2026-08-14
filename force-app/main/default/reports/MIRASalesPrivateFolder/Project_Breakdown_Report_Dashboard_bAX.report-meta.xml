@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Report xmlns="http://soap.sforce.com/2006/04/metadata">
     <aggregates>
-        <calculatedFormula>Opportunity.Unit_Price__c:SUM</calculatedFormula>
+        <calculatedFormula>Opportunity.Unit_Price_Dashboard__c:SUM</calculatedFormula>
         <datatype>currency</datatype>
         <description>Unit Price Summary</description>
         <developerName>FORMULA1</developerName>
@@ -13,19 +13,7 @@
     <columns>
         <field>Opportunity$Name</field>
     </columns>
-    <columns>
-        <aggregateTypes>Sum</aggregateTypes>
-        <field>CDF1</field>
-    </columns>
     <currency>AED</currency>
-    <customDetailFormulas>
-        <calculatedFormula>1</calculatedFormula>
-        <dataType>Double</dataType>
-        <description>Total Number of Units</description>
-        <developerName>CDF1</developerName>
-        <label>Units</label>
-        <scale>0</scale>
-    </customDetailFormulas>
     <filter>
         <criteriaItems>
             <column>Opportunity$StageName</column>

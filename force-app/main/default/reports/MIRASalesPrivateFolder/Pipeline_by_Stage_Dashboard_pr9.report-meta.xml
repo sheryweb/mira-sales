@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Report xmlns="http://soap.sforce.com/2006/04/metadata">
     <aggregates>
-        <calculatedFormula>Opportunity.Unit_Price__c:SUM</calculatedFormula>
+        <calculatedFormula>Opportunity.Unit_Price_Dashboard__c:SUM</calculatedFormula>
         <datatype>currency</datatype>
         <description>Unit Price Formula</description>
         <developerName>FORMULA1</developerName>
@@ -49,20 +49,6 @@
             <isUnlocked>false</isUnlocked>
             <operator>equals</operator>
             <value>Booked,Reserved,Sold</value>
-        </criteriaItems>
-        <criteriaItems>
-            <column>Opportunity$Target_Year__c</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>false</isUnlocked>
-            <operator>equals</operator>
-            <value>2026</value>
-        </criteriaItems>
-        <criteriaItems>
-            <column>Opportunity$Target_Year__c</column>
-            <columnToColumn>false</columnToColumn>
-            <isUnlocked>false</isUnlocked>
-            <operator>equals</operator>
-            <value>2026</value>
         </criteriaItems>
     </filter>
     <format>Summary</format>

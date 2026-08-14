@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Report xmlns="http://soap.sforce.com/2006/04/metadata">
     <aggregates>
-        <calculatedFormula>Opportunity.Unit_Price__c:SUM</calculatedFormula>
+        <calculatedFormula>Opportunity.Unit_Price_Dashboard__c:SUM</calculatedFormula>
         <datatype>currency</datatype>
         <description>Unit Price Formula</description>
         <developerName>FORMULA1</developerName>
