@@ -23,19 +23,19 @@
                         <type>grouping</type>
                     </flexTableColumn>
                     <flexTableColumn>
+                        <reportColumn>s!CDF1</reportColumn>
+                        <showSubTotal>false</showSubTotal>
+                        <showTotal>true</showTotal>
+                        <type>aggregate</type>
+                    </flexTableColumn>
+                    <flexTableColumn>
                         <breakPoint1>33.0</breakPoint1>
                         <breakPoint2>67.0</breakPoint2>
                         <breakPointOrder>0</breakPointOrder>
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
-                        <showSubTotal>false</showSubTotal>
-                        <showTotal>true</showTotal>
-                        <type>aggregate</type>
-                    </flexTableColumn>
-                    <flexTableColumn>
-                        <reportColumn>s!CDF1</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -81,7 +81,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -102,7 +102,7 @@
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
-                        <sortColumn>s!Opportunity.Unit_Price__c</sortColumn>
+                        <sortColumn>s!CDF1</sortColumn>
                         <sortOrder>d</sortOrder>
                     </groupingSorts>
                 </groupingSortProperties>
@@ -134,7 +134,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -186,7 +186,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -238,7 +238,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -259,7 +259,7 @@
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
-                        <sortColumn>s!Opportunity.Unit_Price__c</sortColumn>
+                        <sortColumn>s!CDF1</sortColumn>
                         <sortOrder>d</sortOrder>
                     </groupingSorts>
                 </groupingSortProperties>
@@ -291,7 +291,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -343,7 +343,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -395,7 +395,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -416,7 +416,7 @@
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
-                        <sortColumn>s!Opportunity.Unit_Price__c</sortColumn>
+                        <sortColumn>FORMULA1</sortColumn>
                         <sortOrder>a</sortOrder>
                     </groupingSorts>
                 </groupingSortProperties>
@@ -448,7 +448,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -500,7 +500,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -552,7 +552,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -573,7 +573,7 @@
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
-                        <sortColumn>s!Opportunity.Unit_Price__c</sortColumn>
+                        <sortColumn>FORMULA1</sortColumn>
                         <sortOrder>d</sortOrder>
                     </groupingSorts>
                 </groupingSortProperties>
@@ -605,7 +605,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -626,7 +626,7 @@
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
-                        <sortColumn>s!Opportunity.Unit_Price__c</sortColumn>
+                        <sortColumn>FORMULA1</sortColumn>
                         <sortOrder>d</sortOrder>
                     </groupingSorts>
                 </groupingSortProperties>
@@ -658,7 +658,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>2718719</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -679,7 +679,7 @@
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
-                        <sortColumn>s!Opportunity.Unit_Price__c</sortColumn>
+                        <sortColumn>FORMULA1</sortColumn>
                         <sortOrder>d</sortOrder>
                     </groupingSorts>
                 </groupingSortProperties>
@@ -711,7 +711,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -763,7 +763,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -784,7 +784,7 @@
                 <groupingSortProperties>
                     <groupingSorts>
                         <groupingLevel>g1</groupingLevel>
-                        <sortColumn>s!Opportunity.Unit_Price__c</sortColumn>
+                        <sortColumn>FORMULA1</sortColumn>
                         <sortOrder>d</sortOrder>
                     </groupingSorts>
                 </groupingSortProperties>
@@ -816,7 +816,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -868,7 +868,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -920,7 +920,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -972,7 +972,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
@@ -1024,7 +1024,7 @@
                         <highRangeColor>29035</highRangeColor>
                         <lowRangeColor>12728628</lowRangeColor>
                         <midRangeColor>13272321</midRangeColor>
-                        <reportColumn>s!Opportunity.Unit_Price__c</reportColumn>
+                        <reportColumn>FORMULA1</reportColumn>
                         <showSubTotal>false</showSubTotal>
                         <showTotal>true</showTotal>
                         <type>aggregate</type>
