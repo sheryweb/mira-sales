@@ -20,32 +20,9 @@ global class SummerEscapePresentationBatch implements Database.Batchable<SObject
             try {
                 Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
                 email.setToAddresses(new String[] { acc.Company_Email__c });
-                email.setSubject('GET READY — MIRA CORAL BAY IS COMING!');
+                email.setSubject('Mira Coral Bay Project Briefing - Tuesday 18th August 2026');
                 String emailBody = '<html><body style="font-family: Arial, sans-serif;">' +
-                    '<p>Dear Valued Partner,</p><br/>'+
-                    '<p>We are pleased to announce the upcoming launch of MIRA Coral Bay in Ras Al Khaimah, the world`s first multi-branded waterfront community, and the newest addition to the MIRA Developments portfolio.</p>'+
-                    '<ul>'+
-                    '<li>Premium Waterfront Community</li>'+
-                    '<li>Apartments & Villas</li>'+
-                    '<li>Fully Branded</li>'+
-                    '<li>Fully Furnished</li>'+
-                    '<li>100% Turnkey</li>'+
-                    '<li>Starting from AED 550,000</li>'+
-                    '</ul>'+
-                    '<br/>'+
-                    '<p>PAYMENT PLAN:</p>'+
-                    '<ul>'+
-                    '<li>50% During Construction</li>'+
-                    '<li>50% Over 3 Years Post-Handover</li>'+
-                    '</ul>'+
-                    '<br/>'+
-                    '<p>EOI NOW OPEN — AED 55,000</p><br/>'+
-                    '<p>With an attractive entry point and a post-handover plan extending three years, MIRA Coral Bay is positioned to appeal to both end-users and investors seeking strong capital appreciation in one of the UAE`s fastest-growing emirates.</p>'+
-                    '<p>Submit your clients’ EOI to our sales team NOW to secure priority allocation. We encourage you to begin engaging your database early to secure priority for your clients.</p>'+
-                    '<p>Please find the launch creatives attached for your marketing use. For unit availability, floor plans, or to submit an EOI, kindly reach out to your Relationship Manager.</p>'+
-                    '<p>We look forward to a successful launch together in SEPTEMBER 2026.</p><br/><br/>'+
-                    '<a href="https://miradevelopments.ae/"><img src="https://iili.io/C675S71.md.jpg" alt="MIRA Coral Bay" /></a>'+
-                    '<a href="https://miradevelopments.ae/"><img src="https://iili.io/C67YvOF.md.jpg" alt="MIRA Coral Bay Payment Plan" /></a>'+
+                    '<a href="https://miradevelopments.ae/"><img src="https://iili.io/Ci2bat4.md.jpg" alt="MIRA Coral Bay Payment Plan" /></a>'+
                     '<br/><br/>'+
                     'Regards,<br/>Agent Relations<br/>MIRA Developments<br/><br/>' +
                     '<img src="https://main-info-bucket.s3.us-east-1.amazonaws.com/mira_logo_small.jpeg" alt="MIRA Developments Logo" style="max-width: 200px;"/>' +
