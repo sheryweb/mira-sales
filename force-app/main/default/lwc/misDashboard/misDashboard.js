@@ -65,15 +65,21 @@ export default class MisDashboard extends LightningElement {
             this.dashboard = data;
             this.errorMessage = undefined;
             this.isLoading = false;
-            this.lastUpdatedLabel = `Updated ${new Intl.DateTimeFormat('en-GB', {
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
-            }).format(new Date())}`;
+            this.stampUpdated();
         } else if (error) {
             this.errorMessage = this.reduceError(error);
             this.isLoading = false;
         }
+    }
+
+    /** Refresh time next to the refresh button — stamped on every load AND
+        every manual refresh (the wire won't re-emit when data is unchanged). */
+    stampUpdated() {
+        this.lastUpdatedLabel = `Updated ${new Intl.DateTimeFormat('en-GB', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        }).format(new Date())}`;
     }
 
     handleRefresh() {
@@ -81,9 +87,11 @@ export default class MisDashboard extends LightningElement {
             return;
         }
         this.isLoading = true;
-        refreshApex(this.wiredResult).finally(() => {
-            this.isLoading = false;
-        });
+        refreshApex(this.wiredResult)
+            .then(() => this.stampUpdated())
+            .finally(() => {
+                this.isLoading = false;
+            });
     }
 
     get subtitle() {
