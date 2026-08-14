@@ -176,16 +176,16 @@ public without sharing class MISDashboardController {
             data.mtdAllStatus = mtdAllStatus.rowsByNameAsc();
             data.mtdTopAgencies = mtdTopAgencies.rowsByValueDesc(TOP_AGENCIES_LIMIT);
             data.mtdAgentDirect = mtdAgentDirect.rowsByNameAsc();
-            data.mtdManagers = mtdManagers.rowsByValueDesc(null);
-            data.mtdManagementSale = mtdManagementSale.rowsByValueDesc(null);
+            data.mtdManagers = mtdManagers.rowsByNameAsc(); // original sorts managers A→Z
+            data.mtdManagementSale = mtdManagementSale.rowsByNameAsc();
             data.ytdReserved = ytdReserved.rowsByNameAsc();
             data.ytdSold = ytdSold.rowsByNameAsc();
             data.ytdCombined = ytdCombined.rowsByNameAsc();
             data.ytdTeam = ytdTeam.rowsByValueDesc(null);
             data.ytdTopAgencies = ytdTopAgencies.rowsByValueDesc(TOP_AGENCIES_LIMIT);
             data.ytdAgentDirect = ytdAgentDirect.rowsByNameAsc();
-            data.ytdManagers = ytdManagers.rowsByValueDesc(null);
-            data.ytdManagementSale = ytdManagementSale.rowsByValueDesc(null);
+            data.ytdManagers = ytdManagers.rowsByNameAsc(); // original sorts managers A→Z
+            data.ytdManagementSale = ytdManagementSale.rowsByNameAsc();
             return data;
         } catch (Exception e) {
             throw auraError(e, 'Failed to load MIS dashboard data');
