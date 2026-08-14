@@ -356,16 +356,9 @@ export default class ExecutiveDashboard extends LightningElement {
                 maintainAspectRatio: false,
                 cutout: '66%',
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            pointStyle: 'circle',
-                            boxHeight: 7,
-                            color: INK.secondary,
-                            font: { size: 11 }
-                        }
-                    },
+                    // legend lives in the template (fixed column beside the
+                    // donut) so extra projects never shrink the chart
+                    legend: { display: false },
                     tooltip: {
                         callbacks: {
                             label(ctx) {
@@ -468,6 +461,14 @@ export default class ExecutiveDashboard extends LightningElement {
 
     get hasNoProjects() {
         return !this.projectSegments().length;
+    }
+
+    get donutLegend() {
+        return this.projectSegments().map((segment) => ({
+            label: segment.label,
+            dotStyle: `background:${segment.color}`,
+            title: `${segment.label} — ${this.formatFull(segment.value)}`
+        }));
     }
 
     /* ---------- tables ---------- */

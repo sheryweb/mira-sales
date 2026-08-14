@@ -82,15 +82,25 @@
                     <span class="chart-scope">Sold · by project</span>
                 </header>
                 <div class="donut-wrap">
-                    <canvas class="project-canvas"></canvas>
                     <template lwc:if={hasNoProjects}>
                         <p class="chart-empty">No sold deals in this cohort yet</p>
                     </template>
                     <template lwc:else>
-                        <div class="donut-center" aria-hidden="true">
-                            <span class="donut-center-value">{donutCenter}</span>
-                            <span class="donut-center-label">Sold</span>
+                        <div class="donut-canvas-box">
+                            <canvas class="project-canvas"></canvas>
+                            <div class="donut-center" aria-hidden="true">
+                                <span class="donut-center-value">{donutCenter}</span>
+                                <span class="donut-center-label">Sold</span>
+                            </div>
                         </div>
+                        <ul class="donut-legend">
+                            <template for:each={donutLegend} for:item="item">
+                                <li key={item.label} class="donut-legend-item" title={item.title}>
+                                    <span class="legend-dot" style={item.dotStyle}></span>
+                                    <span class="legend-text">{item.label}</span>
+                                </li>
+                            </template>
+                        </ul>
                     </template>
                 </div>
             </article>
