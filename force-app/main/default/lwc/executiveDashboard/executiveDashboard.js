@@ -218,8 +218,47 @@ export default class ExecutiveDashboard extends LightningElement {
         }
         const rows = this.dashboard.monthlySold || [];
         const formatFull = (v) => this.formatFull(v);
+        const formatGrouped = (v) =>
+            new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(v);
+        // vertical value labels, like the standard dashboard's columns:
+        // white inside tall bars, secondary ink above short ones
+        const verticalLabels = {
+            id: 'columnLabels',
+            afterDatasetsDraw(chart) {
+                const ctx = chart.ctx;
+                const meta = chart.getDatasetMeta(0);
+                meta.data.forEach((bar, index) => {
+                    const raw = rows[index]?.value;
+                    if (!raw) {
+                        return;
+                    }
+                    const text = formatGrouped(raw);
+                    ctx.save();
+                    ctx.font = `600 11px ${CHART_FONT}`;
+                    ctx.textBaseline = 'middle';
+                    const width = ctx.measureText(text).width;
+                    const barHeight = bar.base - bar.y;
+                    if (barHeight > width + 16) {
+                        // inside the bar, reading bottom-to-top, ending 8px below its top
+                        ctx.translate(bar.x, bar.y + 8);
+                        ctx.rotate(-Math.PI / 2);
+                        ctx.textAlign = 'right';
+                        ctx.fillStyle = INK.surface;
+                    } else {
+                        // bar too short — stand the label on top of it
+                        ctx.translate(bar.x, bar.y - 6);
+                        ctx.rotate(-Math.PI / 2);
+                        ctx.textAlign = 'left';
+                        ctx.fillStyle = INK.secondary;
+                    }
+                    ctx.fillText(text, 0, 0);
+                    ctx.restore();
+                });
+            }
+        };
         this.charts.monthly = new window.Chart(canvas.getContext('2d'), {
             type: 'bar',
+            plugins: [verticalLabels],
             data: {
                 labels: rows.map((r) => this.shortPeriod(r.name)),
                 datasets: [
