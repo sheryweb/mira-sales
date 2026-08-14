@@ -1,0 +1,79 @@
+<template>
+    <div class="dashboard">
+        <header class="panel header">
+            <div class="header-text">
+                <h1 class="title">MIS Dashboard</h1>
+                <p class="subtitle">{subtitle}</p>
+            </div>
+            <div class="header-controls">
+                <span class="updated-label">{lastUpdatedLabel}</span>
+                <lightning-button-icon
+                    icon-name="utility:refresh"
+                    variant="border-filled"
+                    alternative-text="Refresh dashboard"
+                    title="Refresh"
+                    onclick={handleRefresh}
+                ></lightning-button-icon>
+            </div>
+        </header>
+
+        <template lwc:if={hasError}>
+            <div class="panel error" role="alert">
+                <lightning-icon icon-name="utility:error" size="x-small" variant="error"></lightning-icon>
+                <span class="error-text">{errorMessage}</span>
+            </div>
+        </template>
+
+        <div class="matrix">
+            <template for:each={columns} for:item="column">
+                <section key={column.key} class="time-column">
+                    <h2 class="column-label">{column.label}</h2>
+                    <template for:each={column.tables} for:item="table">
+                        <article key={table.key} class="panel table-card">
+                            <header class="chart-card-header">
+                                <h3 class="chart-title">{table.title}</h3>
+                                <span class="chart-scope">{table.scope}</span>
+                            </header>
+                            <template lwc:if={table.hasRows}>
+                                <div class="table-scroll">
+                                    <table class="cmp-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">{table.nameHeader}</th>
+                                                <th scope="col" class="num">Sum of Units</th>
+                                                <th scope="col" class="num">Unit Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={table.rows} for:item="row">
+                                                <tr key={row.key}>
+                                                    <th scope="row" class="name-cell">{row.name}</th>
+                                                    <td class="num">{row.units}</td>
+                                                    <td class="num">
+                                                        <span class="val-chip" title={row.fullValue}>{row.value}</span>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th scope="row">Total</th>
+                                                <td class="num">{table.totalUnits}</td>
+                                                <td class="num" title={table.totalFull}>{table.totalValue}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </template>
+                            <template lwc:else><p class="table-empty">{table.empty}</p></template>
+                        </article>
+                    </template>
+                </section>
+            </template>
+        </div>
+
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading dashboard" size="medium"></lightning-spinner>
+        </template>
+    </div>
+</template>

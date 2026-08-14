@@ -24,6 +24,13 @@ const DASHBOARDS = [
         loader: () => import('c/executiveDashboard')
     },
     {
+        id: 'misDashboard',
+        label: 'MIS Dashboard',
+        description: 'All sales activities: Today / MTD / YTD bookings, reservations, sales, teams and agencies',
+        icon: 'utility:activity',
+        loader: () => import('c/misDashboard')
+    },
+    {
         id: 'monthlySalesReport',
         label: 'Monthly Sales Report',
         description: 'Monthly / weekly sales report with PDF download',

@@ -1,0 +1,234 @@
+/*
+ * Theme tokens shared with projectCollectionDashboard / executiveDashboard
+ * (light surface). Tables reuse the Performance Center look: fixed-height
+ * cards, sticky headers, teal value chips.
+ */
+:host {
+    --pcd-surface: #ffffff;
+    --pcd-ink: #0b0b0b;
+    --pcd-ink-secondary: #52514e;
+    --pcd-ink-muted: #898781;
+    --pcd-border: rgba(11, 11, 11, 0.1);
+    --pcd-radius: 10px;
+    --pcd-shadow: 0 1px 3px rgba(21, 21, 21, 0.08);
+
+    display: block;
+    position: relative;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color: var(--pcd-ink);
+}
+
+.dashboard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.panel {
+    background: var(--pcd-surface);
+    border: 1px solid var(--pcd-border);
+    border-radius: var(--pcd-radius);
+    box-shadow: var(--pcd-shadow);
+}
+
+/* ---------- header ---------- */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 1rem 1.25rem;
+}
+
+.title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.subtitle {
+    margin: 0.125rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--pcd-ink-secondary);
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.updated-label {
+    font-size: 0.75rem;
+    color: var(--pcd-ink-muted);
+    white-space: nowrap;
+}
+
+/* ---------- error ---------- */
+
+.error {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid #d03b3b;
+}
+
+.error-text {
+    font-size: 0.8125rem;
+    color: var(--pcd-ink);
+}
+
+/* ---------- Today | MTD | YTD matrix ---------- */
+
+.matrix {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    align-items: start;
+}
+
+.time-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.column-label {
+    margin: 0;
+    padding: 0.125rem 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pcd-ink-muted);
+}
+
+/* ---------- tables (fixed-height cards, like the Executive Dashboard) ---------- */
+
+.table-card {
+    display: flex;
+    flex-direction: column;
+    height: 17rem;
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.chart-card-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+}
+
+.chart-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--pcd-ink);
+}
+
+.chart-scope {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--pcd-ink-muted);
+    white-space: nowrap;
+}
+
+.table-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+}
+
+.cmp-table th,
+.cmp-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #e1e0d9;
+    text-align: left;
+    font-weight: 400;
+    color: var(--pcd-ink);
+    white-space: nowrap;
+}
+
+.cmp-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--pcd-surface);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pcd-ink-muted);
+    border-bottom: 1px solid #c3c2b7;
+}
+
+.cmp-table tbody tr:hover {
+    background: #f9f9f7;
+}
+
+.cmp-table .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* long names wrap instead of forcing a horizontal scrollbar */
+.cmp-table .name-cell {
+    font-weight: 600;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+.cmp-table tfoot th,
+.cmp-table tfoot td {
+    border-bottom: none;
+    border-top: 2px solid #c3c2b7;
+    font-weight: 700;
+}
+
+/* teal value chips, like the standard reports' conditional formatting */
+.val-chip {
+    display: inline-block;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 4px;
+    background: #00716b;
+    color: #ffffff;
+    font-variant-numeric: tabular-nums;
+}
+
+.table-empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--pcd-ink-muted);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 64rem) {
+    .matrix {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .table-card {
+        height: auto;
+        max-height: 17rem;
+    }
+}
