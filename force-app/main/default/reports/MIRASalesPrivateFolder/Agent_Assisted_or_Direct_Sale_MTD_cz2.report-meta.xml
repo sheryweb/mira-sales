@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <aggregates>
+        <calculatedFormula>Opportunity.Unit_Price_Dashboard__c:SUM</calculatedFormula>
+        <datatype>number</datatype>
+        <description>Unit Price Summary</description>
+        <developerName>FORMULA1</developerName>
+        <isActive>true</isActive>
+        <isCrossBlock>false</isCrossBlock>
+        <masterLabel>Unit Price</masterLabel>
+        <scale>2</scale>
+    </aggregates>
     <columns>
         <aggregateTypes>Sum</aggregateTypes>
         <field>CDF1</field>
