@@ -22,6 +22,16 @@ global class SummerEscapePresentationBatch implements Database.Batchable<SObject
                 email.setToAddresses(new String[] { acc.Company_Email__c });
                 email.setSubject('Mira Coral Bay Project Briefing - Tuesday 18th August 2026');
                 String emailBody = '<html><body style="font-family: Arial, sans-serif;">' +
+                    '<p>MIRA DEVELOPMENTS - A new Era in Beachfront Living has arrived!</p><br/>'+
+                    '<p><strong>MIRA CORAL BAY – AL MAIRID – RAS AL KHAIMAH</strong></p>'+
+                    '<p>Location: https://maps.app.goo.gl/8tgwkDPNgx4kNSsbA</p><br/>'+
+                    '<p>Unveiling Mira Coral Bay, the world’s first BRANDED waterfront community, set on the picturesque shores of Al, Mairid, Ras Al Khaimah.</p><br/>'+
+                    '<p><strong>STARTING PRICE: Studio: AED 550K - Unbelievable for branded beachfront property!</strong></p>'+
+                    '<ul>'+
+                    '<li><strong>Payment Plan: 50 / 50 - 3 years post-handover</strong></li>'+
+                    '<li><strong>EOIs now open! – Booking Deposit – AED 55K ($15K)</strong></li>'+
+                    '<li><strong>LAUNCHING: September 2026</strong></li>'+
+                    '</ul>'+
                     '<a href="https://miradevelopments.ae/"><img src="https://iili.io/Ci2bat4.md.jpg" alt="MIRA Coral Bay Payment Plan" /></a>'+
                     '<br/><br/>'+
                     'Regards,<br/>Agent Relations<br/>MIRA Developments<br/><br/>' +
