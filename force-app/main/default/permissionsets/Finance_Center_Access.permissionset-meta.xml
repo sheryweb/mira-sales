@@ -186,4 +186,8 @@
         <object>Finance_Forecast_Line__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
+    <tabSettings>
+        <tab>Finance_Center</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
 </PermissionSet>

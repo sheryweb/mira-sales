@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Finance Center — single point of access for the MIRA finance dashboards (portfolio position, collections and aging, cash flow forecast, invoice and receipt operations)</description>
+    <flexiPage>Finance_Center</flexiPage>
+    <label>Finance Center</label>
+    <motif>Custom16: Bank</motif>
+</CustomTab>

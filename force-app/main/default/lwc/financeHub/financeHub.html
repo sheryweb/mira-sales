@@ -1,0 +1,50 @@
+<template>
+    <div class="hub">
+        <template lwc:if={hasDashboards}>
+            <nav class="hub-nav" role="tablist" aria-label="Finance dashboards">
+                <template for:each={navItems} for:item="item">
+                    <button
+                        key={item.id}
+                        class={item.cssClass}
+                        data-id={item.id}
+                        role="tab"
+                        aria-selected={item.selected}
+                        title={item.description}
+                        onclick={handleSelect}
+                    >
+                        <lightning-icon icon-name={item.icon} size="x-small" class="hub-tab-icon"></lightning-icon>
+                        <span class="hub-tab-label">{item.label}</span>
+                    </button>
+                </template>
+            </nav>
+            <div class="hub-body">
+                <template lwc:if={hasError}>
+                    <p class="hub-error" role="alert">{errorMessage}</p>
+                </template>
+                <template lwc:elseif={isLoading}>
+                    <div class="hub-loading">
+                        <lightning-spinner alternative-text="Loading dashboard" size="medium"></lightning-spinner>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <lwc:component lwc:is={activeCtor}></lwc:component>
+                </template>
+            </div>
+        </template>
+        <template lwc:else>
+            <section class="hub-empty">
+                <h1 class="hub-empty-title">Finance Center</h1>
+                <p class="hub-empty-sub">The finance dashboards are being rolled out here, one at a time. Coming up:</p>
+                <ul class="hub-empty-list">
+                    <template for:each={upcomingItems} for:item="item">
+                        <li key={item.id} class="hub-empty-item">
+                            <span class="hub-empty-label">{item.label}</span>
+                            <span class="hub-empty-detail">{item.detail}</span>
+                        </li>
+                    </template>
+                </ul>
+                <p class="hub-empty-note">The nightly collection-state engine behind them is already live — unit due amounts, health, daily snapshots and forecast lines are being recorded now, so the trend charts will have history on day one.</p>
+            </section>
+        </template>
+    </div>
+</template>
