@@ -1,0 +1,184 @@
+<template>
+    <div class="dashboard">
+        <header class="panel header">
+            <div class="header-text">
+                <h1 class="title">Cash Flow &amp; Forecast</h1>
+                <p class="subtitle">{currencyDescription}</p>
+            </div>
+            <div class="header-controls">
+                <span class="updated-label">{updatedLabel}</span>
+                <lightning-button-icon
+                    icon-name="utility:refresh"
+                    variant="border-filled"
+                    alternative-text="Refresh"
+                    onclick={handleRefresh}
+                ></lightning-button-icon>
+            </div>
+        </header>
+
+        <template lwc:if={hasError}>
+            <div class="panel error" role="alert">
+                <lightning-icon icon-name="utility:error" size="x-small" variant="error"></lightning-icon>
+                <span>{errorMessage}</span>
+            </div>
+        </template>
+
+        <template lwc:if={dashboard}>
+            <div class="tile-grid">
+                <template for:each={tiles} for:item="tile">
+                    <article key={tile.key} class={tile.theme}>
+                        <p class="tile-label">{tile.label}</p>
+                        <p class="tile-hero">{tile.hero}</p>
+                        <p class="tile-scope">{tile.scope}</p>
+                    </article>
+                </template>
+            </div>
+
+            <!-- forecast vs actual -->
+            <article class="panel chart-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Expected Receipts by Month</h2>
+                    <div class="chart-controls">
+                        <lightning-combobox
+                            name="forecastScope"
+                            label="Scope"
+                            variant="label-hidden"
+                            value={forecastScope}
+                            options={forecastOptions}
+                            onchange={handleForecastScope}
+                        ></lightning-combobox>
+                    </div>
+                </div>
+                <div class="chart-wrap tall">
+                    <canvas class="forecast-canvas"></canvas>
+                </div>
+                <p class="table-note">Forecast bars: month-start baselines for past months, tonight's live schedule for current and future months. Actual line: reconciled receipts.</p>
+            </article>
+
+            <!-- scenario -->
+            <article class="panel scenario-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Collection Scenario</h2>
+                    <span class="chart-scope">{scenarioLabel}</span>
+                </div>
+                <div class="scenario-body">
+                    <div class="scenario-slider">
+                        <lightning-slider
+                            label="Share of overdue backlog collected"
+                            min="0"
+                            max="100"
+                            step="5"
+                            value={scenarioPct}
+                            onchange={handleScenarioChange}
+                        ></lightning-slider>
+                    </div>
+                    <div class="scenario-math">
+                        <div class="scenario-figure">
+                            <span class="scenario-label">Next month scheduled</span>
+                            <span class="scenario-value">{scenarioBase}</span>
+                        </div>
+                        <span class="scenario-op">+</span>
+                        <div class="scenario-figure">
+                            <span class="scenario-label">Recovered from overdue</span>
+                            <span class="scenario-value">{scenarioRecovered}</span>
+                        </div>
+                        <span class="scenario-op">=</span>
+                        <div class="scenario-figure scenario-total">
+                            <span class="scenario-label">Projected 30-day cash</span>
+                            <span class="scenario-value">{scenarioTotal}</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- escrow split -->
+            <article class="panel chart-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Incoming Receipts by Account Class</h2>
+                    <span class="chart-scope">escrow vs operating vs cash · last 12 months · AED</span>
+                </div>
+                <div class="chart-wrap">
+                    <canvas class="escrow-canvas"></canvas>
+                </div>
+            </article>
+
+            <!-- forecast vs actual variance -->
+            <article class="panel table-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Forecast vs Actual by Month</h2>
+                    <span class="chart-scope">against the frozen month-start baseline · project currency</span>
+                </div>
+                <template lwc:if={hasVariance}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Month</th>
+                                    <th scope="col">Project</th>
+                                    <th scope="col" class="num">Forecast</th>
+                                    <th scope="col" class="num">Actual</th>
+                                    <th scope="col" class="num">Variance</th>
+                                    <th scope="col" class="num">%</th>
+                                    <th scope="col">Slippage Reason</th>
+                                    <th scope="col" class="actions-head"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={varianceRows} for:item="row">
+                                    <tr key={row.lineId}>
+                                        <th scope="row" class="name-cell">{row.monthLabel}</th>
+                                        <td>{row.projectName}</td>
+                                        <td class="num">{row.fExpected}</td>
+                                        <td class="num">{row.fActual}</td>
+                                        <td class={row.varianceClass}>{row.fVariance}</td>
+                                        <td class={row.varianceClass}>{row.pctLabel}</td>
+                                        <td class="reason-cell">{row.reasonLabel}</td>
+                                        <td class="actions-cell">
+                                            <lightning-button-icon
+                                                icon-name="utility:edit"
+                                                variant="border-filled"
+                                                size="small"
+                                                alternative-text="Edit slippage reason"
+                                                title="Edit slippage reason"
+                                                data-id={row.lineId}
+                                                disabled={isSaving}
+                                                onclick={openReasonModal}
+                                            ></lightning-button-icon>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <p class="table-empty">Variance appears from the first full month of frozen baselines onward.</p>
+                </template>
+            </article>
+        </template>
+
+        <!-- slippage reason modal -->
+        <template lwc:if={modalRow}>
+            <div class="modal-backdrop">
+                <div class="modal" role="dialog" aria-modal="true" aria-label="Edit slippage reason">
+                    <h2 class="modal-title">Slippage reason — {modalRow.projectName}, {modalRow.monthLabel}</h2>
+                    <p class="modal-sub">Forecast {modalRow.fExpected} · actual {modalRow.fActual} ({modalRow.pctLabel})</p>
+                    <lightning-textarea
+                        label="Reason"
+                        placeholder="Handover delayed to next month; two cheques deferred on request…"
+                        value={modalReason}
+                        onchange={handleReasonChange}
+                    ></lightning-textarea>
+                    <div class="modal-actions">
+                        <lightning-button label="Cancel" onclick={closeModal} disabled={isSaving}></lightning-button>
+                        <lightning-button label="Save" variant="brand" onclick={saveReason} disabled={isSaving}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+    </div>
+</template>

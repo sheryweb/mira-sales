@@ -10,7 +10,6 @@ import { LightningElement } from 'lwc';
  * entry carries its own loader arrow.
  *
  * Build order (see the Finance Center plan):
- *   Phase 4 — Cash Flow & Forecast    loader: () => import('c/financeCashflowDashboard')
  *   Phase 5 — Invoice & Receipt Ops   loader: () => import('c/financeOperationsDashboard')
  */
 const DASHBOARDS = [
@@ -27,6 +26,13 @@ const DASHBOARDS = [
         description: 'Aging buckets by project and customer, actionable overdue and defaulted lists, trends',
         icon: 'utility:clock',
         loader: () => import('c/financeCollectionsDashboard')
+    },
+    {
+        id: 'cashflowForecast',
+        label: 'Cash Flow & Forecast',
+        description: 'Expected receipts vs actuals, frozen-baseline variance, collection scenario, escrow split',
+        icon: 'utility:trending',
+        loader: () => import('c/financeCashflowDashboard')
     }
 ];
 
