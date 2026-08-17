@@ -827,8 +827,11 @@ public with sharing class MonthlySalesReportService {
 
     private static String stagePill(String stageName) {
         String stage = stageName == null ? '' : stageName.toUpperCase();
-        if (stage == 'BOOKED' || stage == 'SOLD') {
+        if (stage == 'BOOKED') {
             return roundedPill(stage, '#064E3B', '#34D399');
+        }
+        if (stage == 'SOLD') {
+            return roundedPill(stage, '#0C4A6E', '#38BDF8');
         }
         if (stage == 'RESERVED') {
             return roundedPill(stage, '#78350F', '#FBBF24');
