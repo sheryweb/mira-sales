@@ -1,0 +1,199 @@
+<template>
+    <div class="dashboard">
+        <!-- header -->
+        <header class="panel header">
+            <div class="header-text">
+                <h1 class="title">Portfolio Position</h1>
+                <p class="subtitle">{currencyDescription}</p>
+            </div>
+            <div class="header-controls">
+                <span class="updated-label">{updatedLabel}</span>
+                <lightning-button
+                    label="Export CSV"
+                    icon-name="utility:download"
+                    variant="neutral"
+                    disabled={isExporting}
+                    onclick={handleExport}
+                ></lightning-button>
+                <lightning-button-icon
+                    icon-name="utility:refresh"
+                    variant="border-filled"
+                    alternative-text="Refresh"
+                    onclick={handleRefresh}
+                ></lightning-button-icon>
+            </div>
+        </header>
+
+        <template lwc:if={hasError}>
+            <div class="panel error" role="alert">
+                <lightning-icon icon-name="utility:error" size="x-small" variant="error"></lightning-icon>
+                <span>{errorMessage}</span>
+            </div>
+        </template>
+
+        <template lwc:if={dashboard}>
+            <!-- KPI tiles -->
+            <div class="tile-grid">
+                <template for:each={tiles} for:item="tile">
+                    <article key={tile.key} class={tile.theme}>
+                        <p class="tile-label">{tile.label}</p>
+                        <p class="tile-hero" title={tile.full}>{tile.hero}</p>
+                        <p class="tile-scope">{tile.scope}</p>
+                    </article>
+                </template>
+            </div>
+
+            <!-- waterfall -->
+            <article class="panel chart-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Collection Waterfall</h2>
+                    <div class="chart-controls">
+                        <lightning-combobox
+                            name="waterfallScope"
+                            label="Scope"
+                            variant="label-hidden"
+                            value={waterfallScope}
+                            options={waterfallOptions}
+                            onchange={handleWaterfallScope}
+                        ></lightning-combobox>
+                    </div>
+                </div>
+                <div class="chart-wrap tall">
+                    <canvas class="waterfall-canvas"></canvas>
+                </div>
+            </article>
+
+            <!-- project / unit table -->
+            <article class="panel table-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Projects &amp; Units</h2>
+                    <span class="chart-scope">click a project to expand its units · amounts in each project's currency</span>
+                </div>
+                <template lwc:if={hasProjects}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="name-head">Project / Unit</th>
+                                    <th scope="col" class="num">Total</th>
+                                    <th scope="col" class="num">Invoiced</th>
+                                    <th scope="col" class="num">Received</th>
+                                    <th scope="col" class="num">Remaining</th>
+                                    <th scope="col" class="num">Overdue</th>
+                                    <th scope="col" class="num">% Collected</th>
+                                    <th scope="col" class="num">Units</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={projectTableRows} for:item="p">
+                                    <tr key={p.projectId} class="project-row" data-id={p.projectId} onclick={toggleProject} title="Click to expand units">
+                                        <th scope="row" class="name-cell">
+                                            <span class="chevron">{p.chevron}</span>
+                                            {p.name}
+                                            <span class="ccy-chip">{p.currencyCode}</span>
+                                        </th>
+                                        <td class="num">{p.fContracted}</td>
+                                        <td class="num">{p.fInvoiced}</td>
+                                        <td class="num">{p.fReceived}</td>
+                                        <td class="num">{p.fRemaining}</td>
+                                        <td class="num">{p.fOverdue}</td>
+                                        <td class="num pct-cell">
+                                            <span class="pct-label">{p.collectedLabel}</span>
+                                            <span class="pct-bar"><span class="pct-fill" style={p.barStyle}></span></span>
+                                        </td>
+                                        <td class="num">{p.units}</td>
+                                    </tr>
+                                    <template lwc:if={p.expanded}>
+                                        <template lwc:if={p.unitsLoading}>
+                                            <tr key={p.loadingKey} class="unit-row">
+                                                <td colspan="8" class="unit-note">Loading units…</td>
+                                            </tr>
+                                        </template>
+                                        <template lwc:elseif={p.unitsError}>
+                                            <tr key={p.errorKey} class="unit-row">
+                                                <td colspan="8" class="unit-note unit-error">{p.unitsError}</td>
+                                            </tr>
+                                        </template>
+                                        <template lwc:else>
+                                            <template for:each={p.unitRows} for:item="u">
+                                                <tr key={u.unitId} class="unit-row">
+                                                    <th scope="row" class="name-cell unit-name">
+                                                        {u.name}
+                                                        <span class={u.healthClass}>{u.healthLabel}</span>
+                                                    </th>
+                                                    <td class="num">{u.fTotal}</td>
+                                                    <td class="num unit-muted">—</td>
+                                                    <td class="num">{u.fReceived}</td>
+                                                    <td class="num">{u.fRemaining}</td>
+                                                    <td class="num" title="days overdue on the oldest unpaid instalment">{u.overdueLabel}</td>
+                                                    <td class="num">{u.paidLabel}</td>
+                                                    <td class="num unit-muted">{u.status}</td>
+                                                </tr>
+                                            </template>
+                                        </template>
+                                    </template>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <p class="table-empty">No Booked, Reserved or Sold units found.</p>
+                </template>
+            </article>
+
+            <!-- collection status + top 10 -->
+            <div class="chart-pair">
+                <article class="panel chart-card">
+                    <div class="chart-card-header">
+                        <h2 class="chart-title">Collection Status by Project</h2>
+                        <span class="chart-scope">unit counts</span>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas class="health-canvas"></canvas>
+                    </div>
+                </article>
+                <article class="panel chart-card">
+                    <div class="chart-card-header">
+                        <h2 class="chart-title">Top 10 by Outstanding</h2>
+                        <span class="chart-scope">due + future, AED</span>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas class="top-canvas"></canvas>
+                    </div>
+                </article>
+            </div>
+
+            <!-- unit heatmap -->
+            <article class="panel chart-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Unit Collection Heatmap</h2>
+                    <span class="chart-scope">one cell per unit, top floor first · green paid / blue on track / amber overdue / red defaulted</span>
+                </div>
+                <div class="heatmap">
+                    <template for:each={heatmapProjects} for:item="proj">
+                        <div key={proj.projectId} class="heat-project">
+                            <h3 class="heat-project-name">{proj.projectName}</h3>
+                            <div class="heat-towers">
+                                <template for:each={proj.towers} for:item="tower">
+                                    <div key={tower.key} class="heat-tower">
+                                        <p class="heat-tower-label">{tower.label}</p>
+                                        <div class="heat-grid">
+                                            <template for:each={tower.cells} for:item="cell">
+                                                <span key={cell.unitId} class={cell.cssClass} title={cell.title}></span>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </article>
+        </template>
+
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+    </div>
+</template>

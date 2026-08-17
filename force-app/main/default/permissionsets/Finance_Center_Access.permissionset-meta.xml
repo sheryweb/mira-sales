@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>FinancePortfolioDashboardController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <description>Grants access to the Finance Center: the collection-state fields on Unit, the daily snapshot and forecast objects, and (from Phase 1 on) the finance dashboard controllers and tab. Assignable regardless of profile.</description>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Finance Center Access</label>
