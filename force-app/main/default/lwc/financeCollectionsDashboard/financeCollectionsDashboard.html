@@ -1,0 +1,306 @@
+<template>
+    <div class="dashboard">
+        <header class="panel header">
+            <div class="header-text">
+                <h1 class="title">Collections &amp; Aging</h1>
+                <p class="subtitle">{currencyDescription}</p>
+            </div>
+            <div class="header-controls">
+                <span class="updated-label">{updatedLabel}</span>
+                <lightning-button-icon
+                    icon-name="utility:refresh"
+                    variant="border-filled"
+                    alternative-text="Refresh"
+                    onclick={handleRefresh}
+                ></lightning-button-icon>
+            </div>
+        </header>
+
+        <template lwc:if={hasError}>
+            <div class="panel error" role="alert">
+                <lightning-icon icon-name="utility:error" size="x-small" variant="error"></lightning-icon>
+                <span>{errorMessage}</span>
+            </div>
+        </template>
+
+        <template lwc:if={dashboard}>
+            <div class="tile-grid">
+                <template for:each={tiles} for:item="tile">
+                    <article key={tile.key} class={tile.theme}>
+                        <p class="tile-label">{tile.label}</p>
+                        <p class="tile-hero">{tile.hero}</p>
+                        <p class="tile-scope">{tile.scope}</p>
+                    </article>
+                </template>
+            </div>
+
+            <!-- top overdue customers / units with actions -->
+            <article class="panel table-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Top Overdue — Follow Up</h2>
+                    <span class="chart-scope">worst first by AED equivalent · amounts in project currency</span>
+                </div>
+                <template lwc:if={hasOverdueRows}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Customer</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col">Project</th>
+                                    <th scope="col" class="num">Due</th>
+                                    <th scope="col" class="num">Days</th>
+                                    <th scope="col" class="num">Missed</th>
+                                    <th scope="col">Health</th>
+                                    <th scope="col">Flag</th>
+                                    <th scope="col" class="actions-head">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={overdueRows} for:item="row">
+                                    <tr key={row.unitId}>
+                                        <th scope="row" class="name-cell">{row.customerLabel}</th>
+                                        <td>{row.unitName}</td>
+                                        <td>{row.projectName}</td>
+                                        <td class="num">{row.fDue}</td>
+                                        <td class="num">{row.daysLabel}</td>
+                                        <td class="num">{row.missedInstalments}</td>
+                                        <td><span class={row.healthClass}>{row.health}</span></td>
+                                        <td class="flag-cell">{row.flagLabel}</td>
+                                        <td class="actions-cell">
+                                            <lightning-button-icon
+                                                icon-name="utility:task"
+                                                variant="border-filled"
+                                                size="small"
+                                                alternative-text="Log follow-up task"
+                                                title="Log follow-up task"
+                                                data-id={row.unitId}
+                                                disabled={row.actionsDisabled}
+                                                onclick={openTaskModal}
+                                            ></lightning-button-icon>
+                                            <lightning-button-icon
+                                                icon-name="utility:email"
+                                                variant="border-filled"
+                                                size="small"
+                                                alternative-text="Email SOA"
+                                                title="Email SOA to the customer"
+                                                data-id={row.unitId}
+                                                disabled={row.emailDisabled}
+                                                onclick={openSoaModal}
+                                            ></lightning-button-icon>
+                                            <lightning-button-menu
+                                                icon-name="utility:flag"
+                                                variant="border-filled"
+                                                menu-alignment="right"
+                                                alternative-text="Set collection flag"
+                                                title="Set collection flag"
+                                                data-id={row.unitId}
+                                                disabled={row.actionsDisabled}
+                                                onselect={handleFlagSelect}
+                                            >
+                                                <lightning-menu-item value="Legal Notice" label="Flag: Legal Notice"></lightning-menu-item>
+                                                <lightning-menu-item value="Termination Notice" label="Flag: Termination Notice"></lightning-menu-item>
+                                                <lightning-menu-item value="CLEAR" label="Clear flag"></lightning-menu-item>
+                                            </lightning-button-menu>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <p class="table-empty">Nothing overdue — the portfolio is fully on track.</p>
+                </template>
+            </article>
+
+            <!-- aging by project + customer matrix -->
+            <article class="panel chart-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Aging by Project</h2>
+                    <span class="chart-scope">open invoice pending by bucket, AED</span>
+                </div>
+                <div class="chart-wrap">
+                    <canvas class="aging-canvas"></canvas>
+                </div>
+            </article>
+
+            <article class="panel table-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Aging by Customer</h2>
+                    <span class="chart-scope">AED equivalents · worst first</span>
+                </div>
+                <template lwc:if={hasCustomers}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Customer</th>
+                                    <template for:each={matrixHeaders} for:item="label">
+                                        <th key={label} scope="col" class="num">{label}</th>
+                                    </template>
+                                    <th scope="col" class="num">Total</th>
+                                    <th scope="col" class="num">Oldest</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={customerRows} for:item="row">
+                                    <tr key={row.accountId}>
+                                        <th scope="row" class="name-cell">{row.name}</th>
+                                        <template for:each={row.cells} for:item="cell">
+                                            <td key={cell.key} class={cell.cssClass}>{cell.label}</td>
+                                        </template>
+                                        <td class="num total-cell">{row.fTotal}</td>
+                                        <td class="num">{row.oldestLabel}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="table-note">{customersNote}</p>
+                </template>
+                <template lwc:else>
+                    <p class="table-empty">No open invoices with a customer on file.</p>
+                </template>
+            </article>
+
+            <!-- trends -->
+            <div class="chart-pair">
+                <article class="panel chart-card">
+                    <div class="chart-card-header">
+                        <h2 class="chart-title">Aging Trend</h2>
+                        <span class="chart-scope">daily snapshots · AED at today's rates</span>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas class="trend-canvas"></canvas>
+                    </div>
+                </article>
+                <article class="panel chart-card">
+                    <div class="chart-card-header">
+                        <h2 class="chart-title">DSO &amp; Collection Efficiency</h2>
+                        <span class="chart-scope">DSO = 365 × open AR ÷ invoiced to date</span>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas class="dso-canvas"></canvas>
+                    </div>
+                </article>
+            </div>
+
+            <!-- defaulted / termination candidates -->
+            <article class="panel table-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Defaulted — Termination Candidates</h2>
+                    <span class="chart-scope">90+ days overdue and more than 2 missed instalments</span>
+                </div>
+                <template lwc:if={hasDefaultedRows}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Customer</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col">Project</th>
+                                    <th scope="col" class="num">Due</th>
+                                    <th scope="col" class="num">Days</th>
+                                    <th scope="col" class="num">Missed</th>
+                                    <th scope="col">Flag</th>
+                                    <th scope="col" class="actions-head">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={defaultedRows} for:item="row">
+                                    <tr key={row.unitId}>
+                                        <th scope="row" class="name-cell">{row.customerLabel}</th>
+                                        <td>{row.unitName}</td>
+                                        <td>{row.projectName}</td>
+                                        <td class="num">{row.fDue}</td>
+                                        <td class="num">{row.daysLabel}</td>
+                                        <td class="num">{row.missedInstalments}</td>
+                                        <td class="flag-cell">{row.flagLabel}</td>
+                                        <td class="actions-cell">
+                                            <lightning-button-icon
+                                                icon-name="utility:task"
+                                                variant="border-filled"
+                                                size="small"
+                                                alternative-text="Log follow-up task"
+                                                title="Log follow-up task"
+                                                data-id={row.unitId}
+                                                disabled={row.actionsDisabled}
+                                                onclick={openTaskModal}
+                                            ></lightning-button-icon>
+                                            <lightning-button-icon
+                                                icon-name="utility:email"
+                                                variant="border-filled"
+                                                size="small"
+                                                alternative-text="Email SOA"
+                                                title="Email SOA to the customer"
+                                                data-id={row.unitId}
+                                                disabled={row.emailDisabled}
+                                                onclick={openSoaModal}
+                                            ></lightning-button-icon>
+                                            <lightning-button-menu
+                                                icon-name="utility:flag"
+                                                variant="border-filled"
+                                                menu-alignment="right"
+                                                alternative-text="Set collection flag"
+                                                title="Set collection flag"
+                                                data-id={row.unitId}
+                                                disabled={row.actionsDisabled}
+                                                onselect={handleFlagSelect}
+                                            >
+                                                <lightning-menu-item value="Legal Notice" label="Flag: Legal Notice"></lightning-menu-item>
+                                                <lightning-menu-item value="Termination Notice" label="Flag: Termination Notice"></lightning-menu-item>
+                                                <lightning-menu-item value="CLEAR" label="Clear flag"></lightning-menu-item>
+                                            </lightning-button-menu>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <p class="table-empty">No defaulted units. 🎉</p>
+                </template>
+            </article>
+        </template>
+
+        <!-- follow-up task modal -->
+        <template lwc:if={isTaskModal}>
+            <div class="modal-backdrop">
+                <div class="modal" role="dialog" aria-modal="true" aria-label="Log follow-up task">
+                    <h2 class="modal-title">Log follow-up — {modalRow.customerLabel}</h2>
+                    <p class="modal-sub">Unit {modalRow.unitName} · {modalRow.fDue} due. Creates a task on the customer account, due in 3 days.</p>
+                    <lightning-textarea
+                        label="Note"
+                        placeholder="Called the customer, promised payment by…"
+                        value={taskNote}
+                        onchange={handleNoteChange}
+                    ></lightning-textarea>
+                    <div class="modal-actions">
+                        <lightning-button label="Cancel" onclick={closeModal} disabled={isActionBusy}></lightning-button>
+                        <lightning-button label="Create Task" variant="brand" onclick={saveTask} disabled={isActionBusy}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- SOA email confirm modal -->
+        <template lwc:if={isSoaModal}>
+            <div class="modal-backdrop">
+                <div class="modal" role="dialog" aria-modal="true" aria-label="Send SOA email">
+                    <h2 class="modal-title">Email SOA — {modalRow.customerLabel}</h2>
+                    <p class="modal-sub">Sends the Statement of Account PDF for unit {modalRow.unitName} to the customer's email, CC finance. Continue?</p>
+                    <div class="modal-actions">
+                        <lightning-button label="Cancel" onclick={closeModal} disabled={isActionBusy}></lightning-button>
+                        <lightning-button label="Send SOA Email" variant="brand" onclick={sendSoa} disabled={isActionBusy}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+    </div>
+</template>

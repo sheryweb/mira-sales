@@ -4,6 +4,14 @@
         <apexClass>FinancePortfolioDashboardController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>FinanceCollectionsDashboardController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>SOAEmailService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <description>Grants access to the Finance Center: the collection-state fields on Unit, the daily snapshot and forecast objects, and (from Phase 1 on) the finance dashboard controllers and tab. Assignable regardless of profile.</description>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Finance Center Access</label>

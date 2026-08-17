@@ -55,6 +55,26 @@ List<Unit__c> statusUpdates = new List<Unit__c>();
 for (Unit__c u : units) statusUpdates.add(new Unit__c(Id=u.Id, Status__c=statuses.get(u.Title__c)));
 update statusUpdates;
 
+// ---- customers + deals (Tab 2 actions need account/opportunity context) ----
+// NOTE: the org's Opportunity automation renames new deals and resets StageName to 'New';
+// the Collections dashboard falls back to any deal on the unit, so that is fine.
+List<Account> accounts = new List<Account>();
+for (Integer i = 0; i < units.size(); i++) {
+    accounts.add(new Account(Name = 'FIN-SEED Customer ' + String.valueOf(i + 1).leftPad(2, '0')));
+}
+insert accounts;
+List<Opportunity> opps = new List<Opportunity>();
+for (Integer i = 0; i < units.size(); i++) {
+    opps.add(new Opportunity(
+        Name = 'FIN-SEED Deal ' + units[i].Title__c,
+        StageName = statuses.get(units[i].Title__c),
+        CloseDate = Date.today(),
+        AccountId = accounts[i].Id,
+        Unit__c = units[i].Id
+    ));
+}
+insert opps;
+
 // ---- cash-flow sums ----
 Map<Id, Cash_Flow_Sum__c> sums = new Map<Id, Cash_Flow_Sum__c>();
 List<Cash_Flow_Sum__c> sumList = new List<Cash_Flow_Sum__c>();

@@ -252,13 +252,21 @@ public without sharing class FinanceCollectionStateBatch
 
     private static List<Aging_Bucket__mdt> bucketCache;
 
+    /** CMDT SOQL does not reliably honor ORDER BY on custom fields (rows can come back in
+     *  DeveloperName order), so the sort happens in Apex — otherwise the snapshot's fixed
+     *  aging columns would be filled in a nondeterministic order. */
     private static List<Aging_Bucket__mdt> buckets() {
         if (bucketCache == null) {
-            bucketCache = [
+            List<Aging_Bucket__mdt> sorted = new List<Aging_Bucket__mdt>();
+            for (Aging_Bucket__mdt row : [
                 SELECT Min_Days_Overdue__c, Max_Days_Overdue__c, Sort_Order__c
                 FROM Aging_Bucket__mdt
-                ORDER BY Sort_Order__c ASC
-            ];
+            ]) {
+                Integer i = 0;
+                while (i < sorted.size() && sorted[i].Sort_Order__c <= row.Sort_Order__c) i++;
+                if (i == sorted.size()) sorted.add(row); else sorted.add(i, row);
+            }
+            bucketCache = sorted;
         }
         return bucketCache;
     }

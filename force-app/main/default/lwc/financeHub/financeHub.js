@@ -10,7 +10,6 @@ import { LightningElement } from 'lwc';
  * entry carries its own loader arrow.
  *
  * Build order (see the Finance Center plan):
- *   Phase 3 — Collections & Aging     loader: () => import('c/financeCollectionsDashboard')
  *   Phase 4 — Cash Flow & Forecast    loader: () => import('c/financeCashflowDashboard')
  *   Phase 5 — Invoice & Receipt Ops   loader: () => import('c/financeOperationsDashboard')
  */
@@ -21,12 +20,18 @@ const DASHBOARDS = [
         description: 'Contracted / invoiced / received / due split, project and unit drill-down, collection health',
         icon: 'utility:money',
         loader: () => import('c/financePortfolioDashboard')
+    },
+    {
+        id: 'collectionsAging',
+        label: 'Collections & Aging',
+        description: 'Aging buckets by project and customer, actionable overdue and defaulted lists, trends',
+        icon: 'utility:clock',
+        loader: () => import('c/financeCollectionsDashboard')
     }
 ];
 
 /** Shown while the registry above is still empty (shell shipped ahead of the dashboards). */
 const UPCOMING = [
-    { id: 'collections', label: 'Collections & Aging', detail: 'Aging buckets, top overdue customers with follow-up actions, trends' },
     { id: 'cashflow', label: 'Cash Flow & Forecast', detail: 'Expected receipts by month, forecast vs actual variance, scenarios' },
     { id: 'operations', label: 'Invoice & Receipt Operations', detail: 'Daily volumes, PDC calendar, unallocated queue, data-quality exceptions' }
 ];
