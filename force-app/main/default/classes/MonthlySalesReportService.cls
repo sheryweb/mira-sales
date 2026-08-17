@@ -828,10 +828,10 @@ public with sharing class MonthlySalesReportService {
     private static String stagePill(String stageName) {
         String stage = stageName == null ? '' : stageName.toUpperCase();
         if (stage == 'BOOKED') {
-            return roundedPill(stage, '#064E3B', '#34D399');
+            return roundedPill(stage, '#0C4A6E', '#38BDF8');
         }
         if (stage == 'SOLD') {
-            return roundedPill(stage, '#0C4A6E', '#38BDF8');
+            return roundedPill(stage, '#064E3B', '#34D399');
         }
         if (stage == 'RESERVED') {
             return roundedPill(stage, '#78350F', '#FBBF24');
@@ -1261,8 +1261,8 @@ public with sharing class MonthlySalesReportService {
         css.add(' white-space: nowrap; }');
         css.add('.kpi-sub { font-size: 7px; color: #9CA3AF; margin-top: 4px; line-height: 1.25;');
         css.add(' height: 18px; overflow: hidden; }');
-        css.add('.status-booked { color: #34D399; }');
-        css.add('.status-sold { color: #38BDF8; }');
+        css.add('.status-booked { color: #38BDF8; }');
+        css.add('.status-sold { color: #34D399; }');
         css.add('.status-reserved { color: #FBBF24; }');
         css.add('.footnotes { margin-top: 12px; font-size: 7.5px; line-height: 1.4; color: #9CA3AF; }');
         css.add('.footnotes p { margin: 0 0 6px; }');

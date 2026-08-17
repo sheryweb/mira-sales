@@ -129,11 +129,11 @@
 }
 
 .status-booked {
-    color: #34d399;
+    color: #38bdf8;
 }
 
 .status-sold {
-    color: #38bdf8;
+    color: #34d399;
 }
 
 .status-reserved {
@@ -265,13 +265,13 @@
 }
 
 .stage-pill-booked {
-    color: #34d399;
-    background: #064e3b;
+    color: #38bdf8;
+    background: #0c4a6e;
 }
 
 .stage-pill-sold {
-    color: #38bdf8;
-    background: #0c4a6e;
+    color: #34d399;
+    background: #064e3b;
 }
 
 .stage-pill-reserved {
