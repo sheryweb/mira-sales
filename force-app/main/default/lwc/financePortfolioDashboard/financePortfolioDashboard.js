@@ -283,6 +283,10 @@ export default class FinancePortfolioDashboard extends LightningElement {
 
     renderCharts() {
         if (!this.chartJsReady || !this.dashboard) return;
+        // The wire can deliver before the template's canvases exist; don't stamp renderedData
+        // until they do, or the renderedCallback retry would skip forever and the charts
+        // would never draw on first load.
+        if (!this.template.querySelector('canvas.waterfall-canvas')) return;
         if (this.renderedData === this.dashboard) return;
         this.renderedData = this.dashboard;
         this.renderWaterfall();
