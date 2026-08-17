@@ -399,7 +399,18 @@ export default class FinancePortfolioDashboard extends LightningElement {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    tooltip: { callbacks: { label: (ctx) => `AED ${compactNumber(ctx.raw)}` } }
+                    tooltip: {
+                        callbacks: {
+                            // AED makes the cross-project ranking fair; the tooltip keeps the
+                            // project's own currency one hover away.
+                            label: (ctx) => {
+                                const p = top[ctx.dataIndex];
+                                const aed = `AED ${compactNumber(p.outstandingAed)}`;
+                                if (p.currencyCode === 'AED') return aed;
+                                return `${aed} (${p.currencyCode} ${compactNumber(p.due + p.notYetDue)})`;
+                            }
+                        }
+                    }
                 },
                 scales: {
                     x: { grid: { color: INK.grid }, ticks: { color: INK.muted, font: { family: CHART_FONT }, callback: (v) => compactNumber(v) } },
