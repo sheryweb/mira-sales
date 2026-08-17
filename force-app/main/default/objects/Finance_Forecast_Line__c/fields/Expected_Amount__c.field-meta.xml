@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Expected_Amount__c</fullName>
-    <description>AED. Unpaid cash-flow remaining scheduled in this month for this project, converted at rebuild time.</description>
+    <description>Project currency. Unpaid cash-flow remaining scheduled in this month for this project.</description>
     <label>Expected Amount</label>
     <precision>18</precision>
     <required>false</required>

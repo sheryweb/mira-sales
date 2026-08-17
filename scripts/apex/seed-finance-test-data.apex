@@ -31,13 +31,15 @@ List<Unit__c> units = new List<Unit__c>{
     new Unit__c(Title__c='FIN-SEED-MH-204', Project__c=marina, Status__c='Draft', Cost_AED__c=1200000, Tower__c='Tower 2', Floor__c=2),
     new Unit__c(Title__c='FIN-SEED-MH-205', Project__c=marina, Status__c='Draft', Cost_AED__c=900000,  Tower__c='Tower 2', Floor__c=3),
     new Unit__c(Title__c='FIN-SEED-MH-206', Project__c=marina, Status__c='Draft', Cost_AED__c=840000,  Tower__c='Tower 2', Floor__c=4),
-    new Unit__c(Title__c='FIN-SEED-BT-301', Project__c=bay,    Status__c='Draft', Cost_AED__c=735000,  Tower__c='A', Floor__c=5),
-    new Unit__c(Title__c='FIN-SEED-BT-302', Project__c=bay,    Status__c='Draft', Cost_AED__c=735000,  Tower__c='A', Floor__c=6),
-    new Unit__c(Title__c='FIN-SEED-BT-303', Project__c=bay,    Status__c='Draft', Cost_AED__c=550000,  Tower__c='B', Floor__c=5),
-    new Unit__c(Title__c='FIN-SEED-BT-304', Project__c=bay,    Status__c='Draft', Cost_AED__c=735000,  Tower__c='B', Floor__c=6),
-    new Unit__c(Title__c='FIN-SEED-AL-401', Project__c=alpine, Status__c='Draft', Cost_AED__c=1810000, Tower__c='A', Floor__c=1),
-    new Unit__c(Title__c='FIN-SEED-AL-402', Project__c=alpine, Status__c='Draft', Cost_AED__c=1810000, Tower__c='A', Floor__c=2),
-    new Unit__c(Title__c='FIN-SEED-AL-403', Project__c=alpine, Status__c='Draft', Cost_AED__c=1810000, Tower__c='B', Floor__c=1)
+    // USD/CHF projects price via Cost_USD__c / Cost_CHF__c (Unit_Cost_Number__c resolves to
+    // them) — set both the project-currency price and an approximate Cost_AED__c like real data.
+    new Unit__c(Title__c='FIN-SEED-BT-301', Project__c=bay,    Status__c='Draft', Cost_AED__c=735000,  Cost_USD__c=200000, Tower__c='A', Floor__c=5),
+    new Unit__c(Title__c='FIN-SEED-BT-302', Project__c=bay,    Status__c='Draft', Cost_AED__c=735000,  Cost_USD__c=200000, Tower__c='A', Floor__c=6),
+    new Unit__c(Title__c='FIN-SEED-BT-303', Project__c=bay,    Status__c='Draft', Cost_AED__c=550000,  Cost_USD__c=150000, Tower__c='B', Floor__c=5),
+    new Unit__c(Title__c='FIN-SEED-BT-304', Project__c=bay,    Status__c='Draft', Cost_AED__c=550000,  Cost_USD__c=150000, Tower__c='B', Floor__c=6),
+    new Unit__c(Title__c='FIN-SEED-AL-401', Project__c=alpine, Status__c='Draft', Cost_AED__c=1446000, Cost_CHF__c=320000, Tower__c='A', Floor__c=1),
+    new Unit__c(Title__c='FIN-SEED-AL-402', Project__c=alpine, Status__c='Draft', Cost_AED__c=994000,  Cost_CHF__c=220000, Tower__c='A', Floor__c=2),
+    new Unit__c(Title__c='FIN-SEED-AL-403', Project__c=alpine, Status__c='Draft', Cost_AED__c=1356000, Cost_CHF__c=300000, Tower__c='B', Floor__c=1)
 };
 insert units;
 Map<String, Unit__c> byTitle = new Map<String, Unit__c>();

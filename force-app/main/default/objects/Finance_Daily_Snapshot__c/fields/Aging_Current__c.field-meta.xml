@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Aging_Current__c</fullName>
-    <description>AED. Open invoice pending amounts in aging bucket 1 (not yet past due).</description>
+    <description>Project currency. Open invoice pending amounts in aging bucket 1 (not yet past due).</description>
     <label>Aging: Current</label>
     <precision>18</precision>
     <required>false</required>

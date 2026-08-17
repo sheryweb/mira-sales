@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Due_Not_Invoiced_Amount__c</fullName>
-    <description>AED. Data quality: due cash-flow remaining where Is_Invoiced__c is false - money due that was never billed.</description>
+    <description>Project currency. Data quality: due cash-flow remaining where Is_Invoiced__c is false - money due that was never billed.</description>
     <label>Due Not Invoiced Amount</label>
     <precision>18</precision>
     <required>false</required>

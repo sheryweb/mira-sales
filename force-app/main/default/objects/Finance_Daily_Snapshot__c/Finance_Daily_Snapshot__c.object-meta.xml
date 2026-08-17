@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <deploymentStatus>Deployed</deploymentStatus>
-    <description>Finance Center: one row per project per day, written by FinanceCollectionStateBatch (nightly). Powers the aging / DSO / collection-efficiency trend charts, which cannot be rebuilt from history. All amounts are AED (converted via CurrencyService at snapshot time). Aging fields map to Aging_Bucket__mdt records by Sort_Order__c.</description>
+    <description>Finance Center: one row per project per day, written by FinanceCollectionStateBatch (nightly). Powers the aging / DSO / collection-efficiency trend charts, which cannot be rebuilt from history. All amounts are in the PROJECT CURRENCY (Project__r.Project_Currency__c; AED when blank) — finance works in project currency, and a row never mixes currencies because it is per project. Cross-project rollups must convert at read time. Aging fields map to Aging_Bucket__mdt records by Sort_Order__c.</description>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>

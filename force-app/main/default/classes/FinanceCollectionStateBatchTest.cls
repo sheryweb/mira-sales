@@ -1,14 +1,14 @@
 /**
  * Tests for FinanceCollectionStateBatch — nightly sweep, daily snapshot, forecast rebuild.
  *
- * Data shape (@TestSetup):
- *  - Project ALPHA (no currency -> AED): unit U1 Booked, Cost 3000.
+ * Data shape (@TestSetup). All snapshot amounts stay in the PROJECT CURRENCY — never converted:
+ *  - Project ALPHA (no currency -> AED): unit U1 Booked, Cost_AED 3000.
  *      CF -40d 1000 unpaid (due, overdue 40 days, not invoiced),
- *      CF +45d 2000 unpaid (future). Plan total 3000 = unit price -> no DQ mismatch.
+ *      CF +45d 2000 unpaid (future). Plan total 3000 = Unit_Cost_Number -> no DQ mismatch.
  *      Invoice 1000 due -40d unpaid -> overdue, aging bucket 31-60.
  *      Receipt 500 reconciled with no allocation lines -> unallocated 500 + 1 DQ hit.
- *  - Project BRAVO (USD, seeded rate 0.25 per AED -> 1 USD = 4 AED): unit U2 Sold, Cost 400.
- *      CF +45d 400 USD unpaid -> Not Yet Due 1600 AED.
+ *  - Project BRAVO (USD): unit U2 Sold, Cost_USD 400 (Unit_Cost_Number resolves to it).
+ *      CF +45d 400 USD unpaid -> Not Yet Due 400 (USD, as-is).
  *  - U3 on ALPHA but Draft -> stamped, excluded from snapshot aggregates.
  */
 @IsTest
@@ -16,10 +16,6 @@ private class FinanceCollectionStateBatchTest {
 
     @TestSetup
     static void setup() {
-        insert new Currency_Exchange_Rate__c(
-            Name = 'USD', Rate_Per_AED__c = 0.25, Last_Refreshed__c = System.now(), Source__c = 'Test'
-        );
-
         Project__c alpha = new Project__c(
             Name = 'FCS Alpha', Description__c = 'Test', District__c = 'Meydan',
             Coordinates_Latitude__c = 1, Coordinates_Longitude__c = 1, Handover__c = Date.today()
@@ -33,7 +29,7 @@ private class FinanceCollectionStateBatchTest {
 
         // Validation rule: new units must be created as Draft, then the status may change.
         Unit__c u1 = new Unit__c(Title__c = 'FCS-U1', Project__c = alpha.Id, Status__c = 'Draft', Cost_AED__c = 3000);
-        Unit__c u2 = new Unit__c(Title__c = 'FCS-U2', Project__c = bravo.Id, Status__c = 'Draft', Cost_AED__c = 400);
+        Unit__c u2 = new Unit__c(Title__c = 'FCS-U2', Project__c = bravo.Id, Status__c = 'Draft', Cost_AED__c = 1470, Cost_USD__c = 400);
         Unit__c u3 = new Unit__c(Title__c = 'FCS-U3', Project__c = alpha.Id, Status__c = 'Draft', Cost_AED__c = 100);
         insert new List<Unit__c>{ u1, u2, u3 };
         u1.Status__c = 'Booked';
@@ -146,10 +142,11 @@ private class FinanceCollectionStateBatchTest {
         System.assert(alpha.DQ_Exception_Count__c >= 1, 'Unallocated receipt is a DQ hit');
 
         Finance_Daily_Snapshot__c bravo = snaps.get(bravoId);
-        System.assertEquals(400, bravo.Contracted_Value__c, 'Cost_AED__c is already AED');
-        System.assertEquals(1600, bravo.Not_Yet_Due_Amount__c, '400 USD at 0.25 per AED = 1600 AED');
+        System.assertEquals(400, bravo.Contracted_Value__c,
+            'Unit_Cost_Number__c resolves to Cost_USD__c for a USD project — never converted');
+        System.assertEquals(400, bravo.Not_Yet_Due_Amount__c, 'Kept in USD, the project currency');
         System.assertEquals(1, bravo.Units_On_Track__c);
-        System.assertEquals(800, bravo.Unallocated_Amount__c, 'On-account line: 200 USD = 800 AED');
+        System.assertEquals(200, bravo.Unallocated_Amount__c, 'On-account line kept in USD');
 
         // ---- forecast lines ----
         String futureMonth = FinanceCollectionStateService.monthKey(Date.today().addDays(45));
@@ -160,7 +157,8 @@ private class FinanceCollectionStateBatchTest {
             byKey.put(line.Line_Key__c, line);
         }
         System.assertEquals(2000, byKey.get(alphaId + '|' + futureMonth + '|LIVE').Expected_Amount__c);
-        System.assertEquals(1600, byKey.get(bravoId + '|' + futureMonth + '|LIVE').Expected_Amount__c);
+        System.assertEquals(400, byKey.get(bravoId + '|' + futureMonth + '|LIVE').Expected_Amount__c,
+            'Forecast kept in USD, the project currency');
 
         String currentMonth = FinanceCollectionStateService.monthKey(Date.today());
         System.assertEquals(0, byKey.get(alphaId + '|' + currentMonth + '|FROZEN').Expected_Amount__c,

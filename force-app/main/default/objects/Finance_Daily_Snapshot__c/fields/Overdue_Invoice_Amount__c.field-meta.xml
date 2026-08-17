@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Overdue_Invoice_Amount__c</fullName>
-    <description>AED. Invoice-based: pending amount of non-cancelled invoices past Due_Date__c.</description>
+    <description>Project currency. Invoice-based: pending amount of non-cancelled invoices past Due_Date__c.</description>
     <label>Overdue Invoice Amount</label>
     <precision>18</precision>
     <required>false</required>
