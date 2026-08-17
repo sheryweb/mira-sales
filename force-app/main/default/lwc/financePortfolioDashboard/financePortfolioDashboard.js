@@ -470,11 +470,22 @@ function csvRow(values) {
 }
 
 function downloadCsv(content, filename) {
-    const blob = new Blob(['﻿' + content], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+    // Lightning Web Security allowlists the MIME types URL.createObjectURL accepts —
+    // 'text/csv' is rejected ("Unsupported MIME type"), 'text/plain' is allowed. The .csv
+    // name comes from the download attribute, so Excel behaviour is unchanged. The BOM keeps
+    // Excel reading the file as UTF-8.
+    const body = '﻿' + content;
     const link = document.createElement('a');
-    link.href = url;
     link.download = filename;
-    link.click();
-    URL.revokeObjectURL(url);
+    try {
+        const blob = new Blob([body], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+    } catch (e) {
+        // last-resort path if the object URL is still blocked
+        link.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(body);
+        link.click();
+    }
 }
