@@ -1,5 +1,28 @@
 public with sharing class SOAEmailService {
-    
+
+    /** Set by BulkSoaQueueable so the SOA_Log__c row records the bulk channel. */
+    public static Boolean bulkContext = false;
+
+    /**
+     * Finance Center audit trail: one SOA_Log__c row per send attempt (who = CreatedBy,
+     * for whom, when, outcome). Logging must never block or break the send itself.
+     */
+    private static void logAttempt(Opportunity opp, String sentTo, String result) {
+        try {
+            insert new SOA_Log__c(
+                Opportunity__c = opp == null ? null : opp.Id,
+                Account__c = opp == null ? null : opp.AccountId,
+                Unit__c = opp == null ? null : opp.Unit__c,
+                Channel__c = bulkContext ? 'Bulk Email' : 'Email',
+                Sent_To__c = sentTo,
+                Result__c = result == null ? null : result.abbreviate(255),
+                Is_Success__c = result != null && result.startsWith('Success')
+            );
+        } catch (Exception ignored) {
+            // the log is best-effort; the send result has already been determined
+        }
+    }
+
     @AuraEnabled
     public static String sendSOAEmail(Id opportunityId) {
         FinancialEngine.requireEnabled();
@@ -11,7 +34,7 @@ public with sharing class SOAEmailService {
             
             // Fetch Opportunity record with required fields
             List<Opportunity> opps = [
-                SELECT Id, Name, Account_Name__c, Account_Email__c,
+                SELECT Id, Name, AccountId, Unit__c, Account_Name__c, Account_Email__c,
                        Unit__r.Title__c, Unit__r.Project_Name_F__c, Unit__r.Building__c,
                        Owner.Email
                 FROM Opportunity
@@ -96,14 +119,21 @@ public with sharing class SOAEmailService {
             Messaging.SendEmailResult[] results = Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });
             
             // Check results
-            if (results[0].isSuccess()) {
-                return 'Success: SOA email sent to ' + opp.Account_Email__c;
-            } else {
-                return 'Error: ' + results[0].getErrors()[0].getMessage();
-            }
-            
+            String outcome = results[0].isSuccess()
+                ? 'Success: SOA email sent to ' + opp.Account_Email__c
+                : 'Error: ' + results[0].getErrors()[0].getMessage();
+            logAttempt(opp, opp.Account_Email__c, outcome);
+            return outcome;
+
         } catch (Exception e) {
-            return 'Error: ' + e.getMessage();
+            String outcome = 'Error: ' + e.getMessage();
+            List<Opportunity> failedOpps = [
+                SELECT Id, AccountId, Unit__c, Account_Email__c FROM Opportunity
+                WHERE Id = :opportunityId LIMIT 1
+            ];
+            logAttempt(failedOpps.isEmpty() ? null : failedOpps[0],
+                failedOpps.isEmpty() ? null : failedOpps[0].Account_Email__c, outcome);
+            return outcome;
         }
     }
 }

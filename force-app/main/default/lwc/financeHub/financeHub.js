@@ -8,9 +8,6 @@ import { LightningElement } from 'lwc';
  *
  * import() needs a string literal (on-platform module resolution), so each
  * entry carries its own loader arrow.
- *
- * Build order (see the Finance Center plan):
- *   Phase 5 — Invoice & Receipt Ops   loader: () => import('c/financeOperationsDashboard')
  */
 const DASHBOARDS = [
     {
@@ -33,14 +30,18 @@ const DASHBOARDS = [
         description: 'Expected receipts vs actuals, frozen-baseline variance, collection scenario, escrow split',
         icon: 'utility:trending',
         loader: () => import('c/financeCashflowDashboard')
+    },
+    {
+        id: 'operations',
+        label: 'Invoice & Receipt Ops',
+        description: 'Daily volumes, receipt methods, PDC calendar, unallocated queue, SOA log, data quality',
+        icon: 'utility:record',
+        loader: () => import('c/financeOperationsDashboard')
     }
 ];
 
 /** Shown while the registry above is still empty (shell shipped ahead of the dashboards). */
-const UPCOMING = [
-    { id: 'cashflow', label: 'Cash Flow & Forecast', detail: 'Expected receipts by month, forecast vs actual variance, scenarios' },
-    { id: 'operations', label: 'Invoice & Receipt Operations', detail: 'Daily volumes, PDC calendar, unallocated queue, data-quality exceptions' }
-];
+const UPCOMING = [];
 
 export default class FinanceHub extends LightningElement {
     selectedId = DASHBOARDS.length ? DASHBOARDS[0].id : undefined;

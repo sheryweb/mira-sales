@@ -1,0 +1,371 @@
+<template>
+    <div class="dashboard">
+        <header class="panel header">
+            <div class="header-text">
+                <h1 class="title">Invoice &amp; Receipt Operations</h1>
+                <p class="subtitle">{currencyDescription}</p>
+            </div>
+            <div class="header-controls">
+                <span class="updated-label">{updatedLabel}</span>
+                <lightning-button-icon
+                    icon-name="utility:refresh"
+                    variant="border-filled"
+                    alternative-text="Refresh"
+                    onclick={handleRefresh}
+                ></lightning-button-icon>
+            </div>
+        </header>
+
+        <template lwc:if={hasError}>
+            <div class="panel error" role="alert">
+                <lightning-icon icon-name="utility:error" size="x-small" variant="error"></lightning-icon>
+                <span>{errorMessage}</span>
+            </div>
+        </template>
+
+        <template lwc:if={dashboard}>
+            <!-- volume matrix -->
+            <div class="volume-grid">
+                <template for:each={volumeCards} for:item="card">
+                    <article key={card.scope} class="panel volume-card">
+                        <h2 class="volume-scope">{card.scope}</h2>
+                        <div class="volume-rows">
+                            <div class="volume-row">
+                                <span class="volume-label">Invoices raised</span>
+                                <span class="volume-value">{card.invoices}</span>
+                                <span class="volume-sub">{card.fInvoiced}</span>
+                            </div>
+                            <div class="volume-row">
+                                <span class="volume-label">Receipts posted</span>
+                                <span class="volume-value">{card.receipts}</span>
+                                <span class="volume-sub">{card.fCollected} collected</span>
+                            </div>
+                        </div>
+                    </article>
+                </template>
+            </div>
+
+            <!-- method split + PDC weeks -->
+            <div class="chart-pair">
+                <article class="panel chart-card">
+                    <div class="chart-card-header">
+                        <h2 class="chart-title">Receipt Method Split</h2>
+                        <span class="chart-scope">last 90 days · AED</span>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas class="method-canvas"></canvas>
+                    </div>
+                </article>
+                <article class="panel chart-card">
+                    <div class="chart-card-header">
+                        <h2 class="chart-title">PDC Maturity Calendar</h2>
+                        <span class="chart-scope">post-dated cheques due to be banked · AED</span>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas class="pdc-canvas"></canvas>
+                    </div>
+                </article>
+            </div>
+
+            <!-- upcoming cheques -->
+            <article class="panel table-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Cheques Due — Next 30 Days</h2>
+                    <span class="chart-scope">amounts in project currency · use the menu to track the lifecycle</span>
+                </div>
+                <template lwc:if={hasPdcUpcoming}>
+                    <div class="table-scroll action-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Cheque #</th>
+                                    <th scope="col">Due</th>
+                                    <th scope="col">Bank</th>
+                                    <th scope="col">Customer</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col" class="num">Amount</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col" class="actions-head">Update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={pdcUpcoming} for:item="row">
+                                    <tr key={row.lineId}>
+                                        <th scope="row" class="name-cell">{row.chequeNumber}</th>
+                                        <td>{row.dateLabel}</td>
+                                        <td>{row.bank}</td>
+                                        <td>{row.accountName}</td>
+                                        <td>{row.unitName}</td>
+                                        <td class="num">{row.fAmount}</td>
+                                        <td><span class={row.statusClass}>{row.status}</span></td>
+                                        <td class="actions-cell">
+                                            <lightning-button-menu
+                                                icon-name="utility:check"
+                                                variant="border-filled"
+                                                menu-alignment="right"
+                                                alternative-text="Update cheque status"
+                                                title="Update cheque status"
+                                                data-id={row.lineId}
+                                                disabled={row.actionsDisabled}
+                                                onselect={handleChequeStatus}
+                                            >
+                                                <lightning-menu-item value="Deposited" label="Deposited"></lightning-menu-item>
+                                                <lightning-menu-item value="Cleared" label="Cleared"></lightning-menu-item>
+                                                <lightning-menu-item value="Bounced" label="Bounced"></lightning-menu-item>
+                                                <lightning-menu-item value="Replaced" label="Replaced"></lightning-menu-item>
+                                            </lightning-button-menu>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <p class="table-empty">No post-dated cheques due in the next 30 days.</p>
+                </template>
+            </article>
+
+            <!-- bounced cheques -->
+            <article class="panel table-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Bounced Cheques — Follow Up</h2>
+                    <span class="chart-scope">money reversal still goes through receipt cancel / negative line</span>
+                </div>
+                <template lwc:if={hasBounced}>
+                    <div class="table-scroll action-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Cheque #</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Bank</th>
+                                    <th scope="col">Customer</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col" class="num">Amount</th>
+                                    <th scope="col" class="actions-head">Update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={bouncedList} for:item="row">
+                                    <tr key={row.lineId}>
+                                        <th scope="row" class="name-cell">{row.chequeNumber}</th>
+                                        <td>{row.dateLabel}</td>
+                                        <td>{row.bank}</td>
+                                        <td>{row.accountName}</td>
+                                        <td>{row.unitName}</td>
+                                        <td class="num">{row.fAmount}</td>
+                                        <td class="actions-cell">
+                                            <lightning-button-menu
+                                                icon-name="utility:check"
+                                                variant="border-filled"
+                                                menu-alignment="right"
+                                                alternative-text="Update cheque status"
+                                                title="Update cheque status"
+                                                data-id={row.lineId}
+                                                disabled={row.actionsDisabled}
+                                                onselect={handleChequeStatus}
+                                            >
+                                                <lightning-menu-item value="Replaced" label="Replaced"></lightning-menu-item>
+                                                <lightning-menu-item value="Cleared" label="Cleared"></lightning-menu-item>
+                                            </lightning-button-menu>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <p class="table-empty">No bounced cheques on record.</p>
+                </template>
+            </article>
+
+            <!-- unallocated queue -->
+            <article class="panel table-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Unallocated Receipts — Work Queue</h2>
+                    <span class="chart-scope">money received but not applied to any invoice · open the receipt to allocate</span>
+                </div>
+                <template lwc:if={hasUnallocated}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Receipt</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Customer</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col">Project</th>
+                                    <th scope="col" class="num">Received</th>
+                                    <th scope="col" class="num">Unapplied</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={unallocatedRows} for:item="row">
+                                    <tr key={row.receiptId}>
+                                        <th scope="row" class="name-cell">
+                                            <a href={row.link} target="_blank" rel="noopener">{row.voucher}</a>
+                                        </th>
+                                        <td>{row.dateLabel}</td>
+                                        <td>{row.accountName}</td>
+                                        <td>{row.unitName}</td>
+                                        <td>{row.projectName}</td>
+                                        <td class="num">{row.fReceived}</td>
+                                        <td class="num unapplied-cell">{row.fUnapplied}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <p class="table-empty">Every receipt is fully allocated. 🎉</p>
+                </template>
+            </article>
+
+            <!-- cancellations & approvals -->
+            <article class="panel table-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Cancellations &amp; Approvals</h2>
+                    <span class="chart-scope">last 90 days · credit notes are a separate initiative</span>
+                </div>
+                <div class="tile-grid tile-grid-narrow">
+                    <template for:each={cancelTiles} for:item="tile">
+                        <article key={tile.key} class={tile.theme}>
+                            <p class="tile-label">{tile.label}</p>
+                            <p class="tile-hero">{tile.hero}</p>
+                            <p class="tile-scope">{tile.scope}</p>
+                        </article>
+                    </template>
+                </div>
+                <template lwc:if={hasCancellations}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Number</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col" class="num">Amount</th>
+                                    <th scope="col">Cancelled</th>
+                                    <th scope="col">Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={cancellationRows} for:item="row">
+                                    <tr key={row.recordId}>
+                                        <td>{row.kind}</td>
+                                        <th scope="row" class="name-cell">{row.label}</th>
+                                        <td>{row.unitName}</td>
+                                        <td class="num">{row.fAmount}</td>
+                                        <td>{row.whenLabel}</td>
+                                        <td class="reason-cell">{row.reasonLabel}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+            </article>
+
+            <!-- SOA log + bulk action -->
+            <article class="panel table-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">SOA Generation Log</h2>
+                    <lightning-button
+                        label={bulkButtonLabel}
+                        icon-name="utility:email"
+                        variant="brand"
+                        disabled={bulkDisabled}
+                        onclick={openBulkModal}
+                    ></lightning-button>
+                </div>
+                <template lwc:if={hasSoaLog}>
+                    <div class="table-scroll">
+                        <table class="cmp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">When</th>
+                                    <th scope="col">By</th>
+                                    <th scope="col">Customer</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col">Channel</th>
+                                    <th scope="col">Outcome</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={soaLogRows} for:item="row">
+                                    <tr key={row.name}>
+                                        <th scope="row" class="name-cell">{row.name}</th>
+                                        <td>{row.whenLabel}</td>
+                                        <td>{row.sentBy}</td>
+                                        <td>{row.accountName}</td>
+                                        <td>{row.unitName}</td>
+                                        <td>{row.channel}</td>
+                                        <td><span class={row.resultClass} title={row.result}>{row.resultShort}</span></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <p class="table-empty">No SOA sends logged yet — the log starts recording from today.</p>
+                </template>
+            </article>
+
+            <!-- data quality -->
+            <article class="panel table-card">
+                <div class="chart-card-header">
+                    <h2 class="chart-title">Data-Quality Exceptions</h2>
+                    <span class="chart-scope">finance trusts the dashboard when this panel reads zero</span>
+                </div>
+                <ul class="dq-list">
+                    <template for:each={dqChecks} for:item="check">
+                        <li key={check.key} class="dq-item">
+                            <span class={check.countClass}>{check.count}</span>
+                            <div class="dq-text">
+                                <span class="dq-label">{check.label} <span class="dq-note">({check.note})</span></span>
+                                <template lwc:if={check.hasExamples}>
+                                    <span class="dq-examples">{check.exampleText}</span>
+                                </template>
+                            </div>
+                        </li>
+                    </template>
+                    <li class="dq-item">
+                        <span class={reconClass}>{reconCount}</span>
+                        <div class="dq-text">
+                            <span class="dq-label">{reconLabel}</span>
+                        </div>
+                    </li>
+                </ul>
+            </article>
+        </template>
+
+        <!-- bulk SOA confirm modal -->
+        <template lwc:if={showBulkModal}>
+            <div class="modal-backdrop">
+                <div class="modal" role="dialog" aria-modal="true" aria-label="Bulk SOA send">
+                    <h2 class="modal-title">Email SOA to all overdue customers</h2>
+                    <p class="modal-sub">This generates and emails {bulkTargetCount} Statements of Account, one by one, CC finance. Every send is recorded in the log.</p>
+                    <ul class="bulk-list">
+                        <template for:each={bulkTargetPreview} for:item="target">
+                            <li key={target.opportunityId}>{target.label}</li>
+                        </template>
+                    </ul>
+                    <p class="modal-sub">{bulkPreviewNote}</p>
+                    <div class="modal-actions">
+                        <lightning-button label="Cancel" onclick={closeBulkModal} disabled={isActionBusy}></lightning-button>
+                        <lightning-button label="Send All" variant="brand" onclick={confirmBulkSoa} disabled={isActionBusy}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+    </div>
+</template>
