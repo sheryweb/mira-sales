@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Receipt__c$Voucher_Number__c</field>
+    </columns>
+    <columns>
+        <field>Receipt__c$Payment_Date__c</field>
+    </columns>
+    <columns>
+        <field>Receipt__c$Account__c</field>
+    </columns>
+    <columns>
+        <field>Receipt__c$Project_Unit__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Receipt__c.Receipt_Amounts__r$Amount__c</field>
+    </columns>
+    <columns>
+        <field>Receipt__c.Receipt_Amounts__r$Mode_of_Payment__c</field>
+    </columns>
+    <currency>AED</currency>
+    <description>Finance Center: receipt allocation lines with no invoice — on-account money awaiting allocation (the dashboard work queue in report form). Amounts in the project currency.</description>
+    <filter>
+        <criteriaItems>
+            <column>Receipt__c.Receipt_Amounts__r$Invoice__c</column>
+            <operator>equals</operator>
+            <value></value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Receipt__c$Payment_Status__c</column>
+            <operator>notEqual</operator>
+            <value>Cancelled</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <field>Receipt__c$Project_Name__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>On-Account Receipt Lines (FC)</name>
+    <reportType>Receipts_with_Receipt_Amounts__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>Receipt__c$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>

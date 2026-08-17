@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Receipt__c.Voucher_Number__c</field>
+    </columns>
+    <columns>
+        <field>Receipt__c.Payment_Date__c</field>
+    </columns>
+    <columns>
+        <field>Receipt__c.Project_Unit__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Receipt__c.Payable_Amount__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Receipt__c.Received_Amount__c</field>
+    </columns>
+    <columns>
+        <field>Receipt__c.Cancellation_Reason__c</field>
+    </columns>
+    <columns>
+        <field>CUST_LAST_UPDATE</field>
+    </columns>
+    <currency>AED</currency>
+    <description>Finance Center: soft-cancelled receipts (excluded from all totals by the engine) with the cancellation reason. Amounts in the project currency.</description>
+    <filter>
+        <criteriaItems>
+            <column>Receipt__c.Payment_Status__c</column>
+            <operator>equals</operator>
+            <value>Cancelled</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <field>Receipt__c.Project_Name__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Cancelled Receipts (FC)</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$Receipt__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CUST_CREATED_DATE</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>
