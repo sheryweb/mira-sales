@@ -1347,6 +1347,7 @@
         <members>Project__c.Country__c</members>
         <members>Project__c.Description__c</members>
         <members>Project__c.District__c</members>
+        <members>Project__c.DLD_Registration_Required__c</members>
         <members>Project__c.Handover__c</members>
         <members>Project__c.Is_POST__c</members>
         <members>Project__c.Is_VAT_Applicable__c</members>

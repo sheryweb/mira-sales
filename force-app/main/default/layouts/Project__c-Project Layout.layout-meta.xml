@@ -88,6 +88,10 @@
                 <behavior>Edit</behavior>
                 <field>Registration_Fees__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>DLD_Registration_Required__c</field>
+            </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
     </layoutSections>

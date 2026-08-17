@@ -490,6 +490,108 @@ private class CommissionInvoiceControllerTest {
     }
 
     @isTest
+    static void testDldReasonSkippedWhenProjectDoesNotRequireDld() {
+        Account agency = insertAgencyForUnitTests();
+        Project__c project = new Project__c(
+            Name = 'No DLD Project ' + String.valueOf(Crypto.getRandomLong()),
+            Description__c = 'Test',
+            District__c = 'Meydan',
+            Coordinates_Latitude__c = 1,
+            Coordinates_Longitude__c = 1,
+            Handover__c = Date.today(),
+            DLD_Registration_Required__c = false
+        );
+        insert project;
+
+        Unit__c unit = new Unit__c(
+            Title__c = 'NoDldUnit ' + String.valueOf(Crypto.getRandomLong()),
+            Project__c = project.Id
+        );
+        insert unit;
+
+        Contact agent = new Contact(LastName = 'NoDld Agent ' + String.valueOf(Crypto.getRandomLong()), AccountId = agency.Id);
+        insert agent;
+
+        Opportunity opp = new Opportunity(
+            Name = 'NoDldOpp ' + String.valueOf(Crypto.getRandomLong()),
+            StageName = 'New',
+            CloseDate = Date.today().addDays(30),
+            AccountId = agency.Id,
+            Agency__c = agency.Id,
+            Unit__c = unit.Id,
+            Assisted_by_Agent__c = true,
+            Agent__c = agent.Id,
+            Amount = 500000
+        );
+        insert opp;
+
+        CommissionInvoiceController.CommissionContext ctx =
+            CommissionInvoiceController.getCommissionContext(unit.Id);
+
+        System.assertNotEquals(null, ctx.ineligibilityReasons);
+        for (String r : ctx.ineligibilityReasons) {
+            System.assert(
+                !r.containsIgnoreCase('DLD'),
+                'DLD paid should not be required when the project does not require DLD: ' + r
+            );
+        }
+    }
+
+    @isTest
+    static void testDldReasonShownWhenProjectRequiresDld() {
+        Account agency = insertAgencyForUnitTests();
+        Project__c project = new Project__c(
+            Name = 'DLD Project ' + String.valueOf(Crypto.getRandomLong()),
+            Description__c = 'Test',
+            District__c = 'Meydan',
+            Coordinates_Latitude__c = 1,
+            Coordinates_Longitude__c = 1,
+            Handover__c = Date.today(),
+            DLD_Registration_Required__c = true
+        );
+        insert project;
+
+        Unit__c unit = new Unit__c(
+            Title__c = 'DldUnit ' + String.valueOf(Crypto.getRandomLong()),
+            Project__c = project.Id
+        );
+        insert unit;
+
+        Contact agent = new Contact(LastName = 'Dld Agent ' + String.valueOf(Crypto.getRandomLong()), AccountId = agency.Id);
+        insert agent;
+
+        Opportunity opp = new Opportunity(
+            Name = 'DldOpp ' + String.valueOf(Crypto.getRandomLong()),
+            StageName = 'New',
+            CloseDate = Date.today().addDays(30),
+            AccountId = agency.Id,
+            Agency__c = agency.Id,
+            Unit__c = unit.Id,
+            Assisted_by_Agent__c = true,
+            Agent__c = agent.Id,
+            Amount = 500000
+        );
+        insert opp;
+
+        CommissionInvoiceController.CommissionContext ctx =
+            CommissionInvoiceController.getCommissionContext(unit.Id);
+
+        System.assertNotEquals(null, ctx.ineligibilityReasons);
+        Boolean sawDld = false;
+        for (String r : ctx.ineligibilityReasons) {
+            if (r.containsIgnoreCase('DLD')) {
+                sawDld = true;
+                break;
+            }
+        }
+        System.assertEquals(
+            true,
+            sawDld,
+            'DLD paid should be required when the project requires DLD: ' + ctx.ineligibilityReasons
+        );
+    }
+
+    @isTest
     static void testGetContextForDeletedCommissionIdReturnsEmptyContext() {
         TestRefs refs = createTestData();
         Id deletedId = refs.commissionId;

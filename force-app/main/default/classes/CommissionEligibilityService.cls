@@ -18,13 +18,18 @@ public class CommissionEligibilityService {
         List<Opportunity> opps = [
             SELECT Id, Agency__c, StageName, Amount, Unit__c,
                    Unit__r.Project_Name_F__c, Unit__r.Status__c, Unit__r.Cost_AED__c,
-                   Unit__r.Commission_Status__c
+                   Unit__r.Commission_Status__c,
+                   Unit__r.Project__r.DLD_Registration_Required__c,
+                   Is_DLD_Registration_Paid__c
             FROM Opportunity
             WHERE Agency__c IN :accountIds
             AND StageName = 'Sold'
             AND SPA_Signed__c = true
             AND Is_20_Paid__c = true
-            AND Is_DLD_Registration_Paid__c = true
+            AND (
+                Unit__r.Project__r.DLD_Registration_Required__c != true
+                OR Is_DLD_Registration_Paid__c = true
+            )
             AND Unit__r.Commission_Status__c != 'Paid'
             AND Unit__r.Commission_Status__c != 'Unpaid'
             AND Unit__r.Commission_Status__c != 'Partially Paid'

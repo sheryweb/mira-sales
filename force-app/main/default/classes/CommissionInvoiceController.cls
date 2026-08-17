@@ -97,10 +97,12 @@ public with sharing class CommissionInvoiceController {
         List<String> reasons = new List<String>();
 
         List<Unit__c> units = [
-            SELECT Id, Commission_Status__c FROM Unit__c WHERE Id = :unitId LIMIT 1
+            SELECT Id, Commission_Status__c, Project__r.DLD_Registration_Required__c
+            FROM Unit__c WHERE Id = :unitId LIMIT 1
         ];
-        if (!units.isEmpty()) {
-            String unitStatus = units[0].Commission_Status__c;
+        Unit__c unit = units.isEmpty() ? null : units[0];
+        if (unit != null) {
+            String unitStatus = unit.Commission_Status__c;
             if (unitStatus == 'Paid') {
                 reasons.add('Commission has already been paid for this Unit.');
                 return reasons;
@@ -139,7 +141,10 @@ public with sharing class CommissionInvoiceController {
         if (opp.Is_20_Paid__c != true) {
             reasons.add('20% payment has not been received.');
         }
-        if (opp.Is_DLD_Registration_Paid__c != true) {
+        Boolean dldRequired = unit != null
+            && unit.Project__r != null
+            && unit.Project__r.DLD_Registration_Required__c == true;
+        if (dldRequired && opp.Is_DLD_Registration_Paid__c != true) {
             reasons.add('DLD/Registration fee has not been paid.');
         }
 
