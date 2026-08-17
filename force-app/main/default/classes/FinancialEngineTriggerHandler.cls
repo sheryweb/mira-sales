@@ -7,6 +7,11 @@
  *
  * Each entry point resolves the affected Unit ids and delegates. It short-circuits when the engine
  * is disabled (prod) or already running (recursion guard), so there is near-zero overhead when off.
+ *
+ * Finance Center hook: after applyForUnits, each entry point also queues
+ * FinanceCollectionStateService.enqueueStamp for the same units, so the stamped collection
+ * state (due split / health) follows every finance transaction within seconds. The stamp is
+ * read-only over the engine's outputs and writes only its own Unit__c fields.
  */
 public without sharing class FinancialEngineTriggerHandler {
 
@@ -20,6 +25,7 @@ public without sharing class FinancialEngineTriggerHandler {
         addUnitFromReceipts(newList, unitIds);
         addUnitFromReceipts(oldList, unitIds);
         FinancialEngine.applyForUnits(unitIds);
+        FinanceCollectionStateService.enqueueStamp(unitIds);
     }
 
     public static void handleInvoices(List<Invoice__c> newList, List<Invoice__c> oldList) {
@@ -28,6 +34,7 @@ public without sharing class FinancialEngineTriggerHandler {
         addUnitFromInvoices(newList, unitIds);
         addUnitFromInvoices(oldList, unitIds);
         FinancialEngine.applyForUnits(unitIds);
+        FinanceCollectionStateService.enqueueStamp(unitIds);
     }
 
     public static void handleReceiptAmounts(List<Receipt_Amount__c> newList, List<Receipt_Amount__c> oldList) {
@@ -36,7 +43,9 @@ public without sharing class FinancialEngineTriggerHandler {
         Set<Id> invoiceIds = new Set<Id>();
         collectReceiptAmountRefs(newList, receiptIds, invoiceIds);
         collectReceiptAmountRefs(oldList, receiptIds, invoiceIds);
-        FinancialEngine.applyForUnits(resolveUnits(receiptIds, invoiceIds));
+        Set<Id> unitIds = resolveUnits(receiptIds, invoiceIds);
+        FinancialEngine.applyForUnits(unitIds);
+        FinanceCollectionStateService.enqueueStamp(unitIds);
     }
 
     public static void handleReceiptInvoices(List<Receipt_Invoice__c> newList, List<Receipt_Invoice__c> oldList) {
@@ -45,7 +54,9 @@ public without sharing class FinancialEngineTriggerHandler {
         Set<Id> invoiceIds = new Set<Id>();
         collectReceiptInvoiceRefs(newList, receiptIds, invoiceIds);
         collectReceiptInvoiceRefs(oldList, receiptIds, invoiceIds);
-        FinancialEngine.applyForUnits(resolveUnits(receiptIds, invoiceIds));
+        Set<Id> unitIds = resolveUnits(receiptIds, invoiceIds);
+        FinancialEngine.applyForUnits(unitIds);
+        FinanceCollectionStateService.enqueueStamp(unitIds);
     }
 
     public static void handleMilestoneInvoices(List<Milestone_Invoice__c> newList, List<Milestone_Invoice__c> oldList) {
@@ -53,7 +64,9 @@ public without sharing class FinancialEngineTriggerHandler {
         Set<Id> invoiceIds = new Set<Id>();
         collectMilestoneInvoiceRefs(newList, invoiceIds);
         collectMilestoneInvoiceRefs(oldList, invoiceIds);
-        FinancialEngine.applyForUnits(resolveUnits(new Set<Id>(), invoiceIds));
+        Set<Id> unitIds = resolveUnits(new Set<Id>(), invoiceIds);
+        FinancialEngine.applyForUnits(unitIds);
+        FinanceCollectionStateService.enqueueStamp(unitIds);
     }
 
     // ---- collectors ----------------------------------------------------------

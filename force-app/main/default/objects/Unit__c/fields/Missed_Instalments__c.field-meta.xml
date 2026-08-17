@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Missed_Instalments__c</fullName>
+    <description>Finance Center: count of due-but-unpaid INSTALMENT cash flows (registration items excluded). Written ONLY by FinanceCollectionStateService (event-driven Queueable + nightly FinanceCollectionStateBatch). Read-only for everything else.</description>
+    <externalId>false</externalId>
+    <label>Missed Instalments</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

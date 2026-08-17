@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Finance Center: one row per project per day, written by FinanceCollectionStateBatch (nightly). Powers the aging / DSO / collection-efficiency trend charts, which cannot be rebuilt from history. All amounts are AED (converted via CurrencyService at snapshot time). Aging fields map to Aging_Bucket__mdt records by Sort_Order__c.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <label>Finance Daily Snapshot</label>
+    <nameField>
+        <displayFormat>FDS-{000000}</displayFormat>
+        <label>Snapshot Number</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Finance Daily Snapshots</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

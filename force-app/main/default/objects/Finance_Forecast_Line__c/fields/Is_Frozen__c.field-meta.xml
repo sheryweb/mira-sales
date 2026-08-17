@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Frozen__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>True = the month-start snapshot of the forecast for this month. Never rebuilt; used for forecast-vs-actual variance.</description>
+    <label>Is Frozen</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

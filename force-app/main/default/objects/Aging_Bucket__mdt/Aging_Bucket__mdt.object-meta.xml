@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Finance Center aging buckets. Drives the dashboard bucketing of open invoices by days past Due_Date__c. NOTE: Finance_Daily_Snapshot__c stores per-bucket amounts in 6 fixed fields mapped by Sort_Order__c; changing bucket boundaries restarts the trend series, and buckets beyond the 6th fold into the last field.</description>
+    <label>Aging Bucket</label>
+    <pluralLabel>Aging Buckets</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

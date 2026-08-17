@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Maps each Receipt__c.Deposited_To__c picklist value to a classification (Escrow / Operating / Cash) for the Finance Center escrow split. Metadata-driven so compliance views never rely on string-matching account names. Add a record here whenever a new Deposited To value is added.</description>
+    <label>Bank Account Class</label>
+    <pluralLabel>Bank Account Classes</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

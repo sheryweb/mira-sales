@@ -1,4 +1,34 @@
 public without sharing class CashFlowTriggerHandler {
+
+    /**
+     * Finance Center hook: a payment-plan edit (dates/amounts/VAT) changes the units' due
+     * split, so queue a collection-state re-stamp for the affected units. Skipped while the
+     * FinancialEngine is writing its own Cash_Flow__c.Received_Amount__c updates (bypass guard)
+     * — the engine trigger path already re-stamps those units. On update, only rows whose
+     * state-relevant fields changed are considered, so unrelated writes (e.g. the price
+     * queueable stamping display fields) cost nothing.
+     */
+    public static void handleCollectionStateChange(List<Cash_Flow__c> rows, Map<Id, Cash_Flow__c> oldMap) {
+        if (FinancialEngine.bypass) return;
+        Set<Id> unitIds = new Set<Id>();
+        for (Cash_Flow__c cf : rows) {
+            if (cf.Unit__c == null) continue;
+            if (oldMap != null) {
+                Cash_Flow__c oldCf = oldMap.get(cf.Id);
+                if (oldCf != null
+                    && cf.Date__c == oldCf.Date__c
+                    && cf.Percent__c == oldCf.Percent__c
+                    && cf.Constant__c == oldCf.Constant__c
+                    && cf.VAT__c == oldCf.VAT__c
+                    && cf.Received_Amount__c == oldCf.Received_Amount__c) {
+                    continue;
+                }
+            }
+            unitIds.add(cf.Unit__c);
+        }
+        FinanceCollectionStateService.enqueueStamp(unitIds);
+    }
+
     public static void handleCashFlowsAfterInsert(Set<Id> cashFlowIds) {
         CashFlowPriceQueueable queueJob = new CashFlowPriceQueueable(cashFlowIds);
         System.enqueueJob(queueJob); 
