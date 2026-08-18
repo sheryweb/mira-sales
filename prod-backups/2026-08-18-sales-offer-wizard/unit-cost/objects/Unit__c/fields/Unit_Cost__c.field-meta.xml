@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Unit_Cost__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(Project_Name_F__c = &apos;POST HOTEL &amp; RESIDENCES By ELIE SAAB&apos;,
+&apos;CHF &apos;&amp;TEXT(Cost_CHF__c),
+IF(
+Project_Name_F__c = &apos;Trussardi Residences MIRA VERDE&apos;,
+&apos;USD &apos;&amp;TEXT(Cost_USD__c),
+&apos;AED &apos;&amp;TEXT(Cost_AED__c)
+)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Unit Cost</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
