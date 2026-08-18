@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status_for_Flow__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE( Status__c,
+  &apos;Draft&apos;, &apos;Blocked&apos;,
+  &apos;Published&apos;, &apos;Available&apos;,
+  &apos;Booked&apos;, &apos;Booked&apos;,
+  &apos;Reserved&apos;, &apos;Reserved&apos;,
+  &apos;Sold&apos;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Status for Flow</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

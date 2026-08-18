@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Trussardi_MIRA_Verde</fullName>
+    <columns>NAME</columns>
+    <columns>Title__c</columns>
+    <columns>Structure__c</columns>
+    <columns>Status__c</columns>
+    <columns>Type__c</columns>
+    <columns>Building__c</columns>
+    <columns>Number_of_Bedrooms__c</columns>
+    <columns>Cost_USD_Number__c</columns>
+    <columns>Cost_AED__c</columns>
+    <columns>Living_Space__c</columns>
+    <columns>Balcony_Size__c</columns>
+    <columns>Total_Area__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Structure__c</field>
+        <operation>equals</operation>
+        <value>Standard Studio,Standard 1BD,Standard 2BD</value>
+    </filters>
+    <label>Trussardi MIRA Verde</label>
+</ListView>

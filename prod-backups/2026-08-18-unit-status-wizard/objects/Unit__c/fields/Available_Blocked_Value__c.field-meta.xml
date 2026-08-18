@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Available_Blocked_Value__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+    OR(TEXT(Status__c) = &quot;Published&quot;, TEXT(Status__c) = &quot;Draft&quot;),
+    IF(
+        Project_Name_F__c = &quot;POST HOTEL &amp; RESIDENCES By ELIE SAAB&quot;,
+        Cost_CHF_Number__c,
+        Cost_AED__c
+    ),
+    0
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Available &amp; Blocked Value</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

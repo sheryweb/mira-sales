@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Overdue_Days_Max__c</fullName>
+    <description>Finance Center: age in days of the oldest unpaid due INSTALMENT (registration Oqood/DLD/Registration Fee items excluded). Written ONLY by FinanceCollectionStateService (event-driven Queueable + nightly FinanceCollectionStateBatch). Read-only for everything else.</description>
+    <externalId>false</externalId>
+    <label>Overdue Days (Max)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>
