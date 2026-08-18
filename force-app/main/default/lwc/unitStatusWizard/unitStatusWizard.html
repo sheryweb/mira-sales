@@ -8,11 +8,13 @@
                 <p>{heroSubtitle}</p>
             </div>
             <div class="steps" role="list">
-                <div class={step1Class} role="listitem"><span class="step-dot">1</span><span class="step-label">Project</span></div>
+                <div class={stepActionClass} role="listitem"><span class="step-dot">1</span><span class="step-label">Operation</span></div>
                 <div class="step-bar"></div>
-                <div class={step2Class} role="listitem"><span class="step-dot">2</span><span class="step-label">Units</span></div>
+                <div class={step1Class} role="listitem"><span class="step-dot">2</span><span class="step-label">Project</span></div>
                 <div class="step-bar"></div>
-                <div class={step3Class} role="listitem"><span class="step-dot">3</span><span class="step-label">Done</span></div>
+                <div class={step2Class} role="listitem"><span class="step-dot">3</span><span class="step-label">Units</span></div>
+                <div class="step-bar"></div>
+                <div class={step3Class} role="listitem"><span class="step-dot">4</span><span class="step-label">Done</span></div>
             </div>
         </div>
 
@@ -26,6 +28,29 @@
         </template>
 
         <template lwc:if={showBody}>
+
+            <!-- ============ step 0 : operation ============ -->
+            <template lwc:if={isStepAction}>
+                <div class="panel">
+                    <h2 class="panel-title">What would you like to do?</h2>
+                    <div class="action-grid">
+                        <button class={blockCardClass} data-mode="block" onclick={handleActionPick}>
+                            <span class="action-icon block-icon">
+                                <lightning-icon icon-name="utility:lock" size="small" variant="inverse"></lightning-icon>
+                            </span>
+                            <span class="action-title">Block Units</span>
+                            <span class="action-desc">Take available units off the market — Available becomes Blocked.</span>
+                        </button>
+                        <button class={releaseCardClass} data-mode="release" onclick={handleActionPick}>
+                            <span class="action-icon release-icon">
+                                <lightning-icon icon-name="utility:unlock" size="small" variant="inverse"></lightning-icon>
+                            </span>
+                            <span class="action-title">Release Units</span>
+                            <span class="action-desc">Put blocked units back on the market — Blocked becomes Available.</span>
+                        </button>
+                    </div>
+                </div>
+            </template>
 
             <!-- ============ step 1 : project ============ -->
             <template lwc:if={isStep1}>
@@ -41,8 +66,15 @@
                         </template>
                     </div>
                     <div class="footer-actions">
-                        <lightning-button variant="brand" label="Next: Choose Units" onclick={handleToUnits}
-                                          disabled={nextDisabled}></lightning-button>
+                        <template lwc:if={modeLocked}>
+                            <lightning-button variant="brand" label="Next: Choose Units" onclick={handleToUnits}
+                                              disabled={nextDisabled}></lightning-button>
+                        </template>
+                        <template lwc:else>
+                            <lightning-button label="Back" onclick={handleBackToAction}></lightning-button>
+                            <lightning-button variant="brand" label="Next: Choose Units" onclick={handleToUnits}
+                                              disabled={nextDisabled}></lightning-button>
+                        </template>
                     </div>
                 </div>
             </template>

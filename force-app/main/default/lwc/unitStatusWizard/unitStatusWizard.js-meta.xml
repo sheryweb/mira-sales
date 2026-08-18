@@ -11,7 +11,7 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__AppPage">
-            <property name="mode" type="String" label="Mode" description="block or release" default="block"/>
+            <property name="defaultMode" type="String" label="Mode preset" description="block or release; empty shows the operation chooser" default=""/>
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

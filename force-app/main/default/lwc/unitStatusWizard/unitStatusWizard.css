@@ -21,6 +21,44 @@
     --hero-b: #fdf1e0;
     --hero-c: #fbe9d4;
 }
+.wizard.mode-neutral {
+    --accent: #2477a9;
+    --accent-dark: #1b5a80;
+    --accent-soft: #e8f3fb;
+    --hero-a: #e7f4fd;
+    --hero-b: #e4f1fb;
+    --hero-c: #e0f7fa;
+}
+
+/* ---------- step 0 : operation cards ---------- */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    max-width: 44rem;
+}
+.action-card {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 0.55rem;
+    padding: 1.4rem 1.3rem;
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+}
+.action-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(17, 74, 90, 0.14); }
+.action-card[data-mode="block"]:hover { border-color: #d97706; }
+.action-card[data-mode="release"]:hover { border-color: #0e9384; }
+.action-icon {
+    width: 2.6rem; height: 2.6rem; border-radius: 12px;
+    display: inline-flex; align-items: center; justify-content: center;
+}
+.block-icon { background: linear-gradient(135deg, #d97706, #f59e0b); }
+.release-icon { background: linear-gradient(135deg, #0b7568, #0e9384); }
+.action-title { font-weight: 800; color: var(--ink); font-size: 1rem; }
+.action-desc { font-size: 0.8rem; color: #51707a; line-height: 1.4; }
 
 .wizard { position: relative; }
 

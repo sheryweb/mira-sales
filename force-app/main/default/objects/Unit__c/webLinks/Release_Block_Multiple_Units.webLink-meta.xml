@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Block_Multiple_Units</fullName>
+    <fullName>Release_Block_Multiple_Units</fullName>
     <availability>online</availability>
     <displayType>massActionButton</displayType>
     <encodingKey>UTF-8</encodingKey>
     <height>600</height>
     <linkType>url</linkType>
-    <masterLabel>Block Multiple Units</masterLabel>
+    <masterLabel>Release / Block Multiple Units</masterLabel>
     <openType>sidebar</openType>
     <protected>false</protected>
     <requireRowSelection>false</requireRowSelection>
-    <url>/flow/Block_Multiple_Units</url>
+    <url>/lightning/cmp/c__unitStatusWizard</url>
 </WebLink>

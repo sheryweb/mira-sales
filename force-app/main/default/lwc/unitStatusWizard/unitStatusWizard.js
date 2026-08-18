@@ -5,11 +5,16 @@ import getInitData from '@salesforce/apex/UnitStatusWizardController.getInitData
 import getUnits from '@salesforce/apex/UnitStatusWizardController.getUnits';
 import updateStatuses from '@salesforce/apex/UnitStatusWizardController.updateStatuses';
 
-const STEP_PROJECT = 1;
-const STEP_UNITS = 2;
-const STEP_DONE = 3;
+const STEP_ACTION = 1;
+const STEP_PROJECT = 2;
+const STEP_UNITS = 3;
+const STEP_DONE = 4;
 
 const COPY = {
+    neutral: {
+        heroTitle: 'Release / Block Multiple Units',
+        heroSubtitle: 'Choose an operation, pick a project, and update its units in one go.'
+    },
     block: {
         heroTitle: 'Block Multiple Units',
         heroSubtitle: 'Take available units off the market in one go.',
@@ -35,9 +40,13 @@ const COPY = {
 };
 
 export default class UnitStatusWizard extends LightningElement {
-    @api mode; // 'block' | 'release' — settable on a flexipage; URL c__mode wins if present
+    /** Optional preset: 'block' | 'release'. When set (via flexipage property or the
+     *  c__mode URL param) the operation step is skipped and the mode is locked. */
+    @api defaultMode;
 
-    step = STEP_PROJECT;
+    mode = null;
+    modeLocked = false;
+    step = STEP_ACTION;
     accessDenied = false;
     initLoaded = false;
 
@@ -57,8 +66,13 @@ export default class UnitStatusWizard extends LightningElement {
     @wire(CurrentPageReference)
     setPageRef(pageRef) {
         const urlMode = pageRef && pageRef.state && pageRef.state.c__mode;
-        if (urlMode) this.mode = urlMode;
-        if (!this.mode) this.mode = 'block';
+        const preset = (urlMode === 'block' || urlMode === 'release') ? urlMode
+            : ((this.defaultMode === 'block' || this.defaultMode === 'release') ? this.defaultMode : null);
+        if (preset && !this.mode && this.step === STEP_ACTION) {
+            this.mode = preset;
+            this.modeLocked = true;
+            this.step = STEP_PROJECT;
+        }
     }
 
     connectedCallback() {
@@ -73,19 +87,25 @@ export default class UnitStatusWizard extends LightningElement {
     // ---- copy / derived view state -------------------------------------------
 
     get copy() { return COPY[this.mode] || COPY.block; }
-    get wizardClass() { return this.mode === 'release' ? 'wizard mode-release' : 'wizard mode-block'; }
-    get heroTitle() { return this.copy.heroTitle; }
-    get heroSubtitle() { return this.copy.heroSubtitle; }
+    get heroCopy() { return this.mode ? COPY[this.mode] : COPY.neutral; }
+    get wizardClass() {
+        if (!this.mode) return 'wizard mode-neutral';
+        return this.mode === 'release' ? 'wizard mode-release' : 'wizard mode-block';
+    }
+    get heroTitle() { return this.heroCopy.heroTitle; }
+    get heroSubtitle() { return this.heroCopy.heroSubtitle; }
     get emptyMessage() { return this.copy.emptyMessage; }
     get confirmTitle() { return this.copy.confirmTitle; }
     get doneTitle() { return this.copy.doneTitle; }
-    get againLabel() { return `${this.copy.action} more units`; }
+    get againLabel() { return 'Run another operation'; }
     get busyActionText() { return this.copy.busy; }
 
     get showBody() { return this.initLoaded && !this.accessDenied; }
+    get isStepAction() { return this.step === STEP_ACTION; }
     get isStep1() { return this.step === STEP_PROJECT; }
     get isStep2() { return this.step === STEP_UNITS; }
     get isStep3() { return this.step === STEP_DONE; }
+    get stepActionClass() { return this.stepClass(STEP_ACTION); }
     get step1Class() { return this.stepClass(STEP_PROJECT); }
     get step2Class() { return this.stepClass(STEP_UNITS); }
     get step3Class() { return this.stepClass(STEP_DONE); }
@@ -93,6 +113,9 @@ export default class UnitStatusWizard extends LightningElement {
         if (this.step === n) return 'step current';
         return this.step > n ? 'step done' : 'step';
     }
+
+    get blockCardClass() { return this.mode === 'block' ? 'action-card selected' : 'action-card'; }
+    get releaseCardClass() { return this.mode === 'release' ? 'action-card selected' : 'action-card'; }
 
     get projectOptions() {
         return this.projects.map((p) => ({
@@ -153,8 +176,19 @@ export default class UnitStatusWizard extends LightningElement {
 
     // ---- handlers -----------------------------------------------------------
 
+    handleActionPick(event) {
+        this.mode = event.currentTarget.dataset.mode;
+        this.selectedProjectId = null;
+        this.step = STEP_PROJECT;
+    }
+
     handleProjectPick(event) {
         this.selectedProjectId = event.currentTarget.dataset.id;
+    }
+
+    handleBackToAction() {
+        if (this.modeLocked) return;
+        this.step = STEP_ACTION;
     }
 
     handleToUnits() {
@@ -209,11 +243,17 @@ export default class UnitStatusWizard extends LightningElement {
     }
 
     handleStartOver() {
-        this.step = STEP_PROJECT;
         this.selectedIds = new Set();
         this.units = [];
         this.unitsLoaded = false;
         this.updatedCount = 0;
+        this.selectedProjectId = null;
+        if (this.modeLocked) {
+            this.step = STEP_PROJECT;
+        } else {
+            this.mode = null;
+            this.step = STEP_ACTION;
+        }
     }
 
     // ---- plumbing -----------------------------------------------------------
