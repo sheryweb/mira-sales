@@ -55,7 +55,16 @@
             <!-- ============ step 1 : project ============ -->
             <template lwc:if={isStep1}>
                 <div class="panel">
-                    <h2 class="panel-title">Select a project</h2>
+                    <div class="units-toolbar">
+                        <template lwc:if={showProjectBack}>
+                            <lightning-button-icon icon-name="utility:back" alternative-text="Back"
+                                                   title="Back to operations" onclick={handleBackToAction}>
+                            </lightning-button-icon>
+                        </template>
+                        <div class="toolbar-title">
+                            <h2 class="panel-title no-margin">Select a project</h2>
+                        </div>
+                    </div>
                     <div class="project-grid" role="list" aria-label="Projects">
                         <template for:each={projectOptions} for:item="proj">
                             <button key={proj.id} class="project-card" data-id={proj.id}
@@ -67,11 +76,6 @@
                             </button>
                         </template>
                     </div>
-                    <template lwc:if={showProjectBack}>
-                        <div class="footer-actions">
-                            <lightning-button label="Back" onclick={handleBackToAction}></lightning-button>
-                        </div>
-                    </template>
                 </div>
             </template>
 
