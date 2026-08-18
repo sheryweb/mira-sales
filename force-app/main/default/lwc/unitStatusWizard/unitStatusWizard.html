@@ -1,0 +1,139 @@
+<template>
+    <div class={wizardClass}>
+
+        <!-- ============ header ============ -->
+        <div class="hero">
+            <div class="hero-titles">
+                <h1>{heroTitle}</h1>
+                <p>{heroSubtitle}</p>
+            </div>
+            <div class="steps" role="list">
+                <div class={step1Class} role="listitem"><span class="step-dot">1</span><span class="step-label">Project</span></div>
+                <div class="step-bar"></div>
+                <div class={step2Class} role="listitem"><span class="step-dot">2</span><span class="step-label">Units</span></div>
+                <div class="step-bar"></div>
+                <div class={step3Class} role="listitem"><span class="step-dot">3</span><span class="step-label">Done</span></div>
+            </div>
+        </div>
+
+        <!-- ============ access denied ============ -->
+        <template lwc:if={accessDenied}>
+            <div class="panel denied">
+                <lightning-icon icon-name="utility:lock" alternative-text="Access denied" size="medium"></lightning-icon>
+                <h2>Insufficient Privileges</h2>
+                <p>This operation is for System Administrators only.</p>
+            </div>
+        </template>
+
+        <template lwc:if={showBody}>
+
+            <!-- ============ step 1 : project ============ -->
+            <template lwc:if={isStep1}>
+                <div class="panel">
+                    <h2 class="panel-title">Select a project</h2>
+                    <div class="project-grid" role="radiogroup" aria-label="Projects">
+                        <template for:each={projectOptions} for:item="proj">
+                            <button key={proj.id} class={proj.cssClass} data-id={proj.id}
+                                    role="radio" aria-checked={proj.selected} onclick={handleProjectPick}>
+                                <span class="radio-ring"><span class="radio-core"></span></span>
+                                <span class="project-name">{proj.name}</span>
+                            </button>
+                        </template>
+                    </div>
+                    <div class="footer-actions">
+                        <lightning-button variant="brand" label="Next: Choose Units" onclick={handleToUnits}
+                                          disabled={nextDisabled}></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- ============ step 2 : units ============ -->
+            <template lwc:if={isStep2}>
+                <div class="panel">
+                    <div class="units-toolbar">
+                        <lightning-button-icon icon-name="utility:back" alternative-text="Back"
+                                               title="Back to projects" onclick={handleBackToProjects}>
+                        </lightning-button-icon>
+                        <div class="toolbar-title">
+                            <h2 class="panel-title">{selectedProjectName}</h2>
+                            <span class="count-chip">{selectedCount} of {totalCount} selected</span>
+                        </div>
+                        <div class="bulk-actions">
+                            <lightning-button label="Select all" onclick={handleSelectAll}
+                                              disabled={selectAllDisabled}></lightning-button>
+                            <lightning-button label="Clear" onclick={handleClearSelection}
+                                              disabled={clearDisabled}></lightning-button>
+                        </div>
+                    </div>
+
+                    <template lwc:if={hasUnits}>
+                        <div class="unit-grid">
+                            <template for:each={unitCards} for:item="u">
+                                <button key={u.id} class={u.cssClass} data-id={u.id}
+                                        role="checkbox" aria-checked={u.selected} onclick={handleUnitToggle}>
+                                    <div class="unit-top">
+                                        <span class="unit-title">{u.title}</span>
+                                        <span class={u.statusClass}>{u.status}</span>
+                                    </div>
+                                    <div class="unit-code">{u.codeDisplay}</div>
+                                    <div class="unit-facts">
+                                        <span class="fact"><lightning-icon icon-name="utility:home" size="xx-small"></lightning-icon>{u.typeDisplay}</span>
+                                        <span class="fact"><lightning-icon icon-name="utility:bed" size="xx-small"></lightning-icon>{u.bedroomsDisplay}</span>
+                                    </div>
+                                    <span class="unit-check"><lightning-icon icon-name="utility:check" size="xx-small" variant="inverse"></lightning-icon></span>
+                                </button>
+                            </template>
+                        </div>
+                    </template>
+                    <template lwc:elseif={unitsLoaded}>
+                        <div class="empty-state">
+                            <lightning-icon icon-name="utility:open_folder" size="medium"></lightning-icon>
+                            <p>{emptyMessage}</p>
+                        </div>
+                    </template>
+
+                    <div class="footer-actions">
+                        <lightning-button label="Back" onclick={handleBackToProjects}></lightning-button>
+                        <lightning-button variant="brand" label={actionLabel} onclick={handleOpenConfirm}
+                                          disabled={actionDisabled}></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- ============ step 3 : done ============ -->
+            <template lwc:if={isStep3}>
+                <div class="panel result">
+                    <div class="result-badge">
+                        <lightning-icon icon-name="utility:success" size="large" variant="inverse"></lightning-icon>
+                    </div>
+                    <h2>{doneTitle}</h2>
+                    <p class="result-sub">{doneMessage}</p>
+                    <div class="result-actions">
+                        <lightning-button variant="brand" label={againLabel} onclick={handleStartOver}></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+        </template>
+
+        <!-- ============ confirmation modal ============ -->
+        <template lwc:if={showConfirm}>
+            <section class="confirm-backdrop" onclick={handleCancelConfirm}></section>
+            <section class="confirm-modal" role="alertdialog" aria-modal="true">
+                <h2 class="confirm-title">{confirmTitle}</h2>
+                <p class="confirm-text">{confirmMessage}</p>
+                <div class="confirm-actions">
+                    <lightning-button label="Cancel" onclick={handleCancelConfirm}></lightning-button>
+                    <lightning-button variant="brand" label={confirmButtonLabel} onclick={handleConfirmAction}></lightning-button>
+                </div>
+            </section>
+        </template>
+
+        <template lwc:if={isBusy}>
+            <div class="busy-overlay">
+                <lightning-spinner alternative-text="Working" size="medium"></lightning-spinner>
+                <p class="busy-text">{busyText}</p>
+            </div>
+        </template>
+    </div>
+</template>

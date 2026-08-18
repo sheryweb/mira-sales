@@ -10,5 +10,5 @@
     <openType>sidebar</openType>
     <protected>false</protected>
     <requireRowSelection>false</requireRowSelection>
-    <url>/flow/Block_Multiple_Units</url>
+    <url>/lightning/cmp/c__unitStatusWizard?c__mode=block</url>
 </WebLink>
