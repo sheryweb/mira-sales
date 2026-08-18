@@ -373,15 +373,15 @@ public without sharing class FinanceOperationsDashboardController {
     private static void buildUnallocatedQueue(DashboardData data) {
         Map<Id, Decimal> allocatedByReceipt = new Map<Id, Decimal>();
         Map<Id, Decimal> onAccountByReceipt = new Map<Id, Decimal>();
-        for (AggregateResult ar : [
-            SELECT Receipt__c rid, Invoice__c inv, SUM(Amount__c) total
+        // Summed in Apex, not GROUP BY: an aggregate query cannot queryMore past
+        // 2000 rows and production exceeds that.
+        for (Receipt_Amount__c line : [
+            SELECT Receipt__c, Invoice__c, Amount__c
             FROM Receipt_Amount__c
             WHERE Receipt__r.Unit__c != null
-            GROUP BY Receipt__c, Invoice__c
         ]) {
-            Map<Id, Decimal> target = ar.get('inv') == null ? onAccountByReceipt : allocatedByReceipt;
-            Id rid = (Id) ar.get('rid');
-            target.put(rid, nz(target.get(rid)) + (Decimal) ar.get('total'));
+            Map<Id, Decimal> target = line.Invoice__c == null ? onAccountByReceipt : allocatedByReceipt;
+            target.put(line.Receipt__c, nz(target.get(line.Receipt__c)) + nz(line.Amount__c));
         }
         List<UnallocRow> rows = new List<UnallocRow>();
         for (Receipt__c r : [
