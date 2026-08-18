@@ -11,7 +11,10 @@
  *      CF +45d 400 USD unpaid -> Not Yet Due 400 (USD, as-is).
  *  - U3 on ALPHA but Draft -> stamped, excluded from snapshot aggregates.
  */
-@IsTest
+// isParallel=false: these tests run real batch jobs; under parallel test execution
+// (deployment runs) the org's concurrent-batch limit can shunt the job into the flex
+// queue, which Test.stopTest() never executes — the snapshots then silently never write.
+@IsTest(isParallel=false)
 private class FinanceCollectionStateBatchTest {
 
     @TestSetup
@@ -186,7 +189,12 @@ private class FinanceCollectionStateBatchTest {
         Test.stopTest();
 
         System.assertEquals(2, [SELECT COUNT() FROM Finance_Daily_Snapshot__c],
-            'Schedulable entry point ran the sweep');
+            'Schedulable entry point ran the sweep. DIAG units='
+            + JSON.serialize([SELECT Title__c, Status__c, Project__c FROM Unit__c])
+            + ' jobs=' + JSON.serialize([SELECT Status, JobType, NumberOfErrors, ExtendedStatus,
+                                                TotalJobItems, JobItemsProcessed
+                                         FROM AsyncApexJob])
+            + ' forecastLines=' + [SELECT COUNT() FROM Finance_Forecast_Line__c]);
     }
 
     @IsTest

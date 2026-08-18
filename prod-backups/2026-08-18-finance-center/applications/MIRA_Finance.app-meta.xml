@@ -16,7 +16,6 @@
     <label>MIRA Finance</label>
     <navType>Standard</navType>
     <tabs>standard-home</tabs>
-    <tabs>Finance_Center</tabs>
     <tabs>standard-Opportunity</tabs>
     <tabs>Unit__c</tabs>
     <tabs>Invoice__c</tabs>

@@ -133,18 +133,18 @@ public without sharing class FinanceCollectionStateBatch
         //        engine has not derived — ReceiptManageController's unapplied definition), and
         //    (b) on-account lines with no Invoice__c at all (the engine deliberately excludes
         //        them from Received_Amount, so (a) alone would never see them).
+        // Summed in Apex, not GROUP BY: an aggregate query cannot queryMore past 2000 rows,
+        // and a 200-unit production chunk exceeds that.
         Map<Id, Decimal> allocatedByReceipt = new Map<Id, Decimal>();
         Map<Id, Decimal> onAccountByReceipt = new Map<Id, Decimal>();
-        for (AggregateResult ar : [
-            SELECT Receipt__c rid, Invoice__c inv, SUM(Amount__c) total
+        for (Receipt_Amount__c line : [
+            SELECT Receipt__c, Invoice__c, Amount__c
             FROM Receipt_Amount__c
             WHERE Receipt__r.Unit__c IN :eligible.keySet()
-            GROUP BY Receipt__c, Invoice__c
         ]) {
-            Map<Id, Decimal> target = ar.get('inv') == null ? onAccountByReceipt : allocatedByReceipt;
-            Id rid = (Id) ar.get('rid');
-            Decimal cur = target.get(rid);
-            target.put(rid, (cur == null ? 0 : cur) + (Decimal) ar.get('total'));
+            Map<Id, Decimal> target = line.Invoice__c == null ? onAccountByReceipt : allocatedByReceipt;
+            Decimal cur = target.get(line.Receipt__c);
+            target.put(line.Receipt__c, (cur == null ? 0 : cur) + nz(line.Amount__c));
         }
         for (Receipt__c r : [
             SELECT Id, Unit__c, Received_Amount__c
