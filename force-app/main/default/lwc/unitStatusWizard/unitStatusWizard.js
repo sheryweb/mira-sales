@@ -124,7 +124,7 @@ export default class UnitStatusWizard extends LightningElement {
             cssClass: p.id === this.selectedProjectId ? 'project-card selected' : 'project-card'
         }));
     }
-    get nextDisabled() { return !this.selectedProjectId; }
+    get showProjectBack() { return !this.modeLocked; }
     get selectedProjectName() {
         const p = this.projects.find((x) => x.id === this.selectedProjectId);
         return p ? p.name : '';
@@ -184,6 +184,7 @@ export default class UnitStatusWizard extends LightningElement {
 
     handleProjectPick(event) {
         this.selectedProjectId = event.currentTarget.dataset.id;
+        this.handleToUnits(); // click = choose and go, same as the operation cards
     }
 
     handleBackToAction() {

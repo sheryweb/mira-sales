@@ -65,17 +65,11 @@
                             </button>
                         </template>
                     </div>
-                    <div class="footer-actions">
-                        <template lwc:if={modeLocked}>
-                            <lightning-button variant="brand" label="Next: Choose Units" onclick={handleToUnits}
-                                              disabled={nextDisabled}></lightning-button>
-                        </template>
-                        <template lwc:else>
+                    <template lwc:if={showProjectBack}>
+                        <div class="footer-actions">
                             <lightning-button label="Back" onclick={handleBackToAction}></lightning-button>
-                            <lightning-button variant="brand" label="Next: Choose Units" onclick={handleToUnits}
-                                              disabled={nextDisabled}></lightning-button>
-                        </template>
-                    </div>
+                        </div>
+                    </template>
                 </div>
             </template>
 
