@@ -166,6 +166,8 @@
         <members>GenerateLeadServiceTest</members>
         <members>GenerateOpportunityPaymenPlan</members>
         <members>GenerateOpportunityPaymentPlanTest</members>
+        <members>GetLeadStatusService</members>
+        <members>GetLeadStatusServiceTest</members>
         <members>InvoiceCommissionPDFController</members>
         <members>InvoiceCommissionPDFControllerTest</members>
         <members>InvoiceDetailsController</members>
@@ -265,6 +267,8 @@
         <members>ProjectsSearchServiceTest</members>
         <members>ProjectsService</members>
         <members>ProjectsServiceTest</members>
+        <members>ReassignLeadService</members>
+        <members>ReassignLeadServiceTest</members>
         <members>ReceiptEmailService</members>
         <members>ReceiptEmailServiceTest</members>
         <members>ReceiptPDFController</members>

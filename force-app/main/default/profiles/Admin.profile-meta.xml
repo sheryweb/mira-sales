@@ -808,6 +808,14 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GetLeadStatusService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GetLeadStatusServiceTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GenerateOpportunityPaymenPlan</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -1209,6 +1217,14 @@
     </classAccesses>
     <classAccesses>
         <apexClass>ProjectsServiceTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>ReassignLeadService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>ReassignLeadServiceTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
