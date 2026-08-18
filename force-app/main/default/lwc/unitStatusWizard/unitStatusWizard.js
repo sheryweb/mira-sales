@@ -118,11 +118,7 @@ export default class UnitStatusWizard extends LightningElement {
     get releaseCardClass() { return this.mode === 'release' ? 'action-card selected' : 'action-card'; }
 
     get projectOptions() {
-        return this.projects.map((p) => ({
-            ...p,
-            selected: p.id === this.selectedProjectId,
-            cssClass: p.id === this.selectedProjectId ? 'project-card selected' : 'project-card'
-        }));
+        return this.projects;
     }
     get showProjectBack() { return !this.modeLocked; }
     get selectedProjectName() {
