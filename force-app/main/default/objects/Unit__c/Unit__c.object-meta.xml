@@ -176,7 +176,6 @@
         <excludedStandardButtons>PrintableListView</excludedStandardButtons>
         <excludedStandardButtons>MassAssignRecordLabel</excludedStandardButtons>
         <listViewButtons>Generate_Multiple_Offers</listViewButtons>
-        <listViewButtons>Release_Block_Multiple_Units</listViewButtons>
         <searchResultsAdditionalFields>Type__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>Status__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>Cost_AED__c</searchResultsAdditionalFields>

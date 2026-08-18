@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Release / Block Multiple Units wizard (System Administrator only — tab hidden for every other profile)</description>
+    <label>Release / Block Units</label>
+    <lwcComponent>unitStatusWizard</lwcComponent>
+    <motif>Custom24: Padlock</motif>
+</CustomTab>
