@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>MultiSalesOfferWizardController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <description>Grants the Apex controller behind the Multi Sales Offer Wizard LWC (the Generate Multiple Sales Offer tab). Needed by every non-admin profile that used the old screen flow — flows carried no class access requirement, LWC controllers do.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Multi Sales Offer Access</label>
+</PermissionSet>
