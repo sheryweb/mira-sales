@@ -31,18 +31,16 @@
             <template lwc:if={isStep1}>
                 <div class="panel">
                     <h2 class="panel-title">Select a project</h2>
-                    <div class="project-grid" role="radiogroup" aria-label="Projects">
+                    <div class="project-grid" role="list" aria-label="Projects">
                         <template for:each={projectOptions} for:item="proj">
-                            <button key={proj.name} class={proj.cssClass} data-name={proj.name}
-                                    role="radio" aria-checked={proj.selected} onclick={handleProjectPick}>
-                                <span class="radio-ring"><span class="radio-core"></span></span>
+                            <button key={proj.name} class="project-card" data-name={proj.name}
+                                    role="listitem" onclick={handleProjectPick}>
+                                <span class="project-icon">
+                                    <lightning-icon icon-name="utility:company" size="small" variant="inverse"></lightning-icon>
+                                </span>
                                 <span class="project-name">{proj.name}</span>
                             </button>
                         </template>
-                    </div>
-                    <div class="footer-actions">
-                        <lightning-button variant="brand" label="Next: Choose Units" onclick={handleToUnits}
-                                          disabled={nextDisabled}></lightning-button>
                     </div>
                 </div>
             </template>

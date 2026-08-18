@@ -60,14 +60,8 @@ export default class MultiSalesOfferWizard extends NavigationMixin(LightningElem
     }
 
     get projectOptions() {
-        return this.projectNames.map((name) => ({
-            name,
-            selected: name === this.selectedProject,
-            cssClass: name === this.selectedProject ? 'project-card selected' : 'project-card'
-        }));
+        return this.projectNames.map((name) => ({ name }));
     }
-
-    get nextDisabled() { return !this.selectedProject; }
 
     get currencyOptions() {
         const opts = this.currencies.map((c) => ({ label: c, value: c }));
@@ -157,6 +151,7 @@ export default class MultiSalesOfferWizard extends NavigationMixin(LightningElem
 
     handleProjectPick(event) {
         this.selectedProject = event.currentTarget.dataset.name;
+        this.handleToUnits(); // click = choose and go
     }
 
     handleToUnits() {
