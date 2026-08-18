@@ -185,6 +185,8 @@ export default class UnitStatusWizard extends LightningElement {
 
     handleBackToAction() {
         if (this.modeLocked) return;
+        this.mode = null; // back on the chooser, no operation is picked — neutral title/theme
+        this.selectedProjectId = null;
         this.step = STEP_ACTION;
     }
 
