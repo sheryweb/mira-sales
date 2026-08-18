@@ -17,15 +17,35 @@ private class MultiSalesOfferWizardControllerTest {
         // Validation rule: new units must be created as Draft, then the status may change.
         Unit__c published = new Unit__c(
             Title__c = 'MSO-PUB', Project__c = p.Id, Status__c = 'Draft',
-            Cost_AED__c = 1000000, Building__c = 'Tower A'
+            Cost_AED__c = 1000000, Building__c = 'Tower A',
+            Type__c = 'Apartment', Number_of_Bedrooms__c = 0
         );
         Unit__c draft = new Unit__c(
             Title__c = 'MSO-DRAFT', Project__c = p.Id, Status__c = 'Draft',
-            Cost_AED__c = 2000000, Building__c = 'Tower B'
+            Cost_AED__c = 2000000, Building__c = 'Tower B',
+            Type__c = 'Duplex', Number_of_Bedrooms__c = 2
         );
         insert new List<Unit__c>{ published, draft };
         published.Status__c = 'Published';
         update published;
+
+        Project__c verde = new Project__c(
+            Name = 'Trussardi Residences MIRA VERDE', Description__c = 'Test', District__c = 'Meydan',
+            Coordinates_Latitude__c = 1, Coordinates_Longitude__c = 1, Handover__c = Date.today()
+        );
+        insert verde;
+        Unit__c standardUnit = new Unit__c(
+            Title__c = 'MSO-VERDE-STD', Project__c = verde.Id, Status__c = 'Draft',
+            Cost_USD__c = 300000, Structure__c = 'Standard Studio', Type__c = 'Apartment'
+        );
+        Unit__c atypicalUnit = new Unit__c(
+            Title__c = 'MSO-VERDE-ATYP', Project__c = verde.Id, Status__c = 'Draft',
+            Cost_USD__c = 400000, Structure__c = 'Not a Typical 1BD', Type__c = 'Apartment'
+        );
+        insert new List<Unit__c>{ standardUnit, atypicalUnit };
+        standardUnit.Status__c = 'Published';
+        atypicalUnit.Status__c = 'Published';
+        update new List<Unit__c>{ standardUnit, atypicalUnit };
     }
 
     @IsTest
@@ -48,6 +68,18 @@ private class MultiSalesOfferWizardControllerTest {
         for (MultiSalesOfferWizardController.UnitRow r : rows) statusByTitle.put(r.title, r.status);
         System.assertEquals('Available', statusByTitle.get('MSO-PUB'));
         System.assertEquals('Blocked', statusByTitle.get('MSO-DRAFT'));
+        for (MultiSalesOfferWizardController.UnitRow r : rows) {
+            System.assertNotEquals(null, r.unitCost, 'Unit_Cost__c formula always renders');
+            System.assertNotEquals(null, r.unitType, 'Type_Formula__c populated from Type__c');
+        }
+    }
+
+    @IsTest
+    static void miraVerdeReturnsOnlyStandardStructures() {
+        List<MultiSalesOfferWizardController.UnitRow> rows =
+            MultiSalesOfferWizardController.getUnits('Trussardi Residences MIRA VERDE');
+        System.assertEquals(1, rows.size(), 'Only Standard-structure units for MIRA Verde');
+        System.assertEquals('MSO-VERDE-STD', rows[0].title);
     }
 
     @IsTest

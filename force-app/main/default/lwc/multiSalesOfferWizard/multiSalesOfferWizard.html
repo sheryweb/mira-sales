@@ -58,6 +58,11 @@
                             <h2 class="panel-title">{selectedProject}</h2>
                             <span class={counterClass}>{selectedCount} / {maxUnits} selected</span>
                         </div>
+                        <div class="filter-box">
+                            <lightning-combobox label="Unit type" value={typeFilter}
+                                                options={typeFilterOptions} onchange={handleTypeFilterChange}>
+                            </lightning-combobox>
+                        </div>
                         <div class="currency-box">
                             <lightning-combobox label="Secondary currency (optional)" value={selectedCurrency}
                                                 options={currencyOptions} onchange={handleCurrencyChange}
@@ -78,7 +83,7 @@
                                     </div>
                                     <div class="unit-cost">{u.costDisplay}</div>
                                     <div class="unit-facts">
-                                        <span class="fact"><lightning-icon icon-name="utility:home" size="xx-small"></lightning-icon>{u.towerDisplay}</span>
+                                        <span class="fact"><lightning-icon icon-name="utility:home" size="xx-small"></lightning-icon>{u.typeDisplay}</span>
                                         <span class="fact"><lightning-icon icon-name="utility:bed" size="xx-small"></lightning-icon>{u.bedroomsDisplay}</span>
                                         <span class="fact"><lightning-icon icon-name="utility:ruler" size="xx-small"></lightning-icon>{u.areaDisplay}</span>
                                     </div>

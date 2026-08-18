@@ -98,6 +98,7 @@
     font-size: 0.78rem; font-weight: 700;
 }
 .count-chip.full { background: #fdecea; color: #c23934; }
+.filter-box { flex: 0 1 11rem; min-width: 9rem; }
 .currency-box { flex: 0 1 16rem; min-width: 13rem; }
 .currency-hint { font-size: 0.72rem; color: #6b8a93; margin: 0.25rem 0 0; }
 

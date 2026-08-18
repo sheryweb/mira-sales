@@ -45,7 +45,8 @@ public with sharing class MultiSalesOfferWizardController {
         @AuraEnabled public String title;
         @AuraEnabled public String tower;
         @AuraEnabled public String status;      // Available / Blocked, the flow's labels
-        @AuraEnabled public Decimal costAed;
+        @AuraEnabled public String unitType;    // Type_Formula__c (Apartment / Duplex / Villa / Office …)
+        @AuraEnabled public String unitCost;    // Unit_Cost__c text, e.g. 'USD 1234567' — price in the project currency
         @AuraEnabled public Decimal bedrooms;
         @AuraEnabled public Decimal totalArea;
     }
@@ -75,20 +76,29 @@ public with sharing class MultiSalesOfferWizardController {
         if (BLOCKED_VISIBLE_PROFILES.contains(currentProfileName())) {
             statuses.add('Draft');
         }
+        // MIRA Verde only sells its Standard layouts (Structure__c 'Standard %') — Sheraz 2026-08-18.
+        Boolean standardOnly = projectName == 'Trussardi Residences MIRA VERDE';
+        List<Unit__c> units = standardOnly
+            ? [SELECT Id, Title__c, Building__c, Status__c, Type_Formula__c, Unit_Cost__c,
+                      Number_of_Bedrooms__c, Total_Area__c
+               FROM Unit__c
+               WHERE Project_Name_F__c = :projectName AND Status__c IN :statuses
+                 AND Structure__c LIKE 'Standard%'
+               ORDER BY Title__c ASC]
+            : [SELECT Id, Title__c, Building__c, Status__c, Type_Formula__c, Unit_Cost__c,
+                      Number_of_Bedrooms__c, Total_Area__c
+               FROM Unit__c
+               WHERE Project_Name_F__c = :projectName AND Status__c IN :statuses
+               ORDER BY Title__c ASC];
         List<UnitRow> rows = new List<UnitRow>();
-        for (Unit__c u : [
-            SELECT Id, Title__c, Building__c, Status__c, Cost_AED__c,
-                   Number_of_Bedrooms__c, Total_Area__c
-            FROM Unit__c
-            WHERE Project_Name_F__c = :projectName AND Status__c IN :statuses
-            ORDER BY Title__c ASC
-        ]) {
+        for (Unit__c u : units) {
             UnitRow r = new UnitRow();
             r.id = u.Id;
             r.title = u.Title__c;
             r.tower = u.Building__c;
             r.status = u.Status__c == 'Draft' ? 'Blocked' : 'Available';
-            r.costAed = u.Cost_AED__c;
+            r.unitType = u.Type_Formula__c;
+            r.unitCost = u.Unit_Cost__c;
             r.bedrooms = u.Number_of_Bedrooms__c;
             r.totalArea = u.Total_Area__c;
             rows.add(r);

@@ -25,6 +25,7 @@ export default class MultiSalesOfferWizard extends NavigationMixin(LightningElem
     units = [];
     unitsLoaded = false;
     selectedIds = new Set();
+    typeFilter = '';
 
     contentDocumentId = null;
     generatedCount = 0;
@@ -73,27 +74,68 @@ export default class MultiSalesOfferWizard extends NavigationMixin(LightningElem
         return [{ label: 'None', value: '' }, ...opts];
     }
 
+    /** More than one distinct tower/building among the loaded units? */
+    get isMultiTower() {
+        const towers = new Set(this.units.map((u) => u.tower).filter(Boolean));
+        return towers.size > 1;
+    }
+
+    /** 'Studio' for 0 bedrooms, '2BR Duplex' when the type says so — the filter's vocabulary. */
+    bedroomTypeLabel(u) {
+        if (u.bedrooms == null) return null;
+        const br = Number(u.bedrooms) === 0 ? 'Studio' : `${Number(u.bedrooms)}BR`;
+        const duplex = (u.unitType || '').toLowerCase().includes('duplex');
+        return duplex ? `${br} Duplex` : br;
+    }
+
+    /** Unit_Cost__c is 'CCY 1234567.8' text — reformat the number, keep the currency. */
+    formatUnitCost(raw) {
+        if (!raw) return '—';
+        const m = /^([A-Za-z]{3})\s+(-?[\d.]+)$/.exec(raw.trim());
+        if (!m) return raw;
+        const amount = Number(m[2]);
+        if (!amount) return '—';
+        return `${m[1].toUpperCase()} ${amount.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+    }
+
+    get typeFilterOptions() {
+        const labels = new Set();
+        this.units.forEach((u) => {
+            const label = this.bedroomTypeLabel(u);
+            if (label) labels.add(label);
+        });
+        const sorted = [...labels].sort((a, b) => {
+            const rank = (l) => (l.startsWith('Studio') ? -1 : parseInt(l, 10));
+            return rank(a) - rank(b) || a.localeCompare(b);
+        });
+        return [{ label: 'All types', value: '' }, ...sorted.map((l) => ({ label: l, value: l }))];
+    }
+
     get unitCards() {
         const atCap = this.selectedIds.size >= this.maxUnits;
-        return this.units.map((u) => {
-            const selected = this.selectedIds.has(u.id);
-            const blocked = u.status === 'Blocked';
-            let cssClass = 'unit-card';
-            if (selected) cssClass += ' selected';
-            else if (atCap) cssClass += ' capped';
-            return {
-                ...u,
-                selected,
-                cssClass,
-                statusClass: blocked ? 'status-chip blocked' : 'status-chip available',
-                costDisplay: u.costAed == null ? '—'
-                    : 'AED ' + Number(u.costAed).toLocaleString('en-US', { maximumFractionDigits: 0 }),
-                towerDisplay: u.tower || '—',
-                bedroomsDisplay: u.bedrooms == null ? '— BR' : u.bedrooms + ' BR',
-                areaDisplay: u.totalArea == null ? '—'
-                    : Number(u.totalArea).toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' sqft'
-            };
-        });
+        const multiTower = this.isMultiTower;
+        return this.units
+            .filter((u) => !this.typeFilter || this.bedroomTypeLabel(u) === this.typeFilter)
+            .map((u) => {
+                const selected = this.selectedIds.has(u.id);
+                const blocked = u.status === 'Blocked';
+                let cssClass = 'unit-card';
+                if (selected) cssClass += ' selected';
+                else if (atCap) cssClass += ' capped';
+                const bedroomLabel = this.bedroomTypeLabel(u);
+                return {
+                    ...u,
+                    selected,
+                    cssClass,
+                    title: multiTower && u.tower ? `${u.tower}-${u.title}` : u.title,
+                    statusClass: blocked ? 'status-chip blocked' : 'status-chip available',
+                    costDisplay: this.formatUnitCost(u.unitCost),
+                    typeDisplay: u.unitType || '—',
+                    bedroomsDisplay: bedroomLabel || '—',
+                    areaDisplay: u.totalArea == null ? '—'
+                        : Number(u.totalArea).toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' sqft'
+                };
+            });
     }
 
     get hasUnits() { return this.unitsLoaded && this.units.length > 0; }
@@ -120,6 +162,7 @@ export default class MultiSalesOfferWizard extends NavigationMixin(LightningElem
     handleToUnits() {
         this.selectedIds = new Set();
         this.selectedCurrency = '';
+        this.typeFilter = '';
         this.unitsLoaded = false;
         this.units = [];
         this.step = STEP_UNITS;
@@ -149,6 +192,10 @@ export default class MultiSalesOfferWizard extends NavigationMixin(LightningElem
 
     handleCurrencyChange(event) {
         this.selectedCurrency = event.detail.value;
+    }
+
+    handleTypeFilterChange(event) {
+        this.typeFilter = event.detail.value;
     }
 
     handleGenerate() {
