@@ -49,12 +49,15 @@ public with sharing class SalesActivityWizardController {
         @AuraEnabled public String outcome { get; set; }
         @AuraEnabled public List<String> projectsDiscussed { get; set; }
         @AuraEnabled public String otherProject { get; set; }
+        @AuraEnabled public String followUpDate { get; set; } // yyyy-MM-dd; empty = no follow-up
+        @AuraEnabled public String followUpNote { get; set; }
     }
 
     public class SaveResult {
         @AuraEnabled public String recordId;
         @AuraEnabled public String recordName;
         @AuraEnabled public Integer weekCount;
+        @AuraEnabled public String followUpDate; // formatted, null when none was created
     }
 
     @AuraEnabled(cacheable=true)
@@ -145,6 +148,17 @@ public with sharing class SalesActivityWizardController {
         if (pickedOther && String.isBlank(input.otherProject)) {
             throw err('Please name the project you discussed that is not in the list.');
         }
+        Date followUp;
+        if (String.isNotBlank(input.followUpDate)) {
+            try {
+                followUp = Date.valueOf(input.followUpDate);
+            } catch (Exception e) {
+                throw err('The follow-up date is not valid.');
+            }
+            if (followUp < Date.today()) {
+                throw err('The follow-up date cannot be in the past.');
+            }
+        }
 
         Sales_Activity_Tracker__c rec = new Sales_Activity_Tracker__c(
             Activity__c = input.activity,
@@ -172,6 +186,25 @@ public with sharing class SalesActivityWizardController {
         r.recordId = rec.Id;
         r.recordName = [SELECT Name FROM Sales_Activity_Tracker__c WHERE Id = :rec.Id].Name;
         r.weekCount = myWeekCount();
+
+        if (followUp != null) {
+            String agencyName = [SELECT Name FROM Account WHERE Id = :(Id) input.agencyId].Name;
+            try {
+                insert new Task(
+                    OwnerId = UserInfo.getUserId(),
+                    Subject = 'Follow-up: ' + agencyName,
+                    ActivityDate = followUp,
+                    Status = 'Not Started',
+                    WhatId = rec.Id,
+                    Description = String.isBlank(input.followUpNote)
+                        ? 'Follow up on the ' + input.activity.toLowerCase() + ' logged as ' + r.recordName + '.'
+                        : input.followUpNote.trim()
+                );
+            } catch (Exception e) {
+                throw err('The activity was saved, but the follow-up task could not be created: ' + e.getMessage());
+            }
+            r.followUpDate = Datetime.newInstance(followUp, Time.newInstance(12, 0, 0, 0)).format('d MMM yyyy');
+        }
         return r;
     }
 

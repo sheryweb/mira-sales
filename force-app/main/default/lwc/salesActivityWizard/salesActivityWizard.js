@@ -74,6 +74,11 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
     duration = 60;
     customEndTime = '';
 
+    followUpEnabled = false;
+    followUpDate = '';
+    followUpNote = '';
+    savedFollowUp = null;
+
     recordId = null;
     recordName = '';
 
@@ -360,16 +365,31 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
         return new Date(start.getTime() + this.duration * 60000);
     }
 
-    get whenInvalid() {
-        const start = this.startDate;
-        const end = this.endDate;
-        return !start || !end || end <= start;
+    handleFollowUpToggle(event) {
+        this.followUpEnabled = event.target.checked;
+        if (this.followUpEnabled && !this.followUpDate) {
+            const d = new Date();
+            d.setDate(d.getDate() + 3);
+            const pad = (n) => String(n).padStart(2, '0');
+            this.followUpDate = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        }
     }
+
+    handleFollowUpDateChange(event) { this.followUpDate = event.target.value; }
+    handleFollowUpNoteChange(event) { this.followUpNote = event.target.value || ''; }
+
+    get followUpInPast() {
+        return this.followUpEnabled && this.followUpDate && this.followUpDate < this.todayIso();
+    }
+
+    get whenInvalid() { return this.whenHint !== ''; }
 
     get whenHint() {
         if (!this.startDate) return 'Set the date and start time.';
         if (!this.endDate) return 'Set the end time.';
         if (this.endDate <= this.startDate) return 'The end time must be after the start time.';
+        if (this.followUpEnabled && !this.followUpDate) return 'Pick the follow-up date.';
+        if (this.followUpInPast) return 'The follow-up date cannot be in the past.';
         return '';
     }
 
@@ -405,13 +425,16 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
             rmsAttended: this.selectedRms,
             outcome: this.outcome,
             projectsDiscussed: this.selectedProjects,
-            otherProject: this.otherProject
+            otherProject: this.otherProject,
+            followUpDate: this.followUpEnabled ? this.followUpDate : null,
+            followUpNote: this.followUpEnabled ? this.followUpNote : null
         };
         this.runBusy('Saving your activity…', async () => {
             const r = await saveActivity({ input });
             this.recordId = r.recordId;
             this.recordName = r.recordName;
             this.weekCount = r.weekCount;
+            this.savedFollowUp = r.followUpDate || null;
             this.step = STEP_DONE;
         });
     }
@@ -420,7 +443,8 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
     get doneMessage() {
         const n = this.weekCount;
         const praise = n >= 10 ? 'Great momentum!' : (n >= 5 ? 'Nice pace!' : '');
-        return `That's ${n} activit${n === 1 ? 'y' : 'ies'} logged this week. ${praise}`.trim();
+        const followUp = this.savedFollowUp ? ` A follow-up task is set for ${this.savedFollowUp}.` : '';
+        return `That's ${n} activit${n === 1 ? 'y' : 'ies'} logged this week.${followUp} ${praise}`.trim();
     }
 
     handleOpenRecord() {
@@ -449,6 +473,10 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
         this.startTime = '10:00';
         this.duration = 60;
         this.customEndTime = '';
+        this.followUpEnabled = false;
+        this.followUpDate = '';
+        this.followUpNote = '';
+        this.savedFollowUp = null;
         this.recordId = null;
         this.recordName = '';
         this.step = STEP_ACTIVITY;

@@ -97,6 +97,32 @@ private class SalesActivityWizardControllerTest {
     }
 
     @IsTest
+    static void followUpDateCreatesTaskOnTheActivity() {
+        SalesActivityWizardController.ActivityInput i = validInput();
+        i.followUpDate = String.valueOf(Date.today().addDays(3));
+        i.followUpNote = 'Send the price list';
+
+        SalesActivityWizardController.SaveResult r = SalesActivityWizardController.saveActivity(i);
+
+        System.assertNotEquals(null, r.followUpDate, 'Follow-up date echoed back');
+        List<Task> tasks = [SELECT Subject, ActivityDate, Status, WhatId, Description
+                            FROM Task WHERE WhatId = :r.recordId];
+        System.assertEquals(1, tasks.size(), 'One follow-up task on the activity');
+        System.assertEquals('Follow-up: Wizard Test Agency', tasks[0].Subject);
+        System.assertEquals(Date.today().addDays(3), tasks[0].ActivityDate);
+        System.assertEquals('Not Started', tasks[0].Status);
+        System.assertEquals('Send the price list', tasks[0].Description);
+    }
+
+    @IsTest
+    static void noFollowUpMeansNoTask() {
+        SalesActivityWizardController.SaveResult r =
+            SalesActivityWizardController.saveActivity(validInput());
+        System.assertEquals(null, r.followUpDate);
+        System.assertEquals(0, [SELECT COUNT() FROM Task WHERE WhatId = :r.recordId]);
+    }
+
+    @IsTest
     static void validationRejectsBadInput() {
         // agency always required — even for client meetings
         SalesActivityWizardController.ActivityInput i = validInput();
@@ -136,6 +162,11 @@ private class SalesActivityWizardControllerTest {
         i.projectsDiscussed = new List<String>{ SalesActivityWizardController.OTHER_PROJECT };
         i.otherProject = '';
         expectError(i, 'name the project');
+
+        // follow-up date cannot be in the past
+        i = validInput();
+        i.followUpDate = String.valueOf(Date.today().addDays(-1));
+        expectError(i, 'past');
     }
 
     private static void expectError(SalesActivityWizardController.ActivityInput i, String messagePart) {

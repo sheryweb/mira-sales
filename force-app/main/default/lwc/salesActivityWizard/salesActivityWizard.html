@@ -223,6 +223,26 @@
                         </div>
                     </div>
 
+                    <div class="field-block followup-block">
+                        <lightning-input type="checkbox" label="Schedule a follow-up task for yourself"
+                                         checked={followUpEnabled} onchange={handleFollowUpToggle}></lightning-input>
+                        <template lwc:if={followUpEnabled}>
+                            <div class="followup-fields">
+                                <div class="followup-date">
+                                    <span class="field-label">Follow up on</span>
+                                    <lightning-input variant="label-hidden" type="date" value={followUpDate}
+                                                     onchange={handleFollowUpDateChange}></lightning-input>
+                                </div>
+                                <div class="followup-note">
+                                    <span class="field-label">Reminder note (optional)</span>
+                                    <lightning-input variant="label-hidden" type="text" max-length="255"
+                                                     placeholder="e.g. send the MIRA Verde price list"
+                                                     value={followUpNote} onchange={handleFollowUpNoteChange}></lightning-input>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
                     <template lwc:if={summaryText}>
                         <div class="summary-box">
                             <lightning-icon icon-name="utility:event" size="x-small"></lightning-icon>
