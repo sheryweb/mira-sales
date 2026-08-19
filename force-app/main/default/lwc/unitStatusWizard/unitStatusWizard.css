@@ -149,7 +149,9 @@
     background: var(--accent-soft); color: var(--accent-dark);
     font-size: 0.78rem; font-weight: 700;
 }
-.bulk-actions { display: flex; gap: 0.5rem; align-items: flex-start; }
+.filter-box { flex: 0 1 11rem; min-width: 9rem; }
+/* pushes the buttons down level with the combobox input, which sits under its label */
+.bulk-actions { display: flex; gap: 0.5rem; align-items: flex-start; padding-top: 1.35rem; }
 
 /* ---------- step 2 : unit cards ---------- */
 .unit-grid {

@@ -90,6 +90,11 @@
                             <h2 class="panel-title">{selectedProjectName}</h2>
                             <span class="count-chip">{selectedCount} of {totalCount} selected</span>
                         </div>
+                        <div class="filter-box">
+                            <lightning-combobox label="Unit type" value={typeFilter}
+                                                options={typeFilterOptions} onchange={handleTypeFilterChange}>
+                            </lightning-combobox>
+                        </div>
                         <div class="bulk-actions">
                             <lightning-button label="Select all" onclick={handleSelectAll}
                                               disabled={selectAllDisabled}></lightning-button>
