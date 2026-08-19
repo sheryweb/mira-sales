@@ -35,7 +35,7 @@ private class SalesActivityDashboardControllerTest {
     @IsTest
     static void dashboardAggregatesActivitiesAndCoverage() {
         SalesActivityDashboardController.Dashboard d =
-            SalesActivityDashboardController.getDashboard();
+            SalesActivityDashboardController.getDashboard(null);
 
         System.assertEquals(2, d.kpis.weekCount, 'Both activities happened today');
         System.assertEquals(2, d.kpis.monthCount);

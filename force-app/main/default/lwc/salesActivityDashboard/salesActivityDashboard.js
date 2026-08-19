@@ -14,7 +14,8 @@ export default class SalesActivityDashboard extends LightningElement {
         this.isRefreshing = true;
         this.errorMessage = undefined;
         try {
-            this.data = await getDashboard();
+            // fresh stamp per call = cache miss every time; refresh always hits the server
+            this.data = await getDashboard({ stamp: String(Date.now()) });
         } catch (e) {
             this.errorMessage =
                 (e && e.body && e.body.message) || 'The dashboard could not be loaded.';

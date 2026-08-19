@@ -58,8 +58,10 @@ public without sharing class SalesActivityDashboardController {
         @AuraEnabled public List<CountRow> otherProjects;
     }
 
-    @AuraEnabled
-    public static Dashboard getDashboard() {
+    /** cacheable=true keeps LWC happy; the `stamp` param is unused server-side — the LWC
+     *  passes a fresh timestamp per call so the client cache never serves stale data. */
+    @AuraEnabled(cacheable=true)
+    public static Dashboard getDashboard(String stamp) {
         Date today = Date.today();
         Datetime monthStart = Datetime.newInstance(today.toStartOfMonth(), Time.newInstance(0, 0, 0, 0));
         Datetime weekStart = Datetime.newInstance(today.toStartOfWeek(), Time.newInstance(0, 0, 0, 0));
