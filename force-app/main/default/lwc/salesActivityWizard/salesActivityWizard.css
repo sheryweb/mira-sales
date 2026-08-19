@@ -203,6 +203,26 @@
 }
 .footer-hint { margin-right: auto; font-size: 0.78rem; color: #b45309; font-weight: 600; }
 
+/* proof-of-activity upload on the done screen */
+.proof-box {
+    max-width: 26rem;
+    margin: 0 auto 1.4rem;
+    padding: 1rem 1.2rem;
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    background: #fafdfe;
+    text-align: left;
+}
+.proof-hint { font-size: 0.76rem; color: #6b8a93; margin: 0 0 0.6rem; }
+.proof-list {
+    list-style: none; margin: 0.7rem 0 0; padding: 0;
+    display: flex; flex-direction: column; gap: 0.3rem;
+}
+.proof-list li {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-size: 0.8rem; font-weight: 600; color: var(--accent-dark);
+}
+
 /* ---------- result ---------- */
 .result { text-align: center; padding: 2.5rem 1.5rem; }
 .result-badge {

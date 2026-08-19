@@ -81,6 +81,7 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
 
     recordId = null;
     recordName = '';
+    proofFiles = [];
 
     isBusy = false;
     busyText = '';
@@ -447,6 +448,15 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
         return `That's ${n} activit${n === 1 ? 'y' : 'ies'} logged this week.${followUp} ${praise}`.trim();
     }
 
+    get proofFormats() { return ['.jpg', '.jpeg', '.png', '.heic', '.webp', '.pdf']; }
+    get hasProofFiles() { return this.proofFiles.length > 0; }
+
+    handleProofUploaded(event) {
+        const names = (event.detail.files || []).map((f) => f.name);
+        this.proofFiles = [...this.proofFiles, ...names];
+        this.toast('Photos attached', `${names.length} file${names.length === 1 ? '' : 's'} saved to ${this.recordName}.`, 'success');
+    }
+
     handleOpenRecord() {
         this[NavigationMixin.Navigate]({
             type: 'standard__recordPage',
@@ -479,6 +489,7 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
         this.savedFollowUp = null;
         this.recordId = null;
         this.recordName = '';
+        this.proofFiles = [];
         this.step = STEP_ACTIVITY;
     }
 

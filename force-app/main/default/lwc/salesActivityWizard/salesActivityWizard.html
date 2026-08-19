@@ -267,6 +267,21 @@
                     </div>
                     <h2>{doneTitle}</h2>
                     <p class="result-sub">{doneMessage}</p>
+                    <div class="proof-box">
+                        <span class="field-label">Proof of activity (optional)</span>
+                        <p class="proof-hint">Add photos from the briefing or meeting — they are saved to this activity's files.</p>
+                        <lightning-file-upload label="" name="proofUpload" record-id={recordId}
+                                               accept={proofFormats} multiple
+                                               onuploadfinished={handleProofUploaded}>
+                        </lightning-file-upload>
+                        <template lwc:if={hasProofFiles}>
+                            <ul class="proof-list">
+                                <template for:each={proofFiles} for:item="f">
+                                    <li key={f}><lightning-icon icon-name="utility:image" size="xx-small"></lightning-icon> {f}</li>
+                                </template>
+                            </ul>
+                        </template>
+                    </div>
                     <div class="result-actions">
                         <lightning-button variant="brand" label="Log another activity" onclick={handleLogAnother}></lightning-button>
                         <lightning-button label="Open record" onclick={handleOpenRecord}></lightning-button>
