@@ -143,11 +143,36 @@
                     </div>
 
                     <div class="field-block">
+                        <span class="field-label">Projects discussed (optional)</span>
+                        <div class="chip-row wrap">
+                            <template for:each={projectChips} for:item="p">
+                                <button key={p.name} class={p.cssClass} data-name={p.name} onclick={handleProjectToggle}>{p.name}</button>
+                            </template>
+                        </div>
+                        <template lwc:if={isOtherProjectPicked}>
+                            <div class="other-project">
+                                <lightning-input variant="label-hidden" type="text" max-length="100"
+                                                 placeholder="Which project? e.g. the upcoming marina launch"
+                                                 value={otherProject} onchange={handleOtherProjectChange}></lightning-input>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="field-block">
                         <span class="field-label">What was discussed? <span class="req">*</span>
                             <span class="counter">{descriptionCounter}</span></span>
                         <lightning-textarea variant="label-hidden" placeholder={descriptionPlaceholder}
                                             value={description} max-length={descriptionMax}
                                             onchange={handleDescriptionChange}></lightning-textarea>
+                    </div>
+
+                    <div class="field-block">
+                        <span class="field-label">How did it go? <span class="req">*</span></span>
+                        <div class="chip-row wrap">
+                            <template for:each={outcomeChips} for:item="o">
+                                <button key={o.name} class={o.cssClass} data-name={o.name} onclick={handleOutcomePick}>{o.name}</button>
+                            </template>
+                        </div>
                     </div>
 
                     <div class="footer-actions">

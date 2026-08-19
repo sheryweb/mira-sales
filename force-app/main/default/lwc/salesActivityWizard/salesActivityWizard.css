@@ -174,6 +174,8 @@
     font-size: 0.78rem; font-weight: 700;
 }
 
+.other-project { margin-top: 0.55rem; max-width: 24rem; }
+
 /* summary + footer */
 .summary-box {
     display: flex; align-items: center; gap: 0.6rem;

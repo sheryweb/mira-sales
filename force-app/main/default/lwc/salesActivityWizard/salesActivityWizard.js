@@ -44,6 +44,9 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
     activities = [];
     types = [];
     rmNames = [];
+    outcomes = [];
+    projectNames = [];
+    otherProjectValue = '';
     weekCount = 0;
     userName = '';
 
@@ -59,6 +62,9 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
 
     numberOfAgents = null;
     description = '';
+    outcome = null;
+    selectedProjects = [];
+    otherProject = '';
 
     rmSearch = '';
     selectedRms = [];
@@ -82,6 +88,9 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
             this.activities = d.activities || [];
             this.types = d.types || [];
             this.rmNames = d.rmNames || [];
+            this.outcomes = d.outcomes || [];
+            this.projectNames = d.projectNames || [];
+            this.otherProjectValue = d.otherProjectValue || 'Other / Upcoming Project';
             this.weekCount = d.weekCount || 0;
             this.userName = d.userName || '';
             this.activityType = d.defaultType || (this.types.length ? this.types[0] : null);
@@ -228,6 +237,39 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
             : 'What was discussed? Client interest, units shown, objections, next step…';
     }
 
+    // projects discussed + outcome chips ----------------------------------------------
+
+    get projectChips() {
+        return this.projectNames.map((name) => ({
+            name,
+            cssClass: this.selectedProjects.includes(name) ? 'chip selected' : 'chip'
+        }));
+    }
+
+    handleProjectToggle(event) {
+        const name = event.currentTarget.dataset.name;
+        this.selectedProjects = this.selectedProjects.includes(name)
+            ? this.selectedProjects.filter((p) => p !== name)
+            : [...this.selectedProjects, name];
+    }
+
+    get isOtherProjectPicked() { return this.selectedProjects.includes(this.otherProjectValue); }
+
+    handleOtherProjectChange(event) {
+        this.otherProject = event.target.value || '';
+    }
+
+    get outcomeChips() {
+        return this.outcomes.map((name) => ({
+            name,
+            cssClass: this.outcome === name ? 'chip selected' : 'chip'
+        }));
+    }
+
+    handleOutcomePick(event) {
+        this.outcome = event.currentTarget.dataset.name;
+    }
+
     // RMs attended type-ahead --------------------------------------------------------
 
     handleRmSearch(event) {
@@ -260,19 +302,18 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
 
     // details validation ---------------------------------------------------------------
 
-    get detailsInvalid() {
-        if (!this.selectedAgency) return true;
-        if (this.description.trim().length < DESCRIPTION_MIN) return true;
-        if (this.isBriefing && (!this.numberOfAgents || this.numberOfAgents < 1)) return true;
-        return false;
-    }
+    get detailsInvalid() { return this.detailsHint !== ''; }
 
     get detailsHint() {
         if (!this.selectedAgency) return 'Select the agency to continue.';
-        if (this.description.trim().length < DESCRIPTION_MIN) return 'Add a short description to continue.';
         if (this.isBriefing && (!this.numberOfAgents || this.numberOfAgents < 1)) {
             return 'Enter how many agents attended.';
         }
+        if (this.isOtherProjectPicked && !this.otherProject.trim()) {
+            return 'Name the project that is not in the list.';
+        }
+        if (this.description.trim().length < DESCRIPTION_MIN) return 'Add a short description to continue.';
+        if (!this.outcome) return 'Pick an outcome — how did it go?';
         return '';
     }
 
@@ -361,7 +402,10 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
             startDateTime: this.startDate.toISOString(),
             endDateTime: this.endDate.toISOString(),
             numberOfAgents: this.numberOfAgents,
-            rmsAttended: this.selectedRms
+            rmsAttended: this.selectedRms,
+            outcome: this.outcome,
+            projectsDiscussed: this.selectedProjects,
+            otherProject: this.otherProject
         };
         this.runBusy('Saving your activity…', async () => {
             const r = await saveActivity({ input });
@@ -396,6 +440,9 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
         this.clientResults = [];
         this.numberOfAgents = null;
         this.description = '';
+        this.outcome = null;
+        this.selectedProjects = [];
+        this.otherProject = '';
         this.selectedRms = [];
         this.rmSearch = '';
         this.activityDate = this.todayIso();

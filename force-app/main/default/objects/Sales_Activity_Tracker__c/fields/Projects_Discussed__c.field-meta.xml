@@ -50,6 +50,11 @@
                 <default>false</default>
                 <label>John Richmond Residences</label>
             </value>
+            <value>
+                <fullName>Other / Upcoming Project</fullName>
+                <default>false</default>
+                <label>Other / Upcoming Project</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
     <visibleLines>4</visibleLines>

@@ -25,6 +25,8 @@ private class SalesActivityWizardControllerTest {
         i.endDateTime = start.addMinutes(90).formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
         i.numberOfAgents = 8;
         i.rmsAttended = new List<String>();
+        i.outcome = 'Strong Interest';
+        i.projectsDiscussed = new List<String>();
         return i;
     }
 
@@ -57,6 +59,9 @@ private class SalesActivityWizardControllerTest {
         SalesActivityWizardController.ActivityInput i = validInput();
         i.clientId = [SELECT Id FROM Account WHERE RecordType.DeveloperName = 'Client' LIMIT 1].Id;
         i.rmsAttended = new List<String>{ 'Abid Gull', 'Ahmad Suleiman' };
+        i.projectsDiscussed = new List<String>{
+            'Trussardi Residences 2', SalesActivityWizardController.OTHER_PROJECT };
+        i.otherProject = 'Marina Launch 2027';
 
         SalesActivityWizardController.SaveResult r = SalesActivityWizardController.saveActivity(i);
 
@@ -64,9 +69,14 @@ private class SalesActivityWizardControllerTest {
         System.assertEquals(1, r.weekCount, 'Week counter includes the new record');
         Sales_Activity_Tracker__c rec = [
             SELECT Activity__c, Type__c, Agency__c, Client__c, Description__c,
-                   Start_Date_Time__c, End_Date_Time__c, Number_of_Agents__c, RMs_Attended__c
+                   Start_Date_Time__c, End_Date_Time__c, Number_of_Agents__c, RMs_Attended__c,
+                   Outcome__c, Projects_Discussed__c, Other_Project_Discussed__c
             FROM Sales_Activity_Tracker__c WHERE Id = :r.recordId
         ];
+        System.assertEquals('Strong Interest', rec.Outcome__c);
+        System.assertEquals('Trussardi Residences 2;' + SalesActivityWizardController.OTHER_PROJECT,
+            rec.Projects_Discussed__c);
+        System.assertEquals('Marina Launch 2027', rec.Other_Project_Discussed__c);
         System.assertEquals('Agency Briefing', rec.Activity__c);
         System.assertEquals('Inbound', rec.Type__c);
         System.assertEquals((Id) i.agencyId, rec.Agency__c);
@@ -115,6 +125,17 @@ private class SalesActivityWizardControllerTest {
         i = validInput();
         i.numberOfAgents = 0;
         expectError(i, 'agents');
+
+        // outcome is required
+        i = validInput();
+        i.outcome = null;
+        expectError(i, 'outcome');
+
+        // picking Other / Upcoming Project requires naming it
+        i = validInput();
+        i.projectsDiscussed = new List<String>{ SalesActivityWizardController.OTHER_PROJECT };
+        i.otherProject = '';
+        expectError(i, 'name the project');
     }
 
     private static void expectError(SalesActivityWizardController.ActivityInput i, String messagePart) {

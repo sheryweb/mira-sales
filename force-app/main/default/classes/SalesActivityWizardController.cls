@@ -15,6 +15,7 @@ public with sharing class SalesActivityWizardController {
 
     @TestVisible private static final Integer MAX_DURATION_HOURS = 16;
     private static final Integer SEARCH_LIMIT = 12;
+    @TestVisible private static final String OTHER_PROJECT = 'Other / Upcoming Project';
 
     public class InitData {
         @AuraEnabled public List<String> activities;
@@ -22,6 +23,9 @@ public with sharing class SalesActivityWizardController {
         @AuraEnabled public String defaultActivity;
         @AuraEnabled public String defaultType;
         @AuraEnabled public List<String> rmNames;
+        @AuraEnabled public List<String> outcomes;
+        @AuraEnabled public List<String> projectNames;
+        @AuraEnabled public String otherProjectValue;
         @AuraEnabled public Integer weekCount;
         @AuraEnabled public String userName;
     }
@@ -42,6 +46,9 @@ public with sharing class SalesActivityWizardController {
         @AuraEnabled public String endDateTime   { get; set; }
         @AuraEnabled public Integer numberOfAgents { get; set; }
         @AuraEnabled public List<String> rmsAttended { get; set; }
+        @AuraEnabled public String outcome { get; set; }
+        @AuraEnabled public List<String> projectsDiscussed { get; set; }
+        @AuraEnabled public String otherProject { get; set; }
     }
 
     public class SaveResult {
@@ -69,6 +76,15 @@ public with sharing class SalesActivityWizardController {
         for (Schema.PicklistEntry e : Sales_Activity_Tracker__c.RMs_Attended__c.getDescribe().getPicklistValues()) {
             if (e.isActive()) d.rmNames.add(e.getValue());
         }
+        d.outcomes = new List<String>();
+        for (Schema.PicklistEntry e : Sales_Activity_Tracker__c.Outcome__c.getDescribe().getPicklistValues()) {
+            if (e.isActive()) d.outcomes.add(e.getValue());
+        }
+        d.projectNames = new List<String>();
+        for (Schema.PicklistEntry e : Sales_Activity_Tracker__c.Projects_Discussed__c.getDescribe().getPicklistValues()) {
+            if (e.isActive()) d.projectNames.add(e.getValue());
+        }
+        d.otherProjectValue = OTHER_PROJECT;
         d.weekCount = myWeekCount();
         d.userName = UserInfo.getFirstName();
         return d;
@@ -121,6 +137,14 @@ public with sharing class SalesActivityWizardController {
                 && (input.numberOfAgents == null || input.numberOfAgents < 1)) {
             throw err('Please enter how many agents attended the briefing.');
         }
+        if (String.isBlank(input.outcome)) {
+            throw err('Please pick an outcome — how did it go?');
+        }
+        Boolean pickedOther = input.projectsDiscussed != null
+            && input.projectsDiscussed.contains(OTHER_PROJECT);
+        if (pickedOther && String.isBlank(input.otherProject)) {
+            throw err('Please name the project you discussed that is not in the list.');
+        }
 
         Sales_Activity_Tracker__c rec = new Sales_Activity_Tracker__c(
             Activity__c = input.activity,
@@ -132,7 +156,11 @@ public with sharing class SalesActivityWizardController {
             End_Date_Time__c = endDt,
             Number_of_Agents__c = input.numberOfAgents,
             RMs_Attended__c = (input.rmsAttended == null || input.rmsAttended.isEmpty())
-                ? null : String.join(input.rmsAttended, ';')
+                ? null : String.join(input.rmsAttended, ';'),
+            Outcome__c = input.outcome,
+            Projects_Discussed__c = (input.projectsDiscussed == null || input.projectsDiscussed.isEmpty())
+                ? null : String.join(input.projectsDiscussed, ';'),
+            Other_Project_Discussed__c = pickedOther ? input.otherProject.trim() : null
         );
         try {
             insert rec;
