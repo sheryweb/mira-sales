@@ -23,6 +23,8 @@
 }
 .hero-titles h1 { font-size: 1.35rem; font-weight: 700; margin: 0; }
 .hero-titles p { margin: 0.25rem 0 0; opacity: 0.75; font-size: 0.85rem; }
+.hero-refresh { display: flex; align-items: center; gap: 0.6rem; }
+.updated-text { font-size: 0.75rem; font-weight: 600; color: #51707a; }
 
 /* ---------- KPI cards ---------- */
 .kpi-grid {

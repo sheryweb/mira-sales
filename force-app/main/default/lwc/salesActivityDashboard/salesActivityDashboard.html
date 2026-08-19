@@ -6,8 +6,12 @@
                 <h1>Sales Activity</h1>
                 <p>Field activity, agency coverage and outcomes — updated live from the tracker.</p>
             </div>
-            <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh"
-                                   title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+            <div class="hero-refresh">
+                <span class="updated-text">{updatedText}</span>
+                <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh"
+                                       title="Refresh" onclick={handleRefresh}
+                                       disabled={isRefreshing}></lightning-button-icon>
+            </div>
         </div>
 
         <template lwc:if={hasError}>
