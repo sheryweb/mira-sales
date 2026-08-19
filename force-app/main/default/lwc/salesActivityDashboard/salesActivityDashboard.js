@@ -18,7 +18,7 @@ export default class SalesActivityDashboard extends LightningElement {
             // fresh stamp per call = cache miss every time; refresh always hits the server
             this.data = await getDashboard({ stamp: String(Date.now()) });
             this.lastUpdated = new Date().toLocaleTimeString('en-GB', {
-                hour: '2-digit', minute: '2-digit', second: '2-digit'
+                hour: '2-digit', minute: '2-digit'
             });
         } catch (e) {
             this.errorMessage =
