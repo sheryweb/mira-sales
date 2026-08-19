@@ -176,6 +176,7 @@
         <excludedStandardButtons>MassChangeOwner</excludedStandardButtons>
         <excludedStandardButtons>PrintableListView</excludedStandardButtons>
         <excludedStandardButtons>MassAssignRecordLabel</excludedStandardButtons>
+        <listViewButtons>Record_Activity</listViewButtons>
         <searchResultsAdditionalFields>Description__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>Agency__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>Activity__c</searchResultsAdditionalFields>
