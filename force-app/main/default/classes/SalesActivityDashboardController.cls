@@ -3,14 +3,29 @@
  * Sales_Activity_Dashboard tab; deliberately NOT part of the dashboard hub / Performance
  * Center — Sheraz 2026-08-19).
  *
- * `without sharing` on purpose: the tracker's OWD is Private, but coverage questions
- * ("which agency has nobody briefed in 60 days?") only make sense org-wide. Read-only
- * aggregates; nothing record-level is exposed beyond agency names and RM names.
+ * Sharing (Sheraz 2026-08-19): the dashboard is scoped BY THE VIEWER'S RECORD ACCESS.
+ * System Administrator (Modify All) and Agency Relationship Manager - Limited (sharing
+ * rule: all internal users' records → their role) see org-wide data; Sales Director MIRA
+ * sees only their team via the role hierarchy. The ONE exception is the agency universe
+ * (Account is Private OWD too): the coverage list must always span every active agency,
+ * so agency NAMES are fetched without sharing — a director's coverage therefore reads
+ * "which agencies has MY team (not) visited", over the full agency list.
  *
  * All date math keys off Start_Date_Time__c (when the activity happened), not CreatedDate
  * (when it was logged) — 30% of records are logged a day or more late.
  */
-public without sharing class SalesActivityDashboardController {
+public with sharing class SalesActivityDashboardController {
+
+    /** Account OWD is Private; the coverage list still needs the full agency universe. */
+    private without sharing class AgencyUniverse {
+        List<Account> fetch() {
+            return [
+                SELECT Id, Name FROM Account
+                WHERE Type = 'Agency' AND Status__c = 'Completed'
+                ORDER BY Name LIMIT 5000
+            ];
+        }
+    }
 
     @TestVisible private static final Integer STALE_DAYS = 60;
     private static final Integer COVERAGE_WINDOW_DAYS = 90;
@@ -141,11 +156,7 @@ public without sharing class SalesActivityDashboardController {
 
     private static List<AgencyRow> buildAgencyCoverage(Datetime windowStart, Kpis kpis) {
         Map<Id, AgencyRow> agencies = new Map<Id, AgencyRow>();
-        for (Account a : [
-            SELECT Id, Name FROM Account
-            WHERE Type = 'Agency' AND Status__c = 'Completed'
-            ORDER BY Name LIMIT 5000
-        ]) {
+        for (Account a : new AgencyUniverse().fetch()) {
             AgencyRow row = new AgencyRow();
             row.id = a.Id;
             row.name = a.Name;
