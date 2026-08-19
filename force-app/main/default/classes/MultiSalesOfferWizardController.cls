@@ -117,10 +117,24 @@ public with sharing class MultiSalesOfferWizardController {
         List<ContentDocumentLink> existing =
             MultipleSalesPDFActionController.querySalesOfferDocumentLinks(linkedIds);
         if (existing.isEmpty()) return;
-        Set<Id> docIds = new Set<Id>();
-        for (ContentDocumentLink l : existing) docIds.add(l.ContentDocumentId);
-        delete existing;
-        delete [SELECT Id FROM ContentDocument WHERE Id IN :docIds];
+        try {
+            new OfferFileCleanup().deleteOffers(existing);
+        } catch (Exception e) {
+            throw new AuraHandledException(
+                'Could not remove the previous sales offer file: ' + e.getMessage());
+        }
+    }
+
+    /** The previous offer file is owned by whoever generated it last, and sales profiles
+     *  cannot delete other users' files under this class's `with sharing`. The flow's
+     *  invocable ran these deletes in system mode; this helper preserves that. */
+    private without sharing class OfferFileCleanup {
+        void deleteOffers(List<ContentDocumentLink> links) {
+            Set<Id> docIds = new Set<Id>();
+            for (ContentDocumentLink l : links) docIds.add(l.ContentDocumentId);
+            delete links;
+            delete [SELECT Id FROM ContentDocument WHERE Id IN :docIds];
+        }
     }
 
     /** Step 2 of generation: render the project's VF page as PDF (callout), then save the
@@ -138,7 +152,12 @@ public with sharing class MultiSalesOfferWizardController {
         pdfPage.getParameters().put('unitIds', joinedIds);
         pdfPage.getParameters().put('sCurrency', selectedCurrency == null ? '' : selectedCurrency);
 
-        Blob pdfBody = Test.isRunningTest() ? Blob.valueOf('TEST') : pdfPage.getContentAsPDF();
+        Blob pdfBody;
+        try {
+            pdfBody = Test.isRunningTest() ? Blob.valueOf('TEST') : pdfPage.getContentAsPDF();
+        } catch (Exception e) {
+            throw new AuraHandledException('The PDF could not be rendered: ' + e.getMessage());
+        }
 
         // Title is set explicitly (the invocable relied on PathOnClient, but a locale date
         // format with slashes truncates the derived title and breaks the 'SALES OFFER'
