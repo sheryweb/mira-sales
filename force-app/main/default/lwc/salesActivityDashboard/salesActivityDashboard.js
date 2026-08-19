@@ -1,30 +1,34 @@
-import { LightningElement, wire } from 'lwc';
-import { refreshApex } from '@salesforce/apex';
+import { LightningElement } from 'lwc';
 import getDashboard from '@salesforce/apex/SalesActivityDashboardController.getDashboard';
 
 export default class SalesActivityDashboard extends LightningElement {
     data;
     errorMessage;
-    wiredResult;
+    isRefreshing = false;
 
-    @wire(getDashboard)
-    wiredDashboard(result) {
-        this.wiredResult = result;
-        if (result.data) {
-            this.data = result.data;
-            this.errorMessage = undefined;
-        } else if (result.error) {
+    connectedCallback() {
+        this.load();
+    }
+
+    async load() {
+        this.isRefreshing = true;
+        this.errorMessage = undefined;
+        try {
+            this.data = await getDashboard();
+        } catch (e) {
             this.errorMessage =
-                (result.error.body && result.error.body.message) || 'The dashboard could not be loaded.';
+                (e && e.body && e.body.message) || 'The dashboard could not be loaded.';
+        } finally {
+            this.isRefreshing = false;
         }
     }
 
-    get isLoading() { return !this.data && !this.errorMessage; }
+    get isLoading() { return this.isRefreshing && !this.data; }
     get hasError() { return Boolean(this.errorMessage); }
 
     handleRefresh() {
-        this.data = undefined;
-        refreshApex(this.wiredResult);
+        if (this.isRefreshing) return;
+        this.load(); // keeps the current numbers on screen while fresh ones arrive
     }
 
     // ---- KPI cards -------------------------------------------------------------

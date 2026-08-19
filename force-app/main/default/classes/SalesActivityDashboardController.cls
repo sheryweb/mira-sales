@@ -58,7 +58,7 @@ public without sharing class SalesActivityDashboardController {
         @AuraEnabled public List<CountRow> otherProjects;
     }
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static Dashboard getDashboard() {
         Date today = Date.today();
         Datetime monthStart = Datetime.newInstance(today.toStartOfMonth(), Time.newInstance(0, 0, 0, 0));
