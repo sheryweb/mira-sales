@@ -418,6 +418,14 @@
                     <div class="column-div" style="width: 50%;">სახელი, გვარი: {!oppData['Opportunity'].Account.Name}</div>
                     <div class="column-div" style="width: 50%;">Name, Surname: {!oppData['Opportunity'].Account.Name}</div>
                 </div>
+                <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', '', 'none')}">
+                    <div class="column-div" style="width: 50%;">ლიცენზიის ნომერი. (For legal entities): {!oppData['licenseNumberValue']}</div>
+                    <div class="column-div" style="width: 50%;">License No. (For legal entities): {!oppData['licenseNumberValue']}</div>
+                </div>
+                <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', '', 'none')}">
+                    <div class="column-div" style="width: 50%;">რეგისტრაციის ქვეყანა: {!oppData['incorporationCountry']}</div>
+                    <div class="column-div" style="width: 50%;">Country of Incorporation: {!oppData['incorporationCountry']}</div>
+                </div>
                 <div class="row-div" style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', 'none', '')}">
                     <div class="column-div" style="width: 50%;">მოქალაქეობა: {!oppData['Opportunity'].Account.Nationality__c}</div>
                     <div class="column-div" style="width: 50%;">Citizenship: {!oppData['Opportunity'].Account.Nationality__c}</div>
@@ -431,8 +439,24 @@
                     <div class="column-div" style="width: 50%;">Personal Number (if any): Not Applicable</div>
                 </div>
                 <div class="row-div">
-                    <div class="column-div" style="width: 50%;">გაცემის ადგილი: {!oppData['Opportunity'].Account.Passport_Place_of_Issue__pc}</div>
-                    <div class="column-div" style="width: 50%;">Place of Issue: {!oppData['Opportunity'].Account.Passport_Place_of_Issue__pc}</div>
+                    <div class="column-div" style="width: 50%;  display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', 'none', '')}">
+                        გაცემის ადგილი: {!oppData['Opportunity'].Account.Passport_Place_of_Issue__pc}
+                        <!--<span style="display: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'none', '')}">რეგისტრაციის ქვეყანა: {!oppData['incorporationCountry']}</span>-->
+                    </div>
+                    <div class="column-div" style="width: 50%; display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', 'none', '')}">
+                        Place of Issue: {!oppData['Opportunity'].Account.Passport_Place_of_Issue__pc}
+                        <!--<span style="display: {!IF(oppData['personAccountRecordType'] == oppData['accountRecordType'], 'none', '')}">Country of Incormporation: {!oppData['incorporationCountry']}</span>-->
+                    </div>
+                  </div>
+                  <div class="row-div">
+                    <div class="column-div" style="width: 50%;">
+                        <span style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', 'none', '')}">გაცემის თარიღი: {!oppData['PassportIssueDate']}</span>
+                        <span style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', '', 'none')}">მოქმედების ვადა: {!oppData['licenseExpiryDate']}</span>
+                    </div>
+                    <div class="column-div" style="width: 50%;">
+                        <span style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', 'none', '')}">Date of Issue: {!oppData['PassportIssueDate']}</span>
+                        <span style="display: {!IF(oppData['Opportunity'].Account.RecordTypeId <> '012Hp000001yUTFIA2', '', 'none')}">License Expiry Date: {!oppData['licenseExpiryDate']}</span>
+                    </div>
                 </div>
                 <div class="row-div">
                     <div class="column-div" style="width: 50%;">რეგისტრაციის მისამართი: {!oppData['Opportunity'].Account.BillingStreet}, {!oppData['Opportunity'].Account.BillingCity}, {!oppData['Opportunity'].Account.BillingCountry}</div>

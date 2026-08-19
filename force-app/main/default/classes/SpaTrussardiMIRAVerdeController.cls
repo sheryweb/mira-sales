@@ -294,7 +294,7 @@ public class SpaTrussardiMIRAVerdeController {
                 Account.Date_of_Birth_Arabic__c, Account.Place_of_Birth__pc, Account.Place_of_Birth_Arabic__pc, Account.Occupation__pc, Account.Occupation_Arabic__pc, Account.Name, Account.Nature_of_Business__pc,
                 Account.Nature_of_Business_Arabic__pc, Account.Person_Account_Salutation__pc, Account.Salutation_Arabic__c, Account.Contact_First_Name_Arabic__pc, Account.Contact_Last_Name_Arabic__pc, Account.Contact_Middle_Name_Arabic__pc, Account.Bank_Name__pc,
                 Account.Bank_Name_Arabic__pc, Account.Subject_to_Sanction__pc, Account.RecordTypeId, toLabel(Account.Nationality__c), Account.Nationality_Arabic__c, Account.Country_of_Incorporation_Arabic__c,
-                Account.Passport_No__c, Account.Passport_Issue_Date__pc, Account.Passport_Place_of_Issue__pc, Account.Visa_Number__pc, Account.Visa_Expire_Date__pc, Account.Visa_Place_Issue__pc, Account.Visa_Place_of_Issue_Arabic__pc, Account.Visa_Date_of_Issue__pc,
+                Account.Passport_No__c, Account.Passport_Issue_Date__pc, Account.Passport_Issue_Date_D__pc, Account.Passport_Place_of_Issue__pc, Account.Visa_Number__pc, Account.Visa_Expire_Date__pc, Account.Visa_Place_Issue__pc, Account.Visa_Place_of_Issue_Arabic__pc, Account.Visa_Date_of_Issue__pc,
                 Account.Emirates_ID_Card_Number__pc, Account.Emirates_ID_Number__pc, Account.Emirates_ID_Expiry_Date__pc, Account.POA_Holder_Name__pc, Account.POA_Holder_Name_Arabic__pc, Account.POA_Holder_Emirates_ID_Number__pc,
                 Account.POA_Holder_Passport_Number__pc, Account.POA_Holder_Passport_Expiry_Date__pc, Account.BillingPostalCode, Account.BillingCity, Account.BillingCountry, Account.BillingStreet, Account.PersonMobilePhone,
                 Account.Phone, Account.PersonEmail, Account.Alternative_Email__c, Account.Postal_Code_Arabic__c, Account.Country_Arabic__c, Account.Address__c, Account.City_Arabic__c, toLabel(Account.Source_of_Funds__pc),
@@ -327,7 +327,12 @@ public class SpaTrussardiMIRAVerdeController {
             String anticipatedCompletionDate = Opportunity.Unit__r.Project_Handover_Date__c != null ? 
                 DateTime.newInstance(Opportunity.Unit__r.Project_Handover_Date__c.year(), Opportunity.Unit__r.Project_Handover_Date__c.month(), Opportunity.Unit__r.Project_Handover_Date__c.day()).format('MMMM yyyy') : '';
             String anticipatedCompletionDateArabic = Opportunity.Unit__r.Project_Handover_Date__c != null ? arabicAnticipatedDate(Opportunity.Unit__r.Project_Handover_Date__c) : null;
-    
+            String passportIssueDate;
+            if(opportunity.Account.Passport_Issue_Date_D__pc != null) {
+                passportIssueDate = DateTime.newInstance(opportunity.Account.Passport_Issue_Date_D__pc.year(),opportunity.Account.Passport_Issue_Date_D__pc.month(),opportunity.Account.Passport_Issue_Date_D__pc.day()).format('dd-MMM-yyyy');
+            } else {
+                passportIssueDate = 'N/A';
+            }
             for (Integer i = 0; i < cashFlows.size(); i++) {
                 if (cashFlows[i].Handover_Payment__c == true) {
                     handOverDateCheck = true;
@@ -375,6 +380,7 @@ public class SpaTrussardiMIRAVerdeController {
             objectValues.put('paymentPlan', paymentPlan);
             objectValues.put('anticipatedDate', anticipatedCompletionDate);
             objectValues.put('anticipatedDateArabic', anticipatedCompletionDateArabic);
+            objectValues.put('PassportIssueDate', passportIssueDate);
             if (paymentPlanContinuation.size() > 0) {
                 objectValues.put('paymentPlanContinuation', paymentPlanContinuation);
             } else {
@@ -558,7 +564,7 @@ public class SpaTrussardiMIRAVerdeController {
                 objectValues.put('jointOwnersOwnership', jointOwnerIdToOwnership);
                 objectValues.put('jointOwnersOwnershipArabic', jointOwnerIdToOwnershipArabic);
                 
-                List<Account> jointOwners = [SELECT Id, RecordTypeId, Trade_License_Number__c, Name, Person_Account_Salutation__pc, toLabel(Nationality__c), Passport_No__c, Passport_Issue_Date__pc, BillingPostalCode, BillingCity, BillingCountry, 
+                List<Account> jointOwners = [SELECT Id, RecordTypeId, Trade_License_Number__c, Name, Person_Account_Salutation__pc, toLabel(Nationality__c), Passport_No__c, Passport_Issue_Date__pc, Passport_Issue_Date_D__pc, BillingPostalCode, BillingCity, BillingCountry, 
                         BillingStreet, PersonMobilePhone, Phone, PersonEmail, Contact_First_Name_Arabic__pc, Contact_Middle_Name_Arabic__pc, Contact_Last_Name_Arabic__pc, Country_of_Incorporation_Arabic__c,
                         Nationality_Arabic__c, Postal_Code_Arabic__c, City_Arabic__c, Country_Arabic__c, Address__c, PersonBirthdate, Date_of_Birth_Arabic__c, Occupation__pc, Occupation_Arabic__pc,
                         Place_of_Birth__pc, Place_of_Birth_Arabic__pc, Nature_of_Business__pc, Nature_of_Business_Arabic__pc, toLabel(Source_of_Funds__pc), Source_of_Funds_Other__pc,
@@ -578,12 +584,18 @@ public class SpaTrussardiMIRAVerdeController {
                 Map<String, String> jointFundSourceArabic = new Map<String, String>();
                 Map<String, String> jointPaymentMethodsArabic = new Map<String, String>();
                 Map<String, String> jointPurchaserArabicName = new Map<String, String>();
+                Map<String, String> jointOwnerIdToPassportIssueDate = new Map<String, String>();
                 String jFullName;
                 String jFullNameArabic;
                 
                 Map<String, Map<String, String>> jpInfo = new Map<String, Map<String, String>>();
                 
                 for (Account account : jointOwners) {
+                    if(account.Passport_Issue_Date_D__pc != null) {
+                        jointOwnerIdToPassportIssueDate.put(account.Id, DateTime.newInstance(account.Passport_Issue_Date_D__pc.year(), account.Passport_Issue_Date_D__pc.month(), account.Passport_Issue_Date_D__pc.day()).format('dd-MMM-yyyy'));
+                    } else {
+                        jointOwnerIdToPassportIssueDate.put(account.Id, 'N/A');
+                    }
                     jpInfo.put(account.Id, new Map<String, String>());
                     jointFundSourceArabic.put(account.Id, arabicConversionFundSource(account.Source_of_Funds__pc));
                     jointPaymentMethodsArabic.put(account.Id, arabicConversionPaymentMethods(account.Payment_methods__pc));
@@ -645,6 +657,7 @@ public class SpaTrussardiMIRAVerdeController {
                 objectValues.put('jointOwnersIncorporationValues', jointOwnerIdToIncorporationCountry);
                 objectValues.put('jointOwnersIncorporationValuesArabic', jointOwnerIdToIncorporationCountryArabic);
                 objectValues.put('jointArabicName', jointPurchaserArabicName);
+                objectValues.put('jointOwnersPassportIssueDate', jointOwnerIdToPassportIssueDate);
             } else {
                 objectValues.put('jointOwners', 'Null');
             }
