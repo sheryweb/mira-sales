@@ -71,6 +71,11 @@ public with sharing class MonthlySalesReportModels {
         @AuraEnabled public Integer rank;
     }
 
+    public class PicklistOptionDTO {
+        @AuraEnabled public String label;
+        @AuraEnabled public String value;
+    }
+
     public class MonthlyReportDTO {
         @AuraEnabled public String reportType;
         @AuraEnabled public String reportTitle;

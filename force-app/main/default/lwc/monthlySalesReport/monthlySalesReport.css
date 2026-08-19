@@ -68,6 +68,10 @@
     min-width: 10rem;
 }
 
+.rm-field {
+    min-width: 12rem;
+}
+
 .download-btn {
     margin-left: 0.25rem;
 }

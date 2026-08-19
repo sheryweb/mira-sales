@@ -73,6 +73,17 @@
                 ></lightning-input>
             </template>
 
+            <lightning-combobox
+                class="period-field rm-field"
+                name="rmName"
+                label="RM Name"
+                value={selectedOwnerId}
+                options={rmOptions}
+                onchange={handleOwnerChange}
+                variant="label-hidden"
+                placeholder="All RMs"
+            ></lightning-combobox>
+
             <lightning-button
                 label="Refresh"
                 onclick={handleRefresh}

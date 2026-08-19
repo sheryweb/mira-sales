@@ -247,7 +247,8 @@ private class MonthlySalesReportServiceTest {
                 null,
                 null,
                 '2026-07-10',
-                '2026-07-20'
+                '2026-07-20',
+                null
             );
         String rangeHtml = MonthlySalesReportController.getReportHtml(
             MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE,
@@ -255,7 +256,8 @@ private class MonthlySalesReportServiceTest {
             null,
             null,
             '2026-07-10',
-            '2026-07-20'
+            '2026-07-20',
+            null
         );
         String rangePdf = MonthlySalesReportController.generatePdf(
             MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE,
@@ -263,7 +265,8 @@ private class MonthlySalesReportServiceTest {
             null,
             null,
             '2026-07-10',
-            '2026-07-20'
+            '2026-07-20',
+            null
         );
 
         PageReference printRef = Page.MonthlySalesReportPrint;
@@ -305,7 +308,8 @@ private class MonthlySalesReportServiceTest {
                 null,
                 null,
                 null,
-                '2026-07-20'
+                '2026-07-20',
+                null
             );
         } catch (AuraHandledException e) {
             missingRangeThrew = true;
@@ -352,14 +356,14 @@ private class MonthlySalesReportServiceTest {
     static void testBuildReportHtmlAndController() {
         Test.startTest();
         String html = MonthlySalesReportController.getReportHtml(
-            MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 7, null, null, null
+            MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 7, null, null, null, null
         );
         MonthlySalesReportModels.MonthlyReportDTO data =
             MonthlySalesReportController.getReportData(
-                MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 7, null, null, null
+                MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 7, null, null, null, null
             );
         String pdfBase64 = MonthlySalesReportController.generatePdf(
-            MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 7, null, null, null
+            MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 7, null, null, null, null
         );
         String pdfFromHtml = MonthlySalesReportController.generatePdfFromHtml(html);
         Id pdfDocId = MonthlySalesReportController.savePdfDocument(
@@ -373,10 +377,10 @@ private class MonthlySalesReportServiceTest {
         // Weekly controller path
         MonthlySalesReportModels.MonthlyReportDTO weekly =
             MonthlySalesReportController.getReportData(
-                MonthlySalesReportModels.REPORT_TYPE_WEEKLY, null, null, '2026-07-15', null, null
+                MonthlySalesReportModels.REPORT_TYPE_WEEKLY, null, null, '2026-07-15', null, null, null
             );
         String weeklyPdf = MonthlySalesReportController.generatePdf(
-            MonthlySalesReportModels.REPORT_TYPE_WEEKLY, null, null, '2026-07-15', null, null
+            MonthlySalesReportModels.REPORT_TYPE_WEEKLY, null, null, '2026-07-15', null, null, null
         );
         Test.stopTest();
 
@@ -449,7 +453,7 @@ private class MonthlySalesReportServiceTest {
         Boolean invalidThrew = false;
         try {
             MonthlySalesReportController.getReportData(
-                MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 0, null, null, null
+                MonthlySalesReportModels.REPORT_TYPE_MONTHLY, 2026, 0, null, null, null, null
             );
         } catch (AuraHandledException e) {
             invalidThrew = true;
@@ -467,7 +471,7 @@ private class MonthlySalesReportServiceTest {
         Boolean weeklyMissingThrew = false;
         try {
             MonthlySalesReportController.getReportData(
-                MonthlySalesReportModels.REPORT_TYPE_WEEKLY, null, null, null, null, null
+                MonthlySalesReportModels.REPORT_TYPE_WEEKLY, null, null, null, null, null, null
             );
         } catch (AuraHandledException e) {
             weeklyMissingThrew = true;
@@ -528,5 +532,178 @@ private class MonthlySalesReportServiceTest {
         System.assert(html.contains('No shared deals this month'), 'Empty shared deals message');
         System.assert(rangeHtml.contains('Sales Monthly Report'), 'Date-range HTML overload');
         System.assert(String.isNotBlank(pdfRange), 'Date-range PDF overload');
+    }
+
+    @IsTest
+    static void testOwnerRmFilterAndOptions() {
+        User ownerA = [
+            SELECT Id, LastName
+            FROM User
+            WHERE LastName = 'OwnerA'
+            ORDER BY CreatedDate DESC
+            LIMIT 1
+        ];
+
+        Test.startTest();
+        List<MonthlySalesReportModels.PicklistOptionDTO> options =
+            MonthlySalesReportController.getRmOptions(
+                MonthlySalesReportModels.REPORT_TYPE_MONTHLY,
+                2026,
+                7,
+                null,
+                null,
+                null
+            );
+        List<MonthlySalesReportModels.PicklistOptionDTO> weeklyOptions =
+            MonthlySalesReportController.getRmOptions(
+                MonthlySalesReportModels.REPORT_TYPE_WEEKLY,
+                null,
+                null,
+                '2026-07-15',
+                null,
+                null
+            );
+        List<MonthlySalesReportModels.PicklistOptionDTO> rangeOptions =
+            MonthlySalesReportController.getRmOptions(
+                MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE,
+                null,
+                null,
+                null,
+                '2026-07-10',
+                '2026-07-20'
+            );
+        MonthlySalesReportModels.MonthlyReportDTO filtered =
+            MonthlySalesReportController.getReportData(
+                MonthlySalesReportModels.REPORT_TYPE_MONTHLY,
+                2026,
+                7,
+                null,
+                null,
+                null,
+                String.valueOf(ownerA.Id)
+            );
+        MonthlySalesReportModels.MonthlyReportDTO weeklyFiltered =
+            MonthlySalesReportController.getReportData(
+                MonthlySalesReportModels.REPORT_TYPE_WEEKLY,
+                null,
+                null,
+                '2026-07-15',
+                null,
+                null,
+                String.valueOf(ownerA.Id)
+            );
+        MonthlySalesReportModels.MonthlyReportDTO rangeFiltered =
+            MonthlySalesReportController.getReportData(
+                MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE,
+                null,
+                null,
+                null,
+                '2026-07-10',
+                '2026-07-20',
+                String.valueOf(ownerA.Id)
+            );
+        String filteredHtml = MonthlySalesReportController.getReportHtml(
+            MonthlySalesReportModels.REPORT_TYPE_MONTHLY,
+            2026,
+            7,
+            null,
+            null,
+            null,
+            String.valueOf(ownerA.Id)
+        );
+        String weeklyPdf = MonthlySalesReportController.generatePdf(
+            MonthlySalesReportModels.REPORT_TYPE_WEEKLY,
+            null,
+            null,
+            '2026-07-15',
+            null,
+            null,
+            String.valueOf(ownerA.Id)
+        );
+        String rangePdf = MonthlySalesReportController.generatePdf(
+            MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE,
+            null,
+            null,
+            null,
+            '2026-07-10',
+            '2026-07-20',
+            String.valueOf(ownerA.Id)
+        );
+
+        PageReference printRef = Page.MonthlySalesReportPrint;
+        printRef.getParameters().put('year', '2026');
+        printRef.getParameters().put('month', '7');
+        printRef.getParameters().put('ownerId', String.valueOf(ownerA.Id));
+        Test.setCurrentPage(printRef);
+        MonthlySalesReportPDFController printCtrl = new MonthlySalesReportPDFController();
+
+        Boolean badOwnerThrew = false;
+        try {
+            MonthlySalesReportController.getReportData(
+                MonthlySalesReportModels.REPORT_TYPE_MONTHLY,
+                2026,
+                7,
+                null,
+                null,
+                null,
+                'not-an-id'
+            );
+        } catch (AuraHandledException e) {
+            badOwnerThrew = true;
+        }
+
+        Boolean missingRmOptionsThrew = false;
+        try {
+            MonthlySalesReportController.getRmOptions(
+                MonthlySalesReportModels.REPORT_TYPE_WEEKLY,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
+        } catch (AuraHandledException e) {
+            missingRmOptionsThrew = true;
+        }
+        Test.stopTest();
+
+        System.assert(options.size() >= 2, 'Expected Sales Manager MIRA RMs in options');
+        System.assertEquals(
+            options.size(),
+            weeklyOptions.size(),
+            'RM options are profile-based and independent of period type'
+        );
+        System.assertEquals(
+            options.size(),
+            rangeOptions.size(),
+            'RM options are profile-based and independent of period type'
+        );
+        Boolean foundOwnerA = false;
+        for (MonthlySalesReportModels.PicklistOptionDTO opt : options) {
+            if (opt.value == String.valueOf(ownerA.Id)) {
+                foundOwnerA = true;
+                System.assert(opt.label.contains('OwnerA'), 'RM label should include last name');
+            }
+        }
+        System.assertEquals(true, foundOwnerA, 'OwnerA (Sales Manager MIRA) should appear in RM options');
+        for (Integer i = 1; i < options.size(); i++) {
+            System.assert(
+                options[i - 1].label.toLowerCase() <= options[i].label.toLowerCase(),
+                'RM options must be alphabetical by displayed name'
+            );
+        }
+        // OwnerA owns single + sharedDiff = 2 deals
+        System.assertEquals(2, filtered.transactionCount, 'Owner filter should limit to OwnerA deals');
+        System.assertEquals(2, weeklyFiltered.transactionCount, 'Weekly owner filter');
+        System.assertEquals(2, rangeFiltered.transactionCount, 'Date-range owner filter');
+        System.assert(String.isNotBlank(filteredHtml), 'Filtered HTML expected');
+        System.assert(String.isNotBlank(weeklyPdf), 'Weekly filtered PDF expected');
+        System.assert(String.isNotBlank(rangePdf), 'Date-range filtered PDF expected');
+        System.assert(
+            String.isNotBlank(printCtrl.htmlContent),
+            'Print page should honor ownerId param'
+        );
+        System.assertEquals(true, badOwnerThrew, 'Invalid ownerId should fail');
+        System.assertEquals(true, missingRmOptionsThrew, 'Weekly RM options require weekStartIso');
     }
 }

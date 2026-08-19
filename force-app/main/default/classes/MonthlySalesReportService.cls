@@ -7,6 +7,12 @@
 public with sharing class MonthlySalesReportService {
     // Include Booked / Sold / Reserved — filtered by booking date in the period, not "current stage = Booked only".
     public static final Set<String> REPORT_STAGES = new Set<String>{ 'Booked', 'Sold', 'Reserved' };
+    // RM Name filter: only Sales Manager profiles (MIRA + Georgia).
+    @TestVisible
+    private static final Set<String> RM_PROFILE_NAMES = new Set<String>{
+        'Sales Manager MIRA',
+        'Sales Manager Georgia'
+    };
     // Keep each logical page under one A4 landscape sheet. Overflow + forced
     // page-break creates a blank physical page between content pages.
     @TestVisible private static final Integer PAGE_1_TRANSACTION_COUNT = 14;
@@ -22,26 +28,49 @@ public with sharing class MonthlySalesReportService {
     // -------------------------------------------------------------------------
 
     public static MonthlySalesReportModels.MonthlyReportDTO buildReport(Integer year, Integer month) {
+        return buildReport(year, month, null);
+    }
+
+    public static MonthlySalesReportModels.MonthlyReportDTO buildReport(
+        Integer year,
+        Integer month,
+        Id ownerId
+    ) {
         validatePeriod(year, month);
         Date startDate = Date.newInstance(year, month, 1);
         Date endDate = startDate.addMonths(1).addDays(-1);
-        return buildReport(MonthlySalesReportModels.REPORT_TYPE_MONTHLY, startDate, endDate);
+        return buildReport(MonthlySalesReportModels.REPORT_TYPE_MONTHLY, startDate, endDate, ownerId);
     }
 
     public static MonthlySalesReportModels.MonthlyReportDTO buildWeeklyReport(Date anyDateInWeek) {
+        return buildWeeklyReport(anyDateInWeek, null);
+    }
+
+    public static MonthlySalesReportModels.MonthlyReportDTO buildWeeklyReport(
+        Date anyDateInWeek,
+        Id ownerId
+    ) {
         if (anyDateInWeek == null) {
             throw new MonthlySalesReportException('Provide a date within the reporting week.');
         }
         Date startDate = weekStartMonday(anyDateInWeek);
         Date endDate = startDate.addDays(6);
-        return buildReport(MonthlySalesReportModels.REPORT_TYPE_WEEKLY, startDate, endDate);
+        return buildReport(MonthlySalesReportModels.REPORT_TYPE_WEEKLY, startDate, endDate, ownerId);
     }
 
     public static MonthlySalesReportModels.MonthlyReportDTO buildDateRangeReport(
         Date startDate,
         Date endDate
     ) {
-        return buildReport(MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE, startDate, endDate);
+        return buildDateRangeReport(startDate, endDate, null);
+    }
+
+    public static MonthlySalesReportModels.MonthlyReportDTO buildDateRangeReport(
+        Date startDate,
+        Date endDate,
+        Id ownerId
+    ) {
+        return buildReport(MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE, startDate, endDate, ownerId);
     }
 
     public static MonthlySalesReportModels.MonthlyReportDTO buildReport(
@@ -49,22 +78,118 @@ public with sharing class MonthlySalesReportService {
         Date startDate,
         Date endDate
     ) {
+        return buildReport(reportType, startDate, endDate, null);
+    }
+
+    public static MonthlySalesReportModels.MonthlyReportDTO buildReport(
+        String reportType,
+        Date startDate,
+        Date endDate,
+        Id ownerId
+    ) {
         validateDateRange(startDate, endDate);
         String normalizedType = normalizeReportType(reportType);
-        List<Opportunity> opportunities = queryOpportunities(startDate, endDate);
+        List<Opportunity> opportunities = queryOpportunities(startDate, endDate, ownerId);
         return assembleReport(normalizedType, startDate, endDate, opportunities);
     }
 
     public static String buildReportHtml(Integer year, Integer month) {
-        return renderHtml(buildReport(year, month));
+        return buildReportHtml(year, month, null);
+    }
+
+    public static String buildReportHtml(Integer year, Integer month, Id ownerId) {
+        return renderHtml(buildReport(year, month, ownerId));
     }
 
     public static String buildReportHtml(Date anyDateInWeek) {
-        return renderHtml(buildWeeklyReport(anyDateInWeek));
+        return buildReportHtml(anyDateInWeek, null);
+    }
+
+    public static String buildReportHtml(Date anyDateInWeek, Id ownerId) {
+        return renderHtml(buildWeeklyReport(anyDateInWeek, ownerId));
     }
 
     public static String buildReportHtml(String reportType, Date startDate, Date endDate) {
-        return renderHtml(buildReport(reportType, startDate, endDate));
+        return buildReportHtml(reportType, startDate, endDate, null);
+    }
+
+    public static String buildReportHtml(
+        String reportType,
+        Date startDate,
+        Date endDate,
+        Id ownerId
+    ) {
+        return renderHtml(buildReport(reportType, startDate, endDate, ownerId));
+    }
+
+    /**
+     * Active Users on Sales Manager MIRA / Sales Manager Georgia profiles for the RM filter.
+     * Period dates are validated so the combobox stays aligned with the selected report window.
+     * Options are sorted A–Z by the displayed name (First Last).
+     */
+    public static List<MonthlySalesReportModels.PicklistOptionDTO> getRmOptions(
+        Date startDate,
+        Date endDate
+    ) {
+        validateDateRange(startDate, endDate);
+
+        List<User> rms = [
+            SELECT Id, Name, FirstName, LastName
+            FROM User
+            WHERE IsActive = TRUE
+              AND Profile.Name IN :RM_PROFILE_NAMES
+        ];
+
+        List<String> sortKeys = new List<String>();
+        Map<String, MonthlySalesReportModels.PicklistOptionDTO> optionBySortKey =
+            new Map<String, MonthlySalesReportModels.PicklistOptionDTO>();
+        for (User rm : rms) {
+            String label = formatUserName(rm);
+            String sortKey = label.toLowerCase() + '|' + String.valueOf(rm.Id);
+            MonthlySalesReportModels.PicklistOptionDTO opt =
+                new MonthlySalesReportModels.PicklistOptionDTO();
+            opt.label = label;
+            opt.value = String.valueOf(rm.Id);
+            sortKeys.add(sortKey);
+            optionBySortKey.put(sortKey, opt);
+        }
+        sortKeys.sort();
+
+        List<MonthlySalesReportModels.PicklistOptionDTO> options =
+            new List<MonthlySalesReportModels.PicklistOptionDTO>();
+        for (String sortKey : sortKeys) {
+            options.add(optionBySortKey.get(sortKey));
+        }
+        return options;
+    }
+
+    /**
+     * Resolves inclusive start/end dates for Monthly, Weekly, or Date Range (no Opportunity query).
+     * @return List of size 2: [startDate, endDate]
+     */
+    public static List<Date> resolvePeriodDates(
+        String reportType,
+        Integer year,
+        Integer month,
+        Date anyDateInWeek,
+        Date rangeStart,
+        Date rangeEnd
+    ) {
+        String normalizedType = normalizeReportType(reportType);
+        if (normalizedType == MonthlySalesReportModels.REPORT_TYPE_WEEKLY) {
+            if (anyDateInWeek == null) {
+                throw new MonthlySalesReportException('Provide a date within the reporting week.');
+            }
+            Date startDate = weekStartMonday(anyDateInWeek);
+            return new List<Date>{ startDate, startDate.addDays(6) };
+        }
+        if (normalizedType == MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE) {
+            validateDateRange(rangeStart, rangeEnd);
+            return new List<Date>{ rangeStart, rangeEnd };
+        }
+        validatePeriod(year, month);
+        Date startDate = Date.newInstance(year, month, 1);
+        return new List<Date>{ startDate, startDate.addMonths(1).addDays(-1) };
     }
 
     /**
@@ -279,6 +404,11 @@ public with sharing class MonthlySalesReportService {
 
     @TestVisible
     private static List<Opportunity> queryOpportunities(Date startDate, Date endDate) {
+        return queryOpportunities(startDate, endDate, null);
+    }
+
+    @TestVisible
+    private static List<Opportunity> queryOpportunities(Date startDate, Date endDate, Id ownerId) {
         Datetime startDt = Datetime.newInstance(startDate.year(), startDate.month(), startDate.day(), 0, 0, 0);
         Date dayAfterEnd = endDate.addDays(1);
         Datetime endExclusive = Datetime.newInstance(
@@ -289,6 +419,30 @@ public with sharing class MonthlySalesReportService {
             0,
             0
         );
+        if (ownerId == null) {
+            return [
+                SELECT Id, Name, StageName, Unit_Price__c, Unit__r.Cost_AED__c, Property_Code__c, Project_Name__c,
+                       Agency_Name__c, Agency__c, Agency__r.Name,
+                       OwnerId, Owner.Name, Owner.FirstName, Owner.LastName, Owner.UserRole.Name,
+                       Manager_Name__c, Manager__c, Manager__r.Name,
+                       Unit_Booked_Date_Only__c, Booking_Date_Time__c,
+                       Share_Deal__c, Shared_RM__c,
+                       Shared_RM__r.Name, Shared_RM__r.FirstName, Shared_RM__r.LastName,
+                       Shared_RM__r.UserRole.Name,
+                       Owner_Credit_Amount__c, Shared_RM_Credit_Amount__c,
+                       (
+                           SELECT Id, RM__c, RM_Name__c, Manager_Name__c, Credit_Percent__c,
+                                  Credit_Amount__c, Is_Primary__c, Deal_Type__c
+                           FROM RM_Deal_Credits__r
+                           ORDER BY Is_Primary__c DESC, RM_Name__c ASC
+                       )
+                FROM Opportunity
+                WHERE StageName IN :REPORT_STAGES
+                  AND Booking_Date_Time__c >= :startDt
+                  AND Booking_Date_Time__c < :endExclusive
+                ORDER BY Booking_Date_Time__c ASC, Property_Code__c ASC, Name ASC
+            ];
+        }
         return [
             SELECT Id, Name, StageName, Unit_Price__c, Unit__r.Cost_AED__c, Property_Code__c, Project_Name__c,
                    Agency_Name__c, Agency__c, Agency__r.Name,
@@ -309,6 +463,7 @@ public with sharing class MonthlySalesReportService {
             WHERE StageName IN :REPORT_STAGES
               AND Booking_Date_Time__c >= :startDt
               AND Booking_Date_Time__c < :endExclusive
+              AND OwnerId = :ownerId
             ORDER BY Booking_Date_Time__c ASC, Property_Code__c ASC, Name ASC
         ];
     }

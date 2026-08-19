@@ -2,6 +2,7 @@ import { LightningElement, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getReportData from '@salesforce/apex/MonthlySalesReportController.getReportData';
 import getReportHtml from '@salesforce/apex/MonthlySalesReportController.getReportHtml';
+import getRmOptions from '@salesforce/apex/MonthlySalesReportController.getRmOptions';
 
 const MONTH_OPTIONS = [
     { label: 'January', value: '1' },
@@ -24,12 +25,15 @@ const REPORT_TYPE_OPTIONS = [
     { label: 'Date Range', value: 'Date Range' }
 ];
 
+const ALL_RMS_OPTION = { label: 'All RMs', value: '' };
+
 export default class MonthlySalesReport extends LightningElement {
     @track report;
     @track reportHtml = '';
     @track isLoading = false;
     @track isDownloading = false;
     @track errorMessage;
+    @track rmOptions = [ALL_RMS_OPTION];
 
     selectedReportType = 'Monthly';
     selectedYear;
@@ -37,6 +41,7 @@ export default class MonthlySalesReport extends LightningElement {
     selectedWeekDate;
     selectedRangeStart;
     selectedRangeEnd;
+    selectedOwnerId = '';
 
     reportTypeOptions = REPORT_TYPE_OPTIONS;
     monthOptions = MONTH_OPTIONS;
@@ -276,11 +281,16 @@ export default class MonthlySalesReport extends LightningElement {
         this.selectedRangeEnd = event.detail.value;
     }
 
+    handleOwnerChange(event) {
+        this.selectedOwnerId = event.detail.value || '';
+    }
+
     handleRefresh() {
         this.loadReport();
     }
 
     reportParams() {
+        const ownerId = this.selectedOwnerId || null;
         if (this.isWeekly) {
             return {
                 reportType: 'Weekly',
@@ -288,7 +298,8 @@ export default class MonthlySalesReport extends LightningElement {
                 month: null,
                 weekStartIso: this.selectedWeekDate,
                 startDateIso: null,
-                endDateIso: null
+                endDateIso: null,
+                ownerId
             };
         }
         if (this.isDateRange) {
@@ -298,7 +309,8 @@ export default class MonthlySalesReport extends LightningElement {
                 month: null,
                 weekStartIso: null,
                 startDateIso: this.selectedRangeStart,
-                endDateIso: this.selectedRangeEnd
+                endDateIso: this.selectedRangeEnd,
+                ownerId
             };
         }
         return {
@@ -307,7 +319,20 @@ export default class MonthlySalesReport extends LightningElement {
             month: parseInt(this.selectedMonth, 10),
             weekStartIso: null,
             startDateIso: null,
-            endDateIso: null
+            endDateIso: null,
+            ownerId
+        };
+    }
+
+    rmOptionParams() {
+        const params = this.reportParams();
+        return {
+            reportType: params.reportType,
+            year: params.year,
+            month: params.month,
+            weekStartIso: params.weekStartIso,
+            startDateIso: params.startDateIso,
+            endDateIso: params.endDateIso
         };
     }
 
@@ -339,12 +364,14 @@ export default class MonthlySalesReport extends LightningElement {
         this.errorMessage = undefined;
         try {
             const params = this.reportParams();
-            const [data, html] = await Promise.all([
+            const [data, html, rms] = await Promise.all([
                 getReportData(params),
-                getReportHtml(params)
+                getReportHtml(params),
+                getRmOptions(this.rmOptionParams())
             ]);
             this.report = data;
             this.reportHtml = html || '';
+            this.rmOptions = [ALL_RMS_OPTION, ...(rms || [])];
         } catch (error) {
             this.report = undefined;
             this.reportHtml = '';
@@ -378,6 +405,9 @@ export default class MonthlySalesReport extends LightningElement {
             } else {
                 qs.set('year', String(params.year));
                 qs.set('month', String(params.month));
+            }
+            if (params.ownerId) {
+                qs.set('ownerId', params.ownerId);
             }
             // Browser HTML page (no renderAs=pdf) → print dialog → Save as PDF (CSS3 works).
             const url = `/apex/MonthlySalesReportPrint?${qs.toString()}`;

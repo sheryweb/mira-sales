@@ -9,6 +9,7 @@ public with sharing class MonthlySalesReportController {
      * @param weekStartIso yyyy-MM-dd any date in the week (Weekly)
      * @param startDateIso yyyy-MM-dd range start (Date Range)
      * @param endDateIso yyyy-MM-dd range end (Date Range)
+     * @param ownerId Opportunity Owner (RM) User Id; blank = all RMs
      */
     @AuraEnabled(cacheable=true)
     public static MonthlySalesReportModels.MonthlyReportDTO getReportData(
@@ -17,10 +18,19 @@ public with sharing class MonthlySalesReportController {
         Integer month,
         String weekStartIso,
         String startDateIso,
-        String endDateIso
+        String endDateIso,
+        String ownerId
     ) {
         try {
-            return resolveReport(reportType, year, month, weekStartIso, startDateIso, endDateIso);
+            return resolveReport(
+                reportType,
+                year,
+                month,
+                weekStartIso,
+                startDateIso,
+                endDateIso,
+                ownerId
+            );
         } catch (Exception e) {
             throw auraError(e, 'Failed to build sales report');
         }
@@ -33,14 +43,47 @@ public with sharing class MonthlySalesReportController {
         Integer month,
         String weekStartIso,
         String startDateIso,
-        String endDateIso
+        String endDateIso,
+        String ownerId
     ) {
         try {
             return MonthlySalesReportService.renderHtml(
-                resolveReport(reportType, year, month, weekStartIso, startDateIso, endDateIso)
+                resolveReport(
+                    reportType,
+                    year,
+                    month,
+                    weekStartIso,
+                    startDateIso,
+                    endDateIso,
+                    ownerId
+                )
             );
         } catch (Exception e) {
             throw auraError(e, 'Failed to render sales report HTML');
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<MonthlySalesReportModels.PicklistOptionDTO> getRmOptions(
+        String reportType,
+        Integer year,
+        Integer month,
+        String weekStartIso,
+        String startDateIso,
+        String endDateIso
+    ) {
+        try {
+            List<Date> bounds = resolvePeriodBounds(
+                reportType,
+                year,
+                month,
+                weekStartIso,
+                startDateIso,
+                endDateIso
+            );
+            return MonthlySalesReportService.getRmOptions(bounds[0], bounds[1]);
+        } catch (Exception e) {
+            throw auraError(e, 'Failed to load RM options');
         }
     }
 
@@ -55,9 +98,11 @@ public with sharing class MonthlySalesReportController {
         Integer month,
         String weekStartIso,
         String startDateIso,
-        String endDateIso
+        String endDateIso,
+        String ownerId
     ) {
         try {
+            Id rmOwnerId = parseOwnerId(ownerId);
             String normalized = String.isBlank(reportType)
                 ? MonthlySalesReportModels.REPORT_TYPE_MONTHLY
                 : reportType;
@@ -69,7 +114,7 @@ public with sharing class MonthlySalesReportController {
                     );
                 }
                 MonthlySalesReportModels.MonthlyReportDTO report =
-                    MonthlySalesReportService.buildWeeklyReport(anyDate);
+                    MonthlySalesReportService.buildWeeklyReport(anyDate, rmOwnerId);
                 return MonthlySalesReportService.generatePdf(
                     MonthlySalesReportModels.REPORT_TYPE_WEEKLY,
                     report.startDate,
@@ -153,6 +198,44 @@ public with sharing class MonthlySalesReportController {
         Integer month,
         String weekStartIso,
         String startDateIso,
+        String endDateIso,
+        String ownerId
+    ) {
+        Id rmOwnerId = parseOwnerId(ownerId);
+        String normalized = String.isBlank(reportType)
+            ? MonthlySalesReportModels.REPORT_TYPE_MONTHLY
+            : reportType;
+
+        if (normalized.equalsIgnoreCase(MonthlySalesReportModels.REPORT_TYPE_WEEKLY)) {
+            Date anyDate = parseIsoDate(weekStartIso, 'weekStartIso');
+            if (anyDate == null) {
+                throw new MonthlySalesReportService.MonthlySalesReportException(
+                    'weekStartIso (yyyy-MM-dd) is required for weekly reports.'
+                );
+            }
+            return MonthlySalesReportService.buildWeeklyReport(anyDate, rmOwnerId);
+        }
+
+        if (normalized.equalsIgnoreCase(MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE)) {
+            Date startDate = parseIsoDate(startDateIso, 'startDateIso');
+            Date endDate = parseIsoDate(endDateIso, 'endDateIso');
+            if (startDate == null || endDate == null) {
+                throw new MonthlySalesReportService.MonthlySalesReportException(
+                    'startDateIso and endDateIso (yyyy-MM-dd) are required for date range reports.'
+                );
+            }
+            return MonthlySalesReportService.buildDateRangeReport(startDate, endDate, rmOwnerId);
+        }
+
+        return MonthlySalesReportService.buildReport(year, month, rmOwnerId);
+    }
+
+    private static List<Date> resolvePeriodBounds(
+        String reportType,
+        Integer year,
+        Integer month,
+        String weekStartIso,
+        String startDateIso,
         String endDateIso
     ) {
         String normalized = String.isBlank(reportType)
@@ -166,7 +249,14 @@ public with sharing class MonthlySalesReportController {
                     'weekStartIso (yyyy-MM-dd) is required for weekly reports.'
                 );
             }
-            return MonthlySalesReportService.buildWeeklyReport(anyDate);
+            return MonthlySalesReportService.resolvePeriodDates(
+                MonthlySalesReportModels.REPORT_TYPE_WEEKLY,
+                null,
+                null,
+                anyDate,
+                null,
+                null
+            );
         }
 
         if (normalized.equalsIgnoreCase(MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE)) {
@@ -177,10 +267,37 @@ public with sharing class MonthlySalesReportController {
                     'startDateIso and endDateIso (yyyy-MM-dd) are required for date range reports.'
                 );
             }
-            return MonthlySalesReportService.buildDateRangeReport(startDate, endDate);
+            return MonthlySalesReportService.resolvePeriodDates(
+                MonthlySalesReportModels.REPORT_TYPE_DATE_RANGE,
+                null,
+                null,
+                null,
+                startDate,
+                endDate
+            );
         }
 
-        return MonthlySalesReportService.buildReport(year, month);
+        return MonthlySalesReportService.resolvePeriodDates(
+            MonthlySalesReportModels.REPORT_TYPE_MONTHLY,
+            year,
+            month,
+            null,
+            null,
+            null
+        );
+    }
+
+    private static Id parseOwnerId(String ownerId) {
+        if (String.isBlank(ownerId)) {
+            return null;
+        }
+        try {
+            return Id.valueOf(ownerId.trim());
+        } catch (Exception e) {
+            throw new MonthlySalesReportService.MonthlySalesReportException(
+                'ownerId must be a valid User Id. Received: ' + ownerId
+            );
+        }
     }
 
     private static Date parseIsoDate(String iso, String fieldLabel) {

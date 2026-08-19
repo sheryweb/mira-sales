@@ -27,6 +27,7 @@ public with sharing class MonthlySalesReportPDFController {
     private static String buildHtmlFromParams() {
         String reportType = ApexPages.currentPage().getParameters().get('reportType');
         String weekStartIso = ApexPages.currentPage().getParameters().get('weekStartIso');
+        Id ownerId = parseOwnerIdParam();
         Date startDate = parseDateParam('startDate');
         Date endDate = parseDateParam('endDate');
 
@@ -40,14 +41,14 @@ public with sharing class MonthlySalesReportPDFController {
             if (anyDate == null) {
                 anyDate = Date.today();
             }
-            return MonthlySalesReportService.buildReportHtml(anyDate);
+            return MonthlySalesReportService.buildReportHtml(anyDate, ownerId);
         }
 
         if (startDate != null && endDate != null) {
             String type = String.isBlank(reportType)
                 ? MonthlySalesReportModels.REPORT_TYPE_MONTHLY
                 : reportType;
-            return MonthlySalesReportService.buildReportHtml(type, startDate, endDate);
+            return MonthlySalesReportService.buildReportHtml(type, startDate, endDate, ownerId);
         }
 
         Integer year = parseIntParam('year');
@@ -57,7 +58,7 @@ public with sharing class MonthlySalesReportPDFController {
             year = today.year();
             month = today.month();
         }
-        return MonthlySalesReportService.buildReportHtml(year, month);
+        return MonthlySalesReportService.buildReportHtml(year, month, ownerId);
     }
 
     private static Boolean isPrintPage() {
@@ -99,6 +100,18 @@ public with sharing class MonthlySalesReportPDFController {
         }
         try {
             return Integer.valueOf(raw);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static Id parseOwnerIdParam() {
+        String raw = ApexPages.currentPage().getParameters().get('ownerId');
+        if (String.isBlank(raw)) {
+            return null;
+        }
+        try {
+            return Id.valueOf(raw.trim());
         } catch (Exception e) {
             return null;
         }
