@@ -5,6 +5,7 @@
 public with sharing class SpaReadyNotification {
     
     private static final String PERSON_ACCOUNT_RECORD_TYPE_ID = '012Hp000001yUTFIA2';
+    private static final String COMPANY_ACCOUNT_RECORD_TYPE_ID = '012Hp000001yiSEIAY';
     private static final List<String> CC_EMAIL_ADDRESSES = new List<String>{
         'maria.d@miradevelopments.ae',
         'jad.orabi@miradevelopments.ae',
@@ -105,11 +106,13 @@ public with sharing class SpaReadyNotification {
                 
                 // Conditional logic for Email and Phone based on Account Record Type
                 if (opp.Account.RecordTypeId == PERSON_ACCOUNT_RECORD_TYPE_ID) {
-                    // For Person Account Record Type, use Person fields from Account
                     output.accountEmail = opp.Account.PersonEmail;
                     output.accountMobilePhone = opp.Account.PersonMobilePhone;
+                } else if (opp.Account.RecordTypeId == COMPANY_ACCOUNT_RECORD_TYPE_ID) {
+                    output.accountEmail = opp.Account.Company_Email__c;
+                    output.accountMobilePhone = opp.Account.Phone;
+                    output.accountName = opp.Account.Name;
                 } else {
-                    // For other Record Types, fetch from related Contact
                     List<Contact> relatedContacts = [
                         SELECT Email, MobilePhone, Name
                         FROM Contact
