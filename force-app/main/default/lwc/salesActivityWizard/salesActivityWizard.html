@@ -74,7 +74,7 @@
                             </template>
                             <template lwc:else>
                                 <lightning-input variant="label-hidden" type="search" placeholder="Search agencies…"
-                                                 value={agencyTerm} oninput={handleAgencyInput}></lightning-input>
+                                                 value={agencyTerm} onchange={handleAgencyInput}></lightning-input>
                                 <template lwc:if={showAgencyResults}>
                                     <ul class="lookup-results">
                                         <template for:each={agencyResults} for:item="r">
@@ -97,7 +97,7 @@
                             </template>
                             <template lwc:else>
                                 <lightning-input variant="label-hidden" type="search" placeholder="Search clients…"
-                                                 value={clientTerm} oninput={handleClientInput}></lightning-input>
+                                                 value={clientTerm} onchange={handleClientInput}></lightning-input>
                                 <template lwc:if={showClientResults}>
                                     <ul class="lookup-results">
                                         <template for:each={clientResults} for:item="r">
@@ -119,7 +119,7 @@
                         <div class="field-block lookup-block">
                             <span class="field-label">Other RMs who attended (optional)</span>
                             <lightning-input variant="label-hidden" type="search" placeholder="Type a name…"
-                                             value={rmSearch} oninput={handleRmSearch}></lightning-input>
+                                             value={rmSearch} onchange={handleRmSearch}></lightning-input>
                             <template lwc:if={showRmOptions}>
                                 <ul class="lookup-results">
                                     <template for:each={rmOptions} for:item="r">
