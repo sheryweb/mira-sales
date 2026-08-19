@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Projects_Discussed__c</fullName>
+    <label>Projects Discussed</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Trussardi Residences</fullName>
+                <default>false</default>
+                <label>Trussardi Residences</label>
+            </value>
+            <value>
+                <fullName>MIRA Villas Designed by Bentley Home</fullName>
+                <default>false</default>
+                <label>MIRA Villas Designed by Bentley Home</label>
+            </value>
+            <value>
+                <fullName>Trussardi Residences 2</fullName>
+                <default>false</default>
+                <label>Trussardi Residences 2</label>
+            </value>
+            <value>
+                <fullName>POST HOTEL &amp; RESIDENCES By ELIE SAAB</fullName>
+                <default>false</default>
+                <label>POST HOTEL &amp; RESIDENCES By ELIE SAAB</label>
+            </value>
+            <value>
+                <fullName>GIANFRANCO FERRE RESIDENCES</fullName>
+                <default>false</default>
+                <label>GIANFRANCO FERRE RESIDENCES</label>
+            </value>
+            <value>
+                <fullName>Trussardi Residences 2 Offices</fullName>
+                <default>false</default>
+                <label>Trussardi Residences 2 Offices</label>
+            </value>
+            <value>
+                <fullName>Trussardi Residences MIRA VERDE</fullName>
+                <default>false</default>
+                <label>Trussardi Residences MIRA VERDE</label>
+            </value>
+            <value>
+                <fullName>John Richmond Residences</fullName>
+                <default>false</default>
+                <label>John Richmond Residences</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>
