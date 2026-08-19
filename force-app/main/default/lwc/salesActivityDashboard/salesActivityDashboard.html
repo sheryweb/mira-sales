@@ -1,0 +1,150 @@
+<template>
+    <div class="board">
+
+        <div class="hero">
+            <div class="hero-titles">
+                <h1>Sales Activity</h1>
+                <p>Field activity, agency coverage and outcomes — updated live from the tracker.</p>
+            </div>
+            <lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh"
+                                   title="Refresh" onclick={handleRefresh}></lightning-button-icon>
+        </div>
+
+        <template lwc:if={hasError}>
+            <div class="panel error-state">
+                <lightning-icon icon-name="utility:error" size="medium"></lightning-icon>
+                <p>{errorMessage}</p>
+            </div>
+        </template>
+
+        <template lwc:if={isLoading}>
+            <div class="panel loading-state">
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <template lwc:if={data}>
+
+            <!-- KPI row -->
+            <div class="kpi-grid">
+                <template for:each={kpiCards} for:item="k">
+                    <div key={k.id} class={k.cssClass}>
+                        <span class="kpi-icon"><lightning-icon icon-name={k.icon} size="x-small" variant="inverse"></lightning-icon></span>
+                        <span class="kpi-value">{k.value}</span>
+                        <span class="kpi-label">{k.label}</span>
+                    </div>
+                </template>
+            </div>
+
+            <div class="two-col">
+                <!-- agencies needing attention -->
+                <div class="panel">
+                    <h2 class="panel-title">Agencies needing attention</h2>
+                    <p class="panel-sub">{attentionSummary}</p>
+                    <template lwc:if={hasAttention}>
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr><th>Agency</th><th>Last activity</th><th></th><th class="num">90-day visits</th></tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={attentionRows} for:item="a">
+                                        <tr key={a.id}>
+                                            <td class="strong">{a.name}</td>
+                                            <td>{a.lastDisplay}</td>
+                                            <td><span class={a.rowClass}>{a.sinceDisplay}</span></td>
+                                            <td class="num">{a.count90}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                    <template lwc:else>
+                        <div class="empty-state">
+                            <lightning-icon icon-name="utility:success" size="small"></lightning-icon>
+                            <p>Every agency has been visited in the last 60 days. 🎉</p>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- per-RM matrix -->
+                <div class="panel">
+                    <h2 class="panel-title">RM activity this month</h2>
+                    <p class="panel-sub">Greyed rows have logged nothing this week</p>
+                    <template lwc:if={hasRms}>
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr><th>RM</th><th class="num">Week</th><th class="num">Month</th><th class="num">Hours</th><th class="num">Briefings</th><th class="num">Meetings</th><th>Last</th></tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={rmRows} for:item="r">
+                                        <tr key={r.name} class={r.rowClass}>
+                                            <td class="strong">{r.name}</td>
+                                            <td class="num">{r.weekCount}</td>
+                                            <td class="num">{r.monthCount}</td>
+                                            <td class="num">{r.hoursDisplay}</td>
+                                            <td class="num">{r.briefings}</td>
+                                            <td class="num">{r.meetings}</td>
+                                            <td>{r.lastLogged}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                    <template lwc:else>
+                        <div class="empty-state"><p>No activities logged this month yet.</p></div>
+                    </template>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <!-- outcomes -->
+                <div class="panel">
+                    <h2 class="panel-title">Outcomes this month</h2>
+                    <template lwc:if={hasOutcomes}>
+                        <ul class="bars">
+                            <template for:each={outcomeRows} for:item="o">
+                                <li key={o.name}>
+                                    <span class="bar-label">{o.name}</span>
+                                    <span class="bar-track"><span class="bar-fill" style={o.barStyle}></span></span>
+                                    <span class="bar-count">{o.count}</span>
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+                    <template lwc:else>
+                        <div class="empty-state"><p>No outcomes recorded yet — they arrive with the new wizard.</p></div>
+                    </template>
+                </div>
+
+                <!-- unlisted projects -->
+                <div class="panel">
+                    <h2 class="panel-title">Unlisted projects mentioned (90 days)</h2>
+                    <p class="panel-sub">Recorded via "Other / Upcoming Project" — repeated names are demand signals</p>
+                    <template lwc:if={hasOtherProjects}>
+                        <div class="table-scroll">
+                            <table>
+                                <thead><tr><th>Project name (as typed)</th><th class="num">Mentions</th></tr></thead>
+                                <tbody>
+                                    <template for:each={otherProjectRows} for:item="p">
+                                        <tr key={p.name}>
+                                            <td class="strong">{p.name}</td>
+                                            <td class="num">{p.count}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                    <template lwc:else>
+                        <div class="empty-state"><p>Nothing unlisted mentioned recently.</p></div>
+                    </template>
+                </div>
+            </div>
+
+        </template>
+    </div>
+</template>
