@@ -167,7 +167,14 @@ export default class NGeniusPaymentLink extends NavigationMixin(
         referenceNote: this.form.referenceNote,
         message: this.form.message
       };
-      this.result = await createPaymentLink({ request });
+      const outcome = await createPaymentLink({ request });
+      if (!outcome.success) {
+        // Gateway-side failure: the controller returns (not throws) so the Error
+        // audit record survives the transaction. Render it like any other error.
+        this.showError(outcome.errorMessage);
+        return;
+      }
+      this.result = outcome;
       this.toast(
         "Payment link sent",
         `N-Genius emailed the link to ${this.result.recipientEmail}.`,
@@ -175,18 +182,22 @@ export default class NGeniusPaymentLink extends NavigationMixin(
       );
       refreshApex(this.wiredLinksResult);
     } catch (e) {
-      this.errorText = this.extractError(e);
-      this.dispatchEvent(
-        new ShowToastEvent({
-          title: "Payment link failed",
-          message: this.errorText,
-          variant: "error",
-          mode: "sticky"
-        })
-      );
+      this.showError(this.extractError(e));
     } finally {
       this.isWorking = false;
     }
+  }
+
+  showError(message) {
+    this.errorText = message;
+    this.dispatchEvent(
+      new ShowToastEvent({
+        title: "Payment link failed",
+        message,
+        variant: "error",
+        mode: "sticky"
+      })
+    );
   }
 
   createAnother() {

@@ -54,6 +54,18 @@ private class NGeniusPaymentLinkTest {
     }
   }
 
+  /** Gateway-side failures RETURN success=false (so the Error record commits). */
+  private static String createExpectingFailure(
+    NGeniusPaymentLinkController.LinkRequest r
+  ) {
+    NGeniusPaymentLinkController.LinkResult result = NGeniusPaymentLinkController.createPaymentLink(
+      r
+    );
+    Assert.isFalse(result.success, 'Gateway failure returns success=false');
+    Assert.isTrue(String.isNotBlank(result.errorMessage));
+    return result.errorMessage;
+  }
+
   // 1. Happy path
   @IsTest
   static void happyPathCreatesLinkAndAuditRecord() {
@@ -210,7 +222,7 @@ private class NGeniusPaymentLinkTest {
     );
 
     Test.startTest();
-    String message = createExpectingError(validRequest());
+    String message = createExpectingFailure(validRequest());
     Test.stopTest();
 
     Assert.isTrue(
@@ -242,7 +254,7 @@ private class NGeniusPaymentLinkTest {
     );
 
     Test.startTest();
-    String message = createExpectingError(validRequest());
+    String message = createExpectingFailure(validRequest());
     Test.stopTest();
 
     Assert.isTrue(
@@ -295,7 +307,7 @@ private class NGeniusPaymentLinkTest {
     );
 
     Test.startTest();
-    String message = createExpectingError(validRequest());
+    String message = createExpectingFailure(validRequest());
     Test.stopTest();
 
     Assert.isTrue(
@@ -316,7 +328,7 @@ private class NGeniusPaymentLinkTest {
     );
 
     Test.startTest();
-    String message = createExpectingError(validRequest());
+    String message = createExpectingFailure(validRequest());
     Test.stopTest();
 
     Assert.isTrue(

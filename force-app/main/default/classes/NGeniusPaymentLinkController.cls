@@ -67,6 +67,8 @@ public with sharing class NGeniusPaymentLinkController {
     public Boolean smsSent;
     @AuraEnabled
     public String warning;
+    @AuraEnabled
+    public String errorMessage; // set when success = false
   }
 
   public class Option {
@@ -196,10 +198,16 @@ public with sharing class NGeniusPaymentLinkController {
 
       invoice = NGeniusInvoiceService.createInvoice(input);
     } catch (NGeniusException e) {
-      // Only log an Error record when N-Genius actually responded — local validation
-      // failures are user-input noise and must not clutter the audit trail.
+      // Gateway-side failures (N-Genius actually responded) RETURN a failure result
+      // instead of throwing: a thrown exception rolls back the whole transaction and
+      // the Error audit record would silently vanish. Local validation failures are
+      // user-input noise — they still throw, and log nothing.
       if (e.statusCode != null) {
         logErrorRecord(input, e);
+        LinkResult failed = new LinkResult();
+        failed.success = false;
+        failed.errorMessage = e.userMessage();
+        return failed;
       }
       throw uiError(e.userMessage());
     } catch (Exception e) {
