@@ -267,6 +267,15 @@
                     </div>
                     <h2>{doneTitle}</h2>
                     <p class="result-sub">{doneMessage}</p>
+                    <div class="target-box">
+                        <span class="field-label">Your weekly target</span>
+                        <template for:each={targetBars} for:item="t">
+                            <div key={t.id} class="target-row">
+                                <span class="target-label">{t.label}</span>
+                                <span class="target-track"><span class={t.barClass} style={t.barStyle}></span></span>
+                            </div>
+                        </template>
+                    </div>
                     <div class="proof-box">
                         <span class="field-label">Proof of activity (optional)</span>
                         <p class="proof-hint">Add photos from the briefing or meeting — they are saved to this activity's files.</p>

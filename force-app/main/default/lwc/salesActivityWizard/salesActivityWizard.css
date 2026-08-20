@@ -203,6 +203,30 @@
 }
 .footer-hint { margin-right: auto; font-size: 0.78rem; color: #b45309; font-weight: 600; }
 
+/* weekly target progress on the done screen */
+.target-box {
+    max-width: 26rem;
+    margin: 0 auto 1rem;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fafdfe;
+    text-align: left;
+}
+.target-row {
+    display: grid; grid-template-columns: 9.5rem 1fr;
+    align-items: center; gap: 0.6rem; margin-top: 0.55rem;
+}
+.target-label { font-size: 0.78rem; font-weight: 600; color: var(--ink); }
+.target-track {
+    height: 0.85rem; border-radius: 999px; background: #eef4f6; overflow: hidden;
+}
+.target-fill {
+    display: block; height: 100%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+}
+.target-fill.met { background: linear-gradient(90deg, #12805c, #2e9967); }
+
 /* proof-of-activity upload on the done screen */
 .proof-box {
     max-width: 26rem;

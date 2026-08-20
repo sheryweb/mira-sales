@@ -27,6 +27,10 @@ public with sharing class SalesActivityWizardController {
         @AuraEnabled public List<String> projectNames;
         @AuraEnabled public String otherProjectValue;
         @AuraEnabled public Integer weekCount;
+        @AuraEnabled public Integer weekInbound;
+        @AuraEnabled public Integer weekOutbound;
+        @AuraEnabled public Integer inboundTarget;
+        @AuraEnabled public Integer outboundTarget;
         @AuraEnabled public String userName;
     }
 
@@ -57,6 +61,10 @@ public with sharing class SalesActivityWizardController {
         @AuraEnabled public String recordId;
         @AuraEnabled public String recordName;
         @AuraEnabled public Integer weekCount;
+        @AuraEnabled public Integer weekInbound;
+        @AuraEnabled public Integer weekOutbound;
+        @AuraEnabled public Integer inboundTarget;
+        @AuraEnabled public Integer outboundTarget;
         @AuraEnabled public String followUpDate; // formatted, null when none was created
     }
 
@@ -88,7 +96,12 @@ public with sharing class SalesActivityWizardController {
             if (e.isActive()) d.projectNames.add(e.getValue());
         }
         d.otherProjectValue = OTHER_PROJECT;
-        d.weekCount = myWeekCount();
+        WeekProgress wp = myWeekProgress();
+        d.weekCount = wp.total;
+        d.weekInbound = wp.inbound;
+        d.weekOutbound = wp.outbound;
+        d.inboundTarget = wp.inboundTarget;
+        d.outboundTarget = wp.outboundTarget;
         d.userName = UserInfo.getFirstName();
         return d;
     }
@@ -185,7 +198,12 @@ public with sharing class SalesActivityWizardController {
         SaveResult r = new SaveResult();
         r.recordId = rec.Id;
         r.recordName = [SELECT Name FROM Sales_Activity_Tracker__c WHERE Id = :rec.Id].Name;
-        r.weekCount = myWeekCount();
+        WeekProgress wp = myWeekProgress();
+        r.weekCount = wp.total;
+        r.weekInbound = wp.inbound;
+        r.weekOutbound = wp.outbound;
+        r.inboundTarget = wp.inboundTarget;
+        r.outboundTarget = wp.outboundTarget;
 
         if (followUp != null) {
             String agencyName = [SELECT Name FROM Account WHERE Id = :(Id) input.agencyId].Name;
@@ -210,11 +228,37 @@ public with sharing class SalesActivityWizardController {
 
     // ---- helpers -----------------------------------------------------------------
 
-    private static Integer myWeekCount() {
-        return [
-            SELECT COUNT() FROM Sales_Activity_Tracker__c
-            WHERE OwnerId = :UserInfo.getUserId() AND CreatedDate = THIS_WEEK
-        ];
+    private class WeekProgress {
+        Integer total = 0;
+        Integer inbound = 0;   // Type__c Inbound/Online/blank — Online counts as inbound
+        Integer outbound = 0;  // Type__c Outbound
+        Integer inboundTarget;
+        Integer outboundTarget;
+    }
+
+    /** This week's counts vs the Sales_Activity_Target.Default CMDT targets. Keyed on
+     *  Start_Date_Time__c (when it happened) to match the dashboard leaderboard. */
+    private static WeekProgress myWeekProgress() {
+        WeekProgress wp = new WeekProgress();
+        wp.inboundTarget = weeklyTarget('Weekly_Inbound_Target__c', 12);
+        wp.outboundTarget = weeklyTarget('Weekly_Outbound_Target__c', 4);
+        for (AggregateResult ar : [
+            SELECT Type__c t, COUNT(Id) c FROM Sales_Activity_Tracker__c
+            WHERE OwnerId = :UserInfo.getUserId() AND Start_Date_Time__c = THIS_WEEK
+            GROUP BY Type__c
+        ]) {
+            Integer c = (Integer) ar.get('c');
+            wp.total += c;
+            if ((String) ar.get('t') == 'Outbound') wp.outbound += c;
+            else wp.inbound += c;
+        }
+        return wp;
+    }
+
+    private static Integer weeklyTarget(String fieldName, Integer fallback) {
+        Sales_Activity_Target__mdt config = Sales_Activity_Target__mdt.getInstance('Default');
+        if (config == null || config.get(fieldName) == null) return fallback;
+        return ((Decimal) config.get(fieldName)).intValue();
     }
 
     private static String likeTerm(String term) {

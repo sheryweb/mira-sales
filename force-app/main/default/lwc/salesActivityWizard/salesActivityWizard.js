@@ -48,6 +48,10 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
     projectNames = [];
     otherProjectValue = '';
     weekCount = 0;
+    weekInbound = 0;
+    weekOutbound = 0;
+    inboundTarget = 12;
+    outboundTarget = 4;
     userName = '';
 
     activity = null;
@@ -98,6 +102,10 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
             this.projectNames = d.projectNames || [];
             this.otherProjectValue = d.otherProjectValue || 'Other / Upcoming Project';
             this.weekCount = d.weekCount || 0;
+            this.weekInbound = d.weekInbound || 0;
+            this.weekOutbound = d.weekOutbound || 0;
+            this.inboundTarget = d.inboundTarget || 12;
+            this.outboundTarget = d.outboundTarget || 4;
             this.userName = d.userName || '';
             this.activityType = d.defaultType || (this.types.length ? this.types[0] : null);
             this.initLoaded = true;
@@ -126,8 +134,7 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
     }
 
     get weekChipText() {
-        const n = this.weekCount;
-        return `${n} logged this week`;
+        return `This week: ${this.weekInbound}/${this.inboundTarget} in · ${this.weekOutbound}/${this.outboundTarget} out`;
     }
 
     // ---- step 1 : activity ------------------------------------------------------
@@ -435,17 +442,38 @@ export default class SalesActivityWizard extends NavigationMixin(LightningElemen
             this.recordId = r.recordId;
             this.recordName = r.recordName;
             this.weekCount = r.weekCount;
+            this.weekInbound = r.weekInbound || 0;
+            this.weekOutbound = r.weekOutbound || 0;
+            this.inboundTarget = r.inboundTarget || this.inboundTarget;
+            this.outboundTarget = r.outboundTarget || this.outboundTarget;
             this.savedFollowUp = r.followUpDate || null;
             this.step = STEP_DONE;
         });
     }
 
     get doneTitle() { return `Activity ${this.recordName} saved`; }
+    get targetsMet() {
+        return this.weekInbound >= this.inboundTarget && this.weekOutbound >= this.outboundTarget;
+    }
     get doneMessage() {
         const n = this.weekCount;
-        const praise = n >= 10 ? 'Great momentum!' : (n >= 5 ? 'Nice pace!' : '');
+        const praise = this.targetsMet
+            ? 'Weekly target met — brilliant!'
+            : (n >= 10 ? 'Great momentum!' : (n >= 5 ? 'Nice pace!' : ''));
         const followUp = this.savedFollowUp ? ` A follow-up task is set for ${this.savedFollowUp}.` : '';
         return `That's ${n} activit${n === 1 ? 'y' : 'ies'} logged this week.${followUp} ${praise}`.trim();
+    }
+    get targetBars() {
+        const bar = (id, label, count, target) => ({
+            id, count, target,
+            label: `${label} · ${count} of ${target}`,
+            barClass: count >= target ? 'target-fill met' : 'target-fill',
+            barStyle: `width: ${Math.min(Math.round((count / (target || 1)) * 100), 100)}%`
+        });
+        return [
+            bar('inbound', 'Inbound', this.weekInbound, this.inboundTarget),
+            bar('outbound', 'Outbound', this.weekOutbound, this.outboundTarget)
+        ];
     }
 
     get proofFormats() { return ['.jpg', '.jpeg', '.png', '.heic', '.webp', '.pdf']; }

@@ -20,7 +20,8 @@ private class SalesActivityWizardControllerTest {
         i.activityType = 'Inbound';
         i.agencyId = [SELECT Id FROM Account WHERE Name = 'Wizard Test Agency'].Id;
         i.description = 'Briefed the team on the new MIRA Verde launch and payment plans.';
-        Datetime start = Datetime.newInstance(2026, 8, 19, 10, 0, 0);
+        // today at 10:00 — keeps the record inside THIS_WEEK for the week-progress counters
+        Datetime start = Datetime.newInstance(Date.today(), Time.newInstance(10, 0, 0, 0));
         i.startDateTime = start.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
         i.endDateTime = start.addMinutes(90).formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
         i.numberOfAgents = 8;
@@ -37,6 +38,8 @@ private class SalesActivityWizardControllerTest {
         System.assert(d.types.contains('Inbound'), 'Type values from the value set');
         System.assertNotEquals(0, d.rmNames.size(), 'RM names loaded from RMs_Attended__c');
         System.assertEquals(0, d.weekCount, 'No activities logged yet this week');
+        System.assert(d.inboundTarget > 0, 'Inbound target read from CMDT');
+        System.assert(d.outboundTarget > 0, 'Outbound target read from CMDT');
     }
 
     @IsTest
@@ -67,6 +70,9 @@ private class SalesActivityWizardControllerTest {
 
         System.assertNotEquals(null, r.recordId);
         System.assertEquals(1, r.weekCount, 'Week counter includes the new record');
+        System.assertEquals(1, r.weekInbound, 'Inbound activity counts toward the inbound target');
+        System.assertEquals(0, r.weekOutbound);
+        System.assert(r.inboundTarget > 0 && r.outboundTarget > 0, 'Targets returned with the save');
         Sales_Activity_Tracker__c rec = [
             SELECT Activity__c, Type__c, Agency__c, Client__c, Description__c,
                    Start_Date_Time__c, End_Date_Time__c, Number_of_Agents__c, RMs_Attended__c,
@@ -142,7 +148,7 @@ private class SalesActivityWizardControllerTest {
 
         // duration cap
         i = validInput();
-        Datetime start = Datetime.newInstance(2026, 8, 19, 10, 0, 0);
+        Datetime start = Datetime.newInstance(Date.today(), Time.newInstance(10, 0, 0, 0));
         i.endDateTime = start.addHours(SalesActivityWizardController.MAX_DURATION_HOURS + 1)
             .formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
         expectError(i, 'longer than');
