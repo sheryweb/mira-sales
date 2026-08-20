@@ -96,6 +96,8 @@ public with sharing class NGeniusPaymentLinkController {
     @AuraEnabled
     public Decimal minimumAmount; // 0 = no minimum
     @AuraEnabled
+    public Boolean smsEnabled;
+    @AuraEnabled
     public String environmentName;
     @AuraEnabled
     public Boolean canGenerate;
@@ -120,6 +122,7 @@ public with sharing class NGeniusPaymentLinkController {
       d.defaultCountryCode = '+971';
       d.expiryDays = NGeniusConfig.defaultExpiryDays();
       d.minimumAmount = NGeniusConfig.minimumAmount();
+      d.smsEnabled = NGeniusConfig.sendSms();
       d.defaultExpiryDate = String.valueOf(Date.today().addDays(d.expiryDays));
       d.currencyOptions = new List<Option>{
         new Option('AED — UAE Dirham', 'AED'),
@@ -287,7 +290,8 @@ public with sharing class NGeniusPaymentLinkController {
       ' ' +
       String.valueOf(input.amount.setScale(2, System.RoundingMode.HALF_UP));
     result.expiryDate = String.valueOf(input.expiryDate);
-    result.smsSent = String.isNotBlank(input.mobileNumber);
+    result.smsSent =
+      String.isNotBlank(input.mobileNumber) && NGeniusConfig.sendSms();
 
     try {
       update new Payment_Link__c(

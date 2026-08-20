@@ -130,6 +130,13 @@ public with sharing class NGeniusConfig {
     return s != null ? s.Redirect_URL__c : null;
   }
 
+  /** Off until N-Genius enables "pay by link via SMS" on the outlet — sending a mobile
+   *  while it is disabled makes the gateway reject the whole invoice (422). */
+  public static Boolean sendSms() {
+    NGenius_Setting__mdt s = record();
+    return s != null && s.Send_SMS__c == true;
+  }
+
   public static Boolean logApiPayloads() {
     NGenius_Setting__mdt s = record();
     return s != null && s.Log_API_Payloads__c == true;

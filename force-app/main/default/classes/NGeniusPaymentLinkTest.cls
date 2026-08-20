@@ -21,7 +21,8 @@ private class NGeniusPaymentLinkTest {
       Email_Subject_Prefix__c = 'Payment request - ',
       Default_Expiry_Days__c = 3,
       Payment_Attempts__c = 3,
-      Log_API_Payloads__c = true
+      Log_API_Payloads__c = true,
+      Send_SMS__c = true
     );
     NGeniusPaymentLinkController.testPermissionGrant = true;
   }
@@ -773,6 +774,58 @@ private class NGeniusPaymentLinkTest {
         WHERE Status__c = 'Generating'
       ],
       'Reservations wait as Generating until finalized'
+    );
+  }
+
+  // With Send_SMS__c off, a typed mobile is stored but withheld from the payload —
+  // the outlet's SMS feature being disabled must not sink the whole invoice.
+  @IsTest
+  static void smsDisabledKeepsMobileOutOfPayload() {
+    fixture();
+    NGeniusConfig.testOverride.Send_SMS__c = false;
+    NGeniusHttpMock mock = NGeniusHttpMock.happy(2500000);
+    Test.setMock(HttpCalloutMock.class, mock);
+
+    NGeniusPaymentLinkController.LinkResult r = createLink(validRequest());
+
+    Assert.isTrue(r.success);
+    Assert.isFalse(r.smsSent, 'No SMS while the feature is disabled');
+    Assert.isFalse(
+      mock.invoiceRequestBodies[0].contains('mobileNumber'),
+      'Mobile withheld from the payload'
+    );
+    Assert.areEqual(
+      '+971501234567',
+      [
+        SELECT Recipient_Mobile__c
+        FROM Payment_Link__c
+        WHERE Id = :r.recordId
+      ]
+      .Recipient_Mobile__c,
+      'Mobile still stored for the records'
+    );
+  }
+
+  // The gateway's own reason surfaces in the 422 message instead of the generic hint.
+  @IsTest
+  static void gatewayDetailSurfacesInUserMessage() {
+    fixture();
+    String body =
+      '{"message":"Unprocessable Entity","code":422,' +
+      '"errors":[{"message":"Pay by link via SMS feature is disabled.",' +
+      '"errorCode":"invoiceFeatureDisabled","domain":"invoice"}]}';
+    Test.setMock(
+      HttpCalloutMock.class,
+      new NGeniusHttpMock()
+        .queueIdentity(200, NGeniusHttpMock.TOKEN_BODY)
+        .queueInvoice(422, body)
+    );
+
+    String message = createExpectingFailure(validRequest());
+
+    Assert.isTrue(
+      message.contains('SMS feature is disabled'),
+      'The specific gateway reason is shown: ' + message
     );
   }
 

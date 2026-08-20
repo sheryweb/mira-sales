@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Send_SMS__c</fullName>
+    <label>Send SMS</label>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <required>false</required>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description
+  >When on, a supplied mobile number is sent to N-Genius so the payer also gets an SMS. Requires the "pay by link via SMS" feature to be ENABLED on the outlet — with it disabled N-Genius rejects the whole invoice with HTTP 422 (invoiceFeatureDisabled). Off = mobiles are stored in Salesforce only.</description>
+</CustomField>

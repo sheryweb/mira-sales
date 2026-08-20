@@ -142,7 +142,12 @@ export default class NGeniusPaymentLink extends NavigationMixin(
   get smsResultText() {
     return this.result && this.result.smsSent
       ? "An SMS with the link was also sent."
-      : "No mobile was supplied, so no SMS was sent.";
+      : "The link was sent by email only.";
+  }
+  get mobileHelp() {
+    return this.defaults && this.defaults.smsEnabled
+      ? "Adding a number makes N-Genius send an SMS with the link as well as the email."
+      : "Stored for your records. SMS sending is currently disabled on the N-Genius outlet — the payer gets the link by email only.";
   }
 
   // ---- form -------------------------------------------------------------------

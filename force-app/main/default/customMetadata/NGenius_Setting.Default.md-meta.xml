@@ -56,6 +56,12 @@
     </values>
     <values>
         <field>Log_API_Payloads__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Send_SMS__c</field>
+        <!-- OFF: the outlet's "pay by link via SMS" feature is disabled at N-Genius
+             (confirmed 422 invoiceFeatureDisabled 2026-08-20). Tick after NI enables it. -->
         <value xsi:type="xsd:boolean">false</value>
     </values>
     <values>

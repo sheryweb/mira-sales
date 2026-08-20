@@ -156,8 +156,11 @@ public with sharing class NGeniusInvoiceService {
       },
       'total' => totalAmount
     };
-    // Supplying a mobile makes N-Genius send an SMS as well as the email.
-    if (String.isNotBlank(input.mobileNumber)) {
+    // Supplying a mobile makes N-Genius send an SMS as well as the email — but ONLY
+    // when the outlet's "pay by link via SMS" feature is enabled; with it disabled the
+    // gateway rejects the whole invoice (422 invoiceFeatureDisabled), so the mobile is
+    // withheld from the payload unless the Send_SMS__c config switch is on.
+    if (String.isNotBlank(input.mobileNumber) && NGeniusConfig.sendSms()) {
       payload.put(
         'countryCode',
         String.isBlank(input.countryCode) ? '+971' : input.countryCode
