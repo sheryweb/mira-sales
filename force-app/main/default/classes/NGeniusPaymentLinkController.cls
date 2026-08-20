@@ -94,6 +94,8 @@ public with sharing class NGeniusPaymentLinkController {
     @AuraEnabled
     public Integer expiryDays;
     @AuraEnabled
+    public Decimal minimumAmount; // 0 = no minimum
+    @AuraEnabled
     public String environmentName;
     @AuraEnabled
     public Boolean canGenerate;
@@ -117,6 +119,7 @@ public with sharing class NGeniusPaymentLinkController {
       d.defaultCurrency = NGeniusConfig.defaultCurrencyCode();
       d.defaultCountryCode = '+971';
       d.expiryDays = NGeniusConfig.defaultExpiryDays();
+      d.minimumAmount = NGeniusConfig.minimumAmount();
       d.defaultExpiryDate = String.valueOf(Date.today().addDays(d.expiryDays));
       d.currencyOptions = new List<Option>{
         new Option('AED — UAE Dirham', 'AED'),

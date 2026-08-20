@@ -772,11 +772,12 @@ private class NGeniusPaymentLinkTest {
   @IsTest
   static void belowMinimumAmountRejected() {
     fixture();
-    NGeniusHttpMock mock = NGeniusHttpMock.happy(2500000);
+    NGeniusConfig.testOverride.Minimum_Amount__c = 10000;
+    NGeniusHttpMock mock = NGeniusHttpMock.happy(999900);
     Test.setMock(HttpCalloutMock.class, mock);
 
     NGeniusPaymentLinkController.LinkRequest r = validRequest();
-    r.amount = 9999.99;
+    r.amount = 9999.00;
     String message = createExpectingError(r);
 
     Assert.isTrue(
@@ -789,6 +790,15 @@ private class NGeniusPaymentLinkTest {
       'Rejected before any callout'
     );
     Assert.areEqual(0, [SELECT COUNT() FROM Payment_Link__c]);
+
+    // Minimum_Amount__c = 0 disables the rule — the same amount now goes through.
+    NGeniusConfig.testOverride.Minimum_Amount__c = 0;
+    Test.startTest();
+    NGeniusPaymentLinkController.LinkResult ok = NGeniusPaymentLinkController.createPaymentLink(
+      r
+    );
+    Test.stopTest();
+    Assert.isTrue(ok.success, 'Rule disabled, small amount accepted');
   }
 
   // Business rule: AED only — a client-supplied currency is ignored

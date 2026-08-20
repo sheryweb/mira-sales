@@ -116,8 +116,21 @@ export default class NGeniusPaymentLink extends NavigationMixin(
   get hasRecent() {
     return this.recentLinks.length > 0;
   }
-  get currencyOptions() {
-    return (this.defaults && this.defaults.currencyOptions) || [];
+  get amountMin() {
+    const min = (this.defaults && this.defaults.minimumAmount) || 0;
+    return min > 0 ? min : 0.01;
+  }
+  get amountMinMessage() {
+    const min = (this.defaults && this.defaults.minimumAmount) || 0;
+    return min > 0
+      ? `The minimum amount is AED ${min.toLocaleString()}.`
+      : "The amount must be greater than zero.";
+  }
+  get amountHelp() {
+    const min = (this.defaults && this.defaults.minimumAmount) || 0;
+    return min > 0
+      ? `All payment links are in AED. The minimum amount is ${min.toLocaleString()}.`
+      : "All payment links are in AED.";
   }
   get todayIso() {
     const now = new Date();

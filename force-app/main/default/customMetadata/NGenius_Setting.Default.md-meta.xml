@@ -58,4 +58,9 @@
         <field>Log_API_Payloads__c</field>
         <value xsi:type="xsd:boolean">false</value>
     </values>
+    <values>
+        <field>Minimum_Amount__c</field>
+        <!-- 0 = rule disabled for testing (Sheraz 2026-08-20); set 10000 in Setup when done. -->
+        <value xsi:type="xsd:double">0</value>
+    </values>
 </CustomMetadata>
