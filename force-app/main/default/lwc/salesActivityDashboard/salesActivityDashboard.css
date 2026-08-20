@@ -98,6 +98,18 @@ tr.quiet td { opacity: 0.45; }
     background: linear-gradient(90deg, var(--accent-dark), var(--accent)); }
 .bar-count { font-size: 0.78rem; font-weight: 700; color: var(--ink); text-align: right; }
 
+/* ---------- weekly target leaderboard ---------- */
+.rank { color: #6b8a93; font-weight: 700; width: 2rem; }
+.progress-cell { min-width: 7rem; }
+.progress-cell .bar-track { display: block; }
+.progress-count { white-space: nowrap; font-weight: 700; width: 4.2rem; }
+.bar-fill.met { background: linear-gradient(90deg, #12805c, #2e9967); }
+.badge {
+    display: inline-block; padding: 0.1rem 0.55rem; border-radius: 999px;
+    font-size: 0.7rem; font-weight: 700; background: #eef4f6; color: #51707a;
+}
+.badge.met { background: #e2f6ec; color: #12805c; }
+
 /* ---------- states ---------- */
 .empty-state { text-align: center; padding: 1.6rem 1rem; color: #6b8a93; font-size: 0.85rem; }
 .empty-state p { margin: 0.5rem 0 0; }

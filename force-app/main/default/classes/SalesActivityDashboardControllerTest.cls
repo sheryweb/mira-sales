@@ -28,6 +28,11 @@ private class SalesActivityDashboardControllerTest {
                 Description__c = 'Dashboard test meeting', Outcome__c = 'Strong Interest',
                 Start_Date_Time__c = today10.addHours(3), End_Date_Time__c = today10.addHours(4),
                 Other_Project_Discussed__c = 'marina launch 2027'
+            ),
+            new Sales_Activity_Tracker__c(
+                Activity__c = 'Client Meeting', Type__c = 'Outbound', Agency__c = briefed.Id,
+                Description__c = 'Dashboard test outbound visit', Outcome__c = 'Informational Only',
+                Start_Date_Time__c = today10.addHours(5), End_Date_Time__c = today10.addHours(6)
             )
         };
     }
@@ -37,20 +42,24 @@ private class SalesActivityDashboardControllerTest {
         SalesActivityDashboardController.Dashboard d =
             SalesActivityDashboardController.getDashboard(null);
 
-        System.assertEquals(2, d.kpis.weekCount, 'Both activities happened today');
-        System.assertEquals(2, d.kpis.monthCount);
+        System.assertEquals(3, d.kpis.weekCount, 'All three activities happened today');
+        System.assertEquals(3, d.kpis.monthCount);
         System.assertEquals(1, d.kpis.activeRms, 'Single owner');
-        System.assert(d.kpis.monthHours >= 2, '1.5h + 1h rounded');
+        System.assert(d.kpis.monthHours >= 3, '1.5h + 1h + 1h rounded');
+        System.assert(d.inboundTarget > 0, 'Inbound target read from CMDT');
+        System.assert(d.outboundTarget > 0, 'Outbound target read from CMDT');
         System.assert(d.kpis.agenciesTotal >= 2, 'Both test agencies counted');
         System.assert(d.kpis.agenciesCovered >= 1, 'Briefed agency is covered');
 
         // per-RM matrix
         System.assertEquals(1, d.rmRows.size());
         SalesActivityDashboardController.RmRow rm = d.rmRows[0];
-        System.assertEquals(2, rm.monthCount);
+        System.assertEquals(3, rm.monthCount);
         System.assertEquals(1, rm.briefings);
-        System.assertEquals(1, rm.meetings);
-        System.assertEquals(2.5, rm.hours);
+        System.assertEquals(2, rm.meetings);
+        System.assertEquals(3.5, rm.hours);
+        System.assertEquals(2, rm.weekInbound, 'Inbound + Online both count as inbound');
+        System.assertEquals(1, rm.weekOutbound);
 
         // the untouched agency is flagged, the briefed one is not
         Boolean untouchedFlagged = false;

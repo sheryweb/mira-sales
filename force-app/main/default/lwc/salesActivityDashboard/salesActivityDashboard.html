@@ -40,6 +40,37 @@
                 </template>
             </div>
 
+            <!-- weekly target leaderboard -->
+            <div class="panel">
+                <h2 class="panel-title">Weekly target leaderboard</h2>
+                <p class="panel-sub">{targetSummary}</p>
+                <template lwc:if={hasLeaderboard}>
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr><th class="num">#</th><th>RM</th><th>Inbound</th><th class="num">&nbsp;</th><th>Outbound</th><th class="num">&nbsp;</th><th></th></tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={leaderboardRows} for:item="l">
+                                    <tr key={l.name}>
+                                        <td class="num rank">{l.rank}</td>
+                                        <td class="strong">{l.name}</td>
+                                        <td class="progress-cell"><span class="bar-track"><span class={l.inboundBarClass} style={l.inboundBarStyle}></span></span></td>
+                                        <td class="num progress-count">{l.inboundDisplay}</td>
+                                        <td class="progress-cell"><span class="bar-track"><span class={l.outboundBarClass} style={l.outboundBarStyle}></span></span></td>
+                                        <td class="num progress-count">{l.outboundDisplay}</td>
+                                        <td><span class={l.badgeClass}>{l.badgeLabel}</span></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <div class="empty-state"><p>No activities logged this week yet.</p></div>
+                </template>
+            </div>
+
             <div class="two-col">
                 <!-- agencies needing attention -->
                 <div class="panel">

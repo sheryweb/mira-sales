@@ -72,6 +72,37 @@ export default class SalesActivityDashboard extends LightningElement {
             : `${total} agencies with no activity in the last 60 days`;
     }
 
+    // ---- weekly target leaderboard ---------------------------------------------------
+
+    get leaderboardRows() {
+        const inTgt = this.data.inboundTarget || 1;
+        const outTgt = this.data.outboundTarget || 1;
+        return (this.data.rmRows || [])
+            .map((r) => {
+                const inPct = Math.min(r.weekInbound / inTgt, 1);
+                const outPct = Math.min(r.weekOutbound / outTgt, 1);
+                const met = r.weekInbound >= inTgt && r.weekOutbound >= outTgt;
+                return {
+                    name: r.name,
+                    attainment: (inPct + outPct) / 2,
+                    inboundDisplay: `${r.weekInbound} / ${inTgt}`,
+                    outboundDisplay: `${r.weekOutbound} / ${outTgt}`,
+                    inboundBarStyle: `width: ${Math.round(inPct * 100)}%`,
+                    outboundBarStyle: `width: ${Math.round(outPct * 100)}%`,
+                    inboundBarClass: r.weekInbound >= inTgt ? 'bar-fill met' : 'bar-fill',
+                    outboundBarClass: r.weekOutbound >= outTgt ? 'bar-fill met' : 'bar-fill',
+                    badgeLabel: met ? 'Target met' : `${Math.round(((inPct + outPct) / 2) * 100)}%`,
+                    badgeClass: met ? 'badge met' : 'badge'
+                };
+            })
+            .sort((a, b) => b.attainment - a.attainment || a.name.localeCompare(b.name))
+            .map((r, i) => ({ ...r, rank: i + 1 }));
+    }
+    get hasLeaderboard() { return this.leaderboardRows.length > 0; }
+    get targetSummary() {
+        return `Every RM's week vs the target of ${this.data.inboundTarget} inbound + ${this.data.outboundTarget} outbound (online counts as inbound)`;
+    }
+
     // ---- per-RM matrix -------------------------------------------------------------
 
     get rmRows() {

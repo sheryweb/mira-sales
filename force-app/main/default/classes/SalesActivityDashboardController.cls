@@ -45,6 +45,8 @@ public with sharing class SalesActivityDashboardController {
     public class RmRow {
         @AuraEnabled public String name;
         @AuraEnabled public Integer weekCount = 0;
+        @AuraEnabled public Integer weekInbound = 0;   // Type__c Inbound/Online/blank
+        @AuraEnabled public Integer weekOutbound = 0;  // Type__c Outbound
         @AuraEnabled public Integer monthCount = 0;
         @AuraEnabled public Decimal hours = 0;
         @AuraEnabled public Integer briefings = 0;
@@ -67,6 +69,8 @@ public with sharing class SalesActivityDashboardController {
 
     public class Dashboard {
         @AuraEnabled public Kpis kpis;
+        @AuraEnabled public Integer inboundTarget;
+        @AuraEnabled public Integer outboundTarget;
         @AuraEnabled public List<RmRow> rmRows;
         @AuraEnabled public List<AgencyRow> needsAttention;
         @AuraEnabled public List<CountRow> outcomes;
@@ -84,11 +88,21 @@ public with sharing class SalesActivityDashboardController {
 
         Dashboard d = new Dashboard();
         d.kpis = new Kpis();
+        d.inboundTarget = weeklyTarget('Weekly_Inbound_Target__c', 12);
+        d.outboundTarget = weeklyTarget('Weekly_Outbound_Target__c', 4);
         d.rmRows = buildRmRows(monthStart, weekStart, d.kpis);
         d.needsAttention = buildAgencyCoverage(windowStart, d.kpis);
         d.outcomes = buildOutcomes(monthStart);
         d.otherProjects = buildOtherProjects(windowStart);
         return d;
+    }
+
+    /** Weekly per-RM targets from the Sales_Activity_Target.Default CMDT record;
+     *  every RM shares the same numbers (Sheraz 2026-08-20). Online counts as Inbound. */
+    private static Integer weeklyTarget(String fieldName, Integer fallback) {
+        Sales_Activity_Target__mdt config = Sales_Activity_Target__mdt.getInstance('Default');
+        if (config == null || config.get(fieldName) == null) return fallback;
+        return ((Decimal) config.get(fieldName)).intValue();
     }
 
     // ---- per-RM month matrix -------------------------------------------------------
@@ -97,7 +111,7 @@ public with sharing class SalesActivityDashboardController {
         Map<Id, RmRow> byOwner = new Map<Id, RmRow>();
         Map<Id, Datetime> lastByOwner = new Map<Id, Datetime>();
         for (Sales_Activity_Tracker__c t : [
-            SELECT OwnerId, Owner.Name, Activity__c, Start_Date_Time__c, End_Date_Time__c
+            SELECT OwnerId, Owner.Name, Activity__c, Type__c, Start_Date_Time__c, End_Date_Time__c
             FROM Sales_Activity_Tracker__c
             WHERE Start_Date_Time__c >= :monthStart
             LIMIT 10000
@@ -113,6 +127,8 @@ public with sharing class SalesActivityDashboardController {
             if (t.Start_Date_Time__c >= weekStart) {
                 row.weekCount++;
                 kpis.weekCount++;
+                if (t.Type__c == 'Outbound') row.weekOutbound++;
+                else row.weekInbound++; // Inbound, Online and legacy blanks all count as inbound
             }
             if (t.End_Date_Time__c != null && t.End_Date_Time__c > t.Start_Date_Time__c) {
                 Decimal hrs = (Decimal) (t.End_Date_Time__c.getTime() - t.Start_Date_Time__c.getTime()) / 3600000;
