@@ -767,4 +767,62 @@ private class NGeniusPaymentLinkTest {
     Assert.areEqual(0, mock.identityCalls + mock.invoiceCalls);
     Assert.areEqual(0, [SELECT COUNT() FROM Payment_Link__c]);
   }
+
+  // Business rule: minimum amount 10,000
+  @IsTest
+  static void belowMinimumAmountRejected() {
+    fixture();
+    NGeniusHttpMock mock = NGeniusHttpMock.happy(2500000);
+    Test.setMock(HttpCalloutMock.class, mock);
+
+    NGeniusPaymentLinkController.LinkRequest r = validRequest();
+    r.amount = 9999.99;
+    String message = createExpectingError(r);
+
+    Assert.isTrue(
+      message.contains('at least'),
+      'Minimum-amount rule reported: ' + message
+    );
+    Assert.areEqual(
+      0,
+      mock.identityCalls + mock.invoiceCalls,
+      'Rejected before any callout'
+    );
+    Assert.areEqual(0, [SELECT COUNT() FROM Payment_Link__c]);
+  }
+
+  // Business rule: AED only — a client-supplied currency is ignored
+  @IsTest
+  static void currencyAlwaysForcedToConfiguredAed() {
+    fixture();
+    NGeniusHttpMock mock = NGeniusHttpMock.happy(2500000);
+    Test.setMock(HttpCalloutMock.class, mock);
+
+    NGeniusPaymentLinkController.LinkRequest r = validRequest();
+    r.currencyCode = 'USD'; // must be ignored
+    Test.startTest();
+    NGeniusPaymentLinkController.LinkResult result = NGeniusPaymentLinkController.createPaymentLink(
+      r
+    );
+    Test.stopTest();
+
+    Assert.isTrue(result.success);
+    Assert.isTrue(
+      mock.invoiceRequestBodies[0].contains('"currencyCode":"AED"'),
+      'Payload carries AED'
+    );
+    Assert.isFalse(
+      mock.invoiceRequestBodies[0].contains('USD'),
+      'Client currency never reaches N-Genius'
+    );
+    Assert.areEqual(
+      'AED',
+      [
+        SELECT Currency_Code__c
+        FROM Payment_Link__c
+        WHERE Id = :result.recordId
+      ]
+      .Currency_Code__c
+    );
+  }
 }

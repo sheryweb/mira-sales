@@ -186,9 +186,9 @@ public with sharing class NGeniusPaymentLinkController {
         : '+' + digitsOf(request.countryCode);
       input.mobileNumber = normalizeMobile(request.mobile);
       input.amount = request.amount;
-      input.currencyCode = String.isBlank(request.currencyCode)
-        ? NGeniusConfig.defaultCurrencyCode()
-        : request.currencyCode.trim().toUpperCase();
+      // Business rule (Sheraz 2026-08-20): AED only. The client's currency value is
+      // deliberately ignored — the configured currency always wins.
+      input.currencyCode = NGeniusConfig.defaultCurrencyCode();
       input.description = trimmed(request.description);
       input.referenceNote = trimmed(request.referenceNote);
       input.message = trimmed(request.message);

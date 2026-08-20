@@ -12,6 +12,8 @@ public with sharing class NGeniusInvoiceService {
   private static final Integer TIMEOUT_MS = 60000; // Apex ceiling is 120s — stay well under
   @TestVisible
   private static final Decimal MAX_AMOUNT = 50000000; // sane cap, major units
+  @TestVisible
+  private static final Decimal MIN_AMOUNT = 10000; // business rule (Sheraz 2026-08-20)
   private static final Integer LOG_MAX_CHARS = 30000;
 
   public class InvoiceRequest {
@@ -86,7 +88,11 @@ public with sharing class NGeniusInvoiceService {
       problems.add('Description is required — the payer sees it.');
     }
     if (input.amount == null || input.amount <= 0) {
-      problems.add('Amount must be greater than zero.');
+      problems.add('Amount is required.');
+    } else if (input.amount < MIN_AMOUNT) {
+      problems.add(
+        'Amount must be at least ' + MIN_AMOUNT.format() + ' (business rule).'
+      );
     } else if (input.amount > MAX_AMOUNT) {
       problems.add(
         'Amount exceeds the maximum of ' + MAX_AMOUNT.format() + '.'
