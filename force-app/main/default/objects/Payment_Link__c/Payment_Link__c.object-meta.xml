@@ -10,7 +10,7 @@
         <displayFormat>PL-{00000}</displayFormat>
     </nameField>
     <deploymentStatus>Deployed</deploymentStatus>
-    <sharingModel>ReadWrite</sharingModel>
+    <sharingModel>Private</sharingModel>
     <visibility>Public</visibility>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
