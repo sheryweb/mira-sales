@@ -174,10 +174,11 @@ public with sharing class NGeniusInvoiceService {
       payload.put('redirectUrl', NGeniusConfig.redirectUrl());
     }
     // Finance serial → the pay-by-link "order reference (optional)" the portal offers.
-    // Sent as top-level orderReference (mirrors the response field). TODO: confirm on
-    // the first live link that the portal actually shows it; adjust the key if ignored.
+    // The merchant-controlled key is merchantOrderReference (docs: "reflected on the
+    // N-Genius Online portal (in the Order Details) page"); orderReference is the
+    // gateway-generated response field, not a request input. Alphanumeric + hyphens only.
     if (String.isNotBlank(input.orderReference)) {
-      payload.put('orderReference', input.orderReference);
+      payload.put('merchantOrderReference', input.orderReference);
     }
     // input.referenceNote is stored on Payment_Link__c only.
     return payload;

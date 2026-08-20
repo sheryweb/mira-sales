@@ -157,7 +157,7 @@ private class NGeniusPaymentLinkTest {
       'N-Genius must send the email'
     );
     Assert.isTrue(
-      body.contains('"orderReference":"1001"'),
+      body.contains('"merchantOrderReference":"1001"'),
       'Finance serial travels in the payload: ' + body
     );
     Assert.isFalse(
