@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomMetadata
+  xmlns="http://soap.sforce.com/2006/04/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+>
+    <label>Default</label>
+    <protected>false</protected>
+    <values>
+        <field>Outlet_Reference__c</field>
+        <value xsi:type="xsd:string">REPLACE_WITH_OUTLET_REFERENCE</value>
+    </values>
+    <values>
+        <field>Realm_Name__c</field>
+        <value xsi:type="xsd:string">ni</value>
+    </values>
+    <values>
+        <field>Identity_Named_Credential__c</field>
+        <value xsi:type="xsd:string">NGenius_Identity</value>
+    </values>
+    <values>
+        <field>API_Named_Credential__c</field>
+        <value xsi:type="xsd:string">NGenius_API</value>
+    </values>
+    <values>
+        <field>Transaction_Type__c</field>
+        <value xsi:type="xsd:string">PURCHASE</value>
+    </values>
+    <values>
+        <field>Default_Currency_Code__c</field>
+        <value xsi:type="xsd:string">AED</value>
+    </values>
+    <values>
+        <field>Environment__c</field>
+        <value xsi:type="xsd:string">Sandbox</value>
+    </values>
+    <values>
+        <field>Email_Subject_Prefix__c</field>
+        <value xsi:type="xsd:string">Payment request - </value>
+    </values>
+    <values>
+        <field>Default_Expiry_Days__c</field>
+        <value xsi:type="xsd:double">3</value>
+    </values>
+    <values>
+        <field>Payment_Attempts__c</field>
+        <value xsi:type="xsd:double">3</value>
+    </values>
+    <values>
+        <field>Redirect_URL__c</field>
+        <value xsi:nil="true" />
+    </values>
+    <values>
+        <field>Log_API_Payloads__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

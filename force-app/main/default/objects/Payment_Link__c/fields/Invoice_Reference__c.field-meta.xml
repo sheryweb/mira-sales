@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Invoice_Reference__c</fullName>
+    <label>Invoice Reference</label>
+    <length>64</length>
+    <type>Text</type>
+    <required>false</required>
+    <externalId>true</externalId>
+    <unique>true</unique>
+    <caseSensitive>false</caseSensitive>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <description
+  >N-Genius invoice reference returned when the Pay-by-Link invoice is created.</description>
+</CustomField>

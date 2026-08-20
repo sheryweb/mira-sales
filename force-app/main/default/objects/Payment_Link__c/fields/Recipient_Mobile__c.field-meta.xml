@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Recipient_Mobile__c</fullName>
+    <label>Recipient Mobile</label>
+    <type>Phone</type>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <description
+  >International format, e.g. +971501234567. When present, N-Genius also sent an SMS.</description>
+</CustomField>

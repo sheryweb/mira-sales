@@ -1,0 +1,292 @@
+<template>
+  <lightning-card>
+    <div slot="title" class="header-row">
+      <lightning-icon icon-name="utility:link" size="small"></lightning-icon>
+      <span class="header-title">N-Genius Pay by Link</span>
+      <template lwc:if={showSandboxBadge}>
+        <lightning-badge
+          label={sandboxBadgeLabel}
+          class="sandbox-badge"
+        ></lightning-badge>
+      </template>
+    </div>
+
+    <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+      <template lwc:if={isLoadingDefaults}>
+        <div class="center-state">
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+          ></lightning-spinner>
+        </div>
+      </template>
+
+      <!-- not configured -->
+      <template lwc:if={showNotConfigured}>
+        <div class="panel panel-error" role="alert">
+          <lightning-icon
+            icon-name="utility:error"
+            size="small"
+            variant="error"
+          ></lightning-icon>
+          <div>
+            <p class="panel-title">N-Genius is not configured</p>
+            <p>{configErrorText}</p>
+            <p>
+              An administrator must complete the NGenius Setting custom metadata
+              and the Named Credentials before links can be generated.
+            </p>
+          </div>
+        </div>
+      </template>
+
+      <!-- no permission -->
+      <template lwc:if={showNoPermission}>
+        <div class="panel panel-warning" role="alert">
+          <lightning-icon
+            icon-name="utility:lock"
+            size="small"
+            variant="warning"
+          ></lightning-icon>
+          <div>
+            <p class="panel-title">You do not have access</p>
+            <p>
+              Generating payment links requires the
+              <strong>N-Genius Payment Link User</strong> permission set. Ask
+              your administrator to assign it.
+            </p>
+          </div>
+        </div>
+      </template>
+
+      <!-- form -->
+      <template lwc:if={showForm}>
+        <div class="form-grid">
+          <lightning-input
+            label="First name"
+            data-field="firstName"
+            value={form.firstName}
+            required
+            onchange={handleField}
+          ></lightning-input>
+          <lightning-input
+            label="Last name"
+            data-field="lastName"
+            value={form.lastName}
+            required
+            onchange={handleField}
+          ></lightning-input>
+          <lightning-input
+            type="email"
+            label="Email"
+            data-field="email"
+            value={form.email}
+            required
+            field-level-help="N-Genius emails the payment link to this address."
+            onchange={handleField}
+          ></lightning-input>
+          <div class="mobile-row">
+            <lightning-input
+              label="Country code"
+              data-field="countryCode"
+              value={form.countryCode}
+              class="country-code"
+              onchange={handleField}
+            ></lightning-input>
+            <lightning-input
+              type="tel"
+              label="Mobile (optional)"
+              data-field="mobile"
+              value={form.mobile}
+              field-level-help="Adding a number makes N-Genius send an SMS with the link as well as the email."
+              onchange={handleField}
+            ></lightning-input>
+          </div>
+          <lightning-input
+            type="number"
+            label="Amount"
+            data-field="amount"
+            value={form.amount}
+            required
+            step="0.01"
+            min="0.01"
+            formatter="decimal"
+            onchange={handleField}
+          ></lightning-input>
+          <lightning-combobox
+            label="Currency"
+            data-field="currencyCode"
+            value={form.currencyCode}
+            options={currencyOptions}
+            onchange={handleField}
+          ></lightning-combobox>
+          <lightning-input
+            type="date"
+            label="Link expiry date"
+            data-field="expiryDate"
+            value={form.expiryDate}
+            required
+            min={todayIso}
+            onchange={handleField}
+          ></lightning-input>
+          <lightning-input
+            label="Description"
+            data-field="description"
+            value={form.description}
+            required
+            max-length="255"
+            field-level-help="The payer sees this on the payment page and in the email."
+            onchange={handleField}
+          ></lightning-input>
+          <lightning-input
+            label="Internal reference (optional)"
+            data-field="referenceNote"
+            value={form.referenceNote}
+            max-length="255"
+            field-level-help="Free text for your own records, e.g. a unit code. The payer never sees it."
+            onchange={handleField}
+          ></lightning-input>
+          <div class="full-width">
+            <lightning-textarea
+              label="Message to the payer (optional)"
+              data-field="message"
+              value={form.message}
+              max-length="500"
+              onchange={handleField}
+            ></lightning-textarea>
+          </div>
+        </div>
+
+        <template lwc:if={errorText}>
+          <div class="panel panel-error slds-m-top_small" role="alert">
+            <lightning-icon
+              icon-name="utility:error"
+              size="small"
+              variant="error"
+            ></lightning-icon>
+            <div>
+              <p class="panel-title">The link could not be created</p>
+              <p>{errorText}</p>
+            </div>
+          </div>
+        </template>
+
+        <div class="slds-m-top_medium">
+          <lightning-button
+            variant="brand"
+            label="Generate &amp; email payment link"
+            onclick={generate}
+            disabled={isWorking}
+          ></lightning-button>
+        </div>
+      </template>
+
+      <!-- success -->
+      <template lwc:if={showSuccess}>
+        <div class="panel panel-success" role="status">
+          <lightning-icon
+            icon-name="utility:success"
+            size="small"
+          ></lightning-icon>
+          <div>
+            <p class="panel-title">
+              Payment link sent to {result.recipientEmail}
+            </p>
+            <p>{smsResultText}</p>
+            <p>
+              Amount <strong>{result.amountFormatted}</strong> · expires
+              <strong>{result.expiryDate}</strong> · invoice ref
+              <strong>{result.invoiceReference}</strong>
+              <template lwc:if={result.orderReference}>
+                · order ref <strong>{result.orderReference}</strong></template
+              >
+              <template lwc:if={result.recordName}>
+                · audit <strong>{result.recordName}</strong></template
+              >
+            </p>
+          </div>
+        </div>
+
+        <template lwc:if={result.warning}>
+          <div class="panel panel-warning slds-m-top_small" role="alert">
+            <lightning-icon
+              icon-name="utility:warning"
+              size="small"
+              variant="warning"
+            ></lightning-icon>
+            <div>
+              <p class="panel-title">Saved with a warning</p>
+              <p>{result.warning}</p>
+            </div>
+          </div>
+        </template>
+
+        <div class="slds-m-top_small">
+          <lightning-input
+            label="Payment link"
+            value={result.paymentUrl}
+            readonly
+          ></lightning-input>
+        </div>
+        <div class="slds-m-top_small action-row">
+          <lightning-button
+            label="Copy link"
+            icon-name="utility:copy_to_clipboard"
+            onclick={copyResultLink}
+          ></lightning-button>
+          <template lwc:if={result.recordId}>
+            <lightning-button
+              label="Open audit record"
+              icon-name="utility:open"
+              onclick={openAuditRecord}
+            ></lightning-button>
+          </template>
+          <lightning-button
+            variant="brand"
+            label="Create another"
+            onclick={createAnother}
+          ></lightning-button>
+        </div>
+      </template>
+
+      <template lwc:if={isWorking}>
+        <div class="center-state">
+          <lightning-spinner
+            alternative-text="Creating the payment link"
+            size="medium"
+          ></lightning-spinner>
+          <p class="working-text">Creating the payment link…</p>
+        </div>
+      </template>
+    </div>
+  </lightning-card>
+
+  <lightning-card
+    title="My recent links"
+    icon-name="utility:list"
+    class="slds-m-top_medium"
+  >
+    <lightning-button
+      slot="actions"
+      label="Refresh"
+      icon-name="utility:refresh"
+      onclick={refreshRecent}
+    ></lightning-button>
+    <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+      <template lwc:if={hasRecent}>
+        <lightning-datatable
+          key-field="Id"
+          data={recentLinks}
+          columns={recentColumns}
+          hide-checkbox-column
+          onrowaction={handleRowAction}
+        ></lightning-datatable>
+      </template>
+      <template lwc:else>
+        <p class="empty-text">
+          No links generated yet — they will appear here.
+        </p>
+      </template>
+    </div>
+  </lightning-card>
+</template>

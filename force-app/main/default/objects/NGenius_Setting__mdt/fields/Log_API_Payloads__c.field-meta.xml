@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Log_API_Payloads__c</fullName>
+    <label>Log API Payloads</label>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <required>false</required>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description
+  >When on, redacted request/response bodies are stored in Payment_Link__c.API_Log__c.</description>
+</CustomField>

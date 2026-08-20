@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>API_Log__c</fullName>
+    <label>API Log</label>
+    <type>LongTextArea</type>
+    <length>32768</length>
+    <visibleLines>10</visibleLines>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <description
+  >Redacted request/response bodies. Populated only when NGenius_Setting__mdt.Log_API_Payloads__c is on. Tokens, auth headers and 13-19 digit runs are stripped before storage.</description>
+</CustomField>

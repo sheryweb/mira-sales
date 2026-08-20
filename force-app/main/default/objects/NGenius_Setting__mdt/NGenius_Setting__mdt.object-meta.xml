@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description
+  >Configuration for the standalone N-Genius Pay-by-Link screen (Payment_Link__c / NGeniusPaymentLinkController). One record with DeveloperName Default. NEVER store the API key here — it lives only in the NGenius External Credential authentication parameter. Separate from the legacy N_Genius_Configuration__mdt used by the Booking flow.</description>
+    <label>NGenius Setting</label>
+    <pluralLabel>NGenius Settings</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

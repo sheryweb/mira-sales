@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Redirect_URL__c</fullName>
+    <label>Redirect URL</label>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <required>false</required>
+    <type>Url</type>
+    <description
+  >Optional thank-you page the payer lands on after paying. Omitted from the payload when blank.</description>
+</CustomField>

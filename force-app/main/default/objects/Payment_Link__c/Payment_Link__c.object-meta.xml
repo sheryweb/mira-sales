@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description
+  >Audit trail of N-Genius Pay-by-Link payment links raised from the standalone payment-link screen. Deliberately standalone — links are raised from a form, not from an Opportunity/Account/Contact. Status write-back (Paid/Declined/etc.) is NOT wired up yet; Status__c stays Sent and the paid fields stay empty until a webhook listener is added.</description>
+    <label>Payment Link</label>
+    <pluralLabel>Payment Links</pluralLabel>
+    <nameField>
+        <label>Payment Link Number</label>
+        <type>AutoNumber</type>
+        <displayFormat>PL-{00000}</displayFormat>
+    </nameField>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+</CustomObject>
