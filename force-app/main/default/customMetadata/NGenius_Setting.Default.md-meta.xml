@@ -56,7 +56,6 @@
     </values>
     <values>
         <field>Log_API_Payloads__c</field>
-        <!-- Temporarily on while the first live links are verified; turn off after. -->
-        <value xsi:type="xsd:boolean">true</value>
+        <value xsi:type="xsd:boolean">false</value>
     </values>
 </CustomMetadata>
