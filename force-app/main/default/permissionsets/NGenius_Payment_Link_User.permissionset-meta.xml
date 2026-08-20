@@ -42,6 +42,18 @@
         <viewAllRecords>false</viewAllRecords>
         <modifyAllRecords>false</modifyAllRecords>
     </objectPermissions>
+    <!-- Read on UserExternalCredential is REQUIRED for any user making callouts via
+         the NGenius External Credential — without it the token call fails with
+         "You don't have read permissions on the User External Credential object". -->
+    <objectPermissions>
+        <object>UserExternalCredential</object>
+        <allowCreate>false</allowCreate>
+        <allowRead>true</allowRead>
+        <allowEdit>false</allowEdit>
+        <allowDelete>false</allowDelete>
+        <viewAllRecords>false</viewAllRecords>
+        <modifyAllRecords>false</modifyAllRecords>
+    </objectPermissions>
     <fieldPermissions>
         <field>Payment_Link__c.Recipient_Name__c</field>
         <readable>true</readable>
