@@ -8,11 +8,13 @@
     <protected>false</protected>
     <values>
         <field>Outlet_Reference__c</field>
-        <value xsi:type="xsd:string">REPLACE_WITH_OUTLET_REFERENCE</value>
+        <value
+      xsi:type="xsd:string"
+    >3e16700e-7f63-43a5-bbd5-b0a7860fa8fb</value>
     </values>
     <values>
         <field>Realm_Name__c</field>
-        <value xsi:type="xsd:string">ni</value>
+        <value xsi:type="xsd:string">networkinternational</value>
     </values>
     <values>
         <field>Identity_Named_Credential__c</field>
@@ -32,7 +34,7 @@
     </values>
     <values>
         <field>Environment__c</field>
-        <value xsi:type="xsd:string">Sandbox</value>
+        <value xsi:type="xsd:string">Production</value>
     </values>
     <values>
         <field>Email_Subject_Prefix__c</field>

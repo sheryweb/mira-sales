@@ -28,6 +28,11 @@
         <enabled>true</enabled>
         <name>Generate_Payment_Links</name>
     </customPermissions>
+    <externalCredentialPrincipalAccesses>
+        <enabled>true</enabled>
+        <externalCredentialPrincipal
+    >NGenius-NGeniusPrincipal</externalCredentialPrincipal>
+    </externalCredentialPrincipalAccesses>
     <objectPermissions>
         <object>Payment_Link__c</object>
         <allowCreate>true</allowCreate>
