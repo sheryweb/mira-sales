@@ -147,6 +147,7 @@ public with sharing class NGeniusPaymentLinkController {
       SELECT
         Id,
         Name,
+        Order_Reference__c,
         Recipient_Name__c,
         Recipient_Email__c,
         Amount__c,
@@ -163,10 +164,25 @@ public with sharing class NGeniusPaymentLinkController {
     ];
   }
 
-  // ---- create ---------------------------------------------------------------------------
+  // ---- create (two-phase) ----------------------------------------------------------------
+  // The Finance serial must be reserved (DML) BEFORE the callout, and Salesforce forbids
+  // a callout after DML in one transaction — so the LWC makes two calls:
+  //   1. reserveLink  — validate, draw the next serial, insert the record as Generating
+  //   2. finalizeLink — callout to N-Genius, update the record to Sent (or Error)
+  // A record stuck in Generating (browser closed mid-flight) surfaces via the
+  // Needs Attention list view.
+
+  public class ReserveResult {
+    @AuraEnabled
+    public String recordId;
+    @AuraEnabled
+    public String recordName;
+    @AuraEnabled
+    public String serial;
+  }
 
   @AuraEnabled
-  public static LinkResult createPaymentLink(LinkRequest request) {
+  public static ReserveResult reserveLink(LinkRequest request) {
     if (!hasGeneratePermission()) {
       throw uiError(
         'You do not have permission to generate payment links. Ask an admin for the "N-Genius Payment Link User" permission set.'
@@ -176,54 +192,95 @@ public with sharing class NGeniusPaymentLinkController {
       throw uiError('Nothing to send.');
     }
 
-    NGeniusInvoiceService.InvoiceRequest input = new NGeniusInvoiceService.InvoiceRequest();
-    NGeniusInvoiceService.InvoiceResult invoice;
+    NGeniusInvoiceService.InvoiceRequest input;
     try {
       NGeniusConfig.assertEnvironmentSane();
-
-      input.firstName = trimmed(request.firstName);
-      input.lastName = trimmed(request.lastName);
-      input.email = trimmed(request.email);
-      input.countryCode = String.isBlank(request.countryCode)
-        ? '+971'
-        : '+' + digitsOf(request.countryCode);
-      input.mobileNumber = normalizeMobile(request.mobile);
-      input.amount = request.amount;
-      // Business rule (Sheraz 2026-08-20): AED only. The client's currency value is
-      // deliberately ignored — the configured currency always wins.
-      input.currencyCode = NGeniusConfig.defaultCurrencyCode();
-      input.description = trimmed(request.description);
-      input.referenceNote = trimmed(request.referenceNote);
-      input.message = trimmed(request.message);
-      input.expiryDate = String.isBlank(request.expiryDate)
-        ? null
-        : Date.valueOf(request.expiryDate.trim());
-
-      invoice = NGeniusInvoiceService.createInvoice(input);
+      input = buildInput(request);
+      // Validation happens BEFORE the serial is drawn or anything is inserted —
+      // user-input noise must not burn serials or clutter the audit trail.
+      NGeniusInvoiceService.validate(input);
     } catch (NGeniusException e) {
-      // Gateway-side failures (N-Genius actually responded) RETURN a failure result
-      // instead of throwing: a thrown exception rolls back the whole transaction and
-      // the Error audit record would silently vanish. Local validation failures are
-      // user-input noise — they still throw, and log nothing.
-      if (e.statusCode != null) {
-        logErrorRecord(input, e);
-        LinkResult failed = new LinkResult();
-        failed.success = false;
-        failed.errorMessage = e.userMessage();
-        return failed;
-      }
       throw uiError(e.userMessage());
     } catch (Exception e) {
       throw uiError(e.getMessage());
     }
 
-    // The link is live and the email is sent from this point on. The audit insert gets
-    // its own try/catch — an insert failure becomes a warning, never a reported failure.
+    Integer serial = nextSerial();
+    Payment_Link__c link = new Payment_Link__c(
+      Status__c = 'Generating',
+      Order_Reference__c = String.valueOf(serial),
+      Recipient_Name__c = input.firstName + ' ' + input.lastName,
+      Recipient_Email__c = input.email,
+      Recipient_Mobile__c = String.isBlank(input.mobileNumber)
+        ? null
+        : input.countryCode + input.mobileNumber,
+      Amount__c = input.amount,
+      Currency_Code__c = input.currencyCode,
+      Description__c = input.description,
+      Reference_Note__c = input.referenceNote,
+      Expiry_Date__c = input.expiryDate,
+      Environment__c = NGeniusConfig.environment()
+    );
+    insert link;
+
+    ReserveResult reserved = new ReserveResult();
+    reserved.recordId = link.Id;
+    reserved.recordName = [SELECT Name FROM Payment_Link__c WHERE Id = :link.Id]
+    .Name;
+    reserved.serial = String.valueOf(serial);
+    return reserved;
+  }
+
+  @AuraEnabled
+  public static LinkResult finalizeLink(String recordId, LinkRequest request) {
+    if (!hasGeneratePermission()) {
+      throw uiError(
+        'You do not have permission to generate payment links. Ask an admin for the "N-Genius Payment Link User" permission set.'
+      );
+    }
+    List<Payment_Link__c> links = [
+      SELECT Id, Name, Order_Reference__c
+      FROM Payment_Link__c
+      WHERE
+        Id = :recordId
+        AND CreatedById = :UserInfo.getUserId()
+        AND Status__c = 'Generating'
+      LIMIT 1
+    ];
+    if (links.isEmpty()) {
+      throw uiError(
+        'This payment link was already processed, or the reservation could not be found.'
+      );
+    }
+    Payment_Link__c link = links[0];
+
+    NGeniusInvoiceService.InvoiceRequest input;
+    NGeniusInvoiceService.InvoiceResult invoice;
+    try {
+      input = buildInput(request);
+      input.orderReference = link.Order_Reference__c; // the Finance serial
+      invoice = NGeniusInvoiceService.createInvoice(input);
+    } catch (NGeniusException e) {
+      // The reserved record becomes the Error audit entry — updated, not inserted,
+      // and the failure is RETURNED (not thrown) so nothing rolls back.
+      markError(link.Id, e);
+      LinkResult failed = new LinkResult();
+      failed.success = false;
+      failed.errorMessage = e.userMessage();
+      return failed;
+    } catch (Exception e) {
+      throw uiError(e.getMessage());
+    }
+
+    // The link is live and the email is sent from this point on. The update gets its
+    // own try/catch — an update failure becomes a warning, never a reported failure.
     LinkResult result = new LinkResult();
     result.success = true;
     result.paymentUrl = invoice.paymentUrl;
     result.invoiceReference = invoice.invoiceReference;
-    result.orderReference = invoice.orderReference;
+    result.orderReference = link.Order_Reference__c;
+    result.recordId = link.Id;
+    result.recordName = link.Name;
     result.recipientEmail = input.email;
     result.amountFormatted =
       input.currencyCode +
@@ -233,23 +290,12 @@ public with sharing class NGeniusPaymentLinkController {
     result.smsSent = String.isNotBlank(input.mobileNumber);
 
     try {
-      Payment_Link__c link = new Payment_Link__c(
-        Recipient_Name__c = input.firstName + ' ' + input.lastName,
-        Recipient_Email__c = input.email,
-        Recipient_Mobile__c = String.isBlank(input.mobileNumber)
-          ? null
-          : input.countryCode + input.mobileNumber,
-        Amount__c = input.amount,
-        Currency_Code__c = input.currencyCode,
-        Description__c = input.description,
-        Reference_Note__c = input.referenceNote,
+      update new Payment_Link__c(
+        Id = link.Id,
         Status__c = 'Sent',
-        Expiry_Date__c = input.expiryDate,
         Sent_Date__c = Datetime.now(),
         Invoice_Reference__c = invoice.invoiceReference,
-        Order_Reference__c = invoice.orderReference,
         Payment_URL__c = invoice.paymentUrl,
-        Environment__c = NGeniusConfig.environment(),
         API_Log__c = NGeniusConfig.logApiPayloads()
           ? ('REQUEST:\n' +
             invoice.rawRequest +
@@ -257,15 +303,11 @@ public with sharing class NGeniusPaymentLinkController {
             invoice.rawResponse)
           : null
       );
-      insert link;
-      result.recordId = link.Id;
-      result.recordName = [SELECT Name FROM Payment_Link__c WHERE Id = :link.Id]
-      .Name;
     } catch (Exception e) {
       result.warning =
         'The payment link was created and emailed to ' +
         input.email +
-        ', but the audit record could not be saved: ' +
+        ', but the audit record could not be updated: ' +
         e.getMessage() +
         ' Copy the link now and report this to an admin.';
     }
@@ -311,24 +353,56 @@ public with sharing class NGeniusPaymentLinkController {
     return String.isBlank(raw) ? null : raw.trim();
   }
 
-  /** Best-effort audit of a gateway-side failure. Never masks the real error. */
-  private static void logErrorRecord(
-    NGeniusInvoiceService.InvoiceRequest input,
-    NGeniusException e
+  /** Normalises a LinkRequest into the service input. Shared by reserve and finalize. */
+  private static NGeniusInvoiceService.InvoiceRequest buildInput(
+    LinkRequest request
   ) {
+    NGeniusInvoiceService.InvoiceRequest input = new NGeniusInvoiceService.InvoiceRequest();
+    input.firstName = trimmed(request.firstName);
+    input.lastName = trimmed(request.lastName);
+    input.email = trimmed(request.email);
+    input.countryCode = String.isBlank(request.countryCode)
+      ? '+971'
+      : '+' + digitsOf(request.countryCode);
+    input.mobileNumber = normalizeMobile(request.mobile);
+    input.amount = request.amount;
+    // Business rule (Sheraz 2026-08-20): AED only. The client's currency value is
+    // deliberately ignored — the configured currency always wins.
+    input.currencyCode = NGeniusConfig.defaultCurrencyCode();
+    input.description = trimmed(request.description);
+    input.referenceNote = trimmed(request.referenceNote);
+    input.message = trimmed(request.message);
+    input.expiryDate = String.isBlank(request.expiryDate)
+      ? null
+      : Date.valueOf(request.expiryDate.trim());
+    return input;
+  }
+
+  /** Draws the next Finance serial (1001, 1002, …). Row-locked, so serials never collide. */
+  private static Integer nextSerial() {
+    List<Payment_Link_Serial__c> counters = [
+      SELECT Id, Next_Serial__c
+      FROM Payment_Link_Serial__c
+      LIMIT 1
+      FOR UPDATE
+    ];
+    Payment_Link_Serial__c counter = counters.isEmpty()
+      ? new Payment_Link_Serial__c(Name = 'Payment Link Serial')
+      : counters[0];
+    Integer serial = counter.Next_Serial__c == null
+      ? 1001
+      : counter.Next_Serial__c.intValue();
+    counter.Next_Serial__c = serial + 1;
+    upsert counter;
+    return serial;
+  }
+
+  /** Best-effort: turn the reserved record into the Error audit entry. */
+  private static void markError(Id linkId, NGeniusException e) {
     try {
-      insert new Payment_Link__c(
-        Recipient_Name__c = String.isBlank(input.firstName)
-          ? null
-          : (input.firstName + ' ' + input.lastName),
-        Recipient_Email__c = input.email,
-        Amount__c = input.amount,
-        Currency_Code__c = input.currencyCode,
-        Description__c = input.description,
-        Reference_Note__c = input.referenceNote,
-        Expiry_Date__c = input.expiryDate,
+      update new Payment_Link__c(
+        Id = linkId,
         Status__c = 'Error',
-        Environment__c = NGeniusConfig.environment(),
         Error_Message__c = e.userMessage().abbreviate(255),
         API_Log__c = NGeniusConfig.logApiPayloads()
           ? NGeniusInvoiceService.redactForLog(e.responseBody)

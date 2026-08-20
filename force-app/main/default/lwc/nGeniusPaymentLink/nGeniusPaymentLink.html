@@ -125,15 +125,6 @@
             onchange={handleField}
           ></lightning-input>
           <lightning-input
-            label="Description"
-            data-field="description"
-            value={form.description}
-            required
-            max-length="255"
-            field-level-help="The payer sees this on the payment page and in the email."
-            onchange={handleField}
-          ></lightning-input>
-          <lightning-input
             label="Internal reference (optional)"
             data-field="referenceNote"
             value={form.referenceNote}
@@ -141,6 +132,17 @@
             field-level-help="Free text for your own records, e.g. a unit code. The payer never sees it."
             onchange={handleField}
           ></lightning-input>
+          <div class="full-width">
+            <lightning-textarea
+              label="Description (Provide Project and Unit information - This will be used for Finance to Track)"
+              data-field="description"
+              value={form.description}
+              required
+              max-length="255"
+              field-level-help="The payer sees this on the payment page and in the email. Finance uses it to track the payment — always include the project and unit."
+              onchange={handleField}
+            ></lightning-textarea>
+          </div>
           <div class="full-width">
             <lightning-textarea
               label="Message to the payer (optional)"
@@ -193,7 +195,7 @@
               <strong>{result.expiryDate}</strong> · invoice ref
               <strong>{result.invoiceReference}</strong>
               <template lwc:if={result.orderReference}>
-                · order ref <strong>{result.orderReference}</strong></template
+                · serial <strong>{result.orderReference}</strong></template
               >
               <template lwc:if={result.recordName}>
                 · audit <strong>{result.recordName}</strong></template

@@ -10,5 +10,5 @@
     <trackHistory>true</trackHistory>
     <trackTrending>false</trackTrending>
     <description
-  >Key used by N-Genius webhooks and the order-status API. May be null — its location on the invoice response must be confirmed against real sandbox traffic.</description>
+  >Finance serial number (1001, 1002, …) drawn from Payment_Link_Serial__c and sent to N-Genius as the pay-by-link order reference. Assigned at reservation, before the callout.</description>
 </CustomField>

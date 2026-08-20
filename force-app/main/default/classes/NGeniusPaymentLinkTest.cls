@@ -42,11 +42,12 @@ private class NGeniusPaymentLinkTest {
     return r;
   }
 
+  /** Validation/permission problems throw from reserveLink, before any DML. */
   private static String createExpectingError(
     NGeniusPaymentLinkController.LinkRequest r
   ) {
     try {
-      NGeniusPaymentLinkController.createPaymentLink(r);
+      NGeniusPaymentLinkController.reserveLink(r);
       Assert.fail('Expected an AuraHandledException');
       return null;
     } catch (AuraHandledException e) {
@@ -54,13 +55,27 @@ private class NGeniusPaymentLinkTest {
     }
   }
 
+  /** Full two-phase run: reserve (DML) before startTest, finalize (callout) inside. */
+  private static NGeniusPaymentLinkController.LinkResult createLink(
+    NGeniusPaymentLinkController.LinkRequest r
+  ) {
+    NGeniusPaymentLinkController.ReserveResult reserved = NGeniusPaymentLinkController.reserveLink(
+      r
+    );
+    Test.startTest();
+    NGeniusPaymentLinkController.LinkResult result = NGeniusPaymentLinkController.finalizeLink(
+      reserved.recordId,
+      r
+    );
+    Test.stopTest();
+    return result;
+  }
+
   /** Gateway-side failures RETURN success=false (so the Error record commits). */
   private static String createExpectingFailure(
     NGeniusPaymentLinkController.LinkRequest r
   ) {
-    NGeniusPaymentLinkController.LinkResult result = NGeniusPaymentLinkController.createPaymentLink(
-      r
-    );
+    NGeniusPaymentLinkController.LinkResult result = createLink(r);
     Assert.isFalse(result.success, 'Gateway failure returns success=false');
     Assert.isTrue(String.isNotBlank(result.errorMessage));
     return result.errorMessage;
@@ -72,11 +87,7 @@ private class NGeniusPaymentLinkTest {
     fixture();
     Test.setMock(HttpCalloutMock.class, NGeniusHttpMock.happy(2500000));
 
-    Test.startTest();
-    NGeniusPaymentLinkController.LinkResult r = NGeniusPaymentLinkController.createPaymentLink(
-      validRequest()
-    );
-    Test.stopTest();
+    NGeniusPaymentLinkController.LinkResult r = createLink(validRequest());
 
     Assert.isTrue(r.success, 'Link creation succeeds');
     Assert.isNull(r.warning, 'No warning on the happy path');
@@ -85,7 +96,7 @@ private class NGeniusPaymentLinkTest {
       r.paymentUrl
     );
     Assert.areEqual('inv-ref-123', r.invoiceReference);
-    Assert.areEqual('ord-ref-456', r.orderReference);
+    Assert.areEqual('1001', r.orderReference, 'Finance serial starts at 1001');
     Assert.isTrue(r.smsSent, 'Mobile supplied, so an SMS was triggered');
     Assert.isNotNull(r.recordId, 'Audit record created');
 
@@ -96,6 +107,7 @@ private class NGeniusPaymentLinkTest {
         Amount__c,
         Currency_Code__c,
         Invoice_Reference__c,
+        Order_Reference__c,
         Payment_URL__c,
         Environment__c,
         API_Log__c,
@@ -103,6 +115,11 @@ private class NGeniusPaymentLinkTest {
       FROM Payment_Link__c
       WHERE Id = :r.recordId
     ];
+    Assert.areEqual(
+      '1001',
+      link.Order_Reference__c,
+      'Serial stored on the record'
+    );
     Assert.areEqual('Sent', link.Status__c);
     Assert.areEqual(
       '+971501234567',
@@ -126,9 +143,7 @@ private class NGeniusPaymentLinkTest {
     NGeniusHttpMock mock = NGeniusHttpMock.happy(2500000);
     Test.setMock(HttpCalloutMock.class, mock);
 
-    Test.startTest();
-    NGeniusPaymentLinkController.createPaymentLink(validRequest());
-    Test.stopTest();
+    createLink(validRequest());
 
     Assert.areEqual(1, mock.invoiceRequestBodies.size());
     String body = mock.invoiceRequestBodies[0];
@@ -139,6 +154,10 @@ private class NGeniusPaymentLinkTest {
     Assert.isTrue(
       body.contains('"skipInvoiceCreatedEmailNotification":false'),
       'N-Genius must send the email'
+    );
+    Assert.isTrue(
+      body.contains('"orderReference":"1001"'),
+      'Finance serial travels in the payload: ' + body
     );
     Assert.isFalse(
       body.contains('25000.0'),
@@ -221,9 +240,7 @@ private class NGeniusPaymentLinkTest {
         .queueIdentity(401, '{"errors":[{"message":"denied"}]}')
     );
 
-    Test.startTest();
     String message = createExpectingFailure(validRequest());
-    Test.stopTest();
 
     Assert.isTrue(
       message.containsIgnoreCase('credential'),
@@ -253,9 +270,7 @@ private class NGeniusPaymentLinkTest {
         .queueInvoice(403, '{"message":"forbidden"}')
     );
 
-    Test.startTest();
     String message = createExpectingFailure(validRequest());
-    Test.stopTest();
 
     Assert.isTrue(
       message.contains('Pay-by-Link'),
@@ -277,11 +292,7 @@ private class NGeniusPaymentLinkTest {
       .queueInvoice(201, NGeniusHttpMock.invoiceBody(2500000));
     Test.setMock(HttpCalloutMock.class, mock);
 
-    Test.startTest();
-    NGeniusPaymentLinkController.LinkResult r = NGeniusPaymentLinkController.createPaymentLink(
-      validRequest()
-    );
-    Test.stopTest();
+    NGeniusPaymentLinkController.LinkResult r = createLink(validRequest());
 
     Assert.isTrue(r.success);
     Assert.areEqual(2, mock.invoiceCalls, 'Exactly one retry after the 401');
@@ -306,9 +317,7 @@ private class NGeniusPaymentLinkTest {
         )
     );
 
-    Test.startTest();
     String message = createExpectingFailure(validRequest());
-    Test.stopTest();
 
     Assert.isTrue(
       message.containsIgnoreCase('payment link'),
@@ -327,9 +336,7 @@ private class NGeniusPaymentLinkTest {
         .queueInvoice(201, NGeniusHttpMock.invoiceBody(999))
     );
 
-    Test.startTest();
     String message = createExpectingFailure(validRequest());
-    Test.stopTest();
 
     Assert.isTrue(
       message.containsIgnoreCase('portal'),
@@ -559,7 +566,7 @@ private class NGeniusPaymentLinkTest {
 
   // ---- additional coverage: auth, config, service edges ------------------------------
 
-  // Two full createPaymentLink calls cannot share a transaction (callout-after-DML),
+  // Two full link creations cannot share a transaction (callout-after-DML),
   // so in-transaction token reuse is proven on the auth service directly.
   @IsTest
   static void tokenReusedWithinTransaction() {
@@ -587,18 +594,16 @@ private class NGeniusPaymentLinkTest {
     mock.throwOnIdentity = true;
     Test.setMock(HttpCalloutMock.class, mock);
 
-    Test.startTest();
-    String message = createExpectingError(validRequest());
-    Test.stopTest();
+    String message = createExpectingFailure(validRequest());
 
     Assert.isTrue(
       message.containsIgnoreCase('identity service'),
       'Plain-language callout failure: ' + message
     );
     Assert.areEqual(
-      0,
-      [SELECT COUNT() FROM Payment_Link__c],
-      'No HTTP status means no Error record'
+      1,
+      [SELECT COUNT() FROM Payment_Link__c WHERE Status__c = 'Error'],
+      'The reserved record becomes the Error audit entry'
     );
   }
 
@@ -609,9 +614,7 @@ private class NGeniusPaymentLinkTest {
     mock.throwOnInvoice = true;
     Test.setMock(HttpCalloutMock.class, mock);
 
-    Test.startTest();
-    String message = createExpectingError(validRequest());
-    Test.stopTest();
+    String message = createExpectingFailure(validRequest());
 
     Assert.isTrue(
       message.containsIgnoreCase('gateway'),
@@ -715,8 +718,9 @@ private class NGeniusPaymentLinkTest {
     Assert.areEqual(0, mock.identityCalls + mock.invoiceCalls);
   }
 
+  // The Finance serial always wins over whatever order reference N-Genius echoes back.
   @IsTest
-  static void orderReferenceParsedFromEmbeddedOrder() {
+  static void serialWinsOverResponseOrderReference() {
     fixture();
     String body =
       '{"reference":"inv-ref-777",' +
@@ -730,17 +734,63 @@ private class NGeniusPaymentLinkTest {
         .queueInvoice(201, body)
     );
 
-    Test.startTest();
-    NGeniusPaymentLinkController.LinkResult r = NGeniusPaymentLinkController.createPaymentLink(
-      validRequest()
-    );
-    Test.stopTest();
+    NGeniusPaymentLinkController.LinkResult r = createLink(validRequest());
 
     Assert.areEqual(
-      'embedded-ord-9',
+      '1001',
       r.orderReference,
-      'Falls back to _embedded.order[0].reference'
+      'The record keeps OUR serial, not the response reference'
     );
+    Assert.areEqual(
+      '1001',
+      [
+        SELECT Order_Reference__c
+        FROM Payment_Link__c
+        WHERE Id = :r.recordId
+      ]
+      .Order_Reference__c
+    );
+  }
+
+  // Serials draw from the counter: 1001, then 1002; reservations sit as Generating.
+  @IsTest
+  static void serialsIncrementPerReservation() {
+    fixture();
+    NGeniusPaymentLinkController.ReserveResult first = NGeniusPaymentLinkController.reserveLink(
+      validRequest()
+    );
+    NGeniusPaymentLinkController.ReserveResult second = NGeniusPaymentLinkController.reserveLink(
+      validRequest()
+    );
+
+    Assert.areEqual('1001', first.serial);
+    Assert.areEqual('1002', second.serial);
+    Assert.areEqual(
+      2,
+      [
+        SELECT COUNT()
+        FROM Payment_Link__c
+        WHERE Status__c = 'Generating'
+      ],
+      'Reservations wait as Generating until finalized'
+    );
+  }
+
+  // finalizeLink refuses records that are not the caller's own pending reservation.
+  @IsTest
+  static void finalizeRejectsUnknownOrProcessedRecords() {
+    fixture();
+    Payment_Link__c foreign = new Payment_Link__c(
+      Status__c = 'Sent',
+      Recipient_Email__c = 'done@example.com'
+    );
+    insert foreign;
+    try {
+      NGeniusPaymentLinkController.finalizeLink(foreign.Id, validRequest());
+      Assert.fail('Expected an AuraHandledException');
+    } catch (AuraHandledException e) {
+      Assert.isTrue(e.getMessage().containsIgnoreCase('already processed'));
+    }
   }
 
   @IsTest
@@ -793,11 +843,7 @@ private class NGeniusPaymentLinkTest {
 
     // Minimum_Amount__c = 0 disables the rule — the same amount now goes through.
     NGeniusConfig.testOverride.Minimum_Amount__c = 0;
-    Test.startTest();
-    NGeniusPaymentLinkController.LinkResult ok = NGeniusPaymentLinkController.createPaymentLink(
-      r
-    );
-    Test.stopTest();
+    NGeniusPaymentLinkController.LinkResult ok = createLink(r);
     Assert.isTrue(ok.success, 'Rule disabled, small amount accepted');
   }
 
@@ -810,11 +856,7 @@ private class NGeniusPaymentLinkTest {
 
     NGeniusPaymentLinkController.LinkRequest r = validRequest();
     r.currencyCode = 'USD'; // must be ignored
-    Test.startTest();
-    NGeniusPaymentLinkController.LinkResult result = NGeniusPaymentLinkController.createPaymentLink(
-      r
-    );
-    Test.stopTest();
+    NGeniusPaymentLinkController.LinkResult result = createLink(r);
 
     Assert.isTrue(result.success);
     Assert.isTrue(

@@ -3,11 +3,13 @@ import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { refreshApex } from "@salesforce/apex";
 import getFormDefaults from "@salesforce/apex/NGeniusPaymentLinkController.getFormDefaults";
-import createPaymentLink from "@salesforce/apex/NGeniusPaymentLinkController.createPaymentLink";
+import reserveLink from "@salesforce/apex/NGeniusPaymentLinkController.reserveLink";
+import finalizeLink from "@salesforce/apex/NGeniusPaymentLinkController.finalizeLink";
 import getRecentLinks from "@salesforce/apex/NGeniusPaymentLinkController.getRecentLinks";
 
 const RECENT_COLUMNS = [
   { label: "Link", fieldName: "Name", initialWidth: 110 },
+  { label: "Serial", fieldName: "Order_Reference__c", initialWidth: 90 },
   { label: "Recipient", fieldName: "Recipient_Name__c" },
   { label: "Email", fieldName: "Recipient_Email__c" },
   {
@@ -180,11 +182,18 @@ export default class NGeniusPaymentLink extends NavigationMixin(
         referenceNote: this.form.referenceNote,
         message: this.form.message
       };
-      const outcome = await createPaymentLink({ request });
+      // Two-phase: reserve draws the Finance serial and creates the audit record
+      // (Generating); finalize does the N-Genius callout and flips it to Sent.
+      const reserved = await reserveLink({ request });
+      const outcome = await finalizeLink({
+        recordId: reserved.recordId,
+        request
+      });
       if (!outcome.success) {
         // Gateway-side failure: the controller returns (not throws) so the Error
         // audit record survives the transaction. Render it like any other error.
         this.showError(outcome.errorMessage);
+        refreshApex(this.wiredLinksResult);
         return;
       }
       this.result = outcome;

@@ -26,6 +26,7 @@ public with sharing class NGeniusInvoiceService {
     public String referenceNote;
     public Date expiryDate;
     public String message;
+    public String orderReference; // Finance serial (1001, 1002, …), sent to N-Genius
   }
 
   public class InvoiceResult {
@@ -65,8 +66,9 @@ public with sharing class NGeniusInvoiceService {
 
   // ---- validation ------------------------------------------------------------------
 
-  /** Collects every problem and throws once, rather than failing on the first. */
-  private static void validate(InvoiceRequest input) {
+  /** Collects every problem and throws once, rather than failing on the first.
+   *  Public so the controller can validate BEFORE reserving a serial. */
+  public static void validate(InvoiceRequest input) {
     List<String> problems = new List<String>();
     if (input == null) {
       throw new NGeniusException('Nothing to send.');
@@ -168,9 +170,12 @@ public with sharing class NGeniusInvoiceService {
     if (String.isNotBlank(NGeniusConfig.redirectUrl())) {
       payload.put('redirectUrl', NGeniusConfig.redirectUrl());
     }
-    // NOTE deliberately absent: a merchant-side reference field. The invoice payload's
-    // field for one is not documented — Network International must confirm which field
-    // to use before Salesforce, the portal and the settlement file can share one key.
+    // Finance serial → the pay-by-link "order reference (optional)" the portal offers.
+    // Sent as top-level orderReference (mirrors the response field). TODO: confirm on
+    // the first live link that the portal actually shows it; adjust the key if ignored.
+    if (String.isNotBlank(input.orderReference)) {
+      payload.put('orderReference', input.orderReference);
+    }
     // input.referenceNote is stored on Payment_Link__c only.
     return payload;
   }
