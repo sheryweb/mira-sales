@@ -260,10 +260,16 @@ export default class MultiSalesOfferWizard extends NavigationMixin(
   }
 
   handlePreview() {
+    // The mobile app drives the download off the recordIds list (docs: "the
+    // first file in the recordIds list downloads") — omitting it breaks the
+    // Android app even though iOS and desktop tolerate selectedRecordId alone.
     this[NavigationMixin.Navigate]({
       type: "standard__namedPage",
       attributes: { pageName: "filePreview" },
-      state: { selectedRecordId: this.contentDocumentId }
+      state: {
+        recordIds: this.contentDocumentId,
+        selectedRecordId: this.contentDocumentId
+      }
     });
   }
 
