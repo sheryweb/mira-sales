@@ -1,310 +1,510 @@
 <template>
-    <div class="wizard">
-
-        <!-- ============ header ============ -->
-        <div class="hero">
-            <div class="hero-titles">
-                <h1>Record Sales Activity</h1>
-                <p>Log your briefings and meetings in under a minute.</p>
-            </div>
-            <div class="hero-right">
-                <span class="week-chip" title="Activities you logged this week">
-                    <lightning-icon icon-name="utility:trending" size="xx-small" variant="inverse"></lightning-icon>
-                    {weekChipText}
-                </span>
-                <div class="steps" role="list">
-                    <div class={step1Class} role="listitem"><span class="step-dot">1</span><span class="step-label">Activity</span></div>
-                    <div class="step-bar"></div>
-                    <div class={step2Class} role="listitem"><span class="step-dot">2</span><span class="step-label">Details</span></div>
-                    <div class="step-bar"></div>
-                    <div class={step3Class} role="listitem"><span class="step-dot">3</span><span class="step-label">When</span></div>
-                    <div class="step-bar"></div>
-                    <div class={step4Class} role="listitem"><span class="step-dot">4</span><span class="step-label">Done</span></div>
-                </div>
-            </div>
+  <div class="wizard">
+    <!-- ============ header ============ -->
+    <div class="hero">
+      <div class="hero-titles">
+        <h1>Record Sales Activity</h1>
+        <p>Log your briefings and meetings in under a minute.</p>
+      </div>
+      <div class="hero-right">
+        <span class="week-chip" title="Activities you logged this week">
+          <lightning-icon
+            icon-name="utility:trending"
+            size="xx-small"
+            variant="inverse"
+          ></lightning-icon>
+          {weekChipText}
+        </span>
+        <div class="steps" role="list">
+          <div class={step1Class} role="listitem">
+            <span class="step-dot">1</span
+            ><span class="step-label">Activity</span>
+          </div>
+          <div class="step-bar"></div>
+          <div class={step2Class} role="listitem">
+            <span class="step-dot">2</span
+            ><span class="step-label">Details</span>
+          </div>
+          <div class="step-bar"></div>
+          <div class={step3Class} role="listitem">
+            <span class="step-dot">3</span><span class="step-label">When</span>
+          </div>
+          <div class="step-bar"></div>
+          <div class={step4Class} role="listitem">
+            <span class="step-dot">4</span><span class="step-label">Done</span>
+          </div>
         </div>
-
-        <template lwc:if={initLoaded}>
-
-            <!-- ============ step 1 : activity ============ -->
-            <template lwc:if={isStep1}>
-                <div class="panel">
-                    <h2 class="panel-title">What did you do?</h2>
-                    <div class="action-grid">
-                        <template for:each={activityCards} for:item="a">
-                            <button key={a.name} class={a.cssClass} data-name={a.name} onclick={handleActivityPick}>
-                                <span class="action-icon">
-                                    <lightning-icon icon-name={a.icon} size="small" variant="inverse"></lightning-icon>
-                                </span>
-                                <span class="action-title">{a.name}</span>
-                                <span class="action-desc">{a.desc}</span>
-                            </button>
-                        </template>
-                    </div>
-                </div>
-            </template>
-
-            <!-- ============ step 2 : details ============ -->
-            <template lwc:if={isStep2}>
-                <div class="panel">
-                    <div class="panel-toolbar">
-                        <lightning-button-icon icon-name="utility:back" alternative-text="Back"
-                                               title="Back to activity" onclick={handleBackToActivity}>
-                        </lightning-button-icon>
-                        <h2 class="panel-title no-margin">{detailsTitle}</h2>
-                    </div>
-
-                    <div class="field-block">
-                        <span class="field-label">How was it held?</span>
-                        <div class="chip-row">
-                            <template for:each={typeChips} for:item="t">
-                                <button key={t.value} class={t.cssClass} data-value={t.value} onclick={handleTypePick}>{t.value}</button>
-                            </template>
-                        </div>
-                    </div>
-
-                    <div class="field-grid">
-                        <div class="field-block lookup-block">
-                            <span class="field-label">Agency <span class="req">*</span></span>
-                            <template lwc:if={selectedAgency}>
-                                <div class="picked">
-                                    <span class="picked-name">{selectedAgency.name}</span>
-                                    <button class="picked-clear" title="Change agency" onclick={handleAgencyClear}>✕</button>
-                                </div>
-                            </template>
-                            <template lwc:else>
-                                <lightning-input variant="label-hidden" type="search" placeholder="Search agencies…"
-                                                 value={agencyTerm} onchange={handleAgencyInput}></lightning-input>
-                                <template lwc:if={showAgencyResults}>
-                                    <ul class="lookup-results">
-                                        <template for:each={agencyResults} for:item="r">
-                                            <li key={r.id}>
-                                                <button data-id={r.id} data-name={r.name} onclick={handleAgencyPick}>{r.name}</button>
-                                            </li>
-                                        </template>
-                                    </ul>
-                                </template>
-                            </template>
-                        </div>
-
-                        <div class="field-block lookup-block">
-                            <span class="field-label">Client (optional)</span>
-                            <template lwc:if={selectedClient}>
-                                <div class="picked">
-                                    <span class="picked-name">{selectedClient.name}</span>
-                                    <button class="picked-clear" title="Remove client" onclick={handleClientClear}>✕</button>
-                                </div>
-                            </template>
-                            <template lwc:else>
-                                <lightning-input variant="label-hidden" type="search" placeholder="Search clients…"
-                                                 value={clientTerm} onchange={handleClientInput}></lightning-input>
-                                <template lwc:if={showClientResults}>
-                                    <ul class="lookup-results">
-                                        <template for:each={clientResults} for:item="r">
-                                            <li key={r.id}>
-                                                <button data-id={r.id} data-name={r.name} onclick={handleClientPick}>{r.name}</button>
-                                            </li>
-                                        </template>
-                                    </ul>
-                                </template>
-                            </template>
-                        </div>
-
-                        <div class="field-block">
-                            <span class="field-label">{agentsLabel} <template lwc:if={isBriefing}><span class="req">*</span></template></span>
-                            <lightning-input variant="label-hidden" type="number" min="1" max="99999"
-                                             value={numberOfAgents} onchange={handleAgentsChange}></lightning-input>
-                        </div>
-
-                        <div class="field-block lookup-block">
-                            <span class="field-label">Other RMs who attended (optional)</span>
-                            <lightning-input variant="label-hidden" type="search" placeholder="Type a name…"
-                                             value={rmSearch} onchange={handleRmSearch}></lightning-input>
-                            <template lwc:if={showRmOptions}>
-                                <ul class="lookup-results">
-                                    <template for:each={rmOptions} for:item="r">
-                                        <li key={r.name}>
-                                            <button data-name={r.name} onclick={handleRmPick}>{r.name}</button>
-                                        </li>
-                                    </template>
-                                </ul>
-                            </template>
-                            <template lwc:if={hasRmChips}>
-                                <div class="chip-row wrap">
-                                    <template for:each={rmChips} for:item="rm">
-                                        <span key={rm.name} class="rm-chip">
-                                            {rm.name}
-                                            <button class="picked-clear" title="Remove" data-name={rm.name} onclick={handleRmRemove}>✕</button>
-                                        </span>
-                                    </template>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-
-                    <div class="field-block">
-                        <span class="field-label">Projects discussed (optional)</span>
-                        <div class="chip-row wrap">
-                            <template for:each={projectChips} for:item="p">
-                                <button key={p.name} class={p.cssClass} data-name={p.name} onclick={handleProjectToggle}>{p.name}</button>
-                            </template>
-                        </div>
-                        <template lwc:if={isOtherProjectPicked}>
-                            <div class="other-project">
-                                <lightning-input variant="label-hidden" type="text" max-length="100"
-                                                 placeholder="Which project? e.g. the upcoming marina launch"
-                                                 value={otherProject} onchange={handleOtherProjectChange}></lightning-input>
-                            </div>
-                        </template>
-                    </div>
-
-                    <div class="field-block">
-                        <span class="field-label">What was discussed? <span class="req">*</span>
-                            <span class="counter">{descriptionCounter}</span></span>
-                        <lightning-textarea variant="label-hidden" placeholder={descriptionPlaceholder}
-                                            value={description} max-length={descriptionMax}
-                                            onchange={handleDescriptionChange}></lightning-textarea>
-                    </div>
-
-                    <div class="field-block">
-                        <span class="field-label">How did it go? <span class="req">*</span></span>
-                        <div class="chip-row wrap">
-                            <template for:each={outcomeChips} for:item="o">
-                                <button key={o.name} class={o.cssClass} data-name={o.name} onclick={handleOutcomePick}>{o.name}</button>
-                            </template>
-                        </div>
-                    </div>
-
-                    <div class="footer-actions">
-                        <span class="footer-hint">{detailsHint}</span>
-                        <lightning-button label="Back" onclick={handleBackToActivity}></lightning-button>
-                        <lightning-button variant="brand" label="Continue" onclick={handleToWhen}
-                                          disabled={detailsInvalid}></lightning-button>
-                    </div>
-                </div>
-            </template>
-
-            <!-- ============ step 3 : when ============ -->
-            <template lwc:if={isStep3}>
-                <div class="panel">
-                    <div class="panel-toolbar">
-                        <lightning-button-icon icon-name="utility:back" alternative-text="Back"
-                                               title="Back to details" onclick={handleBackToDetails}>
-                        </lightning-button-icon>
-                        <h2 class="panel-title no-margin">When did it happen?</h2>
-                    </div>
-
-                    <div class="field-grid when-grid">
-                        <div class="field-block">
-                            <span class="field-label">Date</span>
-                            <lightning-input variant="label-hidden" type="date" value={activityDate}
-                                             onchange={handleDateChange}></lightning-input>
-                        </div>
-                        <div class="field-block">
-                            <span class="field-label">Start time</span>
-                            <lightning-input variant="label-hidden" type="time" value={startTime}
-                                             onchange={handleStartTimeChange}></lightning-input>
-                        </div>
-                        <template lwc:if={isCustomDuration}>
-                            <div class="field-block">
-                                <span class="field-label">End time</span>
-                                <lightning-input variant="label-hidden" type="time" value={customEndTime}
-                                                 onchange={handleCustomEndChange}></lightning-input>
-                            </div>
-                        </template>
-                    </div>
-
-                    <div class="field-block">
-                        <span class="field-label">How long did it take?</span>
-                        <div class="chip-row wrap">
-                            <template for:each={durationChips} for:item="d">
-                                <button key={d.label} class={d.cssClass} data-value={d.value} onclick={handleDurationPick}>{d.label}</button>
-                            </template>
-                        </div>
-                    </div>
-
-                    <div class="field-block followup-block">
-                        <lightning-input type="checkbox" label="Schedule a follow-up task for yourself"
-                                         checked={followUpEnabled} onchange={handleFollowUpToggle}></lightning-input>
-                        <template lwc:if={followUpEnabled}>
-                            <div class="followup-fields">
-                                <div class="followup-date">
-                                    <span class="field-label">Follow up on</span>
-                                    <lightning-input variant="label-hidden" type="date" value={followUpDate}
-                                                     onchange={handleFollowUpDateChange}></lightning-input>
-                                </div>
-                                <div class="followup-note">
-                                    <span class="field-label">Reminder note (optional)</span>
-                                    <lightning-input variant="label-hidden" type="text" max-length="255"
-                                                     placeholder="e.g. send the MIRA Verde price list"
-                                                     value={followUpNote} onchange={handleFollowUpNoteChange}></lightning-input>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-
-                    <template lwc:if={summaryText}>
-                        <div class="summary-box">
-                            <lightning-icon icon-name="utility:event" size="x-small"></lightning-icon>
-                            <span>{summaryText}</span>
-                        </div>
-                    </template>
-
-                    <div class="footer-actions">
-                        <span class="footer-hint">{whenHint}</span>
-                        <lightning-button label="Back" onclick={handleBackToDetails}></lightning-button>
-                        <lightning-button variant="brand" label="Save activity" onclick={handleSave}
-                                          disabled={whenInvalid}></lightning-button>
-                    </div>
-                </div>
-            </template>
-
-            <!-- ============ step 4 : done ============ -->
-            <template lwc:if={isStep4}>
-                <div class="panel result">
-                    <div class="result-badge">
-                        <lightning-icon icon-name="utility:success" size="large" variant="inverse"></lightning-icon>
-                    </div>
-                    <h2>{doneTitle}</h2>
-                    <p class="result-sub">{doneMessage}</p>
-                    <div class="target-box">
-                        <span class="field-label">Your weekly target</span>
-                        <template for:each={targetBars} for:item="t">
-                            <div key={t.id} class="target-row">
-                                <span class="target-label">{t.label}</span>
-                                <span class="target-track"><span class={t.barClass} style={t.barStyle}></span></span>
-                            </div>
-                        </template>
-                    </div>
-                    <div class="proof-box">
-                        <span class="field-label">Proof of activity (optional)</span>
-                        <p class="proof-hint">Add photos from the briefing or meeting — they are saved to this activity's files.</p>
-                        <lightning-file-upload label="" name="proofUpload" record-id={recordId}
-                                               accept={proofFormats} multiple
-                                               onuploadfinished={handleProofUploaded}>
-                        </lightning-file-upload>
-                        <template lwc:if={hasProofFiles}>
-                            <ul class="proof-list">
-                                <template for:each={proofFiles} for:item="f">
-                                    <li key={f}><lightning-icon icon-name="utility:image" size="xx-small"></lightning-icon> {f}</li>
-                                </template>
-                            </ul>
-                        </template>
-                    </div>
-                    <div class="result-actions">
-                        <lightning-button variant="brand" label="Log another activity" onclick={handleLogAnother}></lightning-button>
-                        <lightning-button label="Open record" onclick={handleOpenRecord}></lightning-button>
-                    </div>
-                </div>
-            </template>
-
-        </template>
-
-        <template lwc:if={isBusy}>
-            <div class="busy-overlay">
-                <lightning-spinner alternative-text="Working" size="medium"></lightning-spinner>
-                <p class="busy-text">{busyText}</p>
-            </div>
-        </template>
+      </div>
     </div>
+
+    <template lwc:if={initLoaded}>
+      <!-- ============ step 1 : activity ============ -->
+      <template lwc:if={isStep1}>
+        <div class="panel">
+          <h2 class="panel-title">What did you do?</h2>
+          <div class="action-grid">
+            <template for:each={activityCards} for:item="a">
+              <button
+                key={a.name}
+                class={a.cssClass}
+                data-name={a.name}
+                onclick={handleActivityPick}
+              >
+                <span class="action-icon">
+                  <lightning-icon
+                    icon-name={a.icon}
+                    size="small"
+                    variant="inverse"
+                  ></lightning-icon>
+                </span>
+                <span class="action-title">{a.name}</span>
+                <span class="action-desc">{a.desc}</span>
+              </button>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      <!-- ============ step 2 : details ============ -->
+      <template lwc:if={isStep2}>
+        <div class="panel">
+          <div class="panel-toolbar">
+            <lightning-button-icon
+              icon-name="utility:back"
+              alternative-text="Back"
+              title="Back to activity"
+              onclick={handleBackToActivity}
+            >
+            </lightning-button-icon>
+            <h2 class="panel-title no-margin">{detailsTitle}</h2>
+          </div>
+
+          <div class="field-block">
+            <span class="field-label">How was it held?</span>
+            <div class="chip-row">
+              <template for:each={typeChips} for:item="t">
+                <button
+                  key={t.value}
+                  class={t.cssClass}
+                  data-value={t.value}
+                  onclick={handleTypePick}
+                >
+                  {t.value}
+                </button>
+              </template>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field-block lookup-block">
+              <span class="field-label">Agency <span class="req">*</span></span>
+              <template lwc:if={selectedAgency}>
+                <div class="picked">
+                  <span class="picked-name">{selectedAgency.name}</span>
+                  <button
+                    class="picked-clear"
+                    title="Change agency"
+                    onclick={handleAgencyClear}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </template>
+              <template lwc:else>
+                <lightning-input
+                  variant="label-hidden"
+                  type="search"
+                  placeholder="Search agencies…"
+                  value={agencyTerm}
+                  onchange={handleAgencyInput}
+                ></lightning-input>
+                <template lwc:if={showAgencyResults}>
+                  <ul class="lookup-results">
+                    <template for:each={agencyResults} for:item="r">
+                      <li key={r.id}>
+                        <button
+                          data-id={r.id}
+                          data-name={r.name}
+                          onclick={handleAgencyPick}
+                        >
+                          {r.name}
+                        </button>
+                      </li>
+                    </template>
+                  </ul>
+                </template>
+              </template>
+            </div>
+
+            <div class="field-block lookup-block">
+              <span class="field-label">Client (optional)</span>
+              <template lwc:if={selectedClient}>
+                <div class="picked">
+                  <span class="picked-name">{selectedClient.name}</span>
+                  <button
+                    class="picked-clear"
+                    title="Remove client"
+                    onclick={handleClientClear}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </template>
+              <template lwc:else>
+                <lightning-input
+                  variant="label-hidden"
+                  type="search"
+                  placeholder="Search clients…"
+                  value={clientTerm}
+                  onchange={handleClientInput}
+                ></lightning-input>
+                <template lwc:if={showClientResults}>
+                  <ul class="lookup-results">
+                    <template for:each={clientResults} for:item="r">
+                      <li key={r.id}>
+                        <button
+                          data-id={r.id}
+                          data-name={r.name}
+                          onclick={handleClientPick}
+                        >
+                          {r.name}
+                        </button>
+                      </li>
+                    </template>
+                  </ul>
+                </template>
+              </template>
+            </div>
+
+            <div class="field-block">
+              <span class="field-label"
+                >{agentsLabel}
+                <template lwc:if={isBriefing}
+                  ><span class="req">*</span></template
+                ></span
+              >
+              <lightning-input
+                variant="label-hidden"
+                type="number"
+                min="1"
+                max="99999"
+                value={numberOfAgents}
+                onchange={handleAgentsChange}
+              ></lightning-input>
+            </div>
+
+            <div class="field-block lookup-block">
+              <span class="field-label">Other RMs who attended (optional)</span>
+              <lightning-input
+                variant="label-hidden"
+                type="search"
+                placeholder="Type a name…"
+                value={rmSearch}
+                onchange={handleRmSearch}
+              ></lightning-input>
+              <template lwc:if={showRmOptions}>
+                <ul class="lookup-results">
+                  <template for:each={rmOptions} for:item="r">
+                    <li key={r.name}>
+                      <button data-name={r.name} onclick={handleRmPick}>
+                        {r.name}
+                      </button>
+                    </li>
+                  </template>
+                </ul>
+              </template>
+              <template lwc:if={hasRmChips}>
+                <div class="chip-row wrap">
+                  <template for:each={rmChips} for:item="rm">
+                    <span key={rm.name} class="rm-chip">
+                      {rm.name}
+                      <button
+                        class="picked-clear"
+                        title="Remove"
+                        data-name={rm.name}
+                        onclick={handleRmRemove}
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <div class="field-block">
+            <span class="field-label">Projects discussed (optional)</span>
+            <div class="chip-row wrap">
+              <template for:each={projectChips} for:item="p">
+                <button
+                  key={p.name}
+                  class={p.cssClass}
+                  data-name={p.name}
+                  onclick={handleProjectToggle}
+                >
+                  {p.name}
+                </button>
+              </template>
+            </div>
+            <template lwc:if={isOtherProjectPicked}>
+              <div class="other-project">
+                <lightning-input
+                  variant="label-hidden"
+                  type="text"
+                  max-length="100"
+                  placeholder="Which project? e.g. the upcoming marina launch"
+                  value={otherProject}
+                  onchange={handleOtherProjectChange}
+                ></lightning-input>
+              </div>
+            </template>
+          </div>
+
+          <div class="field-block">
+            <span class="field-label"
+              >What was discussed? (optional)
+              <span class="counter">{descriptionCounter}</span></span
+            >
+            <lightning-textarea
+              variant="label-hidden"
+              placeholder={descriptionPlaceholder}
+              value={description}
+              max-length={descriptionMax}
+              onchange={handleDescriptionChange}
+            ></lightning-textarea>
+          </div>
+
+          <div class="field-block">
+            <span class="field-label"
+              >How did it go? <span class="req">*</span></span
+            >
+            <div class="chip-row wrap">
+              <template for:each={outcomeChips} for:item="o">
+                <button
+                  key={o.name}
+                  class={o.cssClass}
+                  data-name={o.name}
+                  onclick={handleOutcomePick}
+                >
+                  {o.name}
+                </button>
+              </template>
+            </div>
+          </div>
+
+          <div class="footer-actions">
+            <span class="footer-hint">{detailsHint}</span>
+            <lightning-button
+              label="Back"
+              onclick={handleBackToActivity}
+            ></lightning-button>
+            <lightning-button
+              variant="brand"
+              label="Continue"
+              onclick={handleToWhen}
+              disabled={detailsInvalid}
+            ></lightning-button>
+          </div>
+        </div>
+      </template>
+
+      <!-- ============ step 3 : when ============ -->
+      <template lwc:if={isStep3}>
+        <div class="panel">
+          <div class="panel-toolbar">
+            <lightning-button-icon
+              icon-name="utility:back"
+              alternative-text="Back"
+              title="Back to details"
+              onclick={handleBackToDetails}
+            >
+            </lightning-button-icon>
+            <h2 class="panel-title no-margin">When did it happen?</h2>
+          </div>
+
+          <div class="field-grid when-grid">
+            <div class="field-block">
+              <span class="field-label">Date</span>
+              <lightning-input
+                variant="label-hidden"
+                type="date"
+                value={activityDate}
+                onchange={handleDateChange}
+              ></lightning-input>
+            </div>
+            <div class="field-block">
+              <span class="field-label">Start time</span>
+              <lightning-input
+                variant="label-hidden"
+                type="time"
+                value={startTime}
+                onchange={handleStartTimeChange}
+              ></lightning-input>
+            </div>
+            <template lwc:if={isCustomDuration}>
+              <div class="field-block">
+                <span class="field-label">End time</span>
+                <lightning-input
+                  variant="label-hidden"
+                  type="time"
+                  value={customEndTime}
+                  onchange={handleCustomEndChange}
+                ></lightning-input>
+              </div>
+            </template>
+          </div>
+
+          <div class="field-block">
+            <span class="field-label">How long did it take?</span>
+            <div class="chip-row wrap">
+              <template for:each={durationChips} for:item="d">
+                <button
+                  key={d.label}
+                  class={d.cssClass}
+                  data-value={d.value}
+                  onclick={handleDurationPick}
+                >
+                  {d.label}
+                </button>
+              </template>
+            </div>
+          </div>
+
+          <div class="field-block followup-block">
+            <lightning-input
+              type="checkbox"
+              label="Schedule a follow-up task for yourself"
+              checked={followUpEnabled}
+              onchange={handleFollowUpToggle}
+            ></lightning-input>
+            <template lwc:if={followUpEnabled}>
+              <div class="followup-fields">
+                <div class="followup-date">
+                  <span class="field-label">Follow up on</span>
+                  <lightning-input
+                    variant="label-hidden"
+                    type="date"
+                    value={followUpDate}
+                    onchange={handleFollowUpDateChange}
+                  ></lightning-input>
+                </div>
+                <div class="followup-note">
+                  <span class="field-label">Reminder note (optional)</span>
+                  <lightning-input
+                    variant="label-hidden"
+                    type="text"
+                    max-length="255"
+                    placeholder="e.g. send the MIRA Verde price list"
+                    value={followUpNote}
+                    onchange={handleFollowUpNoteChange}
+                  ></lightning-input>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <template lwc:if={summaryText}>
+            <div class="summary-box">
+              <lightning-icon
+                icon-name="utility:event"
+                size="x-small"
+              ></lightning-icon>
+              <span>{summaryText}</span>
+            </div>
+          </template>
+
+          <div class="footer-actions">
+            <span class="footer-hint">{whenHint}</span>
+            <lightning-button
+              label="Back"
+              onclick={handleBackToDetails}
+            ></lightning-button>
+            <lightning-button
+              variant="brand"
+              label="Save activity"
+              onclick={handleSave}
+              disabled={whenInvalid}
+            ></lightning-button>
+          </div>
+        </div>
+      </template>
+
+      <!-- ============ step 4 : done ============ -->
+      <template lwc:if={isStep4}>
+        <div class="panel result">
+          <div class="result-badge">
+            <lightning-icon
+              icon-name="utility:success"
+              size="large"
+              variant="inverse"
+            ></lightning-icon>
+          </div>
+          <h2>{doneTitle}</h2>
+          <p class="result-sub">{doneMessage}</p>
+          <div class="target-box">
+            <span class="field-label">Your weekly target</span>
+            <template for:each={targetBars} for:item="t">
+              <div key={t.id} class="target-row">
+                <span class="target-label">{t.label}</span>
+                <span class="target-track"
+                  ><span class={t.barClass} style={t.barStyle}></span
+                ></span>
+              </div>
+            </template>
+          </div>
+          <div class="proof-box">
+            <span class="field-label">Proof of activity (optional)</span>
+            <p class="proof-hint">
+              Add photos from the briefing or meeting — they are saved to this
+              activity's files.
+            </p>
+            <lightning-file-upload
+              label=""
+              name="proofUpload"
+              record-id={recordId}
+              accept={proofFormats}
+              multiple
+              onuploadfinished={handleProofUploaded}
+            >
+            </lightning-file-upload>
+            <template lwc:if={hasProofFiles}>
+              <ul class="proof-list">
+                <template for:each={proofFiles} for:item="f">
+                  <li key={f}>
+                    <lightning-icon
+                      icon-name="utility:image"
+                      size="xx-small"
+                    ></lightning-icon>
+                    {f}
+                  </li>
+                </template>
+              </ul>
+            </template>
+          </div>
+          <div class="result-actions">
+            <lightning-button
+              variant="brand"
+              label="Log another activity"
+              onclick={handleLogAnother}
+            ></lightning-button>
+            <lightning-button
+              label="Open record"
+              onclick={handleOpenRecord}
+            ></lightning-button>
+          </div>
+        </div>
+      </template>
+    </template>
+
+    <template lwc:if={isBusy}>
+      <div class="busy-overlay">
+        <lightning-spinner
+          alternative-text="Working"
+          size="medium"
+        ></lightning-spinner>
+        <p class="busy-text">{busyText}</p>
+      </div>
+    </template>
+  </div>
 </template>
