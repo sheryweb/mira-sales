@@ -206,46 +206,12 @@
               icon-name="utility:download"
               onclick={handleDownload}
             ></lightning-button>
-            <template lwc:if={showEmailAction}>
-              <lightning-button
-                label="Email PDF"
-                icon-name="utility:email"
-                onclick={handleEmailOpen}
-              ></lightning-button>
-            </template>
           </div>
           <button class="start-over" onclick={handleStartOver}>
             Generate another offer
           </button>
         </div>
       </template>
-    </template>
-
-    <template lwc:if={showEmailBox}>
-      <div class="email-overlay">
-        <div class="email-box">
-          <h3>Email the sales offer</h3>
-          <p class="email-hint">The PDF will be sent as an attachment.</p>
-          <lightning-input
-            type="email"
-            label="Send to"
-            value={emailAddress}
-            onchange={handleEmailChange}
-          ></lightning-input>
-          <div class="email-actions">
-            <lightning-button
-              label="Cancel"
-              onclick={handleEmailCancel}
-            ></lightning-button>
-            <lightning-button
-              variant="brand"
-              label="Send"
-              icon-name="utility:send"
-              onclick={handleEmailSend}
-            ></lightning-button>
-          </div>
-        </div>
-      </div>
     </template>
 
     <template lwc:if={isBusy}>

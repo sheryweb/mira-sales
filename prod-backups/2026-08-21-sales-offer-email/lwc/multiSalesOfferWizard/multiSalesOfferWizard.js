@@ -6,8 +6,6 @@ import getInitData from "@salesforce/apex/MultiSalesOfferWizardController.getIni
 import getUnits from "@salesforce/apex/MultiSalesOfferWizardController.getUnits";
 import cleanupExistingOffers from "@salesforce/apex/MultiSalesOfferWizardController.cleanupExistingOffers";
 import generateOffers from "@salesforce/apex/MultiSalesOfferWizardController.generateOffers";
-import getDefaultEmail from "@salesforce/apex/SalesOfferEmailController.getDefaultEmail";
-import emailOffer from "@salesforce/apex/SalesOfferEmailController.emailOffer";
 
 const STEP_PROJECT = 1;
 const STEP_UNITS = 2;
@@ -34,9 +32,6 @@ export default class MultiSalesOfferWizard extends NavigationMixin(
 
   contentDocumentId = null;
   generatedCount = 0;
-
-  showEmailBox = false;
-  emailAddress = "";
 
   isBusy = false;
   busyText = "";
@@ -189,12 +184,6 @@ export default class MultiSalesOfferWizard extends NavigationMixin(
     const n = this.generatedCount;
     return `One combined PDF covering ${n} unit${n === 1 ? "" : "s"} of ${this.selectedProject}.`;
   }
-  /** Email is the mobile app's substitute for a real download (the Android app
-   *  cannot save files to the device); desktop and its working download keep
-   *  the page uncluttered. */
-  get showEmailAction() {
-    return FORM_FACTOR !== "Large";
-  }
 
   // ---- handlers -----------------------------------------------------------
 
@@ -301,41 +290,6 @@ export default class MultiSalesOfferWizard extends NavigationMixin(
     });
   }
 
-  async handleEmailOpen() {
-    if (!this.emailAddress) {
-      try {
-        this.emailAddress = await getDefaultEmail();
-      } catch {
-        this.emailAddress = "";
-      }
-    }
-    this.showEmailBox = true;
-  }
-
-  handleEmailChange(event) {
-    this.emailAddress = event.detail.value;
-  }
-
-  handleEmailCancel() {
-    this.showEmailBox = false;
-  }
-
-  handleEmailSend() {
-    const toAddress = (this.emailAddress || "").trim();
-    this.runBusy("Sending the offer by email…", async () => {
-      await emailOffer({
-        contentDocumentId: this.contentDocumentId,
-        toAddress
-      });
-      this.showEmailBox = false;
-      this.toast(
-        "Email sent",
-        `The sales offer PDF was sent to ${toAddress}.`,
-        "success"
-      );
-    });
-  }
-
   handleStartOver() {
     this.step = STEP_PROJECT;
     this.selectedIds = new Set();
@@ -343,7 +297,6 @@ export default class MultiSalesOfferWizard extends NavigationMixin(
     this.contentDocumentId = null;
     this.units = [];
     this.unitsLoaded = false;
-    this.showEmailBox = false;
   }
 
   // ---- plumbing -----------------------------------------------------------

@@ -49,3 +49,4 @@ $RECYCLE.BIN/
 
 # Prod-retrieve scratch (drift diffs)
 tmp-mdapi/
+prod-retrieve/

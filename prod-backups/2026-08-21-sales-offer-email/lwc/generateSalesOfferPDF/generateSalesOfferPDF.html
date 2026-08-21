@@ -1,0 +1,31 @@
+<template>
+  <div class="generate-sales-offer-container" style="margin-left: 10px">
+    <button
+      type="button"
+      onclick={generate}
+      class="slds-button slds-button_outline-brand"
+      disabled={showSpinner}
+    >
+      <div
+        class="demo-only"
+        style="position: static; display: flex; justify-content: end"
+      >
+        <template if:true={showSpinner}>
+          <div>
+            <div
+              role="status"
+              style="position: relative; margin-right: 15px"
+              class="slds-spinner slds-spinner_x-small slds-spinner"
+            >
+              <span class="slds-assistive-text">Loading</span>
+              <div class="slds-spinner__dot-a"></div>
+              <div class="slds-spinner__dot-b"></div>
+            </div>
+          </div>
+        </template>
+
+        <div>Generate Sales Offer</div>
+      </div>
+    </button>
+  </div>
+</template>

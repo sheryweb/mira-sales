@@ -1,0 +1,40 @@
+.email-button {
+  margin-top: 8px;
+}
+
+.email-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(17, 74, 90, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.email-box {
+  background: #fff;
+  border: 1px solid #e2ebee;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(17, 74, 90, 0.25);
+  padding: 1.3rem 1.4rem;
+  width: 100%;
+  max-width: 380px;
+  text-align: left;
+}
+.email-box h3 {
+  font-weight: 800;
+  color: #114a5a;
+  margin: 0 0 0.2rem;
+}
+.email-hint {
+  color: #51707a;
+  font-size: 0.85rem;
+  margin: 0 0 0.8rem;
+}
+.email-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
