@@ -900,36 +900,6 @@ private class NGeniusPaymentLinkTest {
     Assert.isTrue(ok.success, 'Rule disabled, small amount accepted');
   }
 
-  // Business rule: maximum amount 55,000
-  @IsTest
-  static void aboveMaximumAmountRejected() {
-    fixture();
-    NGeniusConfig.testOverride.Maximum_Amount__c = 55000;
-    NGeniusHttpMock mock = NGeniusHttpMock.happy(5500100);
-    Test.setMock(HttpCalloutMock.class, mock);
-
-    NGeniusPaymentLinkController.LinkRequest r = validRequest();
-    r.amount = 55001.00;
-    String message = createExpectingError(r);
-
-    Assert.isTrue(
-      message.contains('must not exceed'),
-      'Maximum-amount rule reported: ' + message
-    );
-    Assert.areEqual(
-      0,
-      mock.identityCalls + mock.invoiceCalls,
-      'Rejected before any callout'
-    );
-    Assert.areEqual(0, [SELECT COUNT() FROM Payment_Link__c]);
-
-    // Maximum_Amount__c = 0 disables the rule — the same amount now goes
-    // through (only the 50,000,000 sanity cap remains).
-    NGeniusConfig.testOverride.Maximum_Amount__c = 0;
-    NGeniusPaymentLinkController.LinkResult ok = createLink(r);
-    Assert.isTrue(ok.success, 'Rule disabled, large amount accepted');
-  }
-
   // Business rule: AED only — a client-supplied currency is ignored
   @IsTest
   static void currencyAlwaysForcedToConfiguredAed() {

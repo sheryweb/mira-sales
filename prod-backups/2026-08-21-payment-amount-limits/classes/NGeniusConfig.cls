@@ -105,24 +105,13 @@ public with sharing class NGeniusConfig {
       : 3;
   }
 
-  /** Minimum link amount in major units; 0 disables the rule. Business rule: 10,000. */
+  /** Minimum link amount in major units; 0 disables the rule. Business wants 10,000. */
   public static Decimal minimumAmount() {
     NGenius_Setting__mdt s = record();
     return s != null &&
       s.Minimum_Amount__c != null &&
       s.Minimum_Amount__c > 0
       ? s.Minimum_Amount__c
-      : 0;
-  }
-
-  /** Maximum link amount in major units; 0 disables the rule (the service's
-   *  50,000,000 sanity cap still applies). Business rule: 55,000. */
-  public static Decimal maximumAmount() {
-    NGenius_Setting__mdt s = record();
-    return s != null &&
-      s.Maximum_Amount__c != null &&
-      s.Maximum_Amount__c > 0
-      ? s.Maximum_Amount__c
       : 0;
   }
 

@@ -128,25 +128,8 @@ export default class NGeniusPaymentLink extends NavigationMixin(
       ? `The minimum amount is AED ${min.toLocaleString()}.`
       : "The amount must be greater than zero.";
   }
-  get amountMax() {
-    const max = (this.defaults && this.defaults.maximumAmount) || 0;
-    return max > 0 ? max : undefined; // undefined = no max attribute rendered
-  }
-  get amountMaxMessage() {
-    const max = (this.defaults && this.defaults.maximumAmount) || 0;
-    return max > 0
-      ? `The maximum amount is AED ${max.toLocaleString()}.`
-      : undefined;
-  }
   get amountHelp() {
     const min = (this.defaults && this.defaults.minimumAmount) || 0;
-    const max = (this.defaults && this.defaults.maximumAmount) || 0;
-    if (min > 0 && max > 0) {
-      return `All payment links are in AED. The amount must be between ${min.toLocaleString()} and ${max.toLocaleString()}.`;
-    }
-    if (max > 0) {
-      return `All payment links are in AED. The maximum amount is ${max.toLocaleString()}.`;
-    }
     return min > 0
       ? `All payment links are in AED. The minimum amount is ${min.toLocaleString()}.`
       : "All payment links are in AED.";

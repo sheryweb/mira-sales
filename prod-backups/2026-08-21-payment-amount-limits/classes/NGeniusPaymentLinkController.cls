@@ -96,8 +96,6 @@ public with sharing class NGeniusPaymentLinkController {
     @AuraEnabled
     public Decimal minimumAmount; // 0 = no minimum
     @AuraEnabled
-    public Decimal maximumAmount; // 0 = no maximum
-    @AuraEnabled
     public Boolean smsEnabled;
     @AuraEnabled
     public String environmentName;
@@ -124,7 +122,6 @@ public with sharing class NGeniusPaymentLinkController {
       d.defaultCountryCode = '+971';
       d.expiryDays = NGeniusConfig.defaultExpiryDays();
       d.minimumAmount = NGeniusConfig.minimumAmount();
-      d.maximumAmount = NGeniusConfig.maximumAmount();
       d.smsEnabled = NGeniusConfig.sendSms();
       d.defaultExpiryDate = String.valueOf(Date.today().addDays(d.expiryDays));
       d.currencyOptions = new List<Option>{

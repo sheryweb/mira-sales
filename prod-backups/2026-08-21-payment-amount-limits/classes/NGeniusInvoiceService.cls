@@ -98,15 +98,6 @@ public with sharing class NGeniusInvoiceService {
           NGeniusConfig.minimumAmount().format() +
           ' (business rule).'
       );
-    } else if (
-      NGeniusConfig.maximumAmount() > 0 &&
-      input.amount > NGeniusConfig.maximumAmount()
-    ) {
-      problems.add(
-        'Amount must not exceed ' +
-          NGeniusConfig.maximumAmount().format() +
-          ' (business rule).'
-      );
     } else if (input.amount > MAX_AMOUNT) {
       problems.add(
         'Amount exceeds the maximum of ' + MAX_AMOUNT.format() + '.'
